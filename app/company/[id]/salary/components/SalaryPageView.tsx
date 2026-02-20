@@ -1,0 +1,477 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
+import YearMonthPicker from "./filters/YearMonthPicker";
+import { INCOME_META } from "../constants";
+import { BulkPayslipDownload } from "./BulkPayslipDownload";
+import { DashboardCard } from "./DashboardCard";
+import { MonthlyStatsChart } from "./MonthlyStatsChart";
+import { PayslipModal } from "./PayslipModal";
+import { SummaryCardsRow } from "./SummaryCardsRow";
+import { ErrorPanel } from "./common/ErrorPanel";
+import { LoadingPanel } from "./common/LoadingPanel";
+import {
+  IconBuilding,
+  IconChevronLeft,
+  IconChevronRight,
+  IconSearch,
+} from "./icons";
+import { BusinessIncomeTable } from "./tables/BusinessIncomeTable";
+import { DailyIncomeLaborTable } from "./tables/DailyIncomeLaborTable";
+import { EarnedIncomeTable } from "./tables/EarnedIncomeTable";
+import { OtherIncomeTable } from "./tables/OtherIncomeTable";
+import { useSalaryData } from "../hooks/useSalaryData";
+import { useSalaryStats } from "../hooks/useSalaryStats";
+import { formatBusinessNumber, formatNumber, formatYm } from "../lib/format";
+import { buildPageNumbers, shiftYm } from "../lib/navigation";
+import {
+  buildBusinessSummary,
+  buildDailySummary,
+  buildEarnedSummary,
+  buildGrandTotal,
+  buildOtherSummary,
+} from "../lib/summary";
+import type {
+  ActiveIncomeData,
+  IncomeSummary,
+  IncomeTab,
+  ViewMode,
+  EarnedIncomeRow,
+  BusinessIncomeRow,
+  DailyIncomeLaborRow,
+  OtherIncomeRow,
+} from "../types";
+
+interface SalaryPageViewProps {
+  viewMode: ViewMode;
+}
+
+export function SalaryPageView({ viewMode }: SalaryPageViewProps) {
+  const { id } = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const currentPage = Number(searchParams.get("page") ?? "1");
+  const filterAccrualYm = searchParams.get("accrualYm") ?? "";
+  const filterPaymentYm = searchParams.get("paymentYm") ?? "";
+
+  const [accrualInput, setAccrualInput] = useState(filterAccrualYm);
+  const [paymentInput, setPaymentInput] = useState(filterPaymentYm);
+
+  const [payslipRow, setPayslipRow] = useState<
+    | EarnedIncomeRow
+    | BusinessIncomeRow
+    | DailyIncomeLaborRow
+    | OtherIncomeRow
+    | null
+  >(null);
+  const [payslipType, setPayslipType] = useState<IncomeTab>("earned");
+  const [statsMonths, setStatsMonths] = useState(12);
+
+  const { earnedData, businessData, dailyData, otherData, loading, error } =
+    useSalaryData({
+      companyId: id,
+      currentPage,
+      filterAccrualYm,
+      filterPaymentYm,
+      viewMode,
+    });
+
+  const { data: statsData, loading: statsLoading } = useSalaryStats({
+    companyId: id,
+    months: statsMonths,
+    enabled: viewMode === "dashboard",
+  });
+
+  function pushWithQuery(path: string, next: URLSearchParams) {
+    const query = next.toString();
+    router.push(query ? `${path}?${query}` : path);
+  }
+
+  function navigate(overrides: Record<string, string>) {
+    const next = new URLSearchParams(searchParams.toString());
+    for (const [k, v] of Object.entries(overrides)) {
+      if (v) next.set(k, v);
+      else next.delete(k);
+    }
+
+    if (!overrides.page) next.set("page", "1");
+    pushWithQuery(pathname, next);
+  }
+
+  function switchTab(tab: IncomeTab) {
+    const next = new URLSearchParams(searchParams.toString());
+    next.set("page", "1");
+    pushWithQuery(`/company/${id}/salary/${tab}`, next);
+  }
+
+  function goToDashboard() {
+    const next = new URLSearchParams(searchParams.toString());
+    next.set("page", "1");
+    pushWithQuery(`/company/${id}/salary/dashboard`, next);
+  }
+
+  function navigateMonth(delta: number) {
+    const nextAccrual = shiftYm(accrualInput || filterAccrualYm, delta);
+    const nextPayment = shiftYm(paymentInput || filterPaymentYm, delta);
+    setAccrualInput(nextAccrual);
+    setPaymentInput(nextPayment);
+    navigate({ accrualYm: nextAccrual, paymentYm: nextPayment });
+  }
+
+  const activeTab = viewMode !== "dashboard" ? viewMode : null;
+
+  const data: ActiveIncomeData | null =
+    activeTab === "business"
+      ? businessData
+      : activeTab === "daily"
+        ? dailyData
+        : activeTab === "other"
+          ? otherData
+          : activeTab === "earned"
+            ? earnedData
+            : null;
+
+  const totalPages = data ? Math.ceil(data.total / data.size) : 0;
+  const pageNumbers = useMemo(
+    () => buildPageNumbers(currentPage, totalPages),
+    [currentPage, totalPages],
+  );
+
+  const businessEntity =
+    earnedData?.businessEntity ??
+    businessData?.businessEntity ??
+    dailyData?.businessEntity ??
+    otherData?.businessEntity ??
+    null;
+
+  const earnedSummary = useMemo(
+    () => buildEarnedSummary(earnedData),
+    [earnedData],
+  );
+  const businessSummary = useMemo(
+    () => buildBusinessSummary(businessData),
+    [businessData],
+  );
+  const dailySummary = useMemo(() => buildDailySummary(dailyData), [dailyData]);
+  const otherSummary = useMemo(() => buildOtherSummary(otherData), [otherData]);
+
+  const summaryMap: Record<IncomeTab, IncomeSummary | null> = {
+    earned: earnedSummary,
+    business: businessSummary,
+    daily: dailySummary,
+    other: otherSummary,
+  };
+
+  const grandTotal = useMemo(
+    () =>
+      buildGrandTotal([
+        earnedSummary,
+        businessSummary,
+        dailySummary,
+        otherSummary,
+      ]),
+    [earnedSummary, businessSummary, dailySummary, otherSummary],
+  );
+
+  const currentSummary = activeTab ? summaryMap[activeTab] : null;
+
+  const toCurrency = (value: number) => `₩ ${formatNumber(value)}`;
+
+  return (
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+      <div className="mx-auto max-w-450 p-6 lg:p-8">
+        <div className="mb-8">
+          <div className="mb-2 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200">
+              <IconBuilding />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+                급여 명세
+              </h1>
+              {businessEntity && (
+                <p className="text-sm text-gray-500">
+                  {businessEntity.businessName ?? "이름 없음"}
+                  <span className="mx-1.5 text-gray-300">•</span>
+                  <span className="font-mono text-xs text-gray-400">
+                    {formatBusinessNumber(businessEntity.businessNumber)}
+                  </span>
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* 귀속년월, 지급년월 선택 */}
+          <div className="mt-4 flex flex-wrap items-end gap-3">
+            <button
+              type="button"
+              onClick={() => navigateMonth(-1)}
+              title="이전월"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-all hover:bg-gray-50 hover:text-gray-800 active:scale-95"
+            >
+              <IconChevronLeft />
+            </button>
+
+            <YearMonthPicker
+              label="귀속년월"
+              placeholder="선택하세요"
+              value={accrualInput}
+              onChange={(v) => {
+                setAccrualInput(v);
+                setPaymentInput(v);
+              }}
+            />
+            <YearMonthPicker
+              label="지급년월"
+              placeholder="선택하세요"
+              value={paymentInput}
+              onChange={setPaymentInput}
+            />
+
+            <button
+              type="button"
+              onClick={() => navigateMonth(1)}
+              title="다음월"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-all hover:bg-gray-50 hover:text-gray-800 active:scale-95"
+            >
+              <IconChevronRight />
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                navigate({
+                  accrualYm: accrualInput,
+                  paymentYm: paymentInput,
+                })
+              }
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-blue-600 px-4 text-sm font-medium text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow active:scale-[0.98]"
+            >
+              <IconSearch />
+              조회
+            </button>
+          </div>
+        </div>
+
+        {viewMode === "dashboard" && (
+          <>
+            {grandTotal && (
+              <SummaryCardsRow summary={grandTotal} toCurrency={toCurrency} />
+            )}
+
+            {loading ? (
+              <LoadingPanel />
+            ) : error ? (
+              <ErrorPanel message={error} />
+            ) : (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {(["earned", "business", "daily", "other"] as IncomeTab[]).map(
+                  (tab) => (
+                    <DashboardCard
+                      key={tab}
+                      tab={tab}
+                      summary={summaryMap[tab]}
+                      loading={false}
+                      onClick={() => switchTab(tab)}
+                    />
+                  ),
+                )}
+              </div>
+            )}
+
+            {/* 월별 급여 통계 차트 */}
+            {statsLoading ? (
+              <div className="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
+                <div className="h-90 animate-pulse rounded-lg bg-gray-50" />
+              </div>
+            ) : (
+              statsData && (
+                <MonthlyStatsChart
+                  stats={statsData.stats}
+                  months={statsData.months}
+                  onMonthsChange={setStatsMonths}
+                />
+              )
+            )}
+          </>
+        )}
+
+        {activeTab && (
+          <>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={goToDashboard}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-gray-800 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-gray-900 active:scale-95"
+                >
+                  <IconChevronLeft />
+                  대시보드로 돌아가기
+                </button>
+                <div
+                  className={`flex items-center gap-2 rounded-lg bg-linear-to-r ${INCOME_META[activeTab].gradient} px-4 py-1.5 text-sm font-semibold text-white shadow-sm`}
+                >
+                  {INCOME_META[activeTab].label}
+                </div>
+              </div>
+              {data && !loading && data.total > 0 && (
+                <BulkPayslipDownload
+                  companyId={id}
+                  incomeType={activeTab}
+                  businessEntity={businessEntity}
+                  totalCount={data.total}
+                  accrualYm={filterAccrualYm || undefined}
+                  paymentYm={filterPaymentYm || undefined}
+                />
+              )}
+            </div>
+
+            {currentSummary && (
+              <SummaryCardsRow
+                summary={currentSummary}
+                toCurrency={toCurrency}
+              />
+            )}
+
+            <div className="rounded-2xl bg-white shadow-sm ring-1 ring-gray-950/5">
+              {data && !loading && (
+                <div className="flex items-center justify-end border-b border-gray-100 px-6 py-3">
+                  <p className="text-sm text-gray-500">
+                    총{" "}
+                    <span className="font-semibold text-gray-800">
+                      {data.total.toLocaleString()}
+                    </span>
+                    건
+                    {totalPages > 1 && (
+                      <span className="ml-2 text-gray-400">
+                        (페이지 {currentPage} / {totalPages})
+                      </span>
+                    )}
+                  </p>
+                </div>
+              )}
+
+              {loading && <LoadingPanel />}
+
+              {error && <ErrorPanel message={error} />}
+
+              {!loading && !error && data && (
+                <>
+                  <div className="max-h-[calc(100vh-20rem)] overflow-auto">
+                    {activeTab === "earned" ? (
+                      <EarnedIncomeTable
+                        rows={earnedData?.rows ?? []}
+                        formatYm={formatYm}
+                        formatNumber={formatNumber}
+                        onRowClick={(row) => {
+                          setPayslipRow(row);
+                          setPayslipType("earned");
+                        }}
+                      />
+                    ) : activeTab === "daily" ? (
+                      <DailyIncomeLaborTable
+                        rows={dailyData?.rows ?? []}
+                        formatNumber={formatNumber}
+                        onRowClick={(row) => {
+                          setPayslipRow(row);
+                          setPayslipType("daily");
+                        }}
+                      />
+                    ) : activeTab === "other" ? (
+                      <OtherIncomeTable
+                        rows={otherData?.rows ?? []}
+                        formatYm={formatYm}
+                        formatNumber={formatNumber}
+                        onRowClick={(row) => {
+                          setPayslipRow(row);
+                          setPayslipType("other");
+                        }}
+                      />
+                    ) : (
+                      <BusinessIncomeTable
+                        rows={businessData?.rows ?? []}
+                        formatYm={formatYm}
+                        formatNumber={formatNumber}
+                        onRowClick={(row) => {
+                          setPayslipRow(row);
+                          setPayslipType("business");
+                        }}
+                      />
+                    )}
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between border-t border-gray-100 px-6 py-4">
+                      <p className="text-xs text-gray-400">
+                        {(currentPage - 1) * (data?.size ?? 50) + 1}–
+                        {Math.min(
+                          currentPage * (data?.size ?? 50),
+                          data?.total ?? 0,
+                        )}
+                        건 표시 중
+                      </p>
+                      <div className="flex items-center gap-1">
+                        <button
+                          disabled={currentPage <= 1}
+                          onClick={() =>
+                            navigate({ page: String(currentPage - 1) })
+                          }
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent"
+                        >
+                          <IconChevronLeft />
+                        </button>
+                        {pageNumbers.map((p, i) =>
+                          p === "..." ? (
+                            <span
+                              key={`dots-${i}`}
+                              className="flex h-8 w-8 items-center justify-center text-xs text-gray-400"
+                            >
+                              ···
+                            </span>
+                          ) : (
+                            <button
+                              key={p}
+                              onClick={() => navigate({ page: String(p) })}
+                              className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-medium transition-all ${
+                                currentPage === p
+                                  ? "bg-blue-600 text-white shadow-sm"
+                                  : "text-gray-600 hover:bg-gray-100"
+                              }`}
+                            >
+                              {p}
+                            </button>
+                          ),
+                        )}
+                        <button
+                          disabled={currentPage >= totalPages}
+                          onClick={() =>
+                            navigate({ page: String(currentPage + 1) })
+                          }
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent"
+                        >
+                          <IconChevronRight />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
+      {payslipRow && (
+        <PayslipModal
+          row={payslipRow}
+          incomeType={payslipType}
+          businessEntity={businessEntity}
+          onClose={() => setPayslipRow(null)}
+        />
+      )}
+    </div>
+  );
+}
