@@ -1,0 +1,269 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum BusinessType {
+  INDIVIDUAL
+  CORPORATION
+}
+
+model BusinessEntity {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  // 숫자만 10자리 저장
+  businessNumber String @unique @map("business_number") @db.Char(10) //
+
+  businessType BusinessType @map("business_type")
+
+  businessName       String?   @map("business_name") @db.VarChar(200)
+  representativeName String?   @map("representative_name") @db.VarChar(100)
+  openingDate        DateTime? @map("opening_date") @db.Date
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  uploads       Upload[]
+  activeUploads BusinessEntityActiveUpload[]
+
+  @@map("business_entity")
+}
+
+enum UploadType {
+  EARNED_INCOME // 근로소득
+  BUSINESS_INCOME // 사업소득
+  OTHER_INCOME // 기타소득(간단형: 소득구분/세액)
+  OTHER_INCOME_LABOR // 기타소득(근무/공제/시간 포함)
+}
+
+model Upload {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  businessEntityId BigInt         @db.UnsignedBigInt
+  businessEntity   BusinessEntity @relation(fields: [businessEntityId], references: [id])
+
+  type UploadType @map("type")
+
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+  fileName   String?  @map("file_name") @db.VarChar(255)
+  checksum   String?  @map("checksum") @db.VarChar(64)
+  memo       String?  @map("memo") @db.VarChar(255)
+
+  // row relations (타입별 row 테이블)
+  earnedRows     EarnedIncome[]
+  businessRows   BusinessIncome[]
+  otherRows      OtherIncome[]
+  dailyLaborRows DailyIncomeLabor[]
+
+  activePointer BusinessEntityActiveUpload?
+
+  // 동일 파일 중복 업로드 감지(선택): 같은 사업자+타입+체크섬은 중복 방지 가능
+  @@unique([businessEntityId, type, checksum])
+  // 조회 최적화
+  @@index([businessEntityId, type, uploadedAt])
+  @@map("upload")
+}
+
+// "현재 적용 배치"를 강제하는 포인터 테이블
+// 사업자+타입당 1개만 존재하도록 UNIQUE로 강제됨
+model BusinessEntityActiveUpload {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  businessEntityId BigInt         @db.UnsignedBigInt
+  businessEntity   BusinessEntity @relation(fields: [businessEntityId], references: [id])
+
+  type UploadType @map("type")
+
+  uploadId BigInt @unique @db.UnsignedBigInt
+  upload   Upload @relation(fields: [uploadId], references: [id])
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([businessEntityId, type])
+  @@map("workplace_active_upload")
+}
+
+/**
+ * ---------------------------
+ * 근로소득
+ * ---------------------------
+ */
+
+model EarnedIncome {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  uploadId BigInt @db.UnsignedBigInt
+  upload   Upload @relation(fields: [uploadId], references: [id])
+
+  accrualYm Int      @map("귀속년월")
+  paymentYm Int      @map("지급년월")
+  payDate   DateTime @map("지급일") @db.Date
+
+  employeeCode String  @map("사원코드") @db.VarChar(50)
+  employeeName String  @map("사원명") @db.VarChar(100)
+  department   String? @map("부서") @db.VarChar(50)
+  position     String? @map("직급") @db.VarChar(50)
+  jobType      String? @map("직종") @db.VarChar(50)
+
+  baseSalary    Decimal @map("수당_기본급") @db.Decimal(15, 2)
+  bonus         Decimal @map("상여") @db.Decimal(15, 2)
+  mealAllowance Decimal @map("식대") @db.Decimal(15, 2)
+  allowance     Decimal @map("수당") @db.Decimal(15, 2)
+  travelExpense Decimal @map("출장비") @db.Decimal(15, 2)
+  totalPayment  Decimal @map("지급액계") @db.Decimal(15, 2)
+
+  nationalPensionDeduction Decimal @map("공제_국민연금") @db.Decimal(15, 2)
+  healthInsurance          Decimal @map("건강보험") @db.Decimal(15, 2)
+  employmentInsurance      Decimal @map("고용보험") @db.Decimal(15, 2)
+  longTermCareInsurance    Decimal @map("장기요양보험료") @db.Decimal(15, 2)
+  incomeTax                Decimal @map("소득세") @db.Decimal(15, 2)
+  localIncomeTax           Decimal @map("지방소득세") @db.Decimal(15, 2)
+  studentLoanRepayment     Decimal @map("학자금상환액") @db.Decimal(15, 2)
+  healthInsuranceAdj       Decimal @map("건강보험정산") @db.Decimal(15, 2)
+  nationalPensionAdj       Decimal @map("국민연금정산") @db.Decimal(15, 2)
+  employmentInsuranceAdj   Decimal @map("고용보험정산") @db.Decimal(15, 2)
+  healthInsuranceUnpaidQ1  Decimal @map("1-3월 건강보험미납분") @db.Decimal(15, 2)
+  longTermCareAdj          Decimal @map("장기요양정산") @db.Decimal(15, 2)
+  prepaidIncomeTax         Decimal @map("기납부소득세") @db.Decimal(15, 2)
+  prepaidLocalIncomeTax    Decimal @map("기납부지방소득세") @db.Decimal(15, 2)
+  addlIncomeTaxAdj         Decimal @map("추가정산소득세") @db.Decimal(15, 2)
+  addlLocalIncomeTaxAdj    Decimal @map("추가정산지방소득세") @db.Decimal(15, 2)
+  totalDeduction           Decimal @map("공제액계") @db.Decimal(15, 2)
+
+  netPayment Decimal @map("차인지급액") @db.Decimal(15, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([uploadId, employeeCode, accrualYm, paymentYm, payDate])
+  @@index([employeeCode, accrualYm, paymentYm, payDate])
+  @@map("earned_income")
+}
+
+/**
+ * ---------------------------
+ * 사업소득
+ * ---------------------------
+ */
+
+model BusinessIncome {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  uploadId BigInt @db.UnsignedBigInt
+  upload   Upload @relation(fields: [uploadId], references: [id])
+
+  excelNo      Int?   @map("NO")
+  employeeCode String @map("코드") @db.VarChar(50)
+  employeeName String @map("성   명") @db.VarChar(100)
+
+  accrualYm Int @map("귀속년월")
+  paymentYm Int @map("지급년월")
+
+  grossPayment Decimal @map("지급액") @db.Decimal(15, 2)
+
+  incomeTax      Decimal @map("소득세") @db.Decimal(15, 2)
+  localIncomeTax Decimal @map("지방소득세") @db.Decimal(15, 2)
+  expenseArtSpec Decimal @map("예술/특고인 경비") @db.Decimal(15, 2)
+  employmentIns  Decimal @map("고용보험료") @db.Decimal(15, 2)
+  studentLoan    Decimal @map("학자금상환액") @db.Decimal(15, 2)
+  industrialAcc  Decimal @map("산재보험료") @db.Decimal(15, 2)
+
+  netPayment Decimal @map("차인지급액") @db.Decimal(15, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([uploadId, employeeCode, accrualYm, paymentYm])
+  @@index([employeeCode, accrualYm, paymentYm])
+  @@map("business_income")
+}
+
+/**
+ * ---------------------------
+ * 기타소득
+ * ---------------------------
+ */
+
+model OtherIncome {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  uploadId BigInt @db.UnsignedBigInt
+  upload   Upload @relation(fields: [uploadId], references: [id])
+
+  excelNo      Int?   @map("NO")
+  employeeCode String @map("코드") @db.VarChar(50)
+  employeeName String @map("성   명") @db.VarChar(100)
+
+  incomeType String @map("소득구분") @db.VarChar(50)
+
+  accrualYm Int @map("귀속년월")
+  paymentYm Int @map("지급년월")
+
+  grossPayment   Decimal @map("지급액") @db.Decimal(15, 2)
+  taxCorpTax     Decimal @map("소득세/법인세") @db.Decimal(15, 2)
+  localIncomeTax Decimal @map("지방소득세") @db.Decimal(15, 2)
+
+  netPayment Decimal @map("차인지급액") @db.Decimal(15, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([uploadId, employeeCode, incomeType, accrualYm, paymentYm])
+  @@index([employeeCode, incomeType, accrualYm, paymentYm])
+  @@map("other_income")
+}
+
+/**
+ * ---------------------------
+ * 일용직 급여
+ * ---------------------------
+ */
+
+model DailyIncomeLabor {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  uploadId BigInt @db.UnsignedBigInt
+  upload   Upload @relation(fields: [uploadId], references: [id])
+
+  employeeCode String  @map("코드") @db.VarChar(50)
+  employeeName String  @map("성명") @db.VarChar(100)
+  jobType      String? @map("직종") @db.VarChar(50)
+  position     String? @map("직급") @db.VarChar(50)
+
+  identificationNumber String?   @map("주민등록번호") @db.VarChar(20)
+  address              String?   @map("주 소") @db.VarChar(255)
+  phone                String?   @map("전화번호") @db.VarChar(30)
+  joinDate             DateTime? @map("입사일") @db.Date
+
+  workDays      Int?     @map("근무일수")
+  normalHours   Decimal? @map("근무시간_정상") @db.Decimal(10, 2)
+  overtimeHours Decimal? @map("근무시간_연장") @db.Decimal(10, 2)
+
+  grossPay        Decimal @map("급여총액") @db.Decimal(15, 2)
+  employmentIns   Decimal @map("고용보험료") @db.Decimal(15, 2)
+  nationalPension Decimal @map("국민연금") @db.Decimal(15, 2)
+  healthIns       Decimal @map("건강보험료") @db.Decimal(15, 2)
+  incomeTax       Decimal @map("소득세") @db.Decimal(15, 2)
+  localIncomeTax  Decimal @map("지방소득세") @db.Decimal(15, 2)
+  longTermCare    Decimal @map("요양보험") @db.Decimal(15, 2)
+
+  netPay Decimal @map("차인지급액") @db.Decimal(15, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([uploadId, employeeCode, employeeName])
+  @@index([employeeCode, employeeName])
+  @@index([identificationNumber])
+  @@map("daily_income_labor")
+}
