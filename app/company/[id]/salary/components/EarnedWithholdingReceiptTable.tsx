@@ -1,10 +1,10 @@
 import type { CSSProperties } from "react";
-import type { BusinessEntity, EarnedIncomeRow } from "../types";
+import type { Company, EarnedIncomeRow } from "../types";
 import { formatBusinessNumber, formatNumber } from "../lib/format";
 
 interface EarnedWithholdingReceiptTableProps {
   row: EarnedIncomeRow;
-  businessEntity: BusinessEntity | null;
+  company: Company | null;
 }
 
 /* ── Shared Styles ── */
@@ -57,13 +57,13 @@ function fmt(v: string | number): string {
 
 export function EarnedWithholdingReceiptTable({
   row,
-  businessEntity,
+  company,
 }: EarnedWithholdingReceiptTableProps) {
   const taxYear = String(row.accrualYm).slice(0, 4);
-  const businessNo = businessEntity
-    ? formatBusinessNumber(businessEntity.businessNumber)
+  const businessNo = company
+    ? formatBusinessNumber(company.businessNumber)
     : "";
-  const companyName = businessEntity?.businessName ?? "";
+  const companyName = company?.businessName ?? "";
   const issueDate = new Date(row.payDate);
 
   const baseSalary = Number(row.baseSalary);

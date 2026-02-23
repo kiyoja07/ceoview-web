@@ -27,7 +27,7 @@ export type UploadSaveResult = {
 
 export type SaveRowsByIncomeTypeParams = {
   incomeType: SalaryIncomeType;
-  businessEntityId: string;
+  companyId: string;
   fileName: string;
   rows: Record<string, unknown>[];
   accrualYm?: string | null;

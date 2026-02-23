@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type { BusinessEntity, IncomeTab } from "../types";
+import type { Company, IncomeTab } from "../types";
 
 interface BulkPayslipDownloadProps {
   companyId: string;
   incomeType: IncomeTab;
-  businessEntity: BusinessEntity | null;
+  company: Company | null;
   totalCount: number;
   accrualYm?: string;
   paymentYm?: string;
@@ -29,7 +29,7 @@ const ENDPOINT_MAP: Record<IncomeTab, string> = {
 export function BulkPayslipDownload({
   companyId,
   incomeType,
-  businessEntity,
+  company,
   totalCount,
   accrualYm,
   paymentYm,
@@ -71,7 +71,7 @@ export function BulkPayslipDownload({
       const blob = await generatePayslipZip(
         rows,
         incomeType,
-        businessEntity,
+        company,
         (done, total) => setProgress({ done, total }),
       );
 

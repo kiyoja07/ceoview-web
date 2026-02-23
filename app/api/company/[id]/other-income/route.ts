@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const businessEntityId = BigInt(id);
+    const companyId = BigInt(id);
 
     const { searchParams } = new URL(request.url);
     const accrualYm = searchParams.get("accrualYm");
@@ -16,8 +16,8 @@ export async function GET(
     const size = parseInt(searchParams.get("size") ?? "50", 10);
 
     // 사업자 존재 확인
-    const entity = await prisma.businessEntity.findUnique({
-      where: { id: businessEntityId },
+    const entity = await prisma.company.findUnique({
+      where: { id: companyId },
       select: { id: true, businessName: true, businessNumber: true },
     });
 
@@ -31,7 +31,7 @@ export async function GET(
     // 해당 사업자의 OTHER_INCOME 업로드 ID 목록
     const uploadIds = await prisma.upload.findMany({
       where: {
-        businessEntityId,
+        companyId,
         type: "OTHER_INCOME",
       },
       select: { id: true },
@@ -39,7 +39,7 @@ export async function GET(
 
     if (uploadIds.length === 0) {
       return NextResponse.json({
-        businessEntity: serialize(entity),
+        company: serialize(entity),
         rows: [],
         total: 0,
         page,
@@ -73,7 +73,7 @@ export async function GET(
     ]);
 
     return NextResponse.json({
-      businessEntity: serialize(entity),
+      company: serialize(entity),
       rows: rows.map(serialize),
       total,
       page,

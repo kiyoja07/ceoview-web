@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import { EARNED_ITEM_CODE_STUDENT_LOAN_REPAYMENT } from "@/app/lib/payroll-items";
 
 export async function GET(
   request: NextRequest,
@@ -7,7 +8,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const businessEntityId = BigInt(id);
+    const companyId = BigInt(id);
 
     // 쿼리 파라미터: 귀속년월 필터 (선택)
     const { searchParams } = new URL(request.url);
@@ -17,8 +18,8 @@ export async function GET(
     const size = parseInt(searchParams.get("size") ?? "50", 10);
 
     // 사업자 존재 확인
-    const entity = await prisma.businessEntity.findUnique({
-      where: { id: businessEntityId },
+    const entity = await prisma.company.findUnique({
+      where: { id: companyId },
       select: { id: true, businessName: true, businessNumber: true },
     });
 
@@ -32,7 +33,7 @@ export async function GET(
     // 해당 사업자의 EARNED_INCOME 업로드 ID 목록
     const uploadIds = await prisma.upload.findMany({
       where: {
-        businessEntityId,
+        companyId,
         type: "EARNED_INCOME",
       },
       select: { id: true },
@@ -40,7 +41,7 @@ export async function GET(
 
     if (uploadIds.length === 0) {
       return NextResponse.json({
-        businessEntity: serialize(entity),
+        company: serialize(entity),
         rows: [],
         total: 0,
         page,
@@ -63,6 +64,19 @@ export async function GET(
       prisma.earnedIncome.count({ where }),
       prisma.earnedIncome.findMany({
         where,
+        include: {
+          itemValues: {
+            include: {
+              itemDefinition: {
+                select: {
+                  code: true,
+                  name: true,
+                  kind: true,
+                },
+              },
+            },
+          },
+        },
         orderBy: [
           { accrualYm: "desc" },
           { paymentYm: "desc" },
@@ -73,9 +87,38 @@ export async function GET(
       }),
     ]);
 
+    const serializedRows = rows.map((row) => {
+      const { itemValues, ...baseRow } = row;
+      const dynamicPaymentItems = itemValues
+        .filter((item) => item.itemDefinition.kind === "PAYMENT")
+        .map((item) => ({
+          code: item.itemDefinition.code,
+          name: item.itemDefinition.name,
+          amount: item.amount,
+        }));
+      const dynamicDeductionItems = itemValues
+        .filter((item) => item.itemDefinition.kind === "DEDUCTION")
+        .map((item) => ({
+          code: item.itemDefinition.code,
+          name: item.itemDefinition.name,
+          amount: item.amount,
+        }));
+      const studentLoanRepayment =
+        dynamicDeductionItems.find(
+          (item) => item.code === EARNED_ITEM_CODE_STUDENT_LOAN_REPAYMENT,
+        )?.amount ?? 0;
+
+      return serialize({
+        ...baseRow,
+        dynamicPaymentItems,
+        dynamicDeductionItems,
+        studentLoanRepayment,
+      });
+    });
+
     return NextResponse.json({
-      businessEntity: serialize(entity),
-      rows: rows.map(serialize),
+      company: serialize(entity),
+      rows: serializedRows,
       total,
       page,
       size,

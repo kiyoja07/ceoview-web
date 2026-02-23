@@ -7,7 +7,7 @@ import type {
   BusinessIncomeRow,
   DailyIncomeLaborRow,
   OtherIncomeRow,
-  BusinessEntity,
+  Company,
   IncomeTab,
 } from "../types";
 import { formatNumber, formatYm, formatBusinessNumber } from "../lib/format";
@@ -37,6 +37,10 @@ function earnedDeductionItems(row: EarnedIncomeRow): PayslipItem[] {
     { label: "고용보험", amount: Number(row.employmentInsurance) },
     { label: "근로소득세", amount: Number(row.incomeTax) },
     { label: "지방소득세", amount: Number(row.localIncomeTax) },
+    ...(row.dynamicDeductionItems ?? []).map((item) => ({
+      label: item.name,
+      amount: Number(item.amount),
+    })),
   ];
 }
 
@@ -92,7 +96,7 @@ type IncomeRow =
 interface PayslipModalProps {
   row: IncomeRow;
   incomeType: IncomeTab;
-  businessEntity: BusinessEntity | null;
+  company: Company | null;
   onClose: () => void;
 }
 
@@ -238,7 +242,7 @@ function getNetPayment(row: IncomeRow, type: IncomeTab): number {
 export function PayslipModal({
   row,
   incomeType,
-  businessEntity,
+  company,
   onClose,
 }: PayslipModalProps) {
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -410,7 +414,7 @@ export function PayslipModal({
               <div className="p-8">
                 {/* <EarnedWithholdingReceiptTable
                   row={row as EarnedIncomeRow}
-                  businessEntity={businessEntity}
+                  company={company}
                 /> */}
               </div>
             ) : (
@@ -428,7 +432,7 @@ export function PayslipModal({
                         회사명
                       </th>
                       <td className="border border-gray-300 px-3 py-2 text-gray-800">
-                        {businessEntity?.businessName ?? "—"}
+                        {company?.businessName ?? "—"}
                       </td>
                       <th className="w-24 border border-gray-300 bg-gray-50 px-3 py-2 text-left font-semibold text-gray-700">
                         사원명
@@ -442,8 +446,8 @@ export function PayslipModal({
                         사업자번호
                       </th>
                       <td className="border border-gray-300 px-3 py-2 font-mono text-sm text-gray-700">
-                        {businessEntity
-                          ? formatBusinessNumber(businessEntity.businessNumber)
+                        {company
+                          ? formatBusinessNumber(company.businessNumber)
                           : "—"}
                       </td>
                       <th className="border border-gray-300 bg-gray-50 px-3 py-2 text-left font-semibold text-gray-700">

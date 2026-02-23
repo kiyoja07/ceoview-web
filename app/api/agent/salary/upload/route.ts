@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     const incomeTypeRaw = formData.get("incomeType");
-    const businessEntityId = formData.get("businessEntityId") as string | null;
+    const companyId = formData.get("companyId") as string | null;
     const accrualYm = formData.get("accrualYm") as string | null;
     const paymentYm = formData.get("paymentYm") as string | null;
     const payDateStr = formData.get("payDate") as string | null;
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     const incomeType = incomeTypeRaw;
 
-    if (!businessEntityId) {
+    if (!companyId) {
       return NextResponse.json(
         { error: "사업자를 선택해주세요." },
         { status: 400 },
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
       try {
         const result = await saveRowsByIncomeType({
           incomeType,
-          businessEntityId,
+          companyId,
           fileName,
           rows,
           accrualYm,
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
           sheetName,
           incomeType,
           incomeTypeLabel: INCOME_TYPE_LABELS[incomeType],
-          businessEntityId,
+          companyId,
           accrualYm,
           totalRows: rows.length,
           columns,
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
       sheetName,
       incomeType,
       incomeTypeLabel: INCOME_TYPE_LABELS[incomeType],
-      businessEntityId,
+      companyId,
       accrualYm,
       totalRows: rows.length,
       columns,

@@ -18,25 +18,22 @@ enum BusinessType {
   CORPORATION
 }
 
-model BusinessEntity {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+enum PayrollItemKind {
+  PAYMENT
+  DEDUCTION
+}
 
-  // 숫자만 10자리 저장
-  businessNumber String @unique @map("business_number") @db.Char(10) //
+enum CustomerLinkStatus {
+  ACTIVE
+  INACTIVE
+}
 
-  businessType BusinessType @map("business_type")
-
-  businessName       String?   @map("business_name") @db.VarChar(200)
-  representativeName String?   @map("representative_name") @db.VarChar(100)
-  openingDate        DateTime? @map("opening_date") @db.Date
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  uploads       Upload[]
-  activeUploads BusinessEntityActiveUpload[]
-
-  @@map("business_entity")
+enum LoginProvider {
+  LOCAL
+  GOOGLE
+  KAKAO
+  NAVER
+  APPLE
 }
 
 enum UploadType {
@@ -46,11 +43,191 @@ enum UploadType {
   OTHER_INCOME_LABOR // 기타소득(근무/공제/시간 포함)
 }
 
+enum AgentBillingPlan {
+  STARTER
+  GROWTH
+  ENTERPRISE
+}
+
+/**
+ * ---------------------------
+ * 사용자 및 회사 관련 테이블
+ * ---------------------------
+ */
+
+//  세무사무소 등 에이전트 회사 : 서비스 제공자
+model AgentOrganization {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  organizationNumber String @unique @map("organization_number") @db.Char(10) // 숫자만 10자리 저장
+
+  businessType BusinessType @map("business_type") // 개인/법인 구분
+
+  organizationName   String?   @map("organization_name") @db.VarChar(200)
+  representativeName String?   @map("representative_name") @db.VarChar(100)
+  openingDate        DateTime? @map("opening_date") @db.Date
+  address            String?   @map("address") @db.VarChar(255)
+
+  users AgentUser[]
+  billing AgentOrganizationBilling?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("agent_organization")
+}
+
+// 에이전트의 고객 회사 : 서비스 수혜자
+model Company {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  businessNumber String @unique @map("business_number") @db.Char(10) // 숫자만 10자리 저장
+
+  businessType BusinessType @map("business_type") // 개인/법인 구분
+
+  businessName       String?   @map("business_name") @db.VarChar(200)
+  representativeName String?   @map("representative_name") @db.VarChar(100)
+  openingDate        DateTime? @map("opening_date") @db.Date
+  address            String?   @map("address") @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  uploads                     Upload[]
+  activeUploads               CompanyActiveUpload[]
+  earnedIncomeItemDefinitions EarnedIncomeItemDefinition[]
+  companyUsers                CompanyUser[]
+
+  @@map("company")
+}
+
+// 에이전트 회사 소속 사용자
+model AgentUser {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  agentOrganizationId BigInt?            @map("agent_organization_id") @db.UnsignedBigInt
+  agentOrganization   AgentOrganization? @relation(fields: [agentOrganizationId], references: [id])
+
+  email          String        @unique @db.VarChar(255)
+  passwordHash   String?       @map("password_hash") @db.VarChar(255)
+  loginProvider  LoginProvider @default(LOCAL) @map("login_provider")
+  providerUserId String?       @map("provider_user_id") @db.VarChar(191)
+  name           String        @db.VarChar(100)
+  phone          String?       @db.VarChar(30)
+  isMaster       Boolean       @default(false) @map("is_master")
+  isActive       Boolean       @default(true) @map("is_active")
+
+  customerLinks AgentCompanyCustomer[]
+  magicLinkTokens AgentMagicLinkToken[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([loginProvider, providerUserId])
+  @@index([agentOrganizationId, isActive])
+  @@map("agent_user")
+}
+
+model AgentMagicLinkToken {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  agentUserId BigInt   @map("agent_user_id") @db.UnsignedBigInt
+  agentUser   AgentUser @relation(fields: [agentUserId], references: [id], onDelete: Cascade)
+
+  tokenHash String   @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([agentUserId, expiresAt])
+  @@index([expiresAt])
+  @@map("agent_magic_link_token")
+}
+
+// 고객 회사 소속 사용자
+model CompanyUser {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id])
+
+  email          String        @unique @db.VarChar(255)
+  passwordHash   String?       @map("password_hash") @db.VarChar(255)
+  loginProvider  LoginProvider @default(LOCAL) @map("login_provider")
+  providerUserId String?       @map("provider_user_id") @db.VarChar(191)
+  name           String        @db.VarChar(100)
+  phone          String?       @db.VarChar(30)
+  birthday       DateTime?     @map("birthday") @db.Date
+  gender         String?       @map("gender") @db.VarChar(10)
+  isMaster       Boolean       @default(false) @map("is_master")
+  isActive       Boolean       @default(true) @map("is_active")
+
+  agentLinks AgentCompanyCustomer[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([loginProvider, providerUserId])
+  @@index([companyId])
+  @@map("company_user")
+}
+
+model AgentCompanyCustomer {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  agentUserId BigInt    @map("agent_user_id") @db.UnsignedBigInt
+  agentUser   AgentUser @relation(fields: [agentUserId], references: [id])
+
+  companyUserId BigInt      @map("company_user_id") @db.UnsignedBigInt
+  companyUser   CompanyUser @relation(fields: [companyUserId], references: [id])
+
+  status          CustomerLinkStatus @default(ACTIVE)
+  contractStartAt DateTime?          @map("contract_start_at") @db.Date
+  contractEndAt   DateTime?          @map("contract_end_at") @db.Date
+  memo            String?            @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([agentUserId, companyUserId])
+  @@index([companyUserId, status])
+  @@map("agent_company_customer")
+}
+
+model AgentOrganizationBilling {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  agentOrganizationId BigInt            @unique @map("agent_organization_id") @db.UnsignedBigInt
+  agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id])
+
+  plan AgentBillingPlan @default(STARTER) @map("plan")
+
+  cardBrand        String?   @map("card_brand") @db.VarChar(30)
+  cardLast4        String?   @map("card_last4") @db.Char(4)
+  cardExpMonth     Int?      @map("card_exp_month") @db.UnsignedTinyInt
+  cardExpYear      Int?      @map("card_exp_year") @db.UnsignedSmallInt
+  cardHolderName   String?   @map("card_holder_name") @db.VarChar(100)
+  billingKey       String?   @map("billing_key") @db.VarChar(191)
+  cardRegisteredAt DateTime? @map("card_registered_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("agent_organization_billing")
+}
+
+/**
+ * ---------------------------
+ * 위하고 엑셀 파일 관련 테이블
+ * ---------------------------
+ */
+
 model Upload {
   id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
 
-  businessEntityId BigInt         @db.UnsignedBigInt
-  businessEntity   BusinessEntity @relation(fields: [businessEntityId], references: [id])
+  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id])
 
   type UploadType @map("type")
 
@@ -65,22 +242,22 @@ model Upload {
   otherRows      OtherIncome[]
   dailyLaborRows DailyIncomeLabor[]
 
-  activePointer BusinessEntityActiveUpload?
+  activePointer CompanyActiveUpload?
 
   // 동일 파일 중복 업로드 감지(선택): 같은 사업자+타입+체크섬은 중복 방지 가능
-  @@unique([businessEntityId, type, checksum])
+  @@unique([companyId, type, checksum])
   // 조회 최적화
-  @@index([businessEntityId, type, uploadedAt])
+  @@index([companyId, type, uploadedAt])
   @@map("upload")
 }
 
 // "현재 적용 배치"를 강제하는 포인터 테이블
 // 사업자+타입당 1개만 존재하도록 UNIQUE로 강제됨
-model BusinessEntityActiveUpload {
+model CompanyActiveUpload {
   id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
 
-  businessEntityId BigInt         @db.UnsignedBigInt
-  businessEntity   BusinessEntity @relation(fields: [businessEntityId], references: [id])
+  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id])
 
   type UploadType @map("type")
 
@@ -89,7 +266,7 @@ model BusinessEntityActiveUpload {
 
   updatedAt DateTime @updatedAt
 
-  @@unique([businessEntityId, type])
+  @@unique([companyId, type])
   @@map("workplace_active_upload")
 }
 
@@ -128,11 +305,9 @@ model EarnedIncome {
   longTermCareInsurance    Decimal @map("장기요양보험료") @db.Decimal(15, 2)
   incomeTax                Decimal @map("소득세") @db.Decimal(15, 2)
   localIncomeTax           Decimal @map("지방소득세") @db.Decimal(15, 2)
-  studentLoanRepayment     Decimal @map("학자금상환액") @db.Decimal(15, 2)
   healthInsuranceAdj       Decimal @map("건강보험정산") @db.Decimal(15, 2)
   nationalPensionAdj       Decimal @map("국민연금정산") @db.Decimal(15, 2)
   employmentInsuranceAdj   Decimal @map("고용보험정산") @db.Decimal(15, 2)
-  healthInsuranceUnpaidQ1  Decimal @map("1-3월 건강보험미납분") @db.Decimal(15, 2)
   longTermCareAdj          Decimal @map("장기요양정산") @db.Decimal(15, 2)
   prepaidIncomeTax         Decimal @map("기납부소득세") @db.Decimal(15, 2)
   prepaidLocalIncomeTax    Decimal @map("기납부지방소득세") @db.Decimal(15, 2)
@@ -145,9 +320,52 @@ model EarnedIncome {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  itemValues EarnedIncomeItemValue[]
+
   @@unique([uploadId, employeeCode, accrualYm, paymentYm, payDate])
   @@index([employeeCode, accrualYm, paymentYm, payDate])
   @@map("earned_income")
+}
+
+model EarnedIncomeItemDefinition {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id])
+
+  code         String          @db.VarChar(100)
+  name         String          @db.VarChar(100)
+  kind         PayrollItemKind
+  displayOrder Int             @default(0) @map("display_order")
+  active       Boolean         @default(true)
+
+  values EarnedIncomeItemValue[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, code])
+  @@index([companyId, kind, active])
+  @@map("earned_income_item_definition")
+}
+
+model EarnedIncomeItemValue {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  earnedIncomeId BigInt       @map("earned_income_id") @db.UnsignedBigInt
+  earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id])
+
+  itemDefinitionId BigInt                     @map("item_definition_id") @db.UnsignedBigInt
+  itemDefinition   EarnedIncomeItemDefinition @relation(fields: [itemDefinitionId], references: [id])
+
+  amount Decimal @db.Decimal(15, 2)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([earnedIncomeId, itemDefinitionId])
+  @@index([itemDefinitionId])
+  @@map("earned_income_item_value")
 }
 
 /**

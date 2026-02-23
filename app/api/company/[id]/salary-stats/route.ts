@@ -14,7 +14,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const businessEntityId = BigInt(id);
+    const companyId = BigInt(id);
 
     const { searchParams } = new URL(request.url);
     const months = Math.min(
@@ -23,8 +23,8 @@ export async function GET(
     );
 
     // 사업자 존재 확인
-    const entity = await prisma.businessEntity.findUnique({
-      where: { id: businessEntityId },
+    const entity = await prisma.company.findUnique({
+      where: { id: companyId },
       select: { id: true, businessName: true, businessNumber: true },
     });
 
@@ -47,7 +47,7 @@ export async function GET(
 
     // ──────── 업로드 ID 목록 (타입별) ────────
     const allUploads = await prisma.upload.findMany({
-      where: { businessEntityId },
+      where: { companyId },
       select: { id: true, type: true, uploadedAt: true },
     });
 
@@ -323,7 +323,7 @@ export async function GET(
       }));
 
     return NextResponse.json({
-      businessEntity: serialize(entity),
+      company: serialize(entity),
       months,
       stats,
     });

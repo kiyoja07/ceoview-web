@@ -6,16 +6,44 @@ import type {
   OtherApiResponse,
 } from "../types";
 
+// 산재보험 평균 요율
+const INDUSTRIAL_ACCIDENT_RATE = 0.007;
+
 export function buildEarnedSummary(
   data: EarnedApiResponse | null,
 ): IncomeSummary | null {
   if (!data?.rows.length) return null;
 
+  const totalPayment = data.rows.reduce(
+    (s, r) => s + Number(r.totalPayment),
+    0,
+  );
+  const totalDeduction = data.rows.reduce(
+    (s, r) => s + Number(r.totalDeduction),
+    0,
+  );
+  const netPayment = data.rows.reduce((s, r) => s + Number(r.netPayment), 0);
+
+  // 회사 부담액: 4대보험 사업주분 + 산재보험 + 퇴직금
+  const companyBurden = data.rows.reduce((s, r) => {
+    const pay = Number(r.totalPayment);
+    return (
+      s +
+      Number(r.nationalPensionDeduction) +
+      Number(r.healthInsurance) +
+      Number(r.longTermCareInsurance) +
+      Number(r.employmentInsurance) +
+      Math.round(pay * INDUSTRIAL_ACCIDENT_RATE) +
+      Math.round(pay / 12)
+    );
+  }, 0);
+
   return {
-    totalPayment: data.rows.reduce((s, r) => s + Number(r.totalPayment), 0),
-    totalDeduction: data.rows.reduce((s, r) => s + Number(r.totalDeduction), 0),
-    netPayment: data.rows.reduce((s, r) => s + Number(r.netPayment), 0),
+    totalPayment,
+    totalDeduction,
+    netPayment,
     count: data.total,
+    companyBurden,
   };
 }
 
@@ -93,10 +121,18 @@ export function buildGrandTotal(
   const valid = values.filter(Boolean) as IncomeSummary[];
   if (!valid.length) return null;
 
+  const companyBurdenValues = valid.filter((v) => v.companyBurden != null);
+
   return {
     totalPayment: valid.reduce((s, v) => s + v.totalPayment, 0),
     totalDeduction: valid.reduce((s, v) => s + v.totalDeduction, 0),
     netPayment: valid.reduce((s, v) => s + v.netPayment, 0),
     count: valid.reduce((s, v) => s + v.count, 0),
+    ...(companyBurdenValues.length > 0 && {
+      companyBurden: companyBurdenValues.reduce(
+        (s, v) => s + (v.companyBurden ?? 0),
+        0,
+      ),
+    }),
   };
 }

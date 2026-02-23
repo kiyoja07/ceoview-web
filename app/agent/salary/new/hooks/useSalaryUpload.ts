@@ -1,18 +1,11 @@
 import { useState } from "react";
-import type { IncomeType, MessageState, ParsedResult } from "../types";
+import type {
+  MessageState,
+  ParsedResult,
+  UseSalaryUploadParams,
+} from "../types";
 
-type Params = {
-  businessEntityId: string;
-  file: File | null;
-  accrualYear: string;
-  accrualMonth: string;
-  paymentYear: string;
-  paymentMonth: string;
-  payDate: string;
-  incomeType: IncomeType;
-};
-
-function createBaseFormData(params: Params) {
+function createBaseFormData(params: UseSalaryUploadParams) {
   const formData = new FormData();
   const accrualYm = `${params.accrualYear}${params.accrualMonth}`;
   const paymentYm = `${params.paymentYear}${params.paymentMonth}`;
@@ -21,7 +14,7 @@ function createBaseFormData(params: Params) {
     formData.append("file", params.file);
   }
 
-  formData.append("businessEntityId", params.businessEntityId);
+  formData.append("companyId", params.companyId);
   formData.append("accrualYm", accrualYm);
   formData.append("paymentYm", paymentYm);
   if (params.payDate) formData.append("payDate", params.payDate);
@@ -30,7 +23,7 @@ function createBaseFormData(params: Params) {
   return formData;
 }
 
-export function useSalaryUpload(params: Params) {
+export function useSalaryUpload(params: UseSalaryUploadParams) {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<MessageState>(null);
@@ -42,7 +35,7 @@ export function useSalaryUpload(params: Params) {
   };
 
   const handleUpload = async () => {
-    if (!params.businessEntityId) {
+    if (!params.companyId) {
       setMessage({ type: "error", text: "사업자를 선택해주세요." });
       return;
     }

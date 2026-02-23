@@ -1,6 +1,6 @@
-import type { IncomeType } from "./types";
+import type { IncomeTypeOption } from "./types";
 
-export const INCOME_TYPES: { value: IncomeType; label: string }[] = [
+export const INCOME_TYPES: IncomeTypeOption[] = [
   { value: "EARNED_INCOME", label: "근로소득" },
   { value: "OTHER_INCOME_LABOR", label: "일용소득" },
   { value: "BUSINESS_INCOME", label: "사업소득" },

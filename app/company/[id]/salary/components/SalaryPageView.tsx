@@ -1,7 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import YearMonthPicker from "./filters/YearMonthPicker";
 import { INCOME_META } from "../constants";
 import { BulkPayslipDownload } from "./BulkPayslipDownload";
@@ -140,11 +146,11 @@ export function SalaryPageView({ viewMode }: SalaryPageViewProps) {
     [currentPage, totalPages],
   );
 
-  const businessEntity =
-    earnedData?.businessEntity ??
-    businessData?.businessEntity ??
-    dailyData?.businessEntity ??
-    otherData?.businessEntity ??
+  const company =
+    earnedData?.company ??
+    businessData?.company ??
+    dailyData?.company ??
+    otherData?.company ??
     null;
 
   const earnedSummary = useMemo(
@@ -192,12 +198,12 @@ export function SalaryPageView({ viewMode }: SalaryPageViewProps) {
               <h1 className="text-2xl font-bold tracking-tight text-gray-900">
                 급여 명세
               </h1>
-              {businessEntity && (
+              {company && (
                 <p className="text-sm text-gray-500">
-                  {businessEntity.businessName ?? "이름 없음"}
+                  {company.businessName ?? "이름 없음"}
                   <span className="mx-1.5 text-gray-300">•</span>
                   <span className="font-mono text-xs text-gray-400">
-                    {formatBusinessNumber(businessEntity.businessNumber)}
+                    {formatBusinessNumber(company.businessNumber)}
                   </span>
                 </p>
               )}
@@ -253,6 +259,26 @@ export function SalaryPageView({ viewMode }: SalaryPageViewProps) {
               <IconSearch />
               조회
             </button>
+
+            <Link
+              href={`/agent/salary/new?companyId=${id}`}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-emerald-600 px-4 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow active:scale-[0.98]"
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+              급여 입력
+            </Link>
           </div>
         </div>
 
@@ -321,7 +347,7 @@ export function SalaryPageView({ viewMode }: SalaryPageViewProps) {
                 <BulkPayslipDownload
                   companyId={id}
                   incomeType={activeTab}
-                  businessEntity={businessEntity}
+                  company={company}
                   totalCount={data.total}
                   accrualYm={filterAccrualYm || undefined}
                   paymentYm={filterPaymentYm || undefined}
@@ -468,7 +494,7 @@ export function SalaryPageView({ viewMode }: SalaryPageViewProps) {
         <PayslipModal
           row={payslipRow}
           incomeType={payslipType}
-          businessEntity={businessEntity}
+          company={company}
           onClose={() => setPayslipRow(null)}
         />
       )}

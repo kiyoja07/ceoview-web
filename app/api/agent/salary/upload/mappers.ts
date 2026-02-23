@@ -1,5 +1,9 @@
 import type { EarnedIncomeOverrides, IncomeWithYmOverrides } from "./types";
 import {
+  EARNED_ITEM_CODE_STUDENT_LOAN_REPAYMENT,
+  EARNED_ITEM_CODE_HEALTH_INS_UNPAID_Q1,
+} from "@/app/lib/payroll-items";
+import {
   findInRow,
   toDateOrNull,
   toDecimal,
@@ -9,45 +13,105 @@ import {
   toYearMonth,
 } from "./utils";
 
+export type EarnedIncomeDynamicItemInput = {
+  code: string;
+  amount: number;
+};
+
+export type MappedEarnedIncomeRow = {
+  earnedIncomeData: {
+    uploadId: bigint;
+    accrualYm: number;
+    paymentYm: number;
+    payDate: Date;
+    employeeCode: string;
+    employeeName: string;
+    department: string | null;
+    position: string | null;
+    jobType: string | null;
+    baseSalary: number;
+    bonus: number;
+    mealAllowance: number;
+    allowance: number;
+    travelExpense: number;
+    totalPayment: number;
+    nationalPensionDeduction: number;
+    healthInsurance: number;
+    employmentInsurance: number;
+    longTermCareInsurance: number;
+    incomeTax: number;
+    localIncomeTax: number;
+    healthInsuranceAdj: number;
+    nationalPensionAdj: number;
+    employmentInsuranceAdj: number;
+    longTermCareAdj: number;
+    prepaidIncomeTax: number;
+    prepaidLocalIncomeTax: number;
+    addlIncomeTaxAdj: number;
+    addlLocalIncomeTaxAdj: number;
+    totalDeduction: number;
+    netPayment: number;
+  };
+  dynamicItems: EarnedIncomeDynamicItemInput[];
+};
+
 export function mapEarnedIncomeRow(
   row: Record<string, unknown>,
   uploadId: bigint,
   overrides: EarnedIncomeOverrides,
-) {
+): MappedEarnedIncomeRow {
+  const studentLoanRepayment = toDecimal(row["학자금상환액"]);
+  const healthInsUnpaidQ1 = toDecimal(row["1-3월 건강보험미납분"]);
+
+  const dynamicItems: EarnedIncomeDynamicItemInput[] = [];
+  if (studentLoanRepayment !== 0) {
+    dynamicItems.push({
+      code: EARNED_ITEM_CODE_STUDENT_LOAN_REPAYMENT,
+      amount: studentLoanRepayment,
+    });
+  }
+  if (healthInsUnpaidQ1 !== 0) {
+    dynamicItems.push({
+      code: EARNED_ITEM_CODE_HEALTH_INS_UNPAID_Q1,
+      amount: healthInsUnpaidQ1,
+    });
+  }
+
   return {
-    uploadId,
-    accrualYm: overrides.accrualYm,
-    paymentYm: overrides.paymentYm,
-    payDate: overrides.payDate,
-    employeeCode: String(row["사원코드"] ?? ""),
-    employeeName: String(row["사원명"] ?? ""),
-    department: toStringOrNull(row["부서"]),
-    position: toStringOrNull(row["직급"]),
-    jobType: toStringOrNull(row["직종"]),
-    baseSalary: toDecimal(row["수당_기본급"]),
-    bonus: toDecimal(row["상여"]),
-    mealAllowance: toDecimal(row["식대"]),
-    allowance: toDecimal(row["수당"]),
-    travelExpense: toDecimal(row["출장비"]),
-    totalPayment: toDecimal(row["지급액계"]),
-    nationalPensionDeduction: toDecimal(row["공제_국민연금"]),
-    healthInsurance: toDecimal(row["건강보험"]),
-    employmentInsurance: toDecimal(row["고용보험"]),
-    longTermCareInsurance: toDecimal(row["장기요양보험료"]),
-    incomeTax: toDecimal(row["소득세"]),
-    localIncomeTax: toDecimal(row["지방소득세"]),
-    studentLoanRepayment: toDecimal(row["학자금상환액"]),
-    healthInsuranceAdj: toDecimal(row["건강보험정산"]),
-    nationalPensionAdj: toDecimal(row["국민연금정산"]),
-    employmentInsuranceAdj: toDecimal(row["고용보험정산"]),
-    healthInsuranceUnpaidQ1: toDecimal(row["1-3월 건강보험미납분"]),
-    longTermCareAdj: toDecimal(row["장기요양정산"]),
-    prepaidIncomeTax: toDecimal(row["기납부소득세"]),
-    prepaidLocalIncomeTax: toDecimal(row["기납부지방소득세"]),
-    addlIncomeTaxAdj: toDecimal(row["추가정산소득세"]),
-    addlLocalIncomeTaxAdj: toDecimal(row["추가정산지방소득세"]),
-    totalDeduction: toDecimal(row["공제액계"]),
-    netPayment: toDecimal(row["차인지급액"]),
+    earnedIncomeData: {
+      uploadId,
+      accrualYm: overrides.accrualYm,
+      paymentYm: overrides.paymentYm,
+      payDate: overrides.payDate,
+      employeeCode: String(row["사원코드"] ?? ""),
+      employeeName: String(row["사원명"] ?? ""),
+      department: toStringOrNull(row["부서"]),
+      position: toStringOrNull(row["직급"]),
+      jobType: toStringOrNull(row["직종"]),
+      baseSalary: toDecimal(row["수당_기본급"]),
+      bonus: toDecimal(row["상여"]),
+      mealAllowance: toDecimal(row["식대"]),
+      allowance: toDecimal(row["수당"]),
+      travelExpense: toDecimal(row["출장비"]),
+      totalPayment: toDecimal(row["지급액계"]),
+      nationalPensionDeduction: toDecimal(row["공제_국민연금"]),
+      healthInsurance: toDecimal(row["건강보험"]),
+      employmentInsurance: toDecimal(row["고용보험"]),
+      longTermCareInsurance: toDecimal(row["장기요양보험료"]),
+      incomeTax: toDecimal(row["소득세"]),
+      localIncomeTax: toDecimal(row["지방소득세"]),
+      healthInsuranceAdj: toDecimal(row["건강보험정산"]),
+      nationalPensionAdj: toDecimal(row["국민연금정산"]),
+      employmentInsuranceAdj: toDecimal(row["고용보험정산"]),
+      longTermCareAdj: toDecimal(row["장기요양정산"]),
+      prepaidIncomeTax: toDecimal(row["기납부소득세"]),
+      prepaidLocalIncomeTax: toDecimal(row["기납부지방소득세"]),
+      addlIncomeTaxAdj: toDecimal(row["추가정산소득세"]),
+      addlLocalIncomeTaxAdj: toDecimal(row["추가정산지방소득세"]),
+      totalDeduction: toDecimal(row["공제액계"]),
+      netPayment: toDecimal(row["차인지급액"]),
+    },
+    dynamicItems,
   };
 }
 

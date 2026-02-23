@@ -1,4 +1,10 @@
 import prisma from "@/app/lib/prisma";
+import {
+  EARNED_ITEM_CODE_STUDENT_LOAN_REPAYMENT,
+  EARNED_ITEM_NAME_STUDENT_LOAN_REPAYMENT,
+  EARNED_ITEM_CODE_HEALTH_INS_UNPAID_Q1,
+  EARNED_ITEM_NAME_HEALTH_INS_UNPAID_Q1,
+} from "@/app/lib/payroll-items";
 import type {
   EarnedIncomeOverrides,
   IncomeWithYmOverrides,
@@ -11,16 +17,16 @@ import {
   mapOtherIncomeRow,
 } from "./mappers";
 
-async function loadBusinessEntity(businessEntityId: string) {
-  const entity = await prisma.businessEntity.findUnique({
-    where: { id: BigInt(businessEntityId) },
+async function loadCompany(companyId: string) {
+  const company = await prisma.company.findUnique({
+    where: { id: BigInt(companyId) },
   });
 
-  if (!entity) {
+  if (!company) {
     throw new Error("사업자를 찾을 수 없습니다.");
   }
 
-  return entity;
+  return company;
 }
 
 function filterBusinessOrOtherRows(rows: Record<string, unknown>[]) {
@@ -57,12 +63,12 @@ function filterEarnedRows(rows: Record<string, unknown>[]) {
 }
 
 export async function saveBusinessIncome(
-  businessEntityId: string,
+  companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
   overrides: IncomeWithYmOverrides,
 ): Promise<UploadSaveResult> {
-  const entity = await loadBusinessEntity(businessEntityId);
+  const company = await loadCompany(companyId);
   const dataRows = filterBusinessOrOtherRows(rows);
 
   if (dataRows.length === 0) {
@@ -72,7 +78,7 @@ export async function saveBusinessIncome(
   return prisma.$transaction(async (tx) => {
     const upload = await tx.upload.create({
       data: {
-        businessEntity: { connect: { id: entity.id } },
+        company: { connect: { id: company.id } },
         type: "BUSINESS_INCOME",
         fileName,
       },
@@ -94,12 +100,12 @@ export async function saveBusinessIncome(
 }
 
 export async function saveOtherIncome(
-  businessEntityId: string,
+  companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
   overrides: IncomeWithYmOverrides,
 ): Promise<UploadSaveResult> {
-  const entity = await loadBusinessEntity(businessEntityId);
+  const company = await loadCompany(companyId);
   const dataRows = filterBusinessOrOtherRows(rows);
 
   if (dataRows.length === 0) {
@@ -109,7 +115,7 @@ export async function saveOtherIncome(
   return prisma.$transaction(async (tx) => {
     const upload = await tx.upload.create({
       data: {
-        businessEntity: { connect: { id: entity.id } },
+        company: { connect: { id: company.id } },
         type: "OTHER_INCOME",
         fileName,
       },
@@ -131,11 +137,11 @@ export async function saveOtherIncome(
 }
 
 export async function saveOtherIncomeLabor(
-  businessEntityId: string,
+  companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
 ): Promise<UploadSaveResult> {
-  const entity = await loadBusinessEntity(businessEntityId);
+  const company = await loadCompany(companyId);
   const dataRows = filterLaborRows(rows);
 
   if (dataRows.length === 0) {
@@ -145,13 +151,15 @@ export async function saveOtherIncomeLabor(
   return prisma.$transaction(async (tx) => {
     const upload = await tx.upload.create({
       data: {
-        businessEntity: { connect: { id: entity.id } },
+        company: { connect: { id: company.id } },
         type: "OTHER_INCOME_LABOR",
         fileName,
       },
     });
 
-    const laborData = dataRows.map((row) => mapOtherIncomeLaborRow(row, upload.id));
+    const laborData = dataRows.map((row) =>
+      mapOtherIncomeLaborRow(row, upload.id),
+    );
 
     const created = await tx.dailyIncomeLabor.createMany({
       data: laborData,
@@ -165,12 +173,12 @@ export async function saveOtherIncomeLabor(
 }
 
 export async function saveEarnedIncome(
-  businessEntityId: string,
+  companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
   overrides: EarnedIncomeOverrides,
 ): Promise<UploadSaveResult> {
-  const entity = await loadBusinessEntity(businessEntityId);
+  const company = await loadCompany(companyId);
   const dataRows = filterEarnedRows(rows);
 
   if (dataRows.length === 0) {
@@ -180,22 +188,79 @@ export async function saveEarnedIncome(
   return prisma.$transaction(async (tx) => {
     const upload = await tx.upload.create({
       data: {
-        businessEntity: { connect: { id: entity.id } },
+        company: { connect: { id: company.id } },
         type: "EARNED_INCOME",
         fileName,
       },
     });
 
-    const earnedData = dataRows.map((row) =>
+    const earnedRows = dataRows.map((row) =>
       mapEarnedIncomeRow(row, upload.id, overrides),
     );
 
-    const created = await tx.earnedIncome.createMany({
-      data: earnedData,
-    });
+    // Upsert all dynamic item definitions
+    const dynamicDefs = [
+      {
+        code: EARNED_ITEM_CODE_STUDENT_LOAN_REPAYMENT,
+        name: EARNED_ITEM_NAME_STUDENT_LOAN_REPAYMENT,
+        kind: "DEDUCTION" as const,
+      },
+      {
+        code: EARNED_ITEM_CODE_HEALTH_INS_UNPAID_Q1,
+        name: EARNED_ITEM_NAME_HEALTH_INS_UNPAID_Q1,
+        kind: "DEDUCTION" as const,
+      },
+    ];
+
+    const defMap = new Map<string, bigint>();
+    for (const def of dynamicDefs) {
+      const defRecord = await tx.earnedIncomeItemDefinition.upsert({
+        where: {
+          companyId_code: {
+            companyId: company.id,
+            code: def.code,
+          },
+        },
+        update: {
+          name: def.name,
+          kind: def.kind,
+          active: true,
+        },
+        create: {
+          companyId: company.id,
+          code: def.code,
+          name: def.name,
+          kind: def.kind,
+        },
+        select: { id: true },
+      });
+      defMap.set(def.code, defRecord.id);
+    }
+
+    let savedCount = 0;
+    for (const mapped of earnedRows) {
+      const earnedIncome = await tx.earnedIncome.create({
+        data: mapped.earnedIncomeData,
+        select: { id: true },
+      });
+      savedCount += 1;
+
+      for (const item of mapped.dynamicItems) {
+        const defId = defMap.get(item.code);
+        if (!defId) continue;
+
+        await tx.earnedIncomeItemValue.create({
+          data: {
+            earnedIncomeId: earnedIncome.id,
+            itemDefinitionId: defId,
+            amount: item.amount,
+          },
+        });
+      }
+    }
 
     return {
-      savedCount: created.count,
+      savedCount,
       uploadId: upload.id.toString(),
     };
   });

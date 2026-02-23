@@ -1,5 +1,11 @@
 import { SummaryCard } from "./SummaryCard";
-import { IconMinusCircle, IconMoney, IconNetPay } from "./icons";
+import {
+  IconCompanyBurden,
+  IconMinusCircle,
+  IconMoney,
+  IconNetPay,
+  IconTotalLaborCost,
+} from "./icons";
 import type { IncomeSummary } from "../types";
 
 interface SummaryCardsRowProps {
@@ -8,8 +14,17 @@ interface SummaryCardsRowProps {
 }
 
 export function SummaryCardsRow({ summary, toCurrency }: SummaryCardsRowProps) {
+  const hasCompanyBurden = summary.companyBurden != null;
+  const totalLaborCost = hasCompanyBurden
+    ? summary.netPayment + summary.companyBurden!
+    : null;
+
   return (
-    <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div
+      className={`mb-6 grid grid-cols-1 gap-4 ${
+        hasCompanyBurden ? "sm:grid-cols-5" : "sm:grid-cols-3"
+      }`}
+    >
       <SummaryCard
         label="총 지급액"
         value={toCurrency(summary.totalPayment)}
@@ -28,6 +43,22 @@ export function SummaryCardsRow({ summary, toCurrency }: SummaryCardsRowProps) {
         color="emerald"
         icon={<IconNetPay />}
       />
+      {hasCompanyBurden && (
+        <SummaryCard
+          label="회사 부담액"
+          value={toCurrency(summary.companyBurden!)}
+          color="orange"
+          icon={<IconCompanyBurden />}
+        />
+      )}
+      {totalLaborCost != null && (
+        <SummaryCard
+          label="총 인건비"
+          value={toCurrency(totalLaborCost)}
+          color="purple"
+          icon={<IconTotalLaborCost />}
+        />
+      )}
     </div>
   );
 }

@@ -1,23 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
-import type { BusinessEntityModel } from "@/app/generated/prisma/models/BusinessEntity";
+import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
+
+async function requireAgentOrganizationId(request: NextRequest) {
+  const userId = getAgentUserIdFromRequest(request);
+  if (!userId) {
+    return { error: "로그인이 필요합니다.", status: 401 } as const;
+  }
+
+  const user = await prisma.agentUser.findUnique({
+    where: { id: userId },
+    select: { isActive: true, agentOrganizationId: true },
+  });
+
+  if (!user || !user.isActive) {
+    return { error: "로그인이 필요합니다.", status: 401 } as const;
+  }
+
+  if (!user.agentOrganizationId) {
+    return {
+      error: "소속 에이전트 조직 등록이 필요합니다.",
+      status: 403,
+    } as const;
+  }
+
+  return { organizationId: user.agentOrganizationId } as const;
+}
 
 // GET: 전체 목록 조회
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const entities = await prisma.businessEntity.findMany({
+    const auth = await requireAgentOrganizationId(request);
+    if ("error" in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+
+    const companies = await prisma.company.findMany({
       orderBy: { createdAt: "desc" },
     });
 
     // BigInt → string 변환 (JSON 직렬화)
-    const data = entities.map((e: BusinessEntityModel) => ({
-      ...e,
-      id: e.id.toString(),
+    const data = companies.map((company) => ({
+      ...company,
+      id: company.id.toString(),
     }));
 
     return NextResponse.json(data);
   } catch (error) {
-    console.error("BusinessEntity GET error:", error);
+    console.error("Company GET error:", error);
     return NextResponse.json(
       { error: "목록 조회에 실패했습니다." },
       { status: 500 },
@@ -28,12 +58,18 @@ export async function GET() {
 // POST: 새 사업자 등록
 export async function POST(request: NextRequest) {
   try {
+    const auth = await requireAgentOrganizationId(request);
+    if ("error" in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+
     const body = await request.json();
     const {
       businessNumber,
       businessType,
       businessName,
       representativeName,
+      address,
       openingDate,
     } = body;
 
@@ -61,25 +97,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const entity = await prisma.businessEntity.create({
+    const company = await prisma.company.create({
       data: {
         businessNumber: cleanNumber,
         businessType,
         businessName: businessName || null,
         representativeName: representativeName || null,
+        address: address || null,
         openingDate: openingDate ? new Date(openingDate) : null,
       },
     });
 
     return NextResponse.json(
       {
-        ...entity,
-        id: entity.id.toString(),
+        ...company,
+        id: company.id.toString(),
       },
       { status: 201 },
     );
   } catch (error: unknown) {
-    console.error("BusinessEntity POST error:", error);
+    console.error("Company POST error:", error);
 
     // 중복 사업자번호 처리
     if (

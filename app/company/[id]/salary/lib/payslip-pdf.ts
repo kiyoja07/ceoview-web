@@ -3,7 +3,7 @@ import type {
   BusinessIncomeRow,
   DailyIncomeLaborRow,
   OtherIncomeRow,
-  BusinessEntity,
+  Company,
   IncomeTab,
 } from "../types";
 import { formatNumber, formatYm, formatBusinessNumber } from "./format";
@@ -47,6 +47,10 @@ function earnedDeductionItems(row: EarnedIncomeRow): PayslipItem[] {
     { label: "고용보험", amount: Number(row.employmentInsurance) },
     { label: "근로소득세", amount: Number(row.incomeTax) },
     { label: "지방소득세", amount: Number(row.localIncomeTax) },
+    ...(row.dynamicDeductionItems ?? []).map((item) => ({
+      label: item.name,
+      amount: Number(item.amount),
+    })),
   ];
 }
 function businessPaymentItems(row: BusinessIncomeRow): PayslipItem[] {
@@ -189,7 +193,7 @@ function getPaymentYm(row: IncomeRow, type: IncomeTab): string {
 function buildPayslipHtml(
   row: IncomeRow,
   incomeType: IncomeTab,
-  businessEntity: BusinessEntity | null,
+  company: Company | null,
 ): string {
   const paymentItems = getPaymentItems(row, incomeType);
   const deductionItems = getDeductionItems(row, incomeType);
@@ -251,11 +255,11 @@ function buildPayslipHtml(
 
   <table class="info">
     <tr>
-      <th>회사명</th><td>${businessEntity?.businessName ?? "—"}</td>
+      <th>회사명</th><td>${company?.businessName ?? "—"}</td>
       <th>사원명</th><td style="font-weight:600">${row.employeeName}</td>
     </tr>
     <tr>
-      <th>사업자번호</th><td style="font-family:monospace;font-size:13px">${businessEntity ? formatBusinessNumber(businessEntity.businessNumber) : "—"}</td>
+      <th>사업자번호</th><td style="font-family:monospace;font-size:13px">${company ? formatBusinessNumber(company.businessNumber) : "—"}</td>
       <th>사원코드</th><td style="font-family:monospace;font-size:13px">${row.employeeCode}</td>
     </tr>
     <tr>
@@ -348,7 +352,7 @@ export function getEmployeeFileName(
 export async function renderPayslipPdf(
   row: IncomeRow,
   incomeType: IncomeTab,
-  businessEntity: BusinessEntity | null,
+  company: Company | null,
 ): Promise<Blob> {
   const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
     import("html2canvas-pro"),
@@ -366,7 +370,7 @@ export async function renderPayslipPdf(
   shadow.appendChild(style);
 
   const wrapper = document.createElement("div");
-  wrapper.innerHTML = buildPayslipHtml(row, incomeType, businessEntity);
+  wrapper.innerHTML = buildPayslipHtml(row, incomeType, company);
   shadow.appendChild(wrapper);
 
   document.body.appendChild(container);
@@ -411,7 +415,7 @@ export async function renderPayslipPdf(
 export async function generatePayslipZip(
   rows: IncomeRow[],
   incomeType: IncomeTab,
-  businessEntity: BusinessEntity | null,
+  company: Company | null,
   onProgress?: (done: number, total: number) => void,
 ): Promise<Blob> {
   const JSZip = (await import("jszip")).default;
@@ -420,7 +424,7 @@ export async function generatePayslipZip(
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    const blob = await renderPayslipPdf(row, incomeType, businessEntity);
+    const blob = await renderPayslipPdf(row, incomeType, company);
     const fileName = getEmployeeFileName(row, incomeType);
     folder.file(fileName, blob);
     onProgress?.(i + 1, rows.length);

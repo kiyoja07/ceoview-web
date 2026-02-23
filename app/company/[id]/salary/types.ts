@@ -1,10 +1,16 @@
 export type IncomeTab = "earned" | "business" | "daily" | "other";
 export type ViewMode = "dashboard" | IncomeTab;
 
-export interface BusinessEntity {
+export interface Company {
   id: string;
   businessName: string | null;
   businessNumber: string;
+}
+
+export interface EarnedIncomeDynamicItem {
+  code: string;
+  name: string;
+  amount: string;
 }
 
 export interface EarnedIncomeRow {
@@ -28,6 +34,9 @@ export interface EarnedIncomeRow {
   longTermCareInsurance: string;
   incomeTax: string;
   localIncomeTax: string;
+  studentLoanRepayment: string;
+  dynamicPaymentItems?: EarnedIncomeDynamicItem[];
+  dynamicDeductionItems?: EarnedIncomeDynamicItem[];
   totalDeduction: string;
   netPayment: string;
 }
@@ -85,7 +94,7 @@ export interface OtherIncomeRow {
 }
 
 interface BaseApiResponse<T> {
-  businessEntity: BusinessEntity;
+  company: Company;
   rows: T[];
   total: number;
   page: number;
@@ -108,6 +117,7 @@ export interface IncomeSummary {
   totalDeduction: number;
   netPayment: number;
   count: number;
+  companyBurden?: number;
 }
 
 export interface IncomeMeta {
@@ -132,7 +142,7 @@ export interface MonthlyStat {
 }
 
 export interface SalaryStatsResponse {
-  businessEntity: BusinessEntity;
+  company: Company;
   months: number;
   stats: MonthlyStat[];
 }

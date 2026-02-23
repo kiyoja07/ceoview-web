@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 
-type SummaryColor = "blue" | "emerald" | "rose";
+type SummaryColor = "blue" | "emerald" | "rose" | "orange" | "purple";
 
 const COLOR_MAP: Record<SummaryColor, string> = {
   blue: "from-blue-500 to-blue-600 shadow-blue-200",
   emerald: "from-emerald-500 to-emerald-600 shadow-emerald-200",
   rose: "from-rose-500 to-rose-600 shadow-rose-200",
+  orange: "from-orange-500 to-orange-600 shadow-orange-200",
+  purple: "from-purple-500 to-purple-600 shadow-purple-200",
 };
 
 interface SummaryCardProps {

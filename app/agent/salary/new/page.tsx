@@ -1,27 +1,39 @@
 "use client";
 
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { INCOME_TYPES, MONTHS } from "./constants";
-import { BusinessEntitySelect } from "./components/BusinessEntitySelect";
+import { CompanySelect } from "./components/CompanySelect";
 import { FileUploadField } from "./components/FileUploadField";
 import { IncomeTypeSelector } from "./components/IncomeTypeSelector";
 import { ResultPreview } from "./components/ResultPreview";
 import { StatusMessage } from "./components/StatusMessage";
+import { PayDatePicker } from "./components/PayDatePicker";
 import { YearMonthField } from "./components/YearMonthField";
 import { useSalaryUpload } from "./hooks/useSalaryUpload";
-import type { BusinessEntity, IncomeType } from "./types";
-import { buildYearOptions } from "./utils";
+import type { Company, IncomeType } from "./types";
+import { buildYearOptions, formatBusinessNumber } from "./utils";
 
 export default function SalaryNewPage() {
-  const [entities, setEntities] = useState<BusinessEntity[]>([]);
-  const [entitiesLoading, setEntitiesLoading] = useState(true);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const fixedCompanyId = searchParams.get("companyId")?.trim() ?? "";
+  const isFixedCompanyMode = fixedCompanyId.length > 0;
 
-  const [businessEntityId, setBusinessEntityId] = useState("");
-  const [accrualYear, setAccrualYear] = useState(new Date().getFullYear().toString());
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [companiesLoading, setCompaniesLoading] = useState(true);
+  const [fixedCompanyError, setFixedCompanyError] = useState<string | null>(null);
+
+  const [companyId, setCompanyId] = useState("");
+  const [accrualYear, setAccrualYear] = useState(
+    new Date().getFullYear().toString(),
+  );
   const [accrualMonth, setAccrualMonth] = useState(
     String(new Date().getMonth() + 1).padStart(2, "0"),
   );
-  const [paymentYear, setPaymentYear] = useState(new Date().getFullYear().toString());
+  const [paymentYear, setPaymentYear] = useState(
+    new Date().getFullYear().toString(),
+  );
   const [paymentMonth, setPaymentMonth] = useState(
     String(new Date().getMonth() + 1).padStart(2, "0"),
   );
@@ -30,35 +42,64 @@ export default function SalaryNewPage() {
   const [file, setFile] = useState<File | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { uploading, saving, message, result, resetFeedback, handleUpload, handleSave } =
-    useSalaryUpload({
-      businessEntityId,
-      file,
-      accrualYear,
-      accrualMonth,
-      paymentYear,
-      paymentMonth,
-      payDate,
-      incomeType,
-    });
+  const {
+    uploading,
+    saving,
+    message,
+    result,
+    resetFeedback,
+    handleUpload,
+    handleSave,
+  } = useSalaryUpload({
+    companyId,
+    file,
+    accrualYear,
+    accrualMonth,
+    paymentYear,
+    paymentMonth,
+    payDate,
+    incomeType,
+  });
 
   useEffect(() => {
-    const fetchEntities = async () => {
+    const fetchCompanies = async () => {
       try {
-        const res = await fetch("/api/agent/business-entity");
+        const res = await fetch("/api/agent/company");
+        if (res.status === 401) {
+          router.replace("/agent/auth/login");
+          return;
+        }
+        if (res.status === 403) {
+          router.replace("/agent/auth/organization");
+          return;
+        }
         if (res.ok) {
-          const data = await res.json();
-          setEntities(data);
+          const data = (await res.json()) as Company[];
+          setCompanies(data);
+          if (isFixedCompanyMode) {
+            const exists = data.some(
+              (company) => company.id === fixedCompanyId,
+            );
+            if (exists) {
+              setCompanyId(fixedCompanyId);
+              setFixedCompanyError(null);
+            } else {
+              setCompanyId("");
+              setFixedCompanyError(
+                "유효하지 않은 사업자입니다. 사업자 목록에서 다시 선택해주세요.",
+              );
+            }
+          }
         }
       } catch {
         console.error("사업자 목록 조회 실패");
       } finally {
-        setEntitiesLoading(false);
+        setCompaniesLoading(false);
       }
     };
 
-    fetchEntities();
-  }, []);
+    fetchCompanies();
+  }, [fixedCompanyId, isFixedCompanyMode, router]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0] ?? null;
@@ -74,91 +115,225 @@ export default function SalaryNewPage() {
     }
   };
 
-  const selectedEntity = entities.find((e) => e.id === businessEntityId);
+  const selectedCompany = companies.find((company) => company.id === companyId);
   const years = buildYearOptions();
 
   return (
-    <div className="max-w-5xl mx-auto py-10 px-4">
-      <h1 className="text-2xl font-bold mb-6">급여 엑셀 등록</h1>
-
-      <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-8 space-y-6">
-        <BusinessEntitySelect
-          entitiesLoading={entitiesLoading}
-          entities={entities}
-          businessEntityId={businessEntityId}
-          onChange={setBusinessEntityId}
-          selectedEntity={selectedEntity}
-        />
-
-        <YearMonthField
-          label="귀속년월"
-          year={accrualYear}
-          month={accrualMonth}
-          years={years}
-          months={MONTHS}
-          onYearChange={setAccrualYear}
-          onMonthChange={setAccrualMonth}
-        />
-
-        <YearMonthField
-          label="지급년월"
-          year={paymentYear}
-          month={paymentMonth}
-          years={years}
-          months={MONTHS}
-          onYearChange={setPaymentYear}
-          onMonthChange={setPaymentMonth}
-        />
-
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            지급일{" "}
-            {incomeType === "EARNED_INCOME" && (
-              <span className="text-red-500">*</span>
-            )}
-          </label>
-          <input
-            type="date"
-            value={payDate}
-            onChange={(e) => setPayDate(e.target.value)}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {incomeType !== "EARNED_INCOME" && (
-            <p className="mt-1 text-xs text-gray-500">
-              근로소득 업로드 시에만 지급일이 필수입니다.
-            </p>
-          )}
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+      <div className="mx-auto max-w-5xl p-6 lg:p-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200">
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+                />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+                급여 엑셀 등록
+              </h1>
+              <p className="text-sm text-gray-500">
+                엑셀 파일을 업로드하여 급여 데이터를 등록합니다.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <IncomeTypeSelector
-          incomeType={incomeType}
-          options={INCOME_TYPES}
-          onChange={(value) => {
-            setIncomeType(value);
-            resetFeedback();
-          }}
-        />
+        {/* Form Card */}
+        <div className="mb-8 space-y-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
+          {isFixedCompanyMode ? (
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                등록 대상 사업자
+              </label>
+              {companiesLoading ? (
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <svg
+                    className="h-4 w-4 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
+                  </svg>
+                  로딩 중…
+                </div>
+              ) : fixedCompanyError ? (
+                <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  <svg
+                    className="h-4 w-4 shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                    />
+                  </svg>
+                  {fixedCompanyError}
+                </div>
+              ) : selectedCompany ? (
+                <div className="flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-900">
+                  <svg
+                    className="h-4 w-4 shrink-0 text-blue-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"
+                    />
+                  </svg>
+                  {formatBusinessNumber(selectedCompany.businessNumber)}
+                  {selectedCompany.businessName
+                    ? ` / ${selectedCompany.businessName}`
+                    : ""}
+                  {selectedCompany.representativeName
+                    ? ` (대표 ${selectedCompany.representativeName})`
+                    : ""}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400">
+                  사업자 정보를 확인하는 중입니다.
+                </p>
+              )}
+            </div>
+          ) : (
+            <CompanySelect
+              companiesLoading={companiesLoading}
+              companies={companies}
+              companyId={companyId}
+              onChange={setCompanyId}
+              selectedCompany={selectedCompany}
+            />
+          )}
 
-        <FileUploadField
-          file={file}
-          fileInputRef={fileInputRef}
-          onFileChange={handleFileChange}
-          onClear={clearFile}
-        />
+          {/* 귀속/지급년월 2열 */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <YearMonthField
+              label="귀속년월"
+              year={accrualYear}
+              month={accrualMonth}
+              years={years}
+              months={MONTHS}
+              onYearChange={(v) => {
+                setAccrualYear(v);
+                setPaymentYear(v);
+              }}
+              onMonthChange={(v) => {
+                setAccrualMonth(v);
+                setPaymentMonth(v);
+              }}
+            />
 
-        <StatusMessage message={message} />
+            <YearMonthField
+              label="지급년월"
+              year={paymentYear}
+              month={paymentMonth}
+              years={years}
+              months={MONTHS}
+              onYearChange={setPaymentYear}
+              onMonthChange={setPaymentMonth}
+            />
+          </div>
 
-        <button
-          type="button"
-          onClick={handleUpload}
-          disabled={uploading || !businessEntityId || !file}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-medium py-2.5 rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed"
-        >
-          {uploading ? "업로드 중..." : "엑셀 업로드"}
-        </button>
+          <IncomeTypeSelector
+            incomeType={incomeType}
+            options={INCOME_TYPES}
+            onChange={(value) => {
+              setIncomeType(value);
+              resetFeedback();
+            }}
+          />
+
+          <PayDatePicker
+            value={payDate}
+            onChange={setPayDate}
+            label="지급일"
+            required={incomeType === "EARNED_INCOME"}
+            hint={
+              incomeType !== "EARNED_INCOME"
+                ? "근로소득 업로드 시에만 지급일이 필수입니다."
+                : undefined
+            }
+          />
+
+          <FileUploadField
+            file={file}
+            fileInputRef={fileInputRef}
+            onFileChange={handleFileChange}
+            onClear={clearFile}
+          />
+
+          <StatusMessage message={message} />
+
+          <button
+            type="button"
+            onClick={handleUpload}
+            disabled={uploading || !companyId || !file}
+            className="w-full cursor-pointer rounded-xl bg-blue-600 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-blue-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-blue-400 disabled:shadow-none"
+          >
+            {uploading ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+                업로드 중...
+              </span>
+            ) : (
+              "엑셀 업로드"
+            )}
+          </button>
+        </div>
+
+        {result && (
+          <ResultPreview result={result} saving={saving} onSave={handleSave} />
+        )}
       </div>
-
-      {result && <ResultPreview result={result} saving={saving} onSave={handleSave} />}
     </div>
   );
 }
