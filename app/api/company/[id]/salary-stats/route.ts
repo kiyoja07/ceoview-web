@@ -75,6 +75,7 @@ export async function GET(
               uploadId: { in: uploadsByType.EARNED_INCOME },
               paymentYm: { gte: startYm, lte: endYm },
             },
+            _count: true,
             _sum: {
               totalPayment: true,
               totalDeduction: true,
@@ -92,6 +93,7 @@ export async function GET(
               uploadId: { in: uploadsByType.BUSINESS_INCOME },
               paymentYm: { gte: startYm, lte: endYm },
             },
+            _count: true,
             _sum: {
               grossPayment: true,
               incomeTax: true,
@@ -114,6 +116,7 @@ export async function GET(
               uploadId: { in: uploadsByType.OTHER_INCOME },
               paymentYm: { gte: startYm, lte: endYm },
             },
+            _count: true,
             _sum: {
               grossPayment: true,
               taxCorpTax: true,
@@ -132,6 +135,7 @@ export async function GET(
         totalDeduction: number;
         netPayment: number;
         dailyPayment: number;
+        dailyCount: number;
       }
     > = new Map();
 
@@ -150,6 +154,7 @@ export async function GET(
         const dailyGrouped = await prisma.dailyIncomeLabor.groupBy({
           by: ["uploadId"],
           where: { uploadId: { in: [...uploadYmMap.keys()] } },
+          _count: true,
           _sum: {
             grossPay: true,
             employmentIns: true,
@@ -171,6 +176,7 @@ export async function GET(
             totalDeduction: 0,
             netPayment: 0,
             dailyPayment: 0,
+            dailyCount: 0,
           };
 
           const totalDeduction =
@@ -187,6 +193,7 @@ export async function GET(
           existing.totalDeduction += totalDeduction;
           existing.netPayment += Number(row._sum.netPay ?? 0);
           existing.dailyPayment += grossPay;
+          existing.dailyCount += row._count;
           dailyByMonth.set(ym, existing);
         }
       }
@@ -203,6 +210,10 @@ export async function GET(
         businessPayment: number;
         dailyPayment: number;
         otherPayment: number;
+        earnedCount: number;
+        businessCount: number;
+        dailyCount: number;
+        otherCount: number;
       }
     >();
 
@@ -218,6 +229,10 @@ export async function GET(
         businessPayment: 0,
         dailyPayment: 0,
         otherPayment: 0,
+        earnedCount: 0,
+        businessCount: 0,
+        dailyCount: 0,
+        otherCount: 0,
       });
     }
 
@@ -231,6 +246,10 @@ export async function GET(
         businessPayment: 0,
         dailyPayment: 0,
         otherPayment: 0,
+        earnedCount: 0,
+        businessCount: 0,
+        dailyCount: 0,
+        otherCount: 0,
       };
       const payment = Number(row._sum.totalPayment ?? 0);
 
@@ -238,6 +257,7 @@ export async function GET(
       entry.totalDeduction += Number(row._sum.totalDeduction ?? 0);
       entry.netPayment += Number(row._sum.netPayment ?? 0);
       entry.earnedPayment += payment;
+      entry.earnedCount += row._count;
       monthlyMap.set(row.paymentYm, entry);
     }
 
@@ -251,6 +271,10 @@ export async function GET(
         businessPayment: 0,
         dailyPayment: 0,
         otherPayment: 0,
+        earnedCount: 0,
+        businessCount: 0,
+        dailyCount: 0,
+        otherCount: 0,
       };
       const payment = Number(row._sum.grossPayment ?? 0);
       const deduction =
@@ -265,6 +289,7 @@ export async function GET(
       entry.totalDeduction += deduction;
       entry.netPayment += Number(row._sum.netPayment ?? 0);
       entry.businessPayment += payment;
+      entry.businessCount += row._count;
       monthlyMap.set(row.paymentYm, entry);
     }
 
@@ -278,6 +303,10 @@ export async function GET(
         businessPayment: 0,
         dailyPayment: 0,
         otherPayment: 0,
+        earnedCount: 0,
+        businessCount: 0,
+        dailyCount: 0,
+        otherCount: 0,
       };
       const payment = Number(row._sum.grossPayment ?? 0);
 
@@ -286,6 +315,7 @@ export async function GET(
         Number(row._sum.taxCorpTax ?? 0) + Number(row._sum.localIncomeTax ?? 0);
       entry.netPayment += Number(row._sum.netPayment ?? 0);
       entry.otherPayment += payment;
+      entry.otherCount += row._count;
       monthlyMap.set(row.paymentYm, entry);
     }
 
@@ -299,11 +329,16 @@ export async function GET(
         businessPayment: 0,
         dailyPayment: 0,
         otherPayment: 0,
+        earnedCount: 0,
+        businessCount: 0,
+        dailyCount: 0,
+        otherCount: 0,
       };
       entry.totalPayment += vals.totalPayment;
       entry.totalDeduction += vals.totalDeduction;
       entry.netPayment += vals.netPayment;
       entry.dailyPayment += vals.dailyPayment;
+      entry.dailyCount += vals.dailyCount;
       monthlyMap.set(ym, entry);
     }
 
@@ -320,6 +355,15 @@ export async function GET(
         totalPayment: Math.round(vals.totalPayment),
         totalDeduction: Math.round(vals.totalDeduction),
         netPayment: Math.round(vals.netPayment),
+        earnedCount: vals.earnedCount,
+        businessCount: vals.businessCount,
+        dailyCount: vals.dailyCount,
+        otherCount: vals.otherCount,
+        totalCount:
+          vals.earnedCount +
+          vals.businessCount +
+          vals.dailyCount +
+          vals.otherCount,
       }));
 
     return NextResponse.json({

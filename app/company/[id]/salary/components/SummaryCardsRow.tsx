@@ -16,7 +16,7 @@ interface SummaryCardsRowProps {
 export function SummaryCardsRow({ summary, toCurrency }: SummaryCardsRowProps) {
   const hasCompanyBurden = summary.companyBurden != null;
   const totalLaborCost = hasCompanyBurden
-    ? summary.netPayment + summary.companyBurden!
+    ? summary.totalPayment + summary.companyBurden!
     : null;
 
   return (

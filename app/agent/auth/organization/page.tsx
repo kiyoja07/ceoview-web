@@ -89,14 +89,14 @@ export default function AgentOrganizationCreatePage() {
       if (!res.ok) {
         setMessage({
           type: "error",
-          text: data.error || "에이전트 조직 생성에 실패했습니다.",
+          text: data.error || "세무대리인 조직 생성에 실패했습니다.",
         });
         return;
       }
 
       setMessage({
         type: "success",
-        text: "에이전트 조직이 생성되었습니다. 이동 중입니다.",
+        text: "세무대리인 조직이 생성되었습니다. 이동 중입니다.",
       });
       router.replace("/agent/company");
     } catch {
@@ -109,7 +109,8 @@ export default function AgentOrganizationCreatePage() {
     }
   };
 
-  const isBusinessNumberValid = organizationNumber.replace(/\D/g, "").length === 10;
+  const isBusinessNumberValid =
+    organizationNumber.replace(/\D/g, "").length === 10;
 
   if (checking) {
     return (
@@ -125,13 +126,13 @@ export default function AgentOrganizationCreatePage() {
         <div className="mb-6 flex items-start justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-              에이전트 조직 등록
+              세무대리인 조직 등록
             </h1>
             <p className="mt-1 text-sm text-gray-500">
               가입 완료: {name} ({email})
             </p>
             <p className="text-sm text-gray-500">
-              서비스 사용을 위해 먼저 소속 에이전트 조직을 등록해주세요.
+              서비스 사용을 위해 먼저 소속 세무대리인 조직을 등록해주세요.
             </p>
           </div>
           <Link

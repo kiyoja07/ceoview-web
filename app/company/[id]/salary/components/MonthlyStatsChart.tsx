@@ -1,14 +1,15 @@
 "use client";
 
 import {
-  BarChart,
   Bar,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  ComposedChart,
 } from "recharts";
 import type { MonthlyStat } from "../types";
 
@@ -42,7 +43,12 @@ function CustomTooltip({
   label,
 }: {
   active?: boolean;
-  payload?: Array<{ color: string; name: string; value: number }>;
+  payload?: Array<{
+    color: string;
+    name: string;
+    value: number;
+    dataKey: string;
+  }>;
   label?: string;
 }) {
   if (!active || !payload?.length) return null;
@@ -58,7 +64,9 @@ function CustomTooltip({
           />
           <span className="text-gray-500">{entry.name}</span>
           <span className="ml-auto font-semibold tabular-nums text-gray-800">
-            {fullCurrency(entry.value)}
+            {entry.dataKey === "totalCount"
+              ? `${entry.value.toLocaleString()}명`
+              : fullCurrency(entry.value)}
           </span>
         </div>
       ))}
@@ -112,7 +120,7 @@ export function MonthlyStatsChart({
       {/* 차트 */}
       {hasData ? (
         <ResponsiveContainer width="100%" height={360}>
-          <BarChart
+          <ComposedChart
             data={stats}
             margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
             barCategoryGap="20%"
@@ -125,11 +133,21 @@ export function MonthlyStatsChart({
               tickLine={false}
             />
             <YAxis
+              yAxisId="left"
               tickFormatter={compactCurrency}
               tick={{ fontSize: 12, fill: "#94a3b8" }}
               axisLine={false}
               tickLine={false}
               width={60}
+            />
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              tick={{ fontSize: 12, fill: "#94a3b8" }}
+              axisLine={false}
+              tickLine={false}
+              width={50}
+              tickFormatter={(v: number) => `${v}명`}
             />
             <Tooltip
               content={<CustomTooltip />}
@@ -140,31 +158,50 @@ export function MonthlyStatsChart({
               wrapperStyle={{ fontSize: 13, paddingTop: 12 }}
             />
             <Bar
+              yAxisId="left"
               dataKey="earnedPayment"
               name="근로소득"
               fill="#3b82f6"
               stackId="income"
             />
             <Bar
+              yAxisId="left"
               dataKey="businessPayment"
               name="사업소득"
               fill="#6366f1"
               stackId="income"
             />
             <Bar
+              yAxisId="left"
               dataKey="dailyPayment"
               name="일용직소득"
               fill="#10b981"
               stackId="income"
             />
             <Bar
+              yAxisId="left"
               dataKey="otherPayment"
               name="기타소득"
               fill="#f59e0b"
               stackId="income"
               radius={[4, 4, 0, 0]}
             />
-          </BarChart>
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="totalCount"
+              name="지급 인원"
+              stroke="#ef4444"
+              strokeWidth={2}
+              dot={{ r: 4, fill: "#ef4444", strokeWidth: 0 }}
+              activeDot={{
+                r: 6,
+                fill: "#ef4444",
+                strokeWidth: 2,
+                stroke: "#fff",
+              }}
+            />
+          </ComposedChart>
         </ResponsiveContainer>
       ) : (
         <div className="flex h-90 items-center justify-center">

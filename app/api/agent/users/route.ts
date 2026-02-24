@@ -3,7 +3,9 @@ import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
 import type { UpdateBody } from "@/types/agent/users";
 
-async function requireAgentMaster(request: NextRequest) {
+const MASTER_REQUIRED_FOR_STATUS_UPDATE = "MASTER_REQUIRED_FOR_STATUS_UPDATE";
+
+async function requireAgentMember(request: NextRequest) {
   const userId = getAgentUserIdFromRequest(request);
   if (!userId) {
     return { error: "로그인이 필요합니다.", status: 401 } as const;
@@ -30,31 +32,49 @@ async function requireAgentMaster(request: NextRequest) {
     } as const;
   }
 
-  if (!user.isMaster) {
+  return {
+    currentUserId: user.id,
+    organizationId: user.agentOrganizationId,
+    isMaster: user.isMaster,
+  } as const;
+}
+
+async function requireAgentMaster(request: NextRequest) {
+  const auth = await requireAgentMember(request);
+  if ("error" in auth) {
+    return auth;
+  }
+
+  if (!auth.isMaster) {
     const existingMasterCount = await prisma.agentUser.count({
       where: {
-        agentOrganizationId: user.agentOrganizationId,
+        agentOrganizationId: auth.organizationId,
         isMaster: true,
       },
     });
 
     if (existingMasterCount === 0) {
       await prisma.agentUser.update({
-        where: { id: user.id },
+        where: { id: auth.currentUserId },
         data: { isMaster: true },
       });
       return {
-        currentUserId: user.id,
-        organizationId: user.agentOrganizationId,
+        currentUserId: auth.currentUserId,
+        organizationId: auth.organizationId,
       } as const;
     }
 
-    return { error: "마스터 사용자만 접근할 수 있습니다.", status: 403 } as const;
+    return {
+      error:
+        "사용자 상태 변경은 마스터 사용자만 가능합니다. 조회/초대는 일반 사용자도 가능합니다.",
+      status: 403,
+      code: MASTER_REQUIRED_FOR_STATUS_UPDATE,
+    } as const;
   }
 
   return {
-    currentUserId: user.id,
-    organizationId: user.agentOrganizationId,
+    currentUserId: auth.currentUserId,
+    organizationId: auth.organizationId,
   } as const;
 }
 
@@ -64,7 +84,7 @@ function toUserIdString(value: bigint) {
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await requireAgentMaster(request);
+    const auth = await requireAgentMember(request);
     if ("error" in auth) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
@@ -116,6 +136,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       currentUserId: toUserIdString(auth.currentUserId),
+      canManageUsers: auth.isMaster,
       summary: {
         agentUsers: {
           total: agentUsers.length,
@@ -151,7 +172,13 @@ export async function PATCH(request: NextRequest) {
   try {
     const auth = await requireAgentMaster(request);
     if ("error" in auth) {
-      return NextResponse.json({ error: auth.error }, { status: auth.status });
+      return NextResponse.json(
+        {
+          error: auth.error,
+          code: "code" in auth ? auth.code : undefined,
+        },
+        { status: auth.status },
+      );
     }
 
     const body = (await request.json()) as UpdateBody;

@@ -275,6 +275,12 @@ export default function CompanyListPage() {
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex items-center gap-2">
                         <Link
+                          href={`/agent/company/${company.id}/users`}
+                          className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20 transition-all hover:bg-emerald-100 active:scale-[0.97]"
+                        >
+                          사용자 관리
+                        </Link>
+                        <Link
                           href={`/company/${company.id}/salary?page=1&accrualYm=${CURRENT_YYYYMM}&paymentYm=${CURRENT_YYYYMM}`}
                           className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 ring-1 ring-blue-600/20 transition-all hover:bg-blue-100 active:scale-[0.97]"
                         >

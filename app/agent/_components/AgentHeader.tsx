@@ -7,7 +7,7 @@ import type { HeaderProfile, NavItem } from "@/types/agent/header";
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/agent/company", label: "거래처 목록" },
-  { href: "/agent/users", label: "사용자 관리" },
+  { href: "/agent/organization", label: "조직 관리" },
   { href: "/agent/billing", label: "요금제/결제" },
 ];
 
@@ -39,6 +39,7 @@ export function AgentHeader() {
         if (mounted) {
           setProfile({
             name: data.name,
+            email: data.email,
             organization: data.organization,
           });
         }
@@ -64,13 +65,16 @@ export function AgentHeader() {
       : "조직 미연결";
 
   return (
-    <header className="sticky top-0 z-30 border-b border-gray-200 bg-white/90 backdrop-blur">
+    <header
+      className="sticky top-0 z-30 border-b border-gray-700 backdrop-blur"
+      style={{ backgroundColor: "#2e394d" }}
+    >
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link
           href="/agent/company"
-          className="shrink-0 text-sm font-semibold tracking-tight text-gray-900"
+          className="shrink-0 text-sm font-semibold tracking-tight text-white"
         >
-          Agent Console
+          {organizationLabel}
         </Link>
 
         <nav className="min-w-0 flex-1 overflow-x-auto">
@@ -83,8 +87,8 @@ export function AgentHeader() {
                     href={item.href}
                     className={`inline-flex rounded-lg px-3 py-1.5 text-sm font-medium transition ${
                       active
-                        ? "bg-blue-100 text-blue-700"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+                        ? "bg-white/15 text-white"
+                        : "text-gray-300 hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     {item.label}
@@ -96,15 +100,17 @@ export function AgentHeader() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <div className="hidden gap-4 flex-row rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-right md:flex">
-            <p className="text-xs text-gray-500">{organizationLabel}</p>
-            <p className="text-xs font-medium text-gray-900">
+          <div className="hidden gap-4 flex-row rounded-lg border border-gray-500/40 bg-white/10 px-3 py-1.5 text-right md:flex">
+            <p className="text-xs text-gray-300">
+              {profile?.email || organizationLabel}
+            </p>
+            <p className="text-xs font-medium text-white">
               {profile?.name || "사용자"}
             </p>
           </div>
           <Link
             href="/agent/auth/logout"
-            className="shrink-0 rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+            className="shrink-0 rounded-lg border border-gray-500/40 px-3 py-1.5 text-sm font-medium text-gray-200 transition hover:bg-white/10"
           >
             로그아웃
           </Link>

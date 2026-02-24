@@ -110,3 +110,5 @@ export async function sendNcloudMagicLinkMail({
     );
   }
 }
+
+export const sendNcloudMail = sendNcloudMagicLinkMail;

@@ -39,8 +39,8 @@ enum LoginProvider {
 enum UploadType {
   EARNED_INCOME // 근로소득
   BUSINESS_INCOME // 사업소득
-  OTHER_INCOME // 기타소득(간단형: 소득구분/세액)
-  OTHER_INCOME_LABOR // 기타소득(근무/공제/시간 포함)
+  OTHER_INCOME // 기타소득
+  OTHER_INCOME_LABOR // 일용소득
 }
 
 enum AgentBillingPlan {
@@ -68,8 +68,9 @@ model AgentOrganization {
   openingDate        DateTime? @map("opening_date") @db.Date
   address            String?   @map("address") @db.VarChar(255)
 
-  users AgentUser[]
-  billing AgentOrganizationBilling?
+  users        AgentUser[]
+  billing      AgentOrganizationBilling?
+  inviteTokens AgentUserInviteToken[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -117,8 +118,9 @@ model AgentUser {
   isMaster       Boolean       @default(false) @map("is_master")
   isActive       Boolean       @default(true) @map("is_active")
 
-  customerLinks AgentCompanyCustomer[]
-  magicLinkTokens AgentMagicLinkToken[]
+  customerLinks    AgentCompanyCustomer[]
+  magicLinkTokens  AgentMagicLinkToken[]
+  sentInviteTokens AgentUserInviteToken[] @relation("InviterUserInviteTokens")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -131,11 +133,11 @@ model AgentUser {
 model AgentMagicLinkToken {
   id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
 
-  agentUserId BigInt   @map("agent_user_id") @db.UnsignedBigInt
+  agentUserId BigInt    @map("agent_user_id") @db.UnsignedBigInt
   agentUser   AgentUser @relation(fields: [agentUserId], references: [id], onDelete: Cascade)
 
-  tokenHash String   @unique @map("token_hash") @db.Char(64)
-  expiresAt DateTime @map("expires_at")
+  tokenHash String    @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime  @map("expires_at")
   usedAt    DateTime? @map("used_at")
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -143,6 +145,31 @@ model AgentMagicLinkToken {
   @@index([agentUserId, expiresAt])
   @@index([expiresAt])
   @@map("agent_magic_link_token")
+}
+
+model AgentUserInviteToken {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  agentOrganizationId BigInt            @map("agent_organization_id") @db.UnsignedBigInt
+  agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
+
+  inviterUserId BigInt    @map("inviter_user_id") @db.UnsignedBigInt
+  inviterUser   AgentUser @relation("InviterUserInviteTokens", fields: [inviterUserId], references: [id], onDelete: Cascade)
+
+  invitedEmail String @map("invited_email") @db.VarChar(255)
+
+  tokenHash String    @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+
+  acceptedAgentUserId BigInt? @map("accepted_agent_user_id") @db.UnsignedBigInt
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([agentOrganizationId, invitedEmail, expiresAt])
+  @@index([inviterUserId, createdAt])
+  @@index([expiresAt])
+  @@map("agent_user_invite_token")
 }
 
 // 고객 회사 소속 사용자
@@ -163,7 +190,8 @@ model CompanyUser {
   isMaster       Boolean       @default(false) @map("is_master")
   isActive       Boolean       @default(true) @map("is_active")
 
-  agentLinks AgentCompanyCustomer[]
+  agentLinks      AgentCompanyCustomer[]
+  magicLinkTokens CompanyMagicLinkToken[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -171,6 +199,23 @@ model CompanyUser {
   @@unique([loginProvider, providerUserId])
   @@index([companyId])
   @@map("company_user")
+}
+
+model CompanyMagicLinkToken {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  companyUserId BigInt      @map("company_user_id") @db.UnsignedBigInt
+  companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
+
+  tokenHash String    @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([companyUserId, expiresAt])
+  @@index([expiresAt])
+  @@map("company_magic_link_token")
 }
 
 model AgentCompanyCustomer {

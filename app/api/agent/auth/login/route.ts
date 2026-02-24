@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
           <!-- Body -->
           <tr>
             <td style="padding:36px 32px 28px;">
-              <p style="margin:0 0 20px;color:#1f2937;font-size:15px;line-height:1.6;">안녕하세요,</p>
+              <p style="margin:0 0 20px;color:#1f2937;font-size:15px;line-height:1.6;">안녕하세요. ㅇㅇㅇ입니다.</p>
               <p style="margin:0 0 28px;color:#374151;font-size:14px;line-height:1.6;">아래 버튼을 클릭하면 로그인됩니다.</p>
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>

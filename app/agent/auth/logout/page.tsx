@@ -1,16 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { LogoutState } from "@/types/agent/auth";
 
 export default function AgentAuthLogoutPage() {
   const router = useRouter();
-  const [state, setState] = useState<LogoutState>("logging-out");
-  const [message, setMessage] = useState("로그아웃 처리 중입니다...");
+  const [state, setState] = useState<LogoutState>("confirm");
+  const [message, setMessage] = useState("정말 로그아웃 하시겠습니까?");
 
   const performLogout = useCallback(async () => {
+    setState("logging-out");
+    setMessage("로그아웃 처리 중입니다...");
+
     try {
       const res = await fetch("/api/agent/auth/logout", {
         method: "POST",
@@ -33,16 +36,7 @@ export default function AgentAuthLogoutPage() {
     }
   }, [router]);
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void performLogout();
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, [performLogout]);
-
   const handleRetry = () => {
-    setState("logging-out");
-    setMessage("로그아웃 처리 중입니다...");
     void performLogout();
   };
 
@@ -55,9 +49,32 @@ export default function AgentAuthLogoutPage() {
           </h1>
           <p className="mt-2 text-sm text-gray-500">{message}</p>
 
+          {state === "confirm" && (
+            <div className="mt-5 space-y-3">
+              <button
+                type="button"
+                onClick={() => void performLogout()}
+                className="inline-flex w-full items-center justify-center rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700"
+              >
+                로그아웃
+              </button>
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="inline-flex w-full items-center justify-center rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+              >
+                취소
+              </button>
+            </div>
+          )}
+
           {state === "logging-out" && (
             <div className="mt-5 flex items-center gap-2 text-sm text-gray-500">
-              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+              <svg
+                className="h-4 w-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
                 <circle
                   className="opacity-25"
                   cx="12"

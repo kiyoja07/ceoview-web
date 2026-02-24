@@ -139,6 +139,11 @@ export interface MonthlyStat {
   totalPayment: number;
   totalDeduction: number;
   netPayment: number;
+  earnedCount: number;
+  businessCount: number;
+  dailyCount: number;
+  otherCount: number;
+  totalCount: number;
 }
 
 export interface SalaryStatsResponse {

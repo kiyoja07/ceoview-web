@@ -29,7 +29,7 @@ export type AgentAuthMeResponse = {
   } | null;
 };
 
-export type LogoutState = "logging-out" | "success" | "error";
+export type LogoutState = "confirm" | "logging-out" | "success" | "error";
 
 export type LoginBody = {
   email?: string;

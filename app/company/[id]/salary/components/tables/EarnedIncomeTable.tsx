@@ -468,7 +468,7 @@ export function EarnedIncomeTable({
                   </td>
                 ))}
               <td className="whitespace-nowrap border-l border-gray-50 px-4 py-3 text-right tabular-nums font-bold text-purple-700">
-                {formatNumber(Number(row.netPayment) + (companyBurden.byRow.get(row.id)?.totalCompanyBurden ?? 0))}
+                {formatNumber(Number(row.totalPayment) + (companyBurden.byRow.get(row.id)?.totalCompanyBurden ?? 0))}
               </td>
             </tr>
           ))
@@ -524,7 +524,7 @@ export function EarnedIncomeTable({
                 </td>
               ))}
             <td className="whitespace-nowrap border-l border-gray-100 px-4 py-3 text-right tabular-nums font-bold text-purple-700">
-              {formatNumber(sum.netPayment + (companyBurden.sum?.totalCompanyBurden ?? 0))}
+              {formatNumber(sum.totalPayment + (companyBurden.sum?.totalCompanyBurden ?? 0))}
             </td>
           </tr>
         </tfoot>

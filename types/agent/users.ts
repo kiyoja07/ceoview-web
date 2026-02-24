@@ -36,6 +36,7 @@ export type CompanyUserItem = {
 
 export type UsersResponse = {
   currentUserId: string;
+  canManageUsers: boolean;
   summary: {
     agentUsers: { total: number; active: number; masters: number };
     companyUsers: { total: number; active: number; masters: number };

@@ -5,6 +5,7 @@ export type NavItem = {
 
 export type HeaderProfile = {
   name: string;
+  email: string;
   organization: {
     organizationName: string | null;
     organizationNumber: string;
