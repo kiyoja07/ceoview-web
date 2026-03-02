@@ -93,8 +93,16 @@ export interface OtherIncomeRow {
   netPayment: string;
 }
 
+export interface UploadPublication {
+  publishStatus: "NONE" | "SAVED" | "PUBLISHED";
+  isAgentView: boolean;
+  companyVisible: boolean;
+  uploadedAt: string | null;
+}
+
 interface BaseApiResponse<T> {
   company: Company;
+  publication?: UploadPublication;
   rows: T[];
   total: number;
   page: number;
@@ -149,5 +157,6 @@ export interface MonthlyStat {
 export interface SalaryStatsResponse {
   company: Company;
   months: number;
+  publicationByType?: Record<IncomeTab, UploadPublication>;
   stats: MonthlyStat[];
 }

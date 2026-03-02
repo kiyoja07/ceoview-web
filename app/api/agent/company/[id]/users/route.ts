@@ -53,8 +53,15 @@ export async function GET(
       );
     }
 
-    const company = await prisma.company.findUnique({
-      where: { id: companyId },
+    const company = await prisma.company.findFirst({
+      where: {
+        id: companyId,
+        organizationLink: {
+          is: {
+            agentOrganizationId: auth.organizationId,
+          },
+        },
+      },
       select: {
         id: true,
         businessNumber: true,
@@ -74,13 +81,6 @@ export async function GET(
     const users = await prisma.companyUser.findMany({
       where: {
         companyId,
-        agentLinks: {
-          some: {
-            agentUser: {
-              agentOrganizationId: auth.organizationId,
-            },
-          },
-        },
       },
       orderBy: [{ isMaster: "desc" }, { createdAt: "asc" }],
       select: {

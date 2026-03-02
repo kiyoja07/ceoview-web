@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import type { HeaderProfile, NavItem } from "@/types/agent/header";
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/agent/company", label: "거래처 목록" },
+  { href: "/agent/company", label: "거래처 관리" },
   { href: "/agent/organization", label: "조직 관리" },
   { href: "/agent/billing", label: "요금제/결제" },
 ];
@@ -65,10 +65,7 @@ export function AgentHeader() {
       : "조직 미연결";
 
   return (
-    <header
-      className="sticky top-0 z-30 border-b border-gray-700 backdrop-blur"
-      style={{ backgroundColor: "#2e394d" }}
-    >
+    <header className="sticky top-0 z-30 border-b border-gray-700 bg-agent-header backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link
           href="/agent/company"

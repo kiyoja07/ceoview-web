@@ -2,16 +2,17 @@
 
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { INCOME_TYPES, MONTHS } from "./constants";
+import { INCOME_TYPES, MONTHS, PROGRAM_TYPES } from "./constants";
 import { CompanySelect } from "./components/CompanySelect";
 import { FileUploadField } from "./components/FileUploadField";
 import { IncomeTypeSelector } from "./components/IncomeTypeSelector";
+import { ProgramTypeSelector } from "./components/ProgramTypeSelector";
 import { ResultPreview } from "./components/ResultPreview";
 import { StatusMessage } from "./components/StatusMessage";
 import { PayDatePicker } from "./components/PayDatePicker";
 import { YearMonthField } from "./components/YearMonthField";
 import { useSalaryUpload } from "./hooks/useSalaryUpload";
-import type { Company, IncomeType } from "./types";
+import type { Company, IncomeType, ProgramType } from "./types";
 import { buildYearOptions, formatBusinessNumber } from "./utils";
 
 export default function SalaryNewPage() {
@@ -22,7 +23,9 @@ export default function SalaryNewPage() {
 
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companiesLoading, setCompaniesLoading] = useState(true);
-  const [fixedCompanyError, setFixedCompanyError] = useState<string | null>(null);
+  const [fixedCompanyError, setFixedCompanyError] = useState<string | null>(
+    null,
+  );
 
   const [companyId, setCompanyId] = useState("");
   const [accrualYear, setAccrualYear] = useState(
@@ -39,17 +42,20 @@ export default function SalaryNewPage() {
   );
   const [payDate, setPayDate] = useState("");
   const [incomeType, setIncomeType] = useState<IncomeType>("EARNED_INCOME");
+  const [programType, setProgramType] = useState<ProgramType>("WEHAGO");
   const [file, setFile] = useState<File | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const {
     uploading,
     saving,
+    publishing,
     message,
     result,
     resetFeedback,
     handleUpload,
     handleSave,
+    handlePublish,
   } = useSalaryUpload({
     companyId,
     file,
@@ -119,7 +125,7 @@ export default function SalaryNewPage() {
   const years = buildYearOptions();
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+    <div className="min-h-screen bg-agent-bg">
       <div className="mx-auto max-w-5xl p-6 lg:p-8">
         {/* Header */}
         <div className="mb-8">
@@ -236,6 +242,15 @@ export default function SalaryNewPage() {
             />
           )}
 
+          <IncomeTypeSelector
+            incomeType={incomeType}
+            options={INCOME_TYPES}
+            onChange={(value) => {
+              setIncomeType(value);
+              resetFeedback();
+            }}
+          />
+
           {/* 귀속/지급년월 2열 */}
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <YearMonthField
@@ -265,15 +280,6 @@ export default function SalaryNewPage() {
             />
           </div>
 
-          <IncomeTypeSelector
-            incomeType={incomeType}
-            options={INCOME_TYPES}
-            onChange={(value) => {
-              setIncomeType(value);
-              resetFeedback();
-            }}
-          />
-
           <PayDatePicker
             value={payDate}
             onChange={setPayDate}
@@ -284,6 +290,12 @@ export default function SalaryNewPage() {
                 ? "근로소득 업로드 시에만 지급일이 필수입니다."
                 : undefined
             }
+          />
+
+          <ProgramTypeSelector
+            programType={programType}
+            options={PROGRAM_TYPES}
+            onChange={setProgramType}
           />
 
           <FileUploadField
@@ -325,13 +337,19 @@ export default function SalaryNewPage() {
                 업로드 중...
               </span>
             ) : (
-              "엑셀 업로드"
+              "엑셀 파일 등록하기"
             )}
           </button>
         </div>
 
         {result && (
-          <ResultPreview result={result} saving={saving} onSave={handleSave} />
+          <ResultPreview
+            result={result}
+            saving={saving}
+            publishing={publishing}
+            onSave={handleSave}
+            onPublish={handlePublish}
+          />
         )}
       </div>
     </div>

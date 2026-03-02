@@ -15,7 +15,10 @@ export default function CompanyHomePage() {
           return;
         }
 
-        router.replace("/company/dashboard");
+        const data = (await res.json()) as { profileComplete?: boolean };
+        router.replace(
+          data.profileComplete ? "/company/dashboard" : "/company/auth/onboarding",
+        );
       } catch {
         router.replace("/company/auth/login");
       }

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as XLSX from "xlsx";
+import prisma from "@/app/lib/prisma";
+import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
 import {
   INCOME_TYPE_LABELS,
   REQUIRED_COLUMNS,
@@ -8,8 +10,38 @@ import {
 import { parseWorksheetByIncomeType } from "./parsers";
 import { saveRowsByIncomeType } from "./persistence";
 
+async function requireAgentOrganizationId(request: NextRequest) {
+  const userId = getAgentUserIdFromRequest(request);
+  if (!userId) {
+    return { error: "로그인이 필요합니다.", status: 401 } as const;
+  }
+
+  const user = await prisma.agentUser.findUnique({
+    where: { id: userId },
+    select: { isActive: true, agentOrganizationId: true },
+  });
+
+  if (!user || !user.isActive) {
+    return { error: "로그인이 필요합니다.", status: 401 } as const;
+  }
+
+  if (!user.agentOrganizationId) {
+    return {
+      error: "소속 에이전트 조직 등록이 필요합니다.",
+      status: 403,
+    } as const;
+  }
+
+  return { userId, organizationId: user.agentOrganizationId } as const;
+}
+
 export async function POST(request: NextRequest) {
   try {
+    const auth = await requireAgentOrganizationId(request);
+    if ("error" in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     const incomeTypeRaw = formData.get("incomeType");
@@ -39,6 +71,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "사업자를 선택해주세요." },
         { status: 400 },
+      );
+    }
+
+    let parsedCompanyId: bigint;
+    try {
+      parsedCompanyId = BigInt(companyId);
+    } catch {
+      return NextResponse.json(
+        { error: "유효한 사업자 ID가 아닙니다." },
+        { status: 400 },
+      );
+    }
+
+    const companyLink = await prisma.agentOrganizationCompany.findUnique({
+      where: {
+        agentOrganizationId_companyId: {
+          agentOrganizationId: auth.organizationId,
+          companyId: parsedCompanyId,
+        },
+      },
+      select: { companyId: true },
+    });
+
+    if (!companyLink) {
+      return NextResponse.json(
+        { error: "접근 권한이 없는 사업자입니다." },
+        { status: 403 },
       );
     }
 
@@ -104,6 +163,8 @@ export async function POST(request: NextRequest) {
       try {
         const result = await saveRowsByIncomeType({
           incomeType,
+          organizationId: auth.organizationId,
+          agentUserId: auth.userId,
           companyId,
           fileName,
           rows,
@@ -115,6 +176,9 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           saved: true,
+          published: false,
+          companyVisible: false,
+          publishStatus: result.publishStatus,
           savedCount: result.savedCount,
           uploadId: result.uploadId,
           fileName,
@@ -137,6 +201,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       saved: false,
+      published: false,
+      companyVisible: false,
       fileName,
       sheetName,
       incomeType,

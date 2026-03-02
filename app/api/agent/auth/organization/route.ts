@@ -13,6 +13,11 @@ type ParsedOrganizationInput = {
   address: string | null;
 };
 
+type ParsedAgentProfileInput = {
+  name?: string;
+  phone?: string | null;
+};
+
 function parseOrganizationBody(body: CreateOrganizationBody) {
   const rawOrganizationNumber = body.organizationNumber?.trim() ?? "";
   const organizationNumber = rawOrganizationNumber.replace(/\D/g, "");
@@ -61,6 +66,24 @@ function parseOrganizationBody(body: CreateOrganizationBody) {
       address,
     } satisfies ParsedOrganizationInput,
   } as const;
+}
+
+function parseAgentProfileBody(body: CreateOrganizationBody) {
+  const result: ParsedAgentProfileInput = {};
+
+  if (typeof body.userName === "string") {
+    const name = body.userName.trim();
+    if (name.length > 0) {
+      result.name = name.slice(0, 100);
+    }
+  }
+
+  if (typeof body.userPhone === "string") {
+    const phone = body.userPhone.trim();
+    result.phone = phone.length > 0 ? phone.slice(0, 30) : null;
+  }
+
+  return result;
 }
 
 async function requireActiveAgentUser(request: NextRequest) {
@@ -162,6 +185,7 @@ export async function POST(request: NextRequest) {
 
     const body = (await request.json()) as CreateOrganizationBody;
     const parsed = parseOrganizationBody(body);
+    const parsedAgentProfile = parseAgentProfileBody(body);
     if ("error" in parsed) {
       return NextResponse.json(
         { error: parsed.error },
@@ -174,9 +198,25 @@ export async function POST(request: NextRequest) {
         data: parsed.data,
       });
 
+      const userUpdateData: {
+        agentOrganizationId: bigint;
+        isMaster: boolean;
+        name?: string;
+        phone?: string | null;
+      } = {
+        agentOrganizationId: created.id,
+        isMaster: true,
+      };
+      if (parsedAgentProfile.name !== undefined) {
+        userUpdateData.name = parsedAgentProfile.name;
+      }
+      if (parsedAgentProfile.phone !== undefined) {
+        userUpdateData.phone = parsedAgentProfile.phone;
+      }
+
       await tx.agentUser.update({
         where: { id: auth.user.id },
-        data: { agentOrganizationId: created.id, isMaster: true },
+        data: userUpdateData,
       });
 
       return created;

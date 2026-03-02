@@ -126,8 +126,11 @@ export async function POST(request: NextRequest) {
           <!-- Body -->
           <tr>
             <td style="padding:36px 32px 28px;">
-              <p style="margin:0 0 20px;color:#1f2937;font-size:15px;line-height:1.6;">안녕하세요. ㅇㅇㅇ입니다.</p>
-              <p style="margin:0 0 28px;color:#374151;font-size:14px;line-height:1.6;">아래 버튼을 클릭하면 로그인됩니다.</p>
+              <p style="margin:0 0 14px;color:#1f2937;font-size:14px;line-height:1.6;">안녕하세요. ㅇㅇㅇ입니다.</p>
+              <p style="margin:0 0 20px;color:#374151;font-size:14px;line-height:1.6;">아래 버튼을 클릭하면 로그인됩니다.</p>
+              <p style="margin:0 0 28px;color:#9ca3af;font-size:11px;line-height:1.6;">
+                로그인 링크로 접속하면 <a href="#" style="color:#9ca3af;text-decoration:underline;">이용약관</a> 및 <a href="#" style="color:#9ca3af;text-decoration:underline;">개인정보처리방침</a>에 동의한 것으로 봅니다.
+              </p>
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center" style="padding:4px 0 28px;">
@@ -146,6 +149,7 @@ export async function POST(request: NextRequest) {
                 이 링크는 <strong>${ttlMinutes}분</strong> 동안 유효하며 1회만 사용할 수 있습니다.<br/>
                 본인이 요청하지 않았다면 이 메일을 무시해주세요.
               </p>
+
             </td>
           </tr>
           <!-- Footer -->
@@ -159,7 +163,8 @@ export async function POST(request: NextRequest) {
     </tr>
   </table>
 </body>
-</html>`.trim();
+</html>
+`.trim();
 
     await sendNcloudMagicLinkMail({
       to: user.email,

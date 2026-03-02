@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { ApiErrorResponse } from "@/types/agent/auth";
+import type { AgentAuthMeResponse, ApiErrorResponse } from "@/types/agent/auth";
 import type { UsersMessageState, UsersResponse } from "@/types/agent/users";
 import { UserInviteForm } from "./_components/UserInviteForm";
 import { UserTable } from "./_components/UserTable";
@@ -14,6 +14,26 @@ export default function AgentUsersPage() {
   const [submittingKey, setSubmittingKey] = useState<string | null>(null);
   const [message, setMessage] = useState<UsersMessageState>(null);
   const [data, setData] = useState<UsersResponse | null>(null);
+  const [orgLabel, setOrgLabel] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadMe = async () => {
+      try {
+        const res = await fetch("/api/agent/auth/me", { cache: "no-store" });
+        if (!res.ok) return;
+        const me = (await res.json()) as AgentAuthMeResponse;
+        if (me.organization) {
+          setOrgLabel(
+            me.organization.organizationName ||
+              me.organization.organizationNumber,
+          );
+        }
+      } catch {
+        /* ignore */
+      }
+    };
+    void loadMe();
+  }, []);
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -100,14 +120,16 @@ export default function AgentUsersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+    <div className="min-h-screen bg-agent-bg">
       <div className="mx-auto max-w-6xl p-6 lg:p-8">
         <div className="mb-7">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            조직 소속 사용자 관리
+            회사 사용자 관리
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            조직 소속 사용자 현황을 확인하고 초대할 수 있습니다.
+            {orgLabel
+              ? `${orgLabel} 소속 사용자 현황을 확인하고 초대할 수 있습니다.`
+              : "조직 소속 사용자 현황을 확인하고 초대할 수 있습니다."}
           </p>
           {data && !data.canManageUsers && (
             <p className="mt-2 text-xs text-amber-700">

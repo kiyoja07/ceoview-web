@@ -8,6 +8,7 @@ import {
 import type {
   EarnedIncomeOverrides,
   IncomeWithYmOverrides,
+  SalaryIncomeType,
   UploadSaveResult,
 } from "./types";
 import {
@@ -17,13 +18,50 @@ import {
   mapOtherIncomeRow,
 } from "./mappers";
 
-async function loadCompany(companyId: string) {
-  const company = await prisma.company.findUnique({
-    where: { id: BigInt(companyId) },
+const UPLOAD_META_PREFIX = "__upload_meta__:";
+
+function buildUploadMemo(agentUserId: bigint) {
+  return `${UPLOAD_META_PREFIX}${JSON.stringify({
+    uploadedByAgentUserId: agentUserId.toString(),
+  })}`;
+}
+
+function parseUploadedByAgentUserId(memo: string | null): bigint | null {
+  if (!memo || !memo.startsWith(UPLOAD_META_PREFIX)) {
+    return null;
+  }
+
+  const jsonPart = memo.slice(UPLOAD_META_PREFIX.length);
+  try {
+    const parsed = JSON.parse(jsonPart) as { uploadedByAgentUserId?: string };
+    if (!parsed.uploadedByAgentUserId) return null;
+    return BigInt(parsed.uploadedByAgentUserId);
+  } catch {
+    return null;
+  }
+}
+
+async function loadCompany(organizationId: bigint, companyId: string) {
+  let parsedCompanyId: bigint;
+  try {
+    parsedCompanyId = BigInt(companyId);
+  } catch {
+    throw new Error("유효한 사업자 ID가 아닙니다.");
+  }
+
+  const company = await prisma.company.findFirst({
+    where: {
+      id: parsedCompanyId,
+      organizationLink: {
+        is: {
+          agentOrganizationId: organizationId,
+        },
+      },
+    },
   });
 
   if (!company) {
-    throw new Error("사업자를 찾을 수 없습니다.");
+    throw new Error("접근 가능한 사업자를 찾을 수 없습니다.");
   }
 
   return company;
@@ -62,13 +100,80 @@ function filterEarnedRows(rows: Record<string, unknown>[]) {
   });
 }
 
+export async function publishUpload(
+  organizationId: bigint,
+  agentUserId: bigint,
+  uploadId: string,
+) {
+  let parsedUploadId: bigint;
+  try {
+    parsedUploadId = BigInt(uploadId);
+  } catch {
+    throw new Error("유효한 업로드 ID가 아닙니다.");
+  }
+
+  const upload = await prisma.upload.findFirst({
+    where: {
+      id: parsedUploadId,
+      company: {
+        organizationLink: {
+          is: {
+            agentOrganizationId: organizationId,
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+      companyId: true,
+      type: true,
+      memo: true,
+    },
+  });
+
+  if (!upload) {
+    throw new Error("발행할 업로드를 찾을 수 없습니다.");
+  }
+
+  const uploadedByAgentUserId = parseUploadedByAgentUserId(upload.memo);
+  if (uploadedByAgentUserId && uploadedByAgentUserId !== agentUserId) {
+    throw new Error("해당 업로드를 저장한 에이전트만 발행할 수 있습니다.");
+  }
+
+  await prisma.companyActiveUpload.upsert({
+    where: {
+      companyId_type: {
+        companyId: upload.companyId,
+        type: upload.type,
+      },
+    },
+    update: {
+      uploadId: upload.id,
+    },
+    create: {
+      companyId: upload.companyId,
+      type: upload.type,
+      uploadId: upload.id,
+    },
+  });
+
+  return {
+    uploadId: upload.id.toString(),
+    companyId: upload.companyId.toString(),
+    incomeType: upload.type as SalaryIncomeType,
+    publishStatus: "PUBLISHED" as const,
+  };
+}
+
 export async function saveBusinessIncome(
+  organizationId: bigint,
+  agentUserId: bigint,
   companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
   overrides: IncomeWithYmOverrides,
 ): Promise<UploadSaveResult> {
-  const company = await loadCompany(companyId);
+  const company = await loadCompany(organizationId, companyId);
   const dataRows = filterBusinessOrOtherRows(rows);
 
   if (dataRows.length === 0) {
@@ -81,6 +186,7 @@ export async function saveBusinessIncome(
         company: { connect: { id: company.id } },
         type: "BUSINESS_INCOME",
         fileName,
+        memo: buildUploadMemo(agentUserId),
       },
     });
 
@@ -95,17 +201,20 @@ export async function saveBusinessIncome(
     return {
       savedCount: created.count,
       uploadId: upload.id.toString(),
+      publishStatus: "SAVED",
     };
   });
 }
 
 export async function saveOtherIncome(
+  organizationId: bigint,
+  agentUserId: bigint,
   companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
   overrides: IncomeWithYmOverrides,
 ): Promise<UploadSaveResult> {
-  const company = await loadCompany(companyId);
+  const company = await loadCompany(organizationId, companyId);
   const dataRows = filterBusinessOrOtherRows(rows);
 
   if (dataRows.length === 0) {
@@ -118,6 +227,7 @@ export async function saveOtherIncome(
         company: { connect: { id: company.id } },
         type: "OTHER_INCOME",
         fileName,
+        memo: buildUploadMemo(agentUserId),
       },
     });
 
@@ -132,16 +242,19 @@ export async function saveOtherIncome(
     return {
       savedCount: created.count,
       uploadId: upload.id.toString(),
+      publishStatus: "SAVED",
     };
   });
 }
 
 export async function saveOtherIncomeLabor(
+  organizationId: bigint,
+  agentUserId: bigint,
   companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
 ): Promise<UploadSaveResult> {
-  const company = await loadCompany(companyId);
+  const company = await loadCompany(organizationId, companyId);
   const dataRows = filterLaborRows(rows);
 
   if (dataRows.length === 0) {
@@ -154,6 +267,7 @@ export async function saveOtherIncomeLabor(
         company: { connect: { id: company.id } },
         type: "OTHER_INCOME_LABOR",
         fileName,
+        memo: buildUploadMemo(agentUserId),
       },
     });
 
@@ -168,17 +282,20 @@ export async function saveOtherIncomeLabor(
     return {
       savedCount: created.count,
       uploadId: upload.id.toString(),
+      publishStatus: "SAVED",
     };
   });
 }
 
 export async function saveEarnedIncome(
+  organizationId: bigint,
+  agentUserId: bigint,
   companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
   overrides: EarnedIncomeOverrides,
 ): Promise<UploadSaveResult> {
-  const company = await loadCompany(companyId);
+  const company = await loadCompany(organizationId, companyId);
   const dataRows = filterEarnedRows(rows);
 
   if (dataRows.length === 0) {
@@ -191,6 +308,7 @@ export async function saveEarnedIncome(
         company: { connect: { id: company.id } },
         type: "EARNED_INCOME",
         fileName,
+        memo: buildUploadMemo(agentUserId),
       },
     });
 
@@ -262,6 +380,7 @@ export async function saveEarnedIncome(
     return {
       savedCount,
       uploadId: upload.id.toString(),
+      publishStatus: "SAVED",
     };
   });
 }

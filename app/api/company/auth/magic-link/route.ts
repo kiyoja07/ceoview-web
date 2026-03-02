@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { attachCompanySession } from "@/app/lib/company-auth";
 import { hashCompanyMagicLinkToken } from "@/app/lib/company-magic-link";
+import { isCompanyProfileComplete } from "@/app/lib/company-onboarding";
 import prisma from "@/app/lib/prisma";
 
-const LOGIN_PATH = "/company/auth/login";
+const LOGIN_PATH = "/company/auth";
 
 function redirectToLoginWithError(request: NextRequest, errorCode: string) {
   const url = new URL(LOGIN_PATH, request.url);
@@ -31,6 +32,11 @@ export async function GET(request: NextRequest) {
         companyUser: {
           select: {
             isActive: true,
+            company: {
+              select: {
+                address: true,
+              },
+            },
           },
         },
       },
@@ -57,7 +63,10 @@ export async function GET(request: NextRequest) {
       return redirectToLoginWithError(request, "expired_magic_link");
     }
 
-    const response = NextResponse.redirect(new URL("/company/dashboard", request.url));
+    const redirectPath = isCompanyProfileComplete(magicLink.companyUser.company?.address ?? null)
+      ? "/company/dashboard"
+      : "/company/auth/onboarding";
+    const response = NextResponse.redirect(new URL(redirectPath, request.url));
     attachCompanySession(response, magicLink.companyUserId);
     return response;
   } catch (error) {

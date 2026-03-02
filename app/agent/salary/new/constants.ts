@@ -10,3 +10,8 @@ export const INCOME_TYPES: IncomeTypeOption[] = [
 export const MONTHS = Array.from({ length: 12 }, (_, i) =>
   String(i + 1).padStart(2, "0"),
 );
+
+export const PROGRAM_TYPES: import("./types").ProgramTypeOption[] = [
+  { value: "WEHAGO", label: "위하고" },
+  { value: "TAXFRIEND", label: "세무사랑", disabled: true },
+];

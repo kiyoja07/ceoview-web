@@ -4,6 +4,10 @@
 npx prisma generate && npx prisma db push
 ```
 
+## 네이밍 후보
+
+bizesk
+
 ## Auth (Magic Link)
 
 로그인은 이메일 기반 `magic link` 방식입니다.

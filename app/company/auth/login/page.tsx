@@ -1,15 +1,25 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type {
+  CompanyAuthMeResponse,
   CompanyAuthMessageState,
   CompanyAuthResponse,
+  CompanyLoginBody,
 } from "@/types/company/auth";
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-shadow";
+
+type ContactType = "email" | "phone";
+
+function normalizePhoneInput(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+}
 
 export default function CompanyAuthLoginPage() {
   const router = useRouter();
@@ -17,7 +27,8 @@ export default function CompanyAuthLoginPage() {
 
   const [checking, setChecking] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  const [contactType, setContactType] = useState<ContactType>("email");
+  const [contact, setContact] = useState("");
   const [message, setMessage] = useState<CompanyAuthMessageState>(null);
 
   useEffect(() => {
@@ -26,7 +37,10 @@ export default function CompanyAuthLoginPage() {
         const res = await fetch("/api/company/auth/me", { cache: "no-store" });
         if (!res.ok) return;
 
-        router.replace("/company/dashboard");
+        const data = (await res.json()) as CompanyAuthMeResponse;
+        router.replace(
+          data.profileComplete ? "/company/dashboard" : "/company/auth/onboarding",
+        );
       } finally {
         setChecking(false);
       }
@@ -57,16 +71,28 @@ export default function CompanyAuthLoginPage() {
     [loading],
   );
 
+  const helperText = useMemo(() => {
+    if (contactType === "email") {
+      return "이메일로 로그인 링크를 받으세요. 처음이면 계정이 자동으로 생성됩니다.";
+    }
+    return "전화번호로 로그인 링크를 받으세요. 처음이면 계정이 자동으로 생성됩니다.";
+  }, [contactType]);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
 
     try {
+      const payload: CompanyLoginBody = {
+        contactType,
+        contact,
+      };
+
       const res = await fetch("/api/company/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify(payload),
       });
 
       const data = (await res.json()) as CompanyAuthResponse;
@@ -82,7 +108,9 @@ export default function CompanyAuthLoginPage() {
         type: "success",
         text:
           data.message ||
-          "입력한 이메일로 로그인 링크를 보냈습니다. 메일함을 확인해주세요.",
+          (contactType === "email"
+            ? "입력한 이메일로 로그인 링크를 보냈습니다. 메일함을 확인해주세요."
+            : "입력한 전화번호로 로그인 링크를 보냈습니다. 문자함을 확인해주세요."),
       });
     } catch {
       setMessage({
@@ -108,25 +136,69 @@ export default function CompanyAuthLoginPage() {
         <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-              Company 계정 로그인
+              Company 계정 시작
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              이메일로 로그인 링크를 받아 간편하게 로그인하세요.
-            </p>
+            <p className="mt-1 text-sm text-gray-500">{helperText}</p>
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                이메일
+                로그인 방식
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setContactType("email");
+                    setContact("");
+                    setMessage(null);
+                  }}
+                  className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                    contactType === "email"
+                      ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                      : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  이메일
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setContactType("phone");
+                    setContact("");
+                    setMessage(null);
+                  }}
+                  className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                    contactType === "phone"
+                      ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                      : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  전화번호
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                {contactType === "email" ? "이메일" : "전화번호"}
               </label>
               <input
-                type="email"
+                type={contactType === "email" ? "email" : "tel"}
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={contact}
+                onChange={(e) =>
+                  setContact(
+                    contactType === "email"
+                      ? e.target.value
+                      : normalizePhoneInput(e.target.value),
+                  )
+                }
                 className={inputBase}
-                placeholder="name@company.com"
+                placeholder={
+                  contactType === "email" ? "name@company.com" : "010-0000-0000"
+                }
               />
             </div>
 
@@ -155,10 +227,7 @@ export default function CompanyAuthLoginPage() {
             </p>
 
             <p className="text-center text-xs text-gray-500">
-              계정이 없다면{" "}
-              <Link href="/company/auth/signup" className="text-emerald-700 underline">
-                회원가입
-              </Link>
+              첫 로그인 후 온보딩에서 회사 정보를 입력하면 바로 사용 가능합니다.
             </p>
           </form>
         </div>

@@ -102,22 +102,23 @@ export default function AgentAuthLoginPage() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+      <div className="flex min-h-screen items-center justify-center bg-agent-bg">
         <div className="text-sm text-gray-500">세션 확인 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/30">
-      <div className="mx-auto flex min-h-screen max-w-md items-center p-6">
+    <div className="min-h-screen bg-agent-bg">
+      <div className="mx-auto flex min-h-screen max-w-lg items-center p-6">
         <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-              세무대리인 계정
+              세무대리인 계정 접속
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              이메일로 로그인 링크를 받아 간편하게 로그인하세요.
+            <p className="mt-2 text-sm text-gray-500">
+              이메일로 로그인/회원가입 링크를 받으세요. <br />
+              처음이면 계정이 자동으로 생성됩니다.
             </p>
           </div>
 
@@ -135,6 +136,18 @@ export default function AgentAuthLoginPage() {
                 placeholder="name@company.com"
               />
             </div>
+
+            <p className="text-center text-xs leading-relaxed text-gray-400">
+              로그인 링크로 접속하면{" "}
+              <a href="#" className="underline hover:text-gray-600">
+                이용약관
+              </a>{" "}
+              및{" "}
+              <a href="#" className="underline hover:text-gray-600">
+                개인정보처리방침
+              </a>
+              에 동의한 것으로 봅니다.
+            </p>
 
             {message && (
               <div
@@ -158,6 +171,9 @@ export default function AgentAuthLoginPage() {
 
             <p className="text-center text-xs text-gray-500">
               링크는 15분간 유효하며 1회만 사용할 수 있습니다.
+            </p>
+            <p className="text-center text-xs text-gray-500">
+              첫 로그인 후 소속 조직 정보를 입력하면 바로 사용 가능합니다.
             </p>
           </form>
         </div>

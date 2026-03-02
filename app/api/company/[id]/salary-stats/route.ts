@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import {
+  resolveUploadForCompanyView,
+  serializeUploadViewSelection,
+} from "@/app/lib/salary-upload-view";
 
 /**
  * GET /api/company/[id]/salary-stats?months=12
@@ -45,34 +49,20 @@ export async function GET(
     );
     const startYm = startDate.getFullYear() * 100 + (startDate.getMonth() + 1); // e.g. 202503
 
-    // ──────── 업로드 ID 목록 (타입별) ────────
-    const allUploads = await prisma.upload.findMany({
-      where: { companyId },
-      select: { id: true, type: true, uploadedAt: true },
-    });
-
-    const uploadsByType = {
-      EARNED_INCOME: allUploads
-        .filter((u) => u.type === "EARNED_INCOME")
-        .map((u) => u.id),
-      BUSINESS_INCOME: allUploads
-        .filter((u) => u.type === "BUSINESS_INCOME")
-        .map((u) => u.id),
-      OTHER_INCOME: allUploads
-        .filter((u) => u.type === "OTHER_INCOME")
-        .map((u) => u.id),
-      OTHER_INCOME_LABOR: allUploads.filter(
-        (u) => u.type === "OTHER_INCOME_LABOR",
-      ),
-    };
+    const [earnedView, businessView, otherView, dailyView] = await Promise.all([
+      resolveUploadForCompanyView(request, companyId, "EARNED_INCOME"),
+      resolveUploadForCompanyView(request, companyId, "BUSINESS_INCOME"),
+      resolveUploadForCompanyView(request, companyId, "OTHER_INCOME"),
+      resolveUploadForCompanyView(request, companyId, "OTHER_INCOME_LABOR"),
+    ]);
 
     // ──────── 근로소득 (paymentYm 기준) ────────
     const earnedStats =
-      uploadsByType.EARNED_INCOME.length > 0
+      earnedView.uploadId
         ? await prisma.earnedIncome.groupBy({
             by: ["paymentYm"],
             where: {
-              uploadId: { in: uploadsByType.EARNED_INCOME },
+              uploadId: earnedView.uploadId,
               paymentYm: { gte: startYm, lte: endYm },
             },
             _count: true,
@@ -86,11 +76,11 @@ export async function GET(
 
     // ──────── 사업소득 (paymentYm 기준) ────────
     const businessStats =
-      uploadsByType.BUSINESS_INCOME.length > 0
+      businessView.uploadId
         ? await prisma.businessIncome.groupBy({
             by: ["paymentYm"],
             where: {
-              uploadId: { in: uploadsByType.BUSINESS_INCOME },
+              uploadId: businessView.uploadId,
               paymentYm: { gte: startYm, lte: endYm },
             },
             _count: true,
@@ -109,11 +99,11 @@ export async function GET(
 
     // ──────── 기타소득 (paymentYm 기준) ────────
     const otherStats =
-      uploadsByType.OTHER_INCOME.length > 0
+      otherView.uploadId
         ? await prisma.otherIncome.groupBy({
             by: ["paymentYm"],
             where: {
-              uploadId: { in: uploadsByType.OTHER_INCOME },
+              uploadId: otherView.uploadId,
               paymentYm: { gte: startYm, lte: endYm },
             },
             _count: true,
@@ -127,7 +117,6 @@ export async function GET(
         : [];
 
     // ──────── 일용직소득 (Upload.uploadedAt 월 기준) ────────
-    const dailyUploadEntries = uploadsByType.OTHER_INCOME_LABOR;
     const dailyByMonth: Map<
       number,
       {
@@ -139,21 +128,15 @@ export async function GET(
       }
     > = new Map();
 
-    if (dailyUploadEntries.length > 0) {
-      // uploadId → ym 매핑
-      const uploadYmMap = new Map<bigint, number>();
-      for (const u of dailyUploadEntries) {
-        const ym =
-          u.uploadedAt.getFullYear() * 100 + (u.uploadedAt.getMonth() + 1);
-        if (ym >= startYm && ym <= endYm) {
-          uploadYmMap.set(u.id, ym);
-        }
-      }
+    if (dailyView.uploadId && dailyView.uploadedAt) {
+      const ym =
+        dailyView.uploadedAt.getFullYear() * 100 +
+        (dailyView.uploadedAt.getMonth() + 1);
 
-      if (uploadYmMap.size > 0) {
+      if (ym >= startYm && ym <= endYm) {
         const dailyGrouped = await prisma.dailyIncomeLabor.groupBy({
           by: ["uploadId"],
-          where: { uploadId: { in: [...uploadYmMap.keys()] } },
+          where: { uploadId: dailyView.uploadId },
           _count: true,
           _sum: {
             grossPay: true,
@@ -168,9 +151,6 @@ export async function GET(
         });
 
         for (const row of dailyGrouped) {
-          const ym = uploadYmMap.get(row.uploadId);
-          if (!ym) continue;
-
           const existing = dailyByMonth.get(ym) ?? {
             totalPayment: 0,
             totalDeduction: 0,
@@ -369,6 +349,12 @@ export async function GET(
     return NextResponse.json({
       company: serialize(entity),
       months,
+      publicationByType: {
+        earned: serializeUploadViewSelection(earnedView),
+        business: serializeUploadViewSelection(businessView),
+        other: serializeUploadViewSelection(otherView),
+        daily: serializeUploadViewSelection(dailyView),
+      },
       stats,
     });
   } catch (error) {

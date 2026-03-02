@@ -17,6 +17,7 @@ export type CompanyAuthMeResponse = {
   isMaster: boolean;
   loginProvider: string;
   hasCompany: boolean;
+  profileComplete: boolean;
   company: {
     id: string;
     businessNumber: string;
@@ -27,12 +28,26 @@ export type CompanyAuthMeResponse = {
 };
 
 export type CompanyLoginBody = {
+  contactType?: "email" | "phone";
+  contact?: string;
   email?: string;
+  phone?: string;
 };
 
 export type CompanySignupBody = {
   email?: string;
   password?: string;
+  name?: string;
+  phone?: string | null;
+  businessNumber?: string;
+  businessType?: "INDIVIDUAL" | "CORPORATION";
+  businessName?: string | null;
+  representativeName?: string | null;
+  openingDate?: string | null;
+  address?: string | null;
+};
+
+export type CompanyOnboardingBody = {
   name?: string;
   phone?: string | null;
   businessNumber?: string;
@@ -49,3 +64,8 @@ export type CompanyApiErrorResponse = {
 };
 
 export type CompanyLogoutState = "confirm" | "logging-out" | "success" | "error";
+
+export type CompanyProfileUpdateBody = {
+  name?: string;
+  phone?: string | null;
+};

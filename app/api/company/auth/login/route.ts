@@ -2,44 +2,295 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import {
   buildCompanyMagicLinkUrl,
+  createDefaultNameFromEmail,
   createCompanyMagicLinkToken,
   getCompanyMagicLinkTtlMinutes,
   isValidEmail,
 } from "@/app/lib/company-magic-link";
+import {
+  COMPANY_ONBOARDING_PENDING_MARKER,
+  createPlaceholderBusinessNumber,
+} from "@/app/lib/company-onboarding";
 import { sendNcloudMail } from "@/app/lib/ncloud-mailer";
+import { sendNcloudSms } from "@/app/lib/ncloud-sms";
 import type { CompanyLoginBody } from "@/types/company/auth";
+
+type ContactType = "email" | "phone";
+
+function isUniqueConstraintError(error: unknown): error is { code: string } {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: string }).code === "P2002"
+  );
+}
+
+function normalizePhone(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+function isValidPhone(value: string) {
+  return /^01[016789]\d{7,8}$/.test(normalizePhone(value));
+}
+
+function formatPhone(value: string) {
+  const digits = normalizePhone(value);
+  if (digits.length === 10) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  if (digits.length === 11) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  }
+  return value;
+}
+
+function createDefaultNameFromPhone(phone: string) {
+  const digits = normalizePhone(phone);
+  return `사용자 ${digits.slice(-4)}`;
+}
+
+function createPhonePlaceholderEmail(phone: string) {
+  const digits = normalizePhone(phone);
+  return `company-phone-${digits}@noemail.local`;
+}
+
+function resolveContact(body: CompanyLoginBody): {
+  contactType: ContactType;
+  value: string;
+} {
+  const contactType = body.contactType === "phone" ? "phone" : "email";
+
+  const value =
+    body.contact?.trim() ||
+    (contactType === "phone" ? body.phone?.trim() : body.email?.trim()) ||
+    "";
+
+  return {
+    contactType,
+    value,
+  };
+}
+
+async function createPendingCompanyUser(params: {
+  contactType: ContactType;
+  email?: string;
+  phone?: string;
+}) {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      const created = await prisma.$transaction(async (tx) => {
+        const company = await tx.company.create({
+          data: {
+            businessNumber: createPlaceholderBusinessNumber(),
+            businessType: "INDIVIDUAL",
+            address: COMPANY_ONBOARDING_PENDING_MARKER,
+          },
+          select: { id: true },
+        });
+
+        const email =
+          params.contactType === "email"
+            ? (params.email as string)
+            : createPhonePlaceholderEmail(params.phone as string);
+
+        return tx.companyUser.create({
+          data: {
+            companyId: company.id,
+            email,
+            phone: params.contactType === "phone" ? normalizePhone(params.phone as string) : null,
+            loginProvider: "LOCAL",
+            name:
+              params.contactType === "email"
+                ? createDefaultNameFromEmail(email)
+                : createDefaultNameFromPhone(params.phone as string),
+            isMaster: true,
+          },
+          select: {
+            id: true,
+            email: true,
+            phone: true,
+            isActive: true,
+          },
+        });
+      });
+
+      return created;
+    } catch (error) {
+      if (!isUniqueConstraintError(error)) {
+        throw error;
+      }
+
+      if (params.contactType === "email") {
+        const existing = await prisma.companyUser.findUnique({
+          where: { email: params.email },
+          select: {
+            id: true,
+            email: true,
+            phone: true,
+            isActive: true,
+          },
+        });
+        if (existing) return existing;
+      } else {
+        const normalized = normalizePhone(params.phone as string);
+        const formatted = formatPhone(normalized);
+        const existing = await prisma.companyUser.findFirst({
+          where: {
+            OR: [
+              { phone: normalized },
+              { phone: formatted },
+              { email: createPhonePlaceholderEmail(normalized) },
+            ],
+          },
+          select: {
+            id: true,
+            email: true,
+            phone: true,
+            isActive: true,
+          },
+        });
+        if (existing) return existing;
+      }
+    }
+  }
+
+  throw new Error("초기 계정을 생성하지 못했습니다.");
+}
+
+async function findUserByPhone(phoneInput: string) {
+  const normalized = normalizePhone(phoneInput);
+  const formatted = formatPhone(normalized);
+
+  return prisma.companyUser.findFirst({
+    where: {
+      OR: [
+        { phone: normalized },
+        { phone: formatted },
+        { email: createPhonePlaceholderEmail(normalized) },
+      ],
+    },
+    select: {
+      id: true,
+      email: true,
+      phone: true,
+      isActive: true,
+    },
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as CompanyLoginBody;
-    const email = body.email?.trim().toLowerCase();
+    const resolved = resolveContact(body);
 
-    if (!email) {
+    let user:
+      | {
+          id: bigint;
+          email: string;
+          phone: string | null;
+          isActive: boolean;
+        }
+      | null = null;
+
+    if (resolved.contactType === "email") {
+      const email = resolved.value.toLowerCase();
+
+      if (!email) {
+        return NextResponse.json(
+          { error: "이메일을 입력해주세요." },
+          { status: 400 },
+        );
+      }
+
+      if (!isValidEmail(email)) {
+        return NextResponse.json(
+          { error: "올바른 이메일 형식이 아닙니다." },
+          { status: 400 },
+        );
+      }
+
+      user = await prisma.companyUser.findUnique({
+        where: { email },
+        select: {
+          id: true,
+          email: true,
+          phone: true,
+          isActive: true,
+        },
+      });
+
+      if (!user) {
+        try {
+          user = await createPendingCompanyUser({
+            contactType: "email",
+            email,
+          });
+        } catch (error) {
+          if (isUniqueConstraintError(error)) {
+            user = await prisma.companyUser.findUnique({
+              where: { email },
+              select: {
+                id: true,
+                email: true,
+                phone: true,
+                isActive: true,
+              },
+            });
+          } else {
+            throw error;
+          }
+        }
+      }
+    } else {
+      const phone = resolved.value;
+      const normalizedPhone = normalizePhone(phone);
+
+      if (!phone) {
+        return NextResponse.json(
+          { error: "전화번호를 입력해주세요." },
+          { status: 400 },
+        );
+      }
+
+      if (!isValidPhone(phone)) {
+        return NextResponse.json(
+          { error: "올바른 전화번호 형식이 아닙니다." },
+          { status: 400 },
+        );
+      }
+
+      user = await findUserByPhone(normalizedPhone);
+
+      if (!user) {
+        try {
+          user = await createPendingCompanyUser({
+            contactType: "phone",
+            phone: normalizedPhone,
+          });
+        } catch (error) {
+          if (isUniqueConstraintError(error)) {
+            user = await findUserByPhone(normalizedPhone);
+          } else {
+            throw error;
+          }
+        }
+      }
+    }
+
+    if (!user) {
       return NextResponse.json(
-        { error: "이메일을 입력해주세요." },
-        { status: 400 },
+        { error: "로그인 링크를 생성하지 못했습니다." },
+        { status: 500 },
       );
     }
 
-    if (!isValidEmail(email)) {
-      return NextResponse.json(
-        { error: "올바른 이메일 형식이 아닙니다." },
-        { status: 400 },
-      );
-    }
-
-    const user = await prisma.companyUser.findUnique({
-      where: { email },
-      select: {
-        id: true,
-        email: true,
-        isActive: true,
-      },
-    });
-
-    if (!user || !user.isActive) {
+    if (!user.isActive) {
       return NextResponse.json({
-        message: "입력한 이메일로 로그인 링크를 전송했습니다.",
+        message:
+          resolved.contactType === "email"
+            ? "입력한 이메일로 로그인 링크를 전송했습니다."
+            : "입력한 전화번호로 로그인 링크를 전송했습니다.",
       });
     }
 
@@ -61,8 +312,10 @@ export async function POST(request: NextRequest) {
     });
 
     const ttlMinutes = getCompanyMagicLinkTtlMinutes();
-    const title = "[관리자 시스템] Company 로그인 링크 안내";
-    const bodyHtml = `
+
+    if (resolved.contactType === "email") {
+      const title = "[관리자 시스템] Company 로그인 링크 안내";
+      const bodyHtml = `
 <!DOCTYPE html>
 <html lang="ko">
 <head><meta charset="UTF-8" /></head>
@@ -112,14 +365,33 @@ export async function POST(request: NextRequest) {
 </body>
 </html>`.trim();
 
-    await sendNcloudMail({
-      to: user.email,
-      title,
-      body: bodyHtml,
+      await sendNcloudMail({
+        to: user.email,
+        title,
+        body: bodyHtml,
+      });
+
+      return NextResponse.json({
+        message: "입력한 이메일로 로그인 링크를 전송했습니다.",
+      });
+    }
+
+    const phoneToSend = user.phone ? normalizePhone(user.phone) : normalizePhone(resolved.value);
+    const smsContent = [
+      "[관리자 시스템] Company 로그인 링크 안내",
+      "아래 링크를 눌러 로그인해주세요.",
+      magicLinkUrl,
+      `유효시간: ${ttlMinutes}분`,
+    ].join("\n");
+
+    await sendNcloudSms({
+      to: phoneToSend,
+      subject: "Company 로그인 링크",
+      content: smsContent,
     });
 
     return NextResponse.json({
-      message: "입력한 이메일로 로그인 링크를 전송했습니다.",
+      message: `입력한 전화번호(${formatPhone(phoneToSend)})로 로그인 링크를 전송했습니다.`,
     });
   } catch (error) {
     console.error("Company login error:", error);

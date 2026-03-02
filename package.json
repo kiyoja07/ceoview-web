@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "vercel-build": "prisma generate && next build",
+    "prestart": "npm run build",
+    "clean": "rm -rf node_modules && rm -rf package-lock.json && rm -rf .next ",
+    "reinstall": "npm run clean && npm i",
+    "redev": "npm run reinstall && next dev",
+    "restart": "npm run reinstall && npm start"
   },
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.4.0",

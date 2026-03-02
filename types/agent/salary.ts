@@ -17,6 +17,9 @@ export type IncomeType =
 export interface ParsedResult {
   success: boolean;
   saved: boolean;
+  published?: boolean;
+  publishStatus?: "SAVED" | "PUBLISHED";
+  companyVisible?: boolean;
   savedCount?: number;
   uploadId?: string;
   fileName: string;
@@ -51,6 +54,14 @@ export type IncomeTypeOption = {
   label: string;
 };
 
+export type ProgramType = "WEHAGO" | "TAXFRIEND";
+
+export type ProgramTypeOption = {
+  value: ProgramType;
+  label: string;
+  disabled?: boolean;
+};
+
 export type CompanySelectProps = {
   companiesLoading: boolean;
   companies: Company[];
@@ -83,7 +94,9 @@ export type PayDatePickerProps = {
 export type ResultPreviewProps = {
   result: ParsedResult;
   saving: boolean;
+  publishing: boolean;
   onSave: () => void;
+  onPublish: () => void;
 };
 
 export type StatusMessageProps = {

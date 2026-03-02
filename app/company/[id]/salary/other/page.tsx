@@ -53,6 +53,7 @@ export default function SalaryOtherPage() {
 
   const data = otherData;
   const company = otherData?.company ?? null;
+  const isAgentView = otherData?.publication?.isAgentView ?? false;
   const totalPages = data ? Math.ceil(data.total / data.size) : 0;
   const pageNumbers = useMemo(
     () => buildPageNumbers(currentPage, totalPages),
@@ -167,25 +168,27 @@ export default function SalaryOtherPage() {
               조회
             </button>
 
-            <Link
-              href={`/agent/salary/new?companyId=${id}`}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-emerald-600 px-4 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow active:scale-[0.98]"
-            >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
+            {isAgentView && (
+              <Link
+                href={`/agent/salary/new?companyId=${id}`}
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-emerald-600 px-4 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow active:scale-[0.98]"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
-              급여 입력
-            </Link>
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+                급여 입력
+              </Link>
+            )}
           </div>
         </div>
 

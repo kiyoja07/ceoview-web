@@ -68,9 +68,12 @@ model AgentOrganization {
   openingDate        DateTime? @map("opening_date") @db.Date
   address            String?   @map("address") @db.VarChar(255)
 
-  users        AgentUser[]
-  billing      AgentOrganizationBilling?
-  inviteTokens AgentUserInviteToken[]
+  users                AgentUser[]
+  billing              AgentOrganizationBilling?
+  inviteTokens         AgentUserInviteToken[]
+  companyLinks         AgentOrganizationCompany[]
+  transferRequestsFrom AgentOrganizationCompanyTransferRequest[] @relation("TransferFromOrganization")
+  transferRequestsTo   AgentOrganizationCompanyTransferRequest[] @relation("TransferToOrganization")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -98,8 +101,51 @@ model Company {
   activeUploads               CompanyActiveUpload[]
   earnedIncomeItemDefinitions EarnedIncomeItemDefinition[]
   companyUsers                CompanyUser[]
+  companyUserInviteHistories  CompanyUserInviteHistory[]
+  organizationLink            AgentOrganizationCompany?
+  transferRequest             AgentOrganizationCompanyTransferRequest?
 
   @@map("company")
+}
+
+model AgentOrganizationCompany {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  agentOrganizationId BigInt            @map("agent_organization_id") @db.UnsignedBigInt
+  agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
+
+  companyId BigInt  @unique @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([agentOrganizationId, companyId])
+  @@map("agent_organization_company")
+}
+
+model AgentOrganizationCompanyTransferRequest {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  companyId BigInt  @unique @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  fromAgentOrganizationId BigInt?            @map("from_agent_organization_id") @db.UnsignedBigInt
+  fromAgentOrganization   AgentOrganization? @relation("TransferFromOrganization", fields: [fromAgentOrganizationId], references: [id], onDelete: SetNull)
+
+  toAgentOrganizationId BigInt            @map("to_agent_organization_id") @db.UnsignedBigInt
+  toAgentOrganization   AgentOrganization @relation("TransferToOrganization", fields: [toAgentOrganizationId], references: [id], onDelete: Cascade)
+
+  requestedByAgentUserId BigInt    @map("requested_by_agent_user_id") @db.UnsignedBigInt
+  requestedByAgentUser   AgentUser @relation(fields: [requestedByAgentUserId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([toAgentOrganizationId])
+  @@index([fromAgentOrganizationId])
+  @@index([requestedByAgentUserId])
+  @@map("agent_organization_company_transfer_request")
 }
 
 // 에이전트 회사 소속 사용자
@@ -118,9 +164,11 @@ model AgentUser {
   isMaster       Boolean       @default(false) @map("is_master")
   isActive       Boolean       @default(true) @map("is_active")
 
-  customerLinks    AgentCompanyCustomer[]
-  magicLinkTokens  AgentMagicLinkToken[]
-  sentInviteTokens AgentUserInviteToken[] @relation("InviterUserInviteTokens")
+  customerLinks          AgentCompanyCustomer[]
+  magicLinkTokens        AgentMagicLinkToken[]
+  sentInviteTokens       AgentUserInviteToken[]                    @relation("InviterUserInviteTokens")
+  sentCompanyUserInvites CompanyUserInviteHistory[]
+  transferRequests       AgentOrganizationCompanyTransferRequest[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -130,6 +178,7 @@ model AgentUser {
   @@map("agent_user")
 }
 
+// 에이전트 사용자용 매직링크 토큰
 model AgentMagicLinkToken {
   id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
 
@@ -147,6 +196,7 @@ model AgentMagicLinkToken {
   @@map("agent_magic_link_token")
 }
 
+// 에이전트 사용자 초대 토큰 (이메일 기반)
 model AgentUserInviteToken {
   id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
 
@@ -201,6 +251,7 @@ model CompanyUser {
   @@map("company_user")
 }
 
+// 고객 회사 사용자용 매직링크 토큰
 model CompanyMagicLinkToken {
   id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
 
@@ -216,6 +267,29 @@ model CompanyMagicLinkToken {
   @@index([companyUserId, expiresAt])
   @@index([expiresAt])
   @@map("company_magic_link_token")
+}
+
+// 거래처 사용자 초대 이력
+model CompanyUserInviteHistory {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  inviterAgentUserId BigInt    @map("inviter_agent_user_id") @db.UnsignedBigInt
+  inviterAgentUser   AgentUser @relation(fields: [inviterAgentUserId], references: [id], onDelete: Cascade)
+
+  contactType String @map("contact_type") @db.VarChar(10) // "email" | "phone"
+  contact     String @db.VarChar(255)
+  role        String @default("master") @db.VarChar(20)
+
+  expiresAt DateTime @map("expires_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([companyId, createdAt])
+  @@index([inviterAgentUserId])
+  @@map("company_user_invite_history")
 }
 
 model AgentCompanyCustomer {

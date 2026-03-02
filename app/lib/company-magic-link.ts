@@ -1,11 +1,16 @@
 import { createHash, randomBytes } from "crypto";
 import type { NextRequest } from "next/server";
-import { getAppBaseUrl, isValidEmail } from "@/app/lib/agent-magic-link";
+import {
+  createDefaultNameFromEmail,
+  getAppBaseUrl,
+  isValidEmail,
+} from "@/app/lib/agent-magic-link";
 
 const COMPANY_MAGIC_LINK_TTL_MINUTES = 15;
 const COMPANY_MAGIC_LINK_TTL_MS = COMPANY_MAGIC_LINK_TTL_MINUTES * 60 * 1000;
 
 export { isValidEmail };
+export { createDefaultNameFromEmail };
 
 export function createCompanyMagicLinkToken() {
   const token = randomBytes(32).toString("base64url");

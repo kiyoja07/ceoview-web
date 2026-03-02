@@ -23,10 +23,13 @@ export type IncomeWithYmOverrides = {
 export type UploadSaveResult = {
   savedCount: number;
   uploadId: string;
+  publishStatus: "SAVED";
 };
 
 export type SaveRowsByIncomeTypeParams = {
   incomeType: SalaryIncomeType;
+  organizationId: bigint;
+  agentUserId: bigint;
   companyId: string;
   fileName: string;
   rows: Record<string, unknown>[];

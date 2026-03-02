@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
 
-async function requireAgentOrganizationId(request: NextRequest) {
+async function requireAgentAuth(request: NextRequest) {
   const userId = getAgentUserIdFromRequest(request);
   if (!userId) {
     return { error: "로그인이 필요합니다.", status: 401 } as const;
@@ -24,28 +24,83 @@ async function requireAgentOrganizationId(request: NextRequest) {
     } as const;
   }
 
-  return { organizationId: user.agentOrganizationId } as const;
+  return { userId, organizationId: user.agentOrganizationId } as const;
 }
 
-// GET: 전체 목록 조회
+function isUniqueConstraintError(error: unknown): error is { code: string } {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: string }).code === "P2002"
+  );
+}
+
+function serializeCompany(company: {
+  id: bigint;
+  businessNumber: string;
+  businessType: "INDIVIDUAL" | "CORPORATION";
+  businessName: string | null;
+  representativeName: string | null;
+  openingDate: Date | null;
+  address: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}) {
+  return {
+    ...company,
+    id: company.id.toString(),
+  };
+}
+
+// GET: 페이지네이션 목록 조회
 export async function GET(request: NextRequest) {
   try {
-    const auth = await requireAgentOrganizationId(request);
+    const auth = await requireAgentAuth(request);
     if ("error" in auth) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
-    const companies = await prisma.company.findMany({
-      orderBy: { createdAt: "desc" },
+    const { searchParams } = new URL(request.url);
+    const where = {
+      organizationLink: {
+        is: {
+          agentOrganizationId: auth.organizationId,
+        },
+      },
+    };
+
+    // 급여 업로드 화면 등 기존 호출 호환을 위해 page/size가 없으면 배열로 반환
+    if (!searchParams.has("page") && !searchParams.has("size")) {
+      const companies = await prisma.company.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+      });
+      return NextResponse.json(companies.map(serializeCompany));
+    }
+
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const size = Math.min(100, Math.max(1, Number(searchParams.get("size")) || 50));
+
+    const [companies, total] = await Promise.all([
+      prisma.company.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * size,
+        take: size,
+      }),
+      prisma.company.count({ where }),
+    ]);
+
+    const items = companies.map(serializeCompany);
+
+    return NextResponse.json({
+      items,
+      total,
+      page,
+      size,
+      totalPages: Math.ceil(total / size),
     });
-
-    // BigInt → string 변환 (JSON 직렬화)
-    const data = companies.map((company) => ({
-      ...company,
-      id: company.id.toString(),
-    }));
-
-    return NextResponse.json(data);
   } catch (error) {
     console.error("Company GET error:", error);
     return NextResponse.json(
@@ -58,7 +113,7 @@ export async function GET(request: NextRequest) {
 // POST: 새 사업자 등록
 export async function POST(request: NextRequest) {
   try {
-    const auth = await requireAgentOrganizationId(request);
+    const auth = await requireAgentAuth(request);
     if ("error" in auth) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
@@ -97,38 +152,129 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const company = await prisma.company.create({
-      data: {
-        businessNumber: cleanNumber,
-        businessType,
-        businessName: businessName || null,
-        representativeName: representativeName || null,
-        address: address || null,
-        openingDate: openingDate ? new Date(openingDate) : null,
-      },
+    const result = await prisma.$transaction(async (tx) => {
+      let company = await tx.company.findUnique({
+        where: { businessNumber: cleanNumber },
+      });
+      let created = false;
+      let pendingApproval = false;
+      let alreadyLinked = false;
+
+      if (!company) {
+        try {
+          company = await tx.company.create({
+            data: {
+              businessNumber: cleanNumber,
+              businessType,
+              businessName: businessName || null,
+              representativeName: representativeName || null,
+              address: address || null,
+              openingDate: openingDate ? new Date(openingDate) : null,
+            },
+          });
+          created = true;
+        } catch (error) {
+          if (!isUniqueConstraintError(error)) {
+            throw error;
+          }
+          company = await tx.company.findUnique({
+            where: { businessNumber: cleanNumber },
+          });
+        }
+      }
+
+      if (!company) {
+        throw new Error("사업자 정보를 처리할 수 없습니다.");
+      }
+
+      const activeLink = await tx.agentOrganizationCompany.findUnique({
+        where: { companyId: company.id },
+        select: { agentOrganizationId: true },
+      });
+
+      // 신규 회사 또는 연결이 비어 있는 회사는 즉시 배타 연결
+      if (!activeLink) {
+        await tx.agentOrganizationCompany.upsert({
+          where: { companyId: company.id },
+          update: {
+            agentOrganizationId: auth.organizationId,
+          },
+          create: {
+            agentOrganizationId: auth.organizationId,
+            companyId: company.id,
+          },
+        });
+
+        await tx.agentOrganizationCompanyTransferRequest.deleteMany({
+          where: { companyId: company.id },
+        });
+      } else if (activeLink.agentOrganizationId === auth.organizationId) {
+        // 이미 같은 에이전트가 활성 연결된 경우
+        alreadyLinked = true;
+        await tx.agentOrganizationCompanyTransferRequest.deleteMany({
+          where: {
+            companyId: company.id,
+            toAgentOrganizationId: auth.organizationId,
+          },
+        });
+      } else {
+        // 기존 회사는 회사 수락 전까지 이관 요청 상태로 유지
+        const existingRequest =
+          await tx.agentOrganizationCompanyTransferRequest.findUnique({
+            where: { companyId: company.id },
+            select: { toAgentOrganizationId: true },
+          });
+
+        if (
+          existingRequest &&
+          existingRequest.toAgentOrganizationId !== auth.organizationId
+        ) {
+          return {
+            error: "이미 다른 에이전트의 이관 요청이 대기 중입니다.",
+            status: 409,
+          } as const;
+        }
+
+        await tx.agentOrganizationCompanyTransferRequest.upsert({
+          where: { companyId: company.id },
+          update: {
+            fromAgentOrganizationId: activeLink.agentOrganizationId,
+            toAgentOrganizationId: auth.organizationId,
+            requestedByAgentUserId: auth.userId,
+          },
+          create: {
+            companyId: company.id,
+            fromAgentOrganizationId: activeLink.agentOrganizationId,
+            toAgentOrganizationId: auth.organizationId,
+            requestedByAgentUserId: auth.userId,
+          },
+        });
+        pendingApproval = true;
+      }
+
+      return {
+        company,
+        created,
+        pendingApproval,
+        alreadyLinked,
+      };
     });
+
+    if ("error" in result) {
+      return NextResponse.json({ error: result.error }, { status: result.status });
+    }
 
     return NextResponse.json(
       {
-        ...company,
-        id: company.id.toString(),
+        ...serializeCompany(result.company),
+        created: result.created,
+        pendingApproval: result.pendingApproval,
+        alreadyLinked: result.alreadyLinked,
       },
-      { status: 201 },
+      { status: result.pendingApproval ? 202 : result.created ? 201 : 200 },
     );
   } catch (error: unknown) {
     console.error("Company POST error:", error);
-
-    // 중복 사업자번호 처리
-    if (
-      error instanceof Error &&
-      "code" in error &&
-      (error as { code: string }).code === "P2002"
-    ) {
-      return NextResponse.json(
-        { error: "이미 등록된 사업자번호입니다." },
-        { status: 409 },
-      );
-    }
 
     return NextResponse.json(
       { error: "등록에 실패했습니다." },

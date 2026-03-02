@@ -3,7 +3,7 @@ import { attachAgentSession } from "@/app/lib/agent-auth";
 import { hashMagicLinkToken } from "@/app/lib/agent-magic-link";
 import prisma from "@/app/lib/prisma";
 
-const LOGIN_PATH = "/agent/auth/login";
+const LOGIN_PATH = "/agent/auth";
 
 function redirectToLoginWithError(request: NextRequest, errorCode: string) {
   const url = new URL(LOGIN_PATH, request.url);

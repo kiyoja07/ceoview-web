@@ -17,6 +17,8 @@ export async function saveRowsByIncomeType(
 ): Promise<UploadSaveResult> {
   const {
     incomeType,
+    organizationId,
+    agentUserId,
     companyId,
     fileName,
     rows,
@@ -31,11 +33,24 @@ export async function saveRowsByIncomeType(
       paymentYm: toYearMonth(paymentYm),
       payDate: payDateStr ? new Date(payDateStr) : new Date(),
     };
-    return saveEarnedIncome(companyId, fileName, rows, overrides);
+    return saveEarnedIncome(
+      organizationId,
+      agentUserId,
+      companyId,
+      fileName,
+      rows,
+      overrides,
+    );
   }
 
   if (incomeType === "OTHER_INCOME_LABOR") {
-    return saveOtherIncomeLabor(companyId, fileName, rows);
+    return saveOtherIncomeLabor(
+      organizationId,
+      agentUserId,
+      companyId,
+      fileName,
+      rows,
+    );
   }
 
   const overrides: IncomeWithYmOverrides = {
@@ -44,8 +59,22 @@ export async function saveRowsByIncomeType(
   };
 
   if (incomeType === "BUSINESS_INCOME") {
-    return saveBusinessIncome(companyId, fileName, rows, overrides);
+    return saveBusinessIncome(
+      organizationId,
+      agentUserId,
+      companyId,
+      fileName,
+      rows,
+      overrides,
+    );
   }
 
-  return saveOtherIncome(companyId, fileName, rows, overrides);
+  return saveOtherIncome(
+    organizationId,
+    agentUserId,
+    companyId,
+    fileName,
+    rows,
+    overrides,
+  );
 }

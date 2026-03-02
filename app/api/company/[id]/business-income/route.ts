@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import {
+  resolveUploadForCompanyView,
+  serializeUploadViewSelection,
+} from "@/app/lib/salary-upload-view";
 
 export async function GET(
   request: NextRequest,
@@ -28,18 +32,16 @@ export async function GET(
       );
     }
 
-    // 해당 사업자의 BUSINESS_INCOME 업로드 ID 목록
-    const uploadIds = await prisma.upload.findMany({
-      where: {
-        companyId,
-        type: "BUSINESS_INCOME",
-      },
-      select: { id: true },
-    });
+    const uploadView = await resolveUploadForCompanyView(
+      request,
+      companyId,
+      "BUSINESS_INCOME",
+    );
 
-    if (uploadIds.length === 0) {
+    if (!uploadView.uploadId) {
       return NextResponse.json({
         company: serialize(entity),
+        publication: serializeUploadViewSelection(uploadView),
         rows: [],
         total: 0,
         page,
@@ -48,7 +50,7 @@ export async function GET(
     }
 
     const where: Record<string, unknown> = {
-      uploadId: { in: uploadIds.map((u) => u.id) },
+      uploadId: uploadView.uploadId,
     };
 
     if (accrualYm) {
@@ -74,6 +76,7 @@ export async function GET(
 
     return NextResponse.json({
       company: serialize(entity),
+      publication: serializeUploadViewSelection(uploadView),
       rows: rows.map(serialize),
       total,
       page,

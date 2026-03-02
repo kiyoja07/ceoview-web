@@ -11,12 +11,10 @@ import type {
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow";
 
-type MessageState =
-  | {
-      type: "success" | "error";
-      text: string;
-    }
-  | null;
+type MessageState = {
+  type: "success" | "error";
+  text: string;
+} | null;
 
 function formatOrganizationNumber(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 10);
@@ -41,7 +39,9 @@ export default function AgentInviteAcceptPage() {
 
   const [previewLoading, setPreviewLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [preview, setPreview] = useState<AgentInvitePreviewResponse | null>(null);
+  const [preview, setPreview] = useState<AgentInvitePreviewResponse | null>(
+    null,
+  );
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -172,7 +172,7 @@ export default function AgentInviteAcceptPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+    <div className="min-h-screen bg-agent-bg">
       <div className="mx-auto flex min-h-screen max-w-xl items-center p-6">
         <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
           <div className="mb-6">

@@ -26,6 +26,7 @@ function createBaseFormData(params: UseSalaryUploadParams) {
 export function useSalaryUpload(params: UseSalaryUploadParams) {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
   const [message, setMessage] = useState<MessageState>(null);
   const [result, setResult] = useState<ParsedResult | null>(null);
 
@@ -107,7 +108,7 @@ export function useSalaryUpload(params: UseSalaryUploadParams) {
         setResult(data);
         setMessage({
           type: "success",
-          text: `DB 저장 완료 — ${data.savedCount}건이 저장되었습니다.`,
+          text: `DB 저장 완료 — ${data.savedCount}건이 저장되었습니다. 이제 발행하면 회사에서 조회할 수 있습니다.`,
         });
       } else {
         setMessage({
@@ -122,13 +123,58 @@ export function useSalaryUpload(params: UseSalaryUploadParams) {
     }
   };
 
+  const handlePublish = async () => {
+    if (!result?.saved || result.published || !result.uploadId) return;
+
+    setPublishing(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch("/api/agent/salary/upload/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uploadId: result.uploadId }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.published) {
+        setResult((prev) =>
+          prev
+            ? {
+                ...prev,
+                published: true,
+                companyVisible: true,
+                publishStatus: "PUBLISHED",
+              }
+            : prev,
+        );
+        setMessage({
+          type: "success",
+          text: "발행 완료 — 이제 회사에서 해당 데이터를 조회할 수 있습니다.",
+        });
+      } else {
+        setMessage({
+          type: "error",
+          text: data.error || "발행에 실패했습니다.",
+        });
+      }
+    } catch {
+      setMessage({ type: "error", text: "서버 연결에 실패했습니다." });
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   return {
     uploading,
     saving,
+    publishing,
     message,
     result,
     resetFeedback,
     handleUpload,
     handleSave,
+    handlePublish,
   };
 }

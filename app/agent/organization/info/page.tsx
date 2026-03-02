@@ -19,6 +19,8 @@ interface BizStatusData {
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow";
+const readOnlyDisplayBase =
+  "rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-500";
 
 function formatBusinessNumber(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 10);
@@ -140,14 +142,14 @@ export default function AgentInfoPage() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+      <div className="flex min-h-screen items-center justify-center bg-agent-bg">
         <div className="text-sm text-gray-500">정보 확인 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+    <div className="min-h-screen bg-agent-bg">
       <div className="mx-auto max-w-2xl p-6 lg:p-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
@@ -361,7 +363,7 @@ export default function AgentInfoPage() {
             <label className="mb-1.5 block text-sm font-medium text-gray-700">
               사업자구분
             </label>
-            <div className="rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-700">
+            <div className={readOnlyDisplayBase}>
               {businessType === "INDIVIDUAL" ? "개인" : "법인"}
             </div>
             <p className="mt-1 text-xs text-gray-400">

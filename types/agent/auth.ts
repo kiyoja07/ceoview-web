@@ -42,6 +42,11 @@ export type SignupBody = {
   phone?: string | null;
 };
 
+export type AgentProfileUpdateBody = {
+  name?: string;
+  phone?: string | null;
+};
+
 export type CreateOrganizationBody = {
   organizationNumber?: string;
   businessType?: BusinessType;
@@ -49,6 +54,8 @@ export type CreateOrganizationBody = {
   representativeName?: string | null;
   openingDate?: string | null;
   address?: string | null;
+  userName?: string;
+  userPhone?: string | null;
 };
 
 export type ApiErrorResponse = {

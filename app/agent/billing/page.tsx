@@ -131,7 +131,7 @@ export default function AgentBillingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+    <div className="min-h-screen bg-agent-bg">
       <div className="mx-auto max-w-5xl p-6 lg:p-8">
         <div className="mb-7 flex items-start justify-between gap-3">
           <div>
