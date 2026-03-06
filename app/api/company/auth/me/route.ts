@@ -57,7 +57,10 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+      return NextResponse.json(
+        { error: "인증이 필요합니다." },
+        { status: 401 },
+      );
     }
 
     return NextResponse.json({
@@ -116,6 +119,55 @@ export async function PATCH(request: NextRequest) {
         { error: "이름은 비워둘 수 없습니다." },
         { status: 400 },
       );
+    }
+
+    // 휴대폰 번호 변경 시 인증 확인
+    const currentUser = await prisma.companyUser.findUnique({
+      where: { id: auth.user.id },
+      select: { phone: true },
+    });
+    const currentPhone = currentUser?.phone ?? null;
+    const normalizedNewPhone = phone ? phone.replace(/\D/g, "") : null;
+    const normalizedCurrentPhone = currentPhone
+      ? currentPhone.replace(/\D/g, "")
+      : null;
+
+    const phoneChanged = normalizedNewPhone !== normalizedCurrentPhone;
+
+    if (phoneChanged && normalizedNewPhone) {
+      const verificationId = body.phoneVerificationId;
+      if (!verificationId) {
+        return NextResponse.json(
+          { error: "휴대폰 인증이 필요합니다." },
+          { status: 400 },
+        );
+      }
+
+      let verificationIdBigInt: bigint;
+      try {
+        verificationIdBigInt = BigInt(verificationId);
+      } catch {
+        return NextResponse.json(
+          { error: "잘못된 인증 정보입니다." },
+          { status: 400 },
+        );
+      }
+
+      const verification = await prisma.phoneVerificationCode.findUnique({
+        where: { id: verificationIdBigInt },
+      });
+
+      if (
+        !verification ||
+        verification.companyUserId !== auth.user.id ||
+        verification.phone !== normalizedNewPhone ||
+        !verification.verifiedAt
+      ) {
+        return NextResponse.json(
+          { error: "휴대폰 인증을 완료해주세요." },
+          { status: 400 },
+        );
+      }
     }
 
     const updated = await prisma.companyUser.update({

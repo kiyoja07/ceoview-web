@@ -38,9 +38,8 @@ export default function CompanyDashboardPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<CompanyAuthMeResponse | null>(null);
-  const [pendingRequest, setPendingRequest] = useState<PendingTransferRequest | null>(
-    null,
-  );
+  const [pendingRequest, setPendingRequest] =
+    useState<PendingTransferRequest | null>(null);
   const [accepting, setAccepting] = useState(false);
   const [transferMessage, setTransferMessage] = useState<string | null>(null);
 
@@ -60,16 +59,21 @@ export default function CompanyDashboardPage() {
         }
         setProfile(data);
 
-        const transferRes = await fetch("/api/company/auth/agent-transfer-request", {
-          cache: "no-store",
-        });
+        const transferRes = await fetch(
+          "/api/company/auth/agent-transfer-request",
+          {
+            cache: "no-store",
+          },
+        );
         if (transferRes.ok) {
           const transferData = (await transferRes.json()) as {
             hasPendingRequest: boolean;
             request?: PendingTransferRequest;
           };
           setPendingRequest(
-            transferData.hasPendingRequest ? (transferData.request ?? null) : null,
+            transferData.hasPendingRequest
+              ? (transferData.request ?? null)
+              : null,
           );
         }
       } finally {
@@ -82,7 +86,10 @@ export default function CompanyDashboardPage() {
 
   const companyName = useMemo(() => {
     if (!profile?.company) return "";
-    return profile.company.businessName || formatBusinessNumber(profile.company.businessNumber);
+    return (
+      profile.company.businessName ||
+      formatBusinessNumber(profile.company.businessNumber)
+    );
   }, [profile]);
 
   const handleAcceptTransfer = async () => {
@@ -127,27 +134,21 @@ export default function CompanyDashboardPage() {
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
       <div className="mx-auto max-w-4xl p-6 lg:p-8">
         <div className="mb-7 flex items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-              Company 대시보드
-            </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              {profile.name} 님, {companyName}
-            </p>
-          </div>
-          <Link
-            href="/company/auth/logout"
-            className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-50"
-          >
-            로그아웃
-          </Link>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+            {profile.company.businessName || "회사"} 대시보드
+          </h1>
         </div>
 
         <div className="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
           <p className="text-sm font-medium text-gray-700">회사 정보</p>
           <div className="mt-3 grid grid-cols-1 gap-2 text-sm text-gray-600 sm:grid-cols-2">
-            <p>사업자번호: {formatBusinessNumber(profile.company.businessNumber)}</p>
-            <p>사업자구분: {profile.company.businessType === "INDIVIDUAL" ? "개인" : "법인"}</p>
+            <p>
+              사업자번호: {formatBusinessNumber(profile.company.businessNumber)}
+            </p>
+            <p>
+              사업자구분:{" "}
+              {profile.company.businessType === "INDIVIDUAL" ? "개인" : "법인"}
+            </p>
             <p>상호명: {profile.company.businessName || "-"}</p>
             <p>대표자명: {profile.company.representativeName || "-"}</p>
           </div>
@@ -166,7 +167,9 @@ export default function CompanyDashboardPage() {
             <p className="mt-1 text-sm text-amber-800">
               요청한 에이전트:{" "}
               {pendingRequest.toOrganization.organizationName ||
-                formatOrganizationNumber(pendingRequest.toOrganization.organizationNumber)}
+                formatOrganizationNumber(
+                  pendingRequest.toOrganization.organizationNumber,
+                )}
             </p>
             <button
               type="button"

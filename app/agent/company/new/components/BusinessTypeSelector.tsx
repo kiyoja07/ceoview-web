@@ -11,6 +11,8 @@ export default function BusinessTypeSelector({
   onChange,
   isAutoDetected,
 }: BusinessTypeSelectorProps) {
+  // 사업자 구분은 항상 사업자번호에 의해 자동 결정되므로 수동 변경 불가
+  const isDisabled = true;
   const options = [
     { value: "INDIVIDUAL" as const, label: "개인", icon: "👤" },
     { value: "CORPORATION" as const, label: "법인", icon: "🏢" },
@@ -25,14 +27,10 @@ export default function BusinessTypeSelector({
         {options.map((option) => (
           <label
             key={option.value}
-            className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 transition-all ${
-              isAutoDetected ? "cursor-default" : "cursor-pointer"
-            } ${
+            className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 transition-all cursor-default ${
               businessType === option.value
                 ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500/20"
-                : isAutoDetected
-                  ? "border-gray-100 bg-gray-50 opacity-50"
-                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                : "border-gray-100 bg-gray-50 opacity-50"
             }`}
           >
             <input
@@ -40,10 +38,8 @@ export default function BusinessTypeSelector({
               name="businessType"
               value={option.value}
               checked={businessType === option.value}
-              onChange={() => {
-                if (!isAutoDetected) onChange(option.value);
-              }}
-              disabled={isAutoDetected}
+              onChange={() => {}}
+              disabled={isDisabled}
               className="sr-only"
             />
             <span className="text-lg">{option.icon}</span>
@@ -59,6 +55,9 @@ export default function BusinessTypeSelector({
           </label>
         ))}
       </div>
+      <p className="mt-1 text-xs text-gray-400">
+        사업자구분은 사업자번호에 따라 자동 설정됩니다.
+      </p>
     </div>
   );
 }

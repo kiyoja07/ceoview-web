@@ -63,9 +63,14 @@ export type CompanyApiErrorResponse = {
   code?: string;
 };
 
-export type CompanyLogoutState = "confirm" | "logging-out" | "success" | "error";
+export type CompanyLogoutState =
+  | "confirm"
+  | "logging-out"
+  | "success"
+  | "error";
 
 export type CompanyProfileUpdateBody = {
   name?: string;
   phone?: string | null;
+  phoneVerificationId?: string;
 };

@@ -8,6 +8,7 @@ export interface AgentCompanyListItem {
   representativeName: string | null;
   openingDate: string | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface AgentCompanyPaginatedResponse {

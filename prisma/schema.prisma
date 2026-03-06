@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  output   = "../app/generated/prisma-client"
 }
 
 datasource db {
@@ -240,8 +240,9 @@ model CompanyUser {
   isMaster       Boolean       @default(false) @map("is_master")
   isActive       Boolean       @default(true) @map("is_active")
 
-  agentLinks      AgentCompanyCustomer[]
-  magicLinkTokens CompanyMagicLinkToken[]
+  agentLinks             AgentCompanyCustomer[]
+  magicLinkTokens        CompanyMagicLinkToken[]
+  phoneVerificationCodes PhoneVerificationCode[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -267,6 +268,25 @@ model CompanyMagicLinkToken {
   @@index([companyUserId, expiresAt])
   @@index([expiresAt])
   @@map("company_magic_link_token")
+}
+
+// 휴대폰 인증 코드
+model PhoneVerificationCode {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  companyUserId BigInt      @map("company_user_id") @db.UnsignedBigInt
+  companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
+
+  phone      String    @db.VarChar(30)
+  code       String    @db.VarChar(6)
+  expiresAt  DateTime  @map("expires_at")
+  verifiedAt DateTime? @map("verified_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([companyUserId, phone, expiresAt])
+  @@index([expiresAt])
+  @@map("phone_verification_code")
 }
 
 // 거래처 사용자 초대 이력

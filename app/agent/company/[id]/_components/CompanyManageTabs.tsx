@@ -9,7 +9,7 @@ function getTabs(companyId: string) {
     { href: `/agent/company/${companyId}/users`, label: "거래처 사용자 관리" },
     {
       href: `/agent/company/${companyId}/salary-publication`,
-      label: "급여 발행 관리",
+      label: "급여 관리",
     },
   ] as const;
 }

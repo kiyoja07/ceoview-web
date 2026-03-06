@@ -6,7 +6,6 @@ export function CompanySelect({
   companies,
   companyId,
   onChange,
-  selectedCompany,
 }: CompanySelectProps) {
   return (
     <div>
@@ -67,32 +66,17 @@ export function CompanySelect({
             <option key={company.id} value={company.id}>
               {formatBusinessNumber(company.businessNumber)}
               {company.businessName ? ` / ${company.businessName}` : ""}
+              {company.businessType === "INDIVIDUAL"
+                ? " / 개인사업자"
+                : company.businessType === "CORPORATION"
+                  ? " / 법인사업자"
+                  : ""}
               {company.representativeName
                 ? ` (${company.representativeName})`
                 : ""}
             </option>
           ))}
         </select>
-      )}
-
-      {selectedCompany && (
-        <p className="mt-1.5 text-xs text-gray-400">
-          <span
-            className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-xs font-medium ${
-              selectedCompany.businessType === "INDIVIDUAL"
-                ? "bg-sky-50 text-sky-700 ring-1 ring-sky-600/20"
-                : "bg-violet-50 text-violet-700 ring-1 ring-violet-600/20"
-            }`}
-          >
-            {selectedCompany.businessType === "INDIVIDUAL" ? "개인" : "법인"}
-          </span>
-          {selectedCompany.businessName
-            ? ` · ${selectedCompany.businessName}`
-            : ""}
-          {selectedCompany.representativeName
-            ? ` · 대표 ${selectedCompany.representativeName}`
-            : ""}
-        </p>
       )}
     </div>
   );

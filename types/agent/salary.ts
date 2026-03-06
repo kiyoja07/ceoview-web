@@ -70,6 +70,12 @@ export type CompanySelectProps = {
   selectedCompany?: Company;
 };
 
+export type FixedCompanyDisplayProps = {
+  companiesLoading: boolean;
+  fixedCompanyError: string | null;
+  selectedCompany: Company | undefined;
+};
+
 export type FileUploadFieldProps = {
   file: File | null;
   fileInputRef: RefObject<HTMLInputElement | null>;

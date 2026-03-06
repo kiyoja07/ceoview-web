@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
+import { deriveBusinessType } from "@/app/lib/business-type";
 import type { CreateOrganizationBody } from "@/types/agent/auth";
 import type { BusinessType } from "@/types/agent/company";
 

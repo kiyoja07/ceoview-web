@@ -2,6 +2,7 @@ import BizStatusResult from "./BizStatusResult";
 import { INPUT_BASE, formatBusinessNumber } from "./shared";
 import type { BizStatusData } from "./shared";
 import type { BusinessType } from "@/types/agent/company";
+import { deriveBusinessType } from "@/app/lib/business-type";
 
 interface BusinessNumberFieldProps {
   businessNumber: string;
@@ -46,10 +47,7 @@ export default function BusinessNumberField({
             onBizStatusReset();
             const d = formatted.replace(/\D/g, "");
             if (d.length >= 5) {
-              const mid = Number(d.slice(3, 5));
-              onBusinessTypeChange(
-                mid >= 80 && mid <= 89 ? "CORPORATION" : "INDIVIDUAL",
-              );
+              onBusinessTypeChange(deriveBusinessType(d));
             }
           }}
           placeholder="000-00-00000"

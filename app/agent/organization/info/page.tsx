@@ -9,13 +9,7 @@ import type {
 } from "@/types/agent/auth";
 import type { BusinessType } from "@/types/agent/company";
 import type { AgentOrganizationInfoResponse } from "@/types/agent/organization";
-
-interface BizStatusData {
-  b_stt: string;
-  b_stt_cd: string;
-  tax_type: string;
-  end_dt: string;
-}
+import { formatOpeningDate } from "@/app/agent/_components/business-form/shared";
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow";
@@ -44,10 +38,6 @@ export default function AgentInfoPage() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<AuthMessageState>(null);
-
-  const [bizValidating, setBizValidating] = useState(false);
-  const [bizStatus, setBizStatus] = useState<BizStatusData | null>(null);
-  const [bizError, setBizError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadOrganization = async () => {
@@ -106,7 +96,6 @@ export default function AgentInfoPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           organizationNumber,
-          businessType,
           organizationName: organizationName || null,
           representativeName: representativeName || null,
           openingDate: openingDate || null,
@@ -171,192 +160,14 @@ export default function AgentInfoPage() {
         >
           <div>
             <label className="mb-1.5 block text-sm font-medium text-gray-700">
-              사업자번호 <span className="text-red-500">*</span>
+              사업자번호
             </label>
-            <input
-              type="text"
-              required
-              maxLength={12}
-              value={organizationNumber}
-              onChange={(e) => {
-                const formatted = formatBusinessNumber(e.target.value);
-                setOrganizationNumber(formatted);
-                setBizStatus(null);
-                setBizError(null);
-                const d = formatted.replace(/\D/g, "");
-                if (d.length >= 5) {
-                  const mid = Number(d.slice(3, 5));
-                  setBusinessType(
-                    mid >= 80 && mid <= 89 ? "CORPORATION" : "INDIVIDUAL",
-                  );
-                }
-              }}
-              placeholder="000-00-00000"
-              className={`${inputBase} font-mono tracking-wide`}
-              disabled={!isMaster}
-            />
-            {organizationNumber && !isBusinessNumberValid && (
-              <p className="mt-1 text-xs text-amber-600">
-                사업자번호 10자리를 입력해주세요.
-              </p>
-            )}
-
-            {/* 국세청 조회 버튼 */}
-            {isBusinessNumberValid && (
-              <button
-                type="button"
-                onClick={async () => {
-                  setBizValidating(true);
-                  setBizStatus(null);
-                  setBizError(null);
-                  try {
-                    const res = await fetch("/api/agent/company/validate", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        businessNumber: organizationNumber,
-                      }),
-                    });
-                    if (!res.ok) {
-                      const err = await res.json();
-                      setBizError(err.error || "조회에 실패했습니다.");
-                      return;
-                    }
-                    const data = await res.json();
-                    setBizStatus(data as BizStatusData);
-                  } catch {
-                    setBizError("서버 연결에 실패했습니다.");
-                  } finally {
-                    setBizValidating(false);
-                  }
-                }}
-                disabled={bizValidating}
-                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {bizValidating ? (
-                  <>
-                    <svg
-                      className="h-3.5 w-3.5 animate-spin"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      />
-                    </svg>
-                    조회 중...
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="h-3.5 w-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2}
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                      />
-                    </svg>
-                    국세청 조회
-                  </>
-                )}
-              </button>
-            )}
-
-            {/* 국세청 조회 결과 */}
-            {bizStatus && (
-              <div
-                className={`mt-2 rounded-lg border px-3 py-2.5 text-xs ${
-                  bizStatus.b_stt_cd === "01"
-                    ? "border-green-200 bg-green-50 text-green-800"
-                    : bizStatus.b_stt_cd === "02"
-                      ? "border-amber-200 bg-amber-50 text-amber-800"
-                      : bizStatus.b_stt_cd === "03"
-                        ? "border-red-200 bg-red-50 text-red-800"
-                        : "border-gray-200 bg-gray-50 text-gray-800"
-                }`}
-              >
-                <div className="flex items-center gap-1.5 font-medium">
-                  {bizStatus.b_stt_cd === "01" && (
-                    <svg
-                      className="h-4 w-4 text-green-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2}
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                      />
-                    </svg>
-                  )}
-                  {bizStatus.b_stt_cd === "02" && (
-                    <svg
-                      className="h-4 w-4 text-amber-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2}
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-                      />
-                    </svg>
-                  )}
-                  {bizStatus.b_stt_cd === "03" && (
-                    <svg
-                      className="h-4 w-4 text-red-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2}
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                      />
-                    </svg>
-                  )}
-                  납세자 상태: {bizStatus.b_stt || "알 수 없음"}
-                </div>
-                <div className="mt-1 space-y-0.5 text-[11px] opacity-80">
-                  <p>과세유형: {bizStatus.tax_type || "-"}</p>
-                  {bizStatus.end_dt && (
-                    <p>
-                      폐업일:{" "}
-                      {bizStatus.end_dt.replace(
-                        /(\d{4})(\d{2})(\d{2})/,
-                        "$1-$2-$3",
-                      )}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* 국세청 조회 에러 */}
-            {bizError && (
-              <p className="mt-1.5 text-xs text-red-600">{bizError}</p>
-            )}
+            <div className={`${readOnlyDisplayBase} font-mono tracking-wide`}>
+              {organizationNumber || "-"}
+            </div>
+            <p className="mt-1 text-xs text-gray-400">
+              사업자번호는 변경할 수 없습니다.
+            </p>
           </div>
 
           <div>
@@ -405,9 +216,13 @@ export default function AgentInfoPage() {
               개업일
             </label>
             <input
-              type="date"
+              type="text"
               value={openingDate}
-              onChange={(e) => setOpeningDate(e.target.value)}
+              onChange={(e) =>
+                setOpeningDate(formatOpeningDate(e.target.value))
+              }
+              placeholder="YYYY-MM-DD"
+              maxLength={10}
               className={inputBase}
               disabled={!isMaster}
             />

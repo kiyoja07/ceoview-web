@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
+import { deriveBusinessType } from "@/app/lib/business-type";
 
 async function requireAgentAuth(request: NextRequest) {
   const userId = getAgentUserIdFromRequest(request);
@@ -80,7 +81,10 @@ export async function GET(request: NextRequest) {
     }
 
     const page = Math.max(1, Number(searchParams.get("page")) || 1);
-    const size = Math.min(100, Math.max(1, Number(searchParams.get("size")) || 50));
+    const size = Math.min(
+      100,
+      Math.max(1, Number(searchParams.get("size")) || 50),
+    );
 
     const [companies, total] = await Promise.all([
       prisma.company.findMany({
@@ -121,7 +125,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       businessNumber,
-      businessType,
       businessName,
       representativeName,
       address,
@@ -129,9 +132,9 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // 유효성 검사
-    if (!businessNumber || !businessType) {
+    if (!businessNumber) {
       return NextResponse.json(
-        { error: "사업자번호와 사업자구분은 필수입니다." },
+        { error: "사업자번호는 필수입니다." },
         { status: 400 },
       );
     }
@@ -145,12 +148,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!["INDIVIDUAL", "CORPORATION"].includes(businessType)) {
-      return NextResponse.json(
-        { error: "사업자구분은 INDIVIDUAL 또는 CORPORATION이어야 합니다." },
-        { status: 400 },
-      );
-    }
+    // 사업자구분은 사업자번호에서 자동 판별
+    const businessType = deriveBusinessType(cleanNumber);
 
     const result = await prisma.$transaction(async (tx) => {
       let company = await tx.company.findUnique({
@@ -261,7 +260,10 @@ export async function POST(request: NextRequest) {
     });
 
     if ("error" in result) {
-      return NextResponse.json({ error: result.error }, { status: result.status });
+      return NextResponse.json(
+        { error: result.error },
+        { status: result.status },
+      );
     }
 
     return NextResponse.json(

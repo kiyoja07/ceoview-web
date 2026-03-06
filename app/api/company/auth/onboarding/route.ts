@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getCompanyUserIdFromRequest } from "@/app/lib/company-auth";
 import { isCompanyProfileComplete } from "@/app/lib/company-onboarding";
+import { deriveBusinessType } from "@/app/lib/business-type";
 
 type CompanyOnboardingBody = {
   name?: string;
@@ -27,7 +28,9 @@ function parseBody(body: CompanyOnboardingBody) {
   const name = body.name?.trim() ?? "";
   const phone = body.phone?.trim() || null;
   const businessNumber = (body.businessNumber?.trim() ?? "").replace(/\D/g, "");
-  const businessType = body.businessType;
+  // 사업자구분은 사업자번호에서 자동 판별
+  const businessType =
+    businessNumber.length >= 5 ? deriveBusinessType(businessNumber) : undefined;
   const businessName = body.businessName?.trim() || null;
   const representativeName = body.representativeName?.trim() || null;
   const openingDate = body.openingDate?.trim() || null;
@@ -49,15 +52,18 @@ export async function POST(request: NextRequest) {
   try {
     const userId = getCompanyUserIdFromRequest(request);
     if (!userId) {
-      return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
+      return NextResponse.json(
+        { error: "로그인이 필요합니다." },
+        { status: 401 },
+      );
     }
 
     const body = (await request.json()) as CompanyOnboardingBody;
     const parsed = parseBody(body);
 
-    if (!parsed.name || !parsed.businessNumber || !parsed.businessType) {
+    if (!parsed.name || !parsed.businessNumber) {
       return NextResponse.json(
-        { error: "이름, 사업자번호, 사업자구분은 필수입니다." },
+        { error: "이름, 사업자번호는 필수입니다." },
         { status: 400 },
       );
     }
@@ -69,9 +75,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!["INDIVIDUAL", "CORPORATION"].includes(parsed.businessType)) {
+    // businessType은 parseBody에서 사업자번호 기반으로 자동 결정됨
+    if (!parsed.businessType) {
       return NextResponse.json(
-        { error: "사업자구분은 INDIVIDUAL 또는 CORPORATION이어야 합니다." },
+        { error: "사업자번호에서 사업자구분을 판별할 수 없습니다." },
         { status: 400 },
       );
     }
@@ -135,7 +142,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!updated) {
-      return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
+      return NextResponse.json(
+        { error: "로그인이 필요합니다." },
+        { status: 401 },
+      );
     }
 
     return NextResponse.json({

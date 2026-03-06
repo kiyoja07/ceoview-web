@@ -29,9 +29,6 @@ export default function CompanyAuthOnboardingPage() {
   const [phone, setPhone] = useState("");
 
   const [businessNumber, setBusinessNumber] = useState("");
-  const [businessType, setBusinessType] = useState<"INDIVIDUAL" | "CORPORATION">(
-    "INDIVIDUAL",
-  );
   const [businessName, setBusinessName] = useState("");
   const [representativeName, setRepresentativeName] = useState("");
   const [openingDate, setOpeningDate] = useState("");
@@ -56,7 +53,6 @@ export default function CompanyAuthOnboardingPage() {
 
         setName(data.name || "");
         setPhone(data.phone || "");
-        setBusinessType(data.company?.businessType || "INDIVIDUAL");
       } finally {
         setChecking(false);
       }
@@ -83,7 +79,6 @@ export default function CompanyAuthOnboardingPage() {
           name,
           phone,
           businessNumber,
-          businessType,
           businessName,
           representativeName,
           openingDate,
@@ -174,7 +169,9 @@ export default function CompanyAuthOnboardingPage() {
               required
               maxLength={12}
               value={businessNumber}
-              onChange={(e) => setBusinessNumber(formatBusinessNumber(e.target.value))}
+              onChange={(e) =>
+                setBusinessNumber(formatBusinessNumber(e.target.value))
+              }
               className={`${inputBase} font-mono tracking-wide`}
               placeholder="000-00-00000"
             />
@@ -182,28 +179,27 @@ export default function CompanyAuthOnboardingPage() {
 
           <div>
             <label className="mb-1.5 block text-sm font-medium text-gray-700">
-              사업자구분 <span className="text-red-500">*</span>
+              사업자구분
             </label>
-            <div className="grid grid-cols-2 gap-3">
-              {(["INDIVIDUAL", "CORPORATION"] as const).map((value) => (
-                <label
-                  key={value}
-                  className={`flex cursor-pointer items-center justify-center rounded-xl border-2 px-4 py-2.5 text-sm font-medium transition ${
-                    businessType === value
-                      ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                      : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    className="sr-only"
-                    checked={businessType === value}
-                    onChange={() => setBusinessType(value)}
-                  />
-                  {value === "INDIVIDUAL" ? "개인" : "법인"}
-                </label>
-              ))}
-            </div>
+            {(() => {
+              const digits = businessNumber.replace(/\D/g, "");
+              const mid = digits.length >= 5 ? Number(digits.slice(3, 5)) : -1;
+              const derivedType =
+                mid >= 80 && mid <= 89 ? "CORPORATION" : "INDIVIDUAL";
+              const label = derivedType === "INDIVIDUAL" ? "개인" : "법인";
+              return (
+                <>
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-500">
+                    {digits.length >= 5
+                      ? label
+                      : "사업자번호를 입력하면 자동 설정됩니다"}
+                  </div>
+                  <p className="mt-1 text-xs text-gray-400">
+                    사업자구분은 사업자번호에 따라 자동 설정됩니다.
+                  </p>
+                </>
+              );
+            })()}
           </div>
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">

@@ -16,6 +16,7 @@ import {
   CompanyListEmpty,
 } from "./_components/CompanyListStates";
 import Pagination from "./_components/Pagination";
+import OnboardingGuide from "./_components/OnboardingGuide";
 
 const PAGE_SIZE = 50;
 
@@ -79,6 +80,8 @@ export default function CompanyListPage() {
 
         {created && <CompanyCreatedToast />}
         {requested && <CompanyTransferRequestedToast />}
+
+        <OnboardingGuide />
 
         {loading ? (
           <CompanyListLoading />

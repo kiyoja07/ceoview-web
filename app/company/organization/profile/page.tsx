@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type {
   CompanyAuthMeResponse,
@@ -13,6 +13,19 @@ const inputBase =
 const readOnlyInputBase =
   "cursor-not-allowed border-gray-200 bg-gray-50 text-gray-500 focus:border-gray-200 focus:ring-0";
 
+function formatPhoneNumber(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+}
+
+function stripPhone(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+type PhoneVerifyState = "idle" | "sending" | "sent" | "verifying" | "verified";
+
 export default function CompanyOrganizationProfilePage() {
   const router = useRouter();
 
@@ -20,8 +33,43 @@ export default function CompanyOrganizationProfilePage() {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [originalPhone, setOriginalPhone] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<CompanyAuthMessageState>(null);
+
+  // 휴대폰 인증 관련 상태
+  const [verifyState, setVerifyState] = useState<PhoneVerifyState>("idle");
+  const [verificationId, setVerificationId] = useState<string | null>(null);
+  const [verifyCode, setVerifyCode] = useState("");
+  const [verifyMessage, setVerifyMessage] =
+    useState<CompanyAuthMessageState>(null);
+  const [countdown, setCountdown] = useState(0);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const phoneChanged = stripPhone(phone) !== stripPhone(originalPhone);
+  const phoneEmpty = stripPhone(phone).length === 0;
+  const needsVerification = phoneChanged && !phoneEmpty;
+  const isPhoneVerified = verifyState === "verified";
+
+  // 카운트다운 타이머
+  useEffect(() => {
+    if (countdown <= 0) {
+      if (countdownRef.current) clearInterval(countdownRef.current);
+      return;
+    }
+    countdownRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          if (countdownRef.current) clearInterval(countdownRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => {
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, [countdown]);
 
   useEffect(() => {
     const load = async () => {
@@ -40,6 +88,7 @@ export default function CompanyOrganizationProfilePage() {
 
         setName(data.name ?? "");
         setPhone(data.phone ?? "");
+        setOriginalPhone(data.phone ?? "");
         setEmail(data.email ?? "");
       } catch {
         router.replace("/company/auth/login");
@@ -51,19 +100,150 @@ export default function CompanyOrganizationProfilePage() {
     void load();
   }, [router]);
 
+  // 휴대폰 번호가 변경되면 인증 상태 초기화
+  const handlePhoneChange = (value: string) => {
+    const formatted = formatPhoneNumber(value);
+    setPhone(formatted);
+    // 번호가 바뀌면 인증 초기화
+    setVerifyState("idle");
+    setVerificationId(null);
+    setVerifyCode("");
+    setVerifyMessage(null);
+  };
+
+  // 인증번호 발송
+  const handleSendCode = async () => {
+    const digits = stripPhone(phone);
+    if (digits.length < 10) {
+      setVerifyMessage({
+        type: "error",
+        text: "올바른 휴대폰 번호를 입력해주세요.",
+      });
+      return;
+    }
+
+    setVerifyState("sending");
+    setVerifyMessage(null);
+
+    try {
+      const res = await fetch("/api/company/auth/phone-verify/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: digits }),
+      });
+
+      const data = (await res.json()) as {
+        success?: boolean;
+        verificationId?: string;
+        error?: string;
+      };
+
+      if (!res.ok) {
+        setVerifyState("idle");
+        setVerifyMessage({
+          type: "error",
+          text: data.error || "인증번호 발송에 실패했습니다.",
+        });
+        return;
+      }
+
+      setVerificationId(data.verificationId ?? null);
+      setVerifyState("sent");
+      setVerifyCode("");
+      setCountdown(180); // 3분
+      setVerifyMessage({
+        type: "success",
+        text: "인증번호가 발송되었습니다.",
+      });
+    } catch {
+      setVerifyState("idle");
+      setVerifyMessage({
+        type: "error",
+        text: "서버 연결에 실패했습니다.",
+      });
+    }
+  };
+
+  // 인증번호 확인
+  const handleConfirmCode = async () => {
+    if (!verificationId || !verifyCode.trim()) {
+      setVerifyMessage({ type: "error", text: "인증번호를 입력해주세요." });
+      return;
+    }
+
+    setVerifyState("verifying");
+    setVerifyMessage(null);
+
+    try {
+      const res = await fetch("/api/company/auth/phone-verify/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          verificationId,
+          code: verifyCode.trim(),
+        }),
+      });
+
+      const data = (await res.json()) as {
+        success?: boolean;
+        verified?: boolean;
+        error?: string;
+      };
+
+      if (!res.ok) {
+        setVerifyState("sent");
+        setVerifyMessage({
+          type: "error",
+          text: data.error || "인증 확인에 실패했습니다.",
+        });
+        return;
+      }
+
+      setVerifyState("verified");
+      setCountdown(0);
+      setVerifyMessage({
+        type: "success",
+        text: "휴대폰 인증이 완료되었습니다.",
+      });
+    } catch {
+      setVerifyState("sent");
+      setVerifyMessage({
+        type: "error",
+        text: "서버 연결에 실패했습니다.",
+      });
+    }
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    // 휴대폰 번호가 변경되었는데 인증이 안 된 경우
+    if (needsVerification && !isPhoneVerified) {
+      setMessage({
+        type: "error",
+        text: "변경된 휴대폰 번호의 인증을 완료해주세요.",
+      });
+      return;
+    }
+
     setLoading(true);
     setMessage(null);
 
     try {
+      const body: CompanyProfileUpdateBody = {
+        name,
+        phone,
+      };
+
+      // 인증 완료된 경우에만 verificationId 전달
+      if (needsVerification && isPhoneVerified && verificationId) {
+        body.phoneVerificationId = verificationId;
+      }
+
       const res = await fetch("/api/company/auth/me", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-        } satisfies CompanyProfileUpdateBody),
+        body: JSON.stringify(body),
       });
 
       const data = (await res.json()) as { error?: string };
@@ -74,6 +254,13 @@ export default function CompanyOrganizationProfilePage() {
         });
         return;
       }
+
+      // 저장 성공 시 원래 번호 업데이트, 인증 상태 초기화
+      setOriginalPhone(phone);
+      setVerifyState("idle");
+      setVerificationId(null);
+      setVerifyCode("");
+      setVerifyMessage(null);
 
       setMessage({
         type: "success",
@@ -87,6 +274,12 @@ export default function CompanyOrganizationProfilePage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatCountdown = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
   if (checking) {
@@ -126,17 +319,96 @@ export default function CompanyOrganizationProfilePage() {
             />
           </div>
 
+          {/* 휴대폰 번호 + 인증 */}
           <div>
             <label className="mb-1.5 block text-sm font-medium text-gray-700">
-              연락처
+              휴대폰 번호
             </label>
-            <input
-              type="text"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-              className={inputBase}
-              placeholder="010-0000-0000"
-            />
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={phone}
+                onChange={(event) => handlePhoneChange(event.target.value)}
+                className={`${inputBase} ${isPhoneVerified && needsVerification ? "border-emerald-400 bg-emerald-50/50" : ""}`}
+                placeholder="010-0000-0000"
+                maxLength={13}
+                readOnly={
+                  verifyState === "sending" || verifyState === "verifying"
+                }
+              />
+              {needsVerification && !isPhoneVerified && (
+                <button
+                  type="button"
+                  onClick={handleSendCode}
+                  disabled={
+                    verifyState === "sending" ||
+                    (verifyState === "sent" && countdown > 150)
+                  }
+                  className="shrink-0 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300"
+                >
+                  {verifyState === "sending"
+                    ? "발송 중..."
+                    : verifyState === "sent"
+                      ? "재발송"
+                      : "인증요청"}
+                </button>
+              )}
+              {isPhoneVerified && needsVerification && (
+                <div className="flex shrink-0 items-center rounded-lg bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-700 ring-1 ring-emerald-200">
+                  ✓ 인증완료
+                </div>
+              )}
+            </div>
+
+            {/* 인증번호 입력 필드 */}
+            {(verifyState === "sent" || verifyState === "verifying") && (
+              <div className="mt-2 flex gap-2">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    value={verifyCode}
+                    onChange={(event) =>
+                      setVerifyCode(
+                        event.target.value.replace(/\D/g, "").slice(0, 6),
+                      )
+                    }
+                    className={inputBase}
+                    placeholder="인증번호 6자리"
+                    maxLength={6}
+                  />
+                  {countdown > 0 && (
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-red-500">
+                      {formatCountdown(countdown)}
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleConfirmCode}
+                  disabled={
+                    verifyState === "verifying" ||
+                    verifyCode.length < 6 ||
+                    countdown === 0
+                  }
+                  className="shrink-0 rounded-lg bg-gray-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-900 disabled:cursor-not-allowed disabled:bg-gray-300"
+                >
+                  {verifyState === "verifying" ? "확인 중..." : "인증확인"}
+                </button>
+              </div>
+            )}
+
+            {/* 인증 관련 메시지 */}
+            {verifyMessage && (
+              <p
+                className={`mt-1.5 text-xs ${
+                  verifyMessage.type === "error"
+                    ? "text-red-600"
+                    : "text-emerald-600"
+                }`}
+              >
+                {verifyMessage.text}
+              </p>
+            )}
           </div>
 
           <div>
@@ -169,7 +441,7 @@ export default function CompanyOrganizationProfilePage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || (needsVerification && !isPhoneVerified)}
             className="inline-flex w-full items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300"
           >
             {loading ? "저장 중..." : "저장"}

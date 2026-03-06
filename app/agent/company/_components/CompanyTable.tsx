@@ -34,10 +34,10 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
               대표자명
             </th>
             <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
-              등록일
+              최근수정일시
             </th>
-            <th className="px-4 py-3 text-right text-xs font-semibold tracking-wide text-gray-500 uppercase">
-              작업
+            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
+              관리 항목
             </th>
           </tr>
         </thead>
@@ -73,7 +73,7 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
                 )}
               </td>
               <td className="px-4 py-3 tabular-nums text-gray-500">
-                {new Date(company.createdAt).toLocaleDateString("ko-KR")}
+                {new Date(company.updatedAt).toLocaleString("ko-KR")}
               </td>
               <td className="px-4 py-3 text-right">
                 <div className="inline-flex items-center gap-2">
@@ -81,19 +81,13 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
                     href={`/agent/company/${company.id}/users`}
                     className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20 transition-all hover:bg-emerald-100 active:scale-[0.97]"
                   >
-                    사용자 관리
+                    사용자
                   </Link>
                   <Link
                     href={`/agent/company/${company.id}/salary-publication`}
                     className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 ring-1 ring-amber-600/20 transition-all hover:bg-amber-100 active:scale-[0.97]"
                   >
-                    발행 관리
-                  </Link>
-                  <Link
-                    href={`/company/${company.id}/salary?page=1&accrualYm=${CURRENT_YYYYMM}&paymentYm=${CURRENT_YYYYMM}`}
-                    className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 ring-1 ring-blue-600/20 transition-all hover:bg-blue-100 active:scale-[0.97]"
-                  >
-                    급여 내역
+                    급여
                   </Link>
                 </div>
               </td>

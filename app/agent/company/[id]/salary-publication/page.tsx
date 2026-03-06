@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import PublishStatusConfirmModal from "./_components/PublishStatusConfirmModal";
+import { getCurrentYYYYMM } from "@/lib/time";
 
 type PublicationUpload = {
   pointerId?: string;
@@ -131,6 +133,8 @@ function toNumericValue(value: unknown): number | null {
   return null;
 }
 
+const CURRENT_YYYYMM = getCurrentYYYYMM();
+
 export default function AgentCompanySalaryPublicationPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -141,6 +145,11 @@ export default function AgentCompanySalaryPublicationPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoadingKey, setActionLoadingKey] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<{
+    uploadId: string;
+    publishStatus: ActionType;
+    fileName: string | null;
+  } | null>(null);
   const [previewUploadId, setPreviewUploadId] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
@@ -368,7 +377,7 @@ export default function AgentCompanySalaryPublicationPage() {
       <div className="mx-auto max-w-6xl p-6 lg:p-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            급여 발행 관리
+            급여 관리
           </h1>
           {titleCompany && (
             <p className="mt-1 text-sm text-gray-500">{titleCompany}</p>
@@ -389,7 +398,7 @@ export default function AgentCompanySalaryPublicationPage() {
             급여 엑셀 등록
           </Link>
           <Link
-            href={`/company/${companyId}/salary`}
+            href={`/company/${companyId}/salary?page=1&accrualYm=${CURRENT_YYYYMM}&paymentYm=${CURRENT_YYYYMM}`}
             className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-blue-700"
           >
             급여의 거래처용 화면 보기
@@ -491,7 +500,11 @@ export default function AgentCompanySalaryPublicationPage() {
                                 upload.publishStatus === "SAVED"
                               }
                               onClick={() =>
-                                runAction(upload.uploadId, "SAVED")
+                                setPendingAction({
+                                  uploadId: upload.uploadId,
+                                  publishStatus: "SAVED",
+                                  fileName: upload.fileName,
+                                })
                               }
                               className={`inline-flex rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
                                 upload.publishStatus === "SAVED"
@@ -509,7 +522,11 @@ export default function AgentCompanySalaryPublicationPage() {
                                 upload.publishStatus === "PUBLISHED"
                               }
                               onClick={() =>
-                                runAction(upload.uploadId, "PUBLISHED")
+                                setPendingAction({
+                                  uploadId: upload.uploadId,
+                                  publishStatus: "PUBLISHED",
+                                  fileName: upload.fileName,
+                                })
                               }
                               className={`inline-flex rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
                                 upload.publishStatus === "PUBLISHED"
@@ -539,6 +556,19 @@ export default function AgentCompanySalaryPublicationPage() {
           </div>
         )}
       </div>
+
+      {pendingAction && (
+        <PublishStatusConfirmModal
+          fileName={pendingAction.fileName}
+          publishStatus={pendingAction.publishStatus}
+          onCancel={() => setPendingAction(null)}
+          onConfirm={() => {
+            const { uploadId, publishStatus } = pendingAction;
+            setPendingAction(null);
+            runAction(uploadId, publishStatus);
+          }}
+        />
+      )}
 
       {previewUploadId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/45 p-4">

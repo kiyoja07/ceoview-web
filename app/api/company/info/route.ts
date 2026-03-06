@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getCompanyUserIdFromRequest } from "@/app/lib/company-auth";
+import { deriveBusinessType } from "@/app/lib/business-type";
 import type { CompanyInfoUpdateBody } from "@/types/company/users";
 
 async function requireCompanyMember(request: NextRequest) {
@@ -45,7 +46,9 @@ function serializeCompany(company: {
     businessType: company.businessType,
     businessName: company.businessName,
     representativeName: company.representativeName,
-    openingDate: company.openingDate ? company.openingDate.toISOString().slice(0, 10) : null,
+    openingDate: company.openingDate
+      ? company.openingDate.toISOString().slice(0, 10)
+      : null,
     address: company.address,
   };
 }
@@ -106,17 +109,8 @@ export async function PATCH(request: NextRequest) {
 
     const body = (await request.json()) as CompanyInfoUpdateBody;
 
-    const businessType = body.businessType;
-    if (
-      businessType !== undefined &&
-      businessType !== "INDIVIDUAL" &&
-      businessType !== "CORPORATION"
-    ) {
-      return NextResponse.json(
-        { error: "사업자구분이 올바르지 않습니다." },
-        { status: 400 },
-      );
-    }
+    // businessType은 클라이언트 입력을 무시하고, 사업자번호에서 자동 판별
+    // (사업자번호는 변경 불가이므로 DB에서 현재 값을 조회하여 판별)
 
     const businessName = body.businessName?.trim() || null;
     const representativeName = body.representativeName?.trim() || null;
@@ -133,7 +127,6 @@ export async function PATCH(request: NextRequest) {
     const updated = await prisma.company.update({
       where: { id: auth.companyId },
       data: {
-        businessType,
         businessName,
         representativeName,
         openingDate: openingDateRaw ? new Date(openingDateRaw) : null,

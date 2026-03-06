@@ -6,9 +6,10 @@ import { useEffect, useState } from "react";
 import type { HeaderProfile, NavItem } from "@/types/agent/header";
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/agent/company", label: "거래처 관리" },
-  { href: "/agent/organization", label: "조직 관리" },
-  { href: "/agent/billing", label: "요금제/결제" },
+  { href: "/agent/company", label: "거래처" },
+  { href: "/agent/organization", label: "계정" },
+  { href: "/agent/salary", label: "급여" },
+  { href: "/agent/billing", label: "결제" },
 ];
 
 function isActivePath(pathname: string, href: string) {
