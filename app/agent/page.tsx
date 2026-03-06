@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function AgentHomePage() {
   return (
-    <div className="min-h-screen bg-agent-bg">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto flex min-h-screen max-w-md items-center p-6">
         <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
           <div className="mb-6 text-center">

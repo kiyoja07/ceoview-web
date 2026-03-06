@@ -38,7 +38,9 @@ function serializeCompany(company: {
   businessName: string | null;
   representativeName: string | null;
   openingDate: Date | null;
+  zipcode: string | null;
   address: string | null;
+  addressDetail: string | null;
 }) {
   return {
     id: company.id.toString(),
@@ -49,7 +51,9 @@ function serializeCompany(company: {
     openingDate: company.openingDate
       ? company.openingDate.toISOString().slice(0, 10)
       : null,
+    zipcode: company.zipcode,
     address: company.address,
+    addressDetail: company.addressDetail,
   };
 }
 
@@ -69,7 +73,9 @@ export async function GET(request: NextRequest) {
         businessName: true,
         representativeName: true,
         openingDate: true,
+        zipcode: true,
         address: true,
+        addressDetail: true,
       },
     });
 
@@ -114,7 +120,9 @@ export async function PATCH(request: NextRequest) {
 
     const businessName = body.businessName?.trim() || null;
     const representativeName = body.representativeName?.trim() || null;
+    const zipcode = body.zipcode?.trim() || null;
     const address = body.address?.trim() || null;
+    const addressDetail = body.addressDetail?.trim() || null;
     const openingDateRaw = body.openingDate?.trim() || null;
 
     if (openingDateRaw && Number.isNaN(new Date(openingDateRaw).getTime())) {
@@ -130,7 +138,9 @@ export async function PATCH(request: NextRequest) {
         businessName,
         representativeName,
         openingDate: openingDateRaw ? new Date(openingDateRaw) : null,
+        zipcode,
         address,
+        addressDetail,
       },
       select: {
         id: true,
@@ -139,7 +149,9 @@ export async function PATCH(request: NextRequest) {
         businessName: true,
         representativeName: true,
         openingDate: true,
+        zipcode: true,
         address: true,
+        addressDetail: true,
       },
     });
 

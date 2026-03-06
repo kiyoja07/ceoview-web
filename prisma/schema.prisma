@@ -92,7 +92,9 @@ model Company {
   businessName       String?   @map("business_name") @db.VarChar(200)
   representativeName String?   @map("representative_name") @db.VarChar(100)
   openingDate        DateTime? @map("opening_date") @db.Date
+  zipcode            String?   @map("zipcode") @db.VarChar(10)
   address            String?   @map("address") @db.VarChar(255)
+  addressDetail      String?   @map("address_detail") @db.VarChar(255)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

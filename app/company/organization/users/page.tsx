@@ -3,6 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { CompanyUsersResponse } from "@/types/company/users";
+import type {
+  CompanyInviteHistoryItem,
+  CompanyInviteHistoryResponse,
+} from "@/types/company/users";
 import { InviteCompanyUserModal } from "./_components/InviteCompanyUserModal";
 
 function formatBusinessNumber(value: string) {
@@ -31,6 +35,11 @@ export default function CompanyOrganizationUsersPage() {
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [inviteHistory, setInviteHistory] = useState<
+    CompanyInviteHistoryItem[]
+  >([]);
+  const [inviteHistoryLoading, setInviteHistoryLoading] = useState(false);
+  const [showInviteHistory, setShowInviteHistory] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -85,6 +94,32 @@ export default function CompanyOrganizationUsersPage() {
     void load();
   }, [refreshKey, router]);
 
+  // 초대 이력 로드
+  const loadInviteHistory = async () => {
+    setInviteHistoryLoading(true);
+    try {
+      const res = await fetch("/api/company/users/invite", {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const body = (await res.json()) as CompanyInviteHistoryResponse;
+        setInviteHistory(body.invites);
+      }
+    } catch {
+      // 조회 실패 시 무시
+    } finally {
+      setInviteHistoryLoading(false);
+    }
+  };
+
+  const handleToggleInviteHistory = () => {
+    const next = !showInviteHistory;
+    setShowInviteHistory(next);
+    if (next && inviteHistory.length === 0) {
+      void loadInviteHistory();
+    }
+  };
+
   const companyLabel = useMemo(() => {
     if (!data) return "";
     return (
@@ -131,7 +166,7 @@ export default function CompanyOrganizationUsersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-6xl p-6 lg:p-8">
         <div className="mb-7 flex items-start justify-between gap-3">
           <div>
@@ -317,6 +352,113 @@ export default function CompanyOrganizationUsersPage() {
               </div>
             )}
           </>
+        )}
+
+        {/* 초대 이력 섹션 */}
+        {data && (
+          <section className="mt-8">
+            <button
+              type="button"
+              onClick={handleToggleInviteHistory}
+              className="mb-4 flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition"
+            >
+              <svg
+                className={`h-4 w-4 transition-transform ${showInviteHistory ? "rotate-90" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+              초대 이력
+            </button>
+
+            {showInviteHistory && (
+              <>
+                {inviteHistoryLoading ? (
+                  <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
+                    <p className="text-sm text-gray-500">
+                      초대 이력을 불러오는 중...
+                    </p>
+                  </div>
+                ) : inviteHistory.length === 0 ? (
+                  <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
+                    <p className="text-sm text-gray-500">
+                      초대 이력이 없습니다.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-950/5">
+                    <table className="w-full text-sm">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            연락처
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            권한
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            초대자
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            상태
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                            초대일
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {inviteHistory.map((inv) => (
+                          <tr key={inv.id}>
+                            <td className="px-4 py-3">
+                              <p className="text-gray-900">{inv.contact}</p>
+                              <p className="text-xs text-gray-400">
+                                {inv.contactType === "email"
+                                  ? "이메일"
+                                  : "휴대폰"}
+                              </p>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                                {inv.role === "master" ? "MASTER" : "MEMBER"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <p className="text-gray-900">{inv.inviterName}</p>
+                              <p className="text-xs text-gray-400">
+                                {inv.inviterEmail}
+                              </p>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span
+                                className={`rounded-full px-2 py-1 text-xs font-medium ${
+                                  inv.isExpired
+                                    ? "bg-gray-100 text-gray-500"
+                                    : "bg-blue-50 text-blue-700"
+                                }`}
+                              >
+                                {inv.isExpired ? "만료됨" : "대기 중"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-gray-600">
+                              {formatDate(inv.createdAt)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            )}
+          </section>
         )}
       </div>
 

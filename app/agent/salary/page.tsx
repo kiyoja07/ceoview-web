@@ -101,7 +101,7 @@ export default function SalaryDashboardPage() {
   }, [companies]);
 
   return (
-    <div className="min-h-screen bg-agent-bg">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-5xl p-6 lg:p-8">
         {/* Page header */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

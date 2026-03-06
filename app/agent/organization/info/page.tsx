@@ -131,25 +131,25 @@ export default function AgentInfoPage() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-agent-bg">
+      <div className="flex min-h-screen items-center justify-center bg-app-bg">
         <div className="text-sm text-gray-500">정보 확인 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-agent-bg">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-2xl p-6 lg:p-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            조직 정보 변경
+            회사 정보 변경
           </h1>
           <p className="text-sm text-gray-500">
-            내 조직 정보를 조회하고 수정할 수 있습니다.
+            내 회사 정보를 조회하고 수정할 수 있습니다.
           </p>
           {!isMaster && !checking && (
             <p className="mt-1 text-xs text-amber-600">
-              조직 정보 수정은 마스터 권한이 필요합니다.
+              회사 정보 수정은 마스터 권한이 필요합니다.
             </p>
           )}
         </div>

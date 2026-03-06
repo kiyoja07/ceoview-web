@@ -35,6 +35,7 @@ export default function CompanyOrganizationProfilePage() {
   const [phone, setPhone] = useState("");
   const [originalPhone, setOriginalPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [isMaster, setIsMaster] = useState(false);
   const [message, setMessage] = useState<CompanyAuthMessageState>(null);
 
   // 휴대폰 인증 관련 상태
@@ -90,6 +91,7 @@ export default function CompanyOrganizationProfilePage() {
         setPhone(data.phone ?? "");
         setOriginalPhone(data.phone ?? "");
         setEmail(data.email ?? "");
+        setIsMaster(data.isMaster);
       } catch {
         router.replace("/company/auth/login");
       } finally {
@@ -233,6 +235,7 @@ export default function CompanyOrganizationProfilePage() {
       const body: CompanyProfileUpdateBody = {
         name,
         phone,
+        isMaster,
       };
 
       // 인증 완료된 경우에만 verificationId 전달
@@ -246,13 +249,28 @@ export default function CompanyOrganizationProfilePage() {
         body: JSON.stringify(body),
       });
 
-      const data = (await res.json()) as { error?: string };
+      const data = (await res.json()) as {
+        error?: string;
+        isMaster?: boolean;
+      };
       if (!res.ok) {
+        // 권한 변경 실패 시 서버 상태로 롤백
+        if (typeof data.isMaster === "boolean") {
+          setIsMaster(data.isMaster);
+        } else {
+          // 서버에서 isMaster 미반환 시, 마스터 관련 에러면 마스터로 복원
+          setIsMaster(true);
+        }
         setMessage({
           type: "error",
           text: data.error || "사용자 정보 변경에 실패했습니다.",
         });
         return;
+      }
+
+      // 저장 성공 시 서버 응답으로 isMaster 동기화
+      if (typeof data.isMaster === "boolean") {
+        setIsMaster(data.isMaster);
       }
 
       // 저장 성공 시 원래 번호 업데이트, 인증 상태 초기화
@@ -284,21 +302,21 @@ export default function CompanyOrganizationProfilePage() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+      <div className="flex min-h-screen items-center justify-center bg-app-bg">
         <div className="text-sm text-gray-500">정보 확인 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-2xl p-6 lg:p-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            내 정보 변경
+            내 정보 관리
           </h1>
           <p className="text-sm text-gray-500">
-            이름과 연락처를 변경할 수 있습니다.
+            내 정보를 조회하고 수정할 수 있습니다.
           </p>
         </div>
 
@@ -424,6 +442,35 @@ export default function CompanyOrganizationProfilePage() {
             />
             <p className="mt-1 text-xs text-gray-400">
               이메일은 조회만 가능하며 변경할 수 없습니다.
+            </p>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+              권한
+            </label>
+            {isMaster ? (
+              <select
+                value={isMaster ? "master" : "normal"}
+                onChange={(event) =>
+                  setIsMaster(event.target.value === "master")
+                }
+                className={inputBase}
+              >
+                <option value="master">마스터</option>
+                <option value="normal">일반</option>
+              </select>
+            ) : (
+              <div
+                className={`${readOnlyInputBase} rounded-lg border border-gray-200 px-3.5 py-2.5 text-sm`}
+              >
+                일반
+              </div>
+            )}
+            <p className="mt-1 text-xs text-gray-400">
+              {isMaster
+                ? "마스터 권한을 변경할 수 있습니다. 최소 1명의 마스터가 필요합니다."
+                : "권한은 마스터 사용자만 변경할 수 있습니다."}
             </p>
           </div>
 

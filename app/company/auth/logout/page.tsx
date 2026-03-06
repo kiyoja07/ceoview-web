@@ -37,7 +37,7 @@ export default function CompanyAuthLogoutPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto flex min-h-screen max-w-md items-center p-6">
         <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
           <h1 className="text-xl font-bold tracking-tight text-gray-900">로그아웃</h1>

@@ -120,7 +120,7 @@ export default function AgentUsersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-agent-bg">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-6xl p-6 lg:p-8">
         <div className="mb-7">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">

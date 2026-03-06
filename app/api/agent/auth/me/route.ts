@@ -54,7 +54,10 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
+      return NextResponse.json(
+        { error: "인증이 필요합니다." },
+        { status: 401 },
+      );
     }
 
     return NextResponse.json({
@@ -93,9 +96,10 @@ export async function PATCH(request: NextRequest) {
     const body = (await request.json()) as AgentProfileUpdateBody;
     const name = body.name?.trim() ?? "";
     const phoneRaw = body.phone?.trim();
-    const phone = typeof phoneRaw === "string" && phoneRaw.length > 0
-      ? phoneRaw.slice(0, 30)
-      : null;
+    const phone =
+      typeof phoneRaw === "string" && phoneRaw.length > 0
+        ? phoneRaw.slice(0, 30)
+        : null;
 
     if (!name) {
       return NextResponse.json(
@@ -104,17 +108,60 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // isMaster 변경 처리 (마스터 사용자만 가능)
+    const updateData: {
+      name: string;
+      phone: string | null;
+      isMaster?: boolean;
+    } = {
+      name: name.slice(0, 100),
+      phone,
+    };
+
+    if (typeof body.isMaster === "boolean") {
+      const self = await prisma.agentUser.findUnique({
+        where: { id: auth.user.id },
+        select: { isMaster: true, agentOrganizationId: true },
+      });
+
+      if (!self?.isMaster) {
+        return NextResponse.json(
+          { error: "권한 변경은 마스터 사용자만 가능합니다." },
+          { status: 403 },
+        );
+      }
+
+      // 마스터 → 일반 변경 시, 다른 마스터가 있는지 확인
+      if (!body.isMaster && self.agentOrganizationId) {
+        const otherMasterCount = await prisma.agentUser.count({
+          where: {
+            agentOrganizationId: self.agentOrganizationId,
+            isMaster: true,
+            isActive: true,
+            id: { not: auth.user.id },
+          },
+        });
+
+        if (otherMasterCount === 0) {
+          return NextResponse.json(
+            { error: "최소 1명의 마스터 사용자가 필요합니다." },
+            { status: 400 },
+          );
+        }
+      }
+
+      updateData.isMaster = body.isMaster;
+    }
+
     const updated = await prisma.agentUser.update({
       where: { id: auth.user.id },
-      data: {
-        name: name.slice(0, 100),
-        phone,
-      },
+      data: updateData,
       select: {
         id: true,
         email: true,
         name: true,
         phone: true,
+        isMaster: true,
       },
     });
 
@@ -123,6 +170,7 @@ export async function PATCH(request: NextRequest) {
       email: updated.email,
       name: updated.name,
       phone: updated.phone,
+      isMaster: updated.isMaster,
     });
   } catch (error) {
     console.error("Agent me PATCH error:", error);

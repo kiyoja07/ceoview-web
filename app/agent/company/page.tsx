@@ -74,7 +74,7 @@ export default function CompanyListPage() {
   );
 
   return (
-    <div className="min-h-screen bg-agent-bg">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-5xl p-6 lg:p-8">
         <CompanyListHeader count={!loading && !error ? total : null} />
 

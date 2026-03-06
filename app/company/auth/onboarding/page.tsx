@@ -108,14 +108,14 @@ export default function CompanyAuthOnboardingPage() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+      <div className="flex min-h-screen items-center justify-center bg-app-bg">
         <div className="text-sm text-gray-500">세션 확인 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-2xl p-6 lg:p-8">
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">

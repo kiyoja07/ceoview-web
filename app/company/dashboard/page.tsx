@@ -116,7 +116,7 @@ export default function CompanyDashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+      <div className="flex min-h-screen items-center justify-center bg-app-bg">
         <p className="text-sm text-gray-500">사용자 정보를 불러오는 중...</p>
       </div>
     );
@@ -124,34 +124,22 @@ export default function CompanyDashboardPage() {
 
   if (!profile?.company) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+      <div className="flex min-h-screen items-center justify-center bg-app-bg">
         <p className="text-sm text-gray-500">회사 정보를 확인할 수 없습니다.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-4xl p-6 lg:p-8">
         <div className="mb-7 flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            {profile.company.businessName || "회사"} 대시보드
+            {profile.company.businessName || "회사"}{" "}
+            <span className="text-base text-gray-600">
+              ({formatBusinessNumber(profile.company.businessNumber)}){" "}
+            </span>
           </h1>
-        </div>
-
-        <div className="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
-          <p className="text-sm font-medium text-gray-700">회사 정보</p>
-          <div className="mt-3 grid grid-cols-1 gap-2 text-sm text-gray-600 sm:grid-cols-2">
-            <p>
-              사업자번호: {formatBusinessNumber(profile.company.businessNumber)}
-            </p>
-            <p>
-              사업자구분:{" "}
-              {profile.company.businessType === "INDIVIDUAL" ? "개인" : "법인"}
-            </p>
-            <p>상호명: {profile.company.businessName || "-"}</p>
-            <p>대표자명: {profile.company.representativeName || "-"}</p>
-          </div>
         </div>
 
         {pendingRequest && (

@@ -93,7 +93,7 @@ export default function CompanyNewPage() {
   );
 
   return (
-    <div className="min-h-screen bg-agent-bg">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-2xl p-6 lg:p-8">
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">

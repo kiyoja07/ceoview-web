@@ -102,14 +102,14 @@ export default function AgentAuthLoginPage() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-agent-bg">
+      <div className="flex min-h-screen items-center justify-center bg-app-bg">
         <div className="text-sm text-gray-500">세션 확인 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-agent-bg">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto flex min-h-screen max-w-lg items-center p-6">
         <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
           <div className="mb-6 text-center">

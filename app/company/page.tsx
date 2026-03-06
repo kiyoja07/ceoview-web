@@ -28,7 +28,7 @@ export default function CompanyHomePage() {
   }, [router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+    <div className="flex min-h-screen items-center justify-center bg-app-bg">
       <p className="text-sm text-gray-500">이동 중...</p>
     </div>
   );

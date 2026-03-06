@@ -97,7 +97,7 @@ export default function SalaryEarnedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-450 p-6 lg:p-8">
         {/* Header */}
         <div className="mb-8">

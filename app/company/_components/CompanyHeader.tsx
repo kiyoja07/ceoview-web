@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import type { CompanyHeaderNavItem, CompanyHeaderProfile } from "@/types/company/header";
+import type {
+  CompanyHeaderNavItem,
+  CompanyHeaderProfile,
+} from "@/types/company/header";
 
 function isActivePath(pathname: string, href: string) {
   if (pathname === href) return true;
@@ -67,8 +70,9 @@ export function CompanyHeader() {
 
   const navItems: CompanyHeaderNavItem[] = [
     { href: "/company/dashboard", label: "대시보드" },
-    { href: salaryHref, label: "급여 내역" },
-    { href: "/company/organization", label: "회사 관리" },
+    { href: salaryHref, label: "급여" },
+    { href: "/company/organization/profile", label: "계정" },
+    { href: "/company/billing", label: "결제" },
   ];
 
   const companyLabel = profile?.company

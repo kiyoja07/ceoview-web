@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const TAB_ITEMS = [
-  { href: "/agent/organization/profile", label: "내 정보 변경" },
-  { href: "/agent/organization/info", label: "회사 정보 변경" },
-  { href: "/agent/organization/users", label: "회사 사용자 관리" },
+  { href: "/agent/organization/profile", label: "내 정보" },
+  { href: "/agent/organization/info", label: "회사 정보" },
+  { href: "/agent/organization/users", label: "회사 사용자" },
 ] as const;
 
 function isActivePath(pathname: string, href: string) {

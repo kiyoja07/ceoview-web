@@ -170,17 +170,61 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
+    // isMaster 변경 처리 (마스터 사용자만 가능)
+    const updateData: {
+      name: string;
+      phone: string | null;
+      isMaster?: boolean;
+    } = {
+      name: name.slice(0, 100),
+      phone,
+    };
+
+    if (typeof body.isMaster === "boolean") {
+      // 현재 사용자가 마스터인지 확인
+      const self = await prisma.companyUser.findUnique({
+        where: { id: auth.user.id },
+        select: { isMaster: true, companyId: true },
+      });
+
+      if (!self?.isMaster) {
+        return NextResponse.json(
+          { error: "권한 변경은 마스터 사용자만 가능합니다." },
+          { status: 403 },
+        );
+      }
+
+      // 마스터 → 일반으로 변경 시, 다른 마스터가 있는지 확인
+      if (!body.isMaster) {
+        const otherMasterCount = await prisma.companyUser.count({
+          where: {
+            companyId: self.companyId,
+            isMaster: true,
+            isActive: true,
+            id: { not: auth.user.id },
+          },
+        });
+
+        if (otherMasterCount === 0) {
+          return NextResponse.json(
+            { error: "최소 1명의 마스터 사용자가 필요합니다." },
+            { status: 400 },
+          );
+        }
+      }
+
+      updateData.isMaster = body.isMaster;
+    }
+
     const updated = await prisma.companyUser.update({
       where: { id: auth.user.id },
-      data: {
-        name: name.slice(0, 100),
-        phone,
-      },
+      data: updateData,
       select: {
         id: true,
         email: true,
         name: true,
         phone: true,
+        isMaster: true,
       },
     });
 
@@ -189,6 +233,7 @@ export async function PATCH(request: NextRequest) {
       email: updated.email,
       name: updated.name,
       phone: updated.phone,
+      isMaster: updated.isMaster,
     });
   } catch (error) {
     console.error("Company me PATCH error:", error);

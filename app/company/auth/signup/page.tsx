@@ -147,7 +147,7 @@ export default function CompanySignupPage() {
 
   if (verifying) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+      <div className="flex min-h-screen items-center justify-center bg-app-bg">
         <div className="text-sm text-gray-500">초대 정보 확인 중...</div>
       </div>
     );
@@ -155,7 +155,7 @@ export default function CompanySignupPage() {
 
   if (inviteError) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+      <div className="flex min-h-screen items-center justify-center bg-app-bg">
         <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 text-center">
           <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
             <svg
@@ -187,7 +187,7 @@ export default function CompanySignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto flex min-h-screen max-w-md items-center p-6">
         <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
           <div className="mb-6 text-center">

@@ -151,14 +151,14 @@ export default function AgentCompanyInfoPage() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-agent-bg">
+      <div className="flex min-h-screen items-center justify-center bg-app-bg">
         <div className="text-sm text-gray-500">거래처 정보 확인 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-agent-bg">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-2xl p-6 lg:p-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">

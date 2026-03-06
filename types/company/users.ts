@@ -53,7 +53,9 @@ export type CompanyInfoResponse = {
     businessName: string | null;
     representativeName: string | null;
     openingDate: string | null;
+    zipcode: string | null;
     address: string | null;
+    addressDetail: string | null;
   };
 };
 
@@ -62,5 +64,26 @@ export type CompanyInfoUpdateBody = {
   businessName?: string | null;
   representativeName?: string | null;
   openingDate?: string | null;
+  zipcode?: string | null;
   address?: string | null;
+  addressDetail?: string | null;
+};
+
+// ── 거래처 사용자 초대 이력 (회사 측 조회용) ──
+
+export type CompanyInviteHistoryItem = {
+  id: string;
+  contactType: string;
+  contact: string;
+  role: string;
+  inviterName: string;
+  inviterEmail: string;
+  expiresAt: string;
+  isExpired: boolean;
+  createdAt: string;
+};
+
+export type CompanyInviteHistoryResponse = {
+  invites: CompanyInviteHistoryItem[];
+  total: number;
 };

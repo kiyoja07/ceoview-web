@@ -124,14 +124,14 @@ export default function CompanyAuthLoginPage() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+      <div className="flex min-h-screen items-center justify-center bg-app-bg">
         <div className="text-sm text-gray-500">세션 확인 중...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto flex min-h-screen max-w-md items-center p-6">
         <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
           <div className="mb-6 text-center">

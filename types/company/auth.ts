@@ -73,4 +73,5 @@ export type CompanyProfileUpdateBody = {
   name?: string;
   phone?: string | null;
   phoneVerificationId?: string;
+  isMaster?: boolean;
 };

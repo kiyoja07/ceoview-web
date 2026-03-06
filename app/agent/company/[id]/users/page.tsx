@@ -124,7 +124,7 @@ export default function AgentCompanyUsersPage() {
   }, [data]);
 
   return (
-    <div className="min-h-screen bg-agent-bg">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-5xl p-6 lg:p-8">
         <div className="mb-7 flex items-start justify-between gap-3">
           <div>

@@ -4,14 +4,14 @@
   --background: #ffffff;
   --foreground: #171717;
   --agent-header: #2e394d;
-  --agent-bg: #f0f2f5;
+  --app-bg: #f0f2f5;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-agent-header: var(--agent-header);
-  --color-agent-bg: var(--agent-bg);
+  --color-app-bg: var(--app-bg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

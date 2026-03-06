@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   useParams,
@@ -42,8 +42,34 @@ export default function SalaryPage() {
   const filterAccrualYm = searchParams.get("accrualYm") ?? "";
   const filterPaymentYm = searchParams.get("paymentYm") ?? "";
 
+  // 쿼리 파라미터가 없으면 현재 년월로 기본 설정
+  useEffect(() => {
+    const hasAccrual = searchParams.has("accrualYm");
+    const hasPayment = searchParams.has("paymentYm");
+    const hasPage = searchParams.has("page");
+
+    if (!hasAccrual || !hasPayment || !hasPage) {
+      const now = new Date();
+      const currentYm = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}`;
+      const next = new URLSearchParams(searchParams.toString());
+      if (!hasPage) next.set("page", "1");
+      if (!hasAccrual) next.set("accrualYm", currentYm);
+      if (!hasPayment) next.set("paymentYm", currentYm);
+      router.replace(`${pathname}?${next.toString()}`);
+    }
+  }, [searchParams, pathname, router]);
+
   const [accrualInput, setAccrualInput] = useState(filterAccrualYm);
   const [paymentInput, setPaymentInput] = useState(filterPaymentYm);
+
+  // 쿼리 파라미터 변경 시 입력 상태 동기화
+  useEffect(() => {
+    setAccrualInput(filterAccrualYm);
+  }, [filterAccrualYm]);
+  useEffect(() => {
+    setPaymentInput(filterPaymentYm);
+  }, [filterPaymentYm]);
+
   const [statsMonths, setStatsMonths] = useState(12);
 
   const { earnedData, businessData, dailyData, otherData, loading, error } =
@@ -135,7 +161,7 @@ export default function SalaryPage() {
   const toCurrency = (value: number) => `₩ ${formatNumber(value)}`;
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+    <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-450 p-6 lg:p-8">
         <div className="mb-8">
           <div className="mb-2 flex items-center gap-3">
