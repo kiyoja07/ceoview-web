@@ -1451,6 +1451,11 @@ export type OtherIncomeFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Skip the first `n` OtherIncomes.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of OtherIncomes.
+   */
   distinct?: Prisma.OtherIncomeScalarFieldEnum | Prisma.OtherIncomeScalarFieldEnum[]
 }
 

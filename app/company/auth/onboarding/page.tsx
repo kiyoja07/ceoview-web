@@ -8,6 +8,7 @@ import type {
   CompanyAuthResponse,
   CompanyOnboardingBody,
 } from "@/types/company/auth";
+import DateInput from "@/app/_components/DateInput";
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-shadow";
@@ -234,11 +235,10 @@ export default function CompanyAuthOnboardingPage() {
               <label className="mb-1.5 block text-sm font-medium text-gray-700">
                 개업일
               </label>
-              <input
-                type="date"
+              <DateInput
                 value={openingDate}
-                onChange={(e) => setOpeningDate(e.target.value)}
-                className={inputBase}
+                onChange={setOpeningDate}
+                theme="emerald"
               />
             </div>
             <div>

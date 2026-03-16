@@ -2025,6 +2025,11 @@ export type AgentUserFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Skip the first `n` AgentUsers.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of AgentUsers.
+   */
   distinct?: Prisma.AgentUserScalarFieldEnum | Prisma.AgentUserScalarFieldEnum[]
 }
 

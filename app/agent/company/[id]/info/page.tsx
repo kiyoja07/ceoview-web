@@ -5,10 +5,11 @@ import { useParams, useRouter } from "next/navigation";
 import type { BusinessType } from "@/types/agent/company";
 import BizStatusResult from "@/app/agent/_components/business-form/BizStatusResult";
 import type { BizStatusData } from "@/app/agent/_components/business-form/shared";
-import {
-  formatBusinessNumber,
-  formatOpeningDate,
-} from "@/app/agent/_components/business-form/shared";
+import { formatBusinessNumber } from "@/app/agent/_components/business-form/shared";
+import DateInput from "@/app/_components/DateInput";
+import AddressInput, {
+  type AddressValue,
+} from "@/app/_components/AddressInput";
 
 type MessageState = { type: "success" | "error"; text: string } | null;
 
@@ -19,7 +20,9 @@ interface CompanyInfo {
   businessName: string | null;
   representativeName: string | null;
   openingDate: string | null;
+  zipcode: string | null;
   address: string | null;
+  addressDetail: string | null;
 }
 
 const inputBase =
@@ -40,7 +43,11 @@ export default function AgentCompanyInfoPage() {
   const [businessName, setBusinessName] = useState("");
   const [representativeName, setRepresentativeName] = useState("");
   const [openingDate, setOpeningDate] = useState("");
-  const [address, setAddress] = useState("");
+  const [addressValue, setAddressValue] = useState<AddressValue>({
+    zipcode: "",
+    address: "",
+    addressDetail: "",
+  });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<MessageState>(null);
@@ -84,7 +91,11 @@ export default function AgentCompanyInfoPage() {
         setBusinessName(data.businessName || "");
         setRepresentativeName(data.representativeName || "");
         setOpeningDate(data.openingDate || "");
-        setAddress(data.address || "");
+        setAddressValue({
+          zipcode: data.zipcode || "",
+          address: data.address || "",
+          addressDetail: data.addressDetail || "",
+        });
       } catch {
         setMessage({
           type: "error",
@@ -113,7 +124,9 @@ export default function AgentCompanyInfoPage() {
           businessName: businessName || null,
           representativeName: representativeName || null,
           openingDate: openingDate || null,
-          address: address || null,
+          zipcode: addressValue.zipcode || null,
+          address: addressValue.address || null,
+          addressDetail: addressValue.addressDetail || null,
         }),
       });
 
@@ -318,31 +331,19 @@ export default function AgentCompanyInfoPage() {
             <label className="mb-1.5 block text-sm font-medium text-gray-700">
               개업일
             </label>
-            <input
-              type="text"
+            <DateInput
               value={openingDate}
-              onChange={(e) =>
-                setOpeningDate(formatOpeningDate(e.target.value))
-              }
-              placeholder="YYYY-MM-DD"
-              maxLength={10}
-              className={inputBase}
+              onChange={setOpeningDate}
+              theme="blue"
             />
           </div>
 
           {/* 주소 */}
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
-              주소
-            </label>
-            <input
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="서울특별시 ..."
-              className={inputBase}
-            />
-          </div>
+          <AddressInput
+            value={addressValue}
+            onChange={setAddressValue}
+            theme="blue"
+          />
 
           {/* 메시지 */}
           {message && (

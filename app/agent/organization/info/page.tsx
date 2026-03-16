@@ -9,7 +9,10 @@ import type {
 } from "@/types/agent/auth";
 import type { BusinessType } from "@/types/agent/company";
 import type { AgentOrganizationInfoResponse } from "@/types/agent/organization";
-import { formatOpeningDate } from "@/app/agent/_components/business-form/shared";
+import DateInput from "@/app/_components/DateInput";
+import AddressInput, {
+  type AddressValue,
+} from "@/app/_components/AddressInput";
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow";
@@ -34,7 +37,11 @@ export default function AgentInfoPage() {
   const [organizationName, setOrganizationName] = useState("");
   const [representativeName, setRepresentativeName] = useState("");
   const [openingDate, setOpeningDate] = useState("");
-  const [address, setAddress] = useState("");
+  const [addressValue, setAddressValue] = useState<AddressValue>({
+    zipcode: "",
+    address: "",
+    addressDetail: "",
+  });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<AuthMessageState>(null);
@@ -71,7 +78,11 @@ export default function AgentInfoPage() {
         setOrganizationName(data.organization.organizationName || "");
         setRepresentativeName(data.organization.representativeName || "");
         setOpeningDate(data.organization.openingDate || "");
-        setAddress(data.organization.address || "");
+        setAddressValue({
+          zipcode: data.organization.zipcode || "",
+          address: data.organization.address || "",
+          addressDetail: data.organization.addressDetail || "",
+        });
       } catch {
         setMessage({
           type: "error",
@@ -99,7 +110,9 @@ export default function AgentInfoPage() {
           organizationName: organizationName || null,
           representativeName: representativeName || null,
           openingDate: openingDate || null,
-          address: address || null,
+          zipcode: addressValue.zipcode || null,
+          address: addressValue.address || null,
+          addressDetail: addressValue.addressDetail || null,
         } satisfies CreateOrganizationBody),
       });
 
@@ -215,32 +228,20 @@ export default function AgentInfoPage() {
             <label className="mb-1.5 block text-sm font-medium text-gray-700">
               개업일
             </label>
-            <input
-              type="text"
+            <DateInput
               value={openingDate}
-              onChange={(e) =>
-                setOpeningDate(formatOpeningDate(e.target.value))
-              }
-              placeholder="YYYY-MM-DD"
-              maxLength={10}
-              className={inputBase}
+              onChange={setOpeningDate}
               disabled={!isMaster}
+              theme="blue"
             />
           </div>
 
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
-              주소
-            </label>
-            <input
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="서울특별시 ..."
-              className={inputBase}
-              disabled={!isMaster}
-            />
-          </div>
+          <AddressInput
+            value={addressValue}
+            onChange={setAddressValue}
+            disabled={!isMaster}
+            theme="blue"
+          />
 
           {message && (
             <div

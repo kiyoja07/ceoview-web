@@ -1391,6 +1391,11 @@ export type AgentCompanyCustomerFindManyArgs<ExtArgs extends runtime.Types.Exten
    * Skip the first `n` AgentCompanyCustomers.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of AgentCompanyCustomers.
+   */
   distinct?: Prisma.AgentCompanyCustomerScalarFieldEnum | Prisma.AgentCompanyCustomerScalarFieldEnum[]
 }
 

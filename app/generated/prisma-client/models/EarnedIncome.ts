@@ -31,6 +31,7 @@ export type EarnedIncomeAvgAggregateOutputType = {
   uploadId: number | null
   accrualYm: number | null
   paymentYm: number | null
+  employeeId: number | null
   baseSalary: runtime.Decimal | null
   bonus: runtime.Decimal | null
   mealAllowance: runtime.Decimal | null
@@ -60,6 +61,7 @@ export type EarnedIncomeSumAggregateOutputType = {
   uploadId: bigint | null
   accrualYm: number | null
   paymentYm: number | null
+  employeeId: bigint | null
   baseSalary: runtime.Decimal | null
   bonus: runtime.Decimal | null
   mealAllowance: runtime.Decimal | null
@@ -90,6 +92,7 @@ export type EarnedIncomeMinAggregateOutputType = {
   accrualYm: number | null
   paymentYm: number | null
   payDate: Date | null
+  employeeId: bigint | null
   employeeCode: string | null
   employeeName: string | null
   department: string | null
@@ -127,6 +130,7 @@ export type EarnedIncomeMaxAggregateOutputType = {
   accrualYm: number | null
   paymentYm: number | null
   payDate: Date | null
+  employeeId: bigint | null
   employeeCode: string | null
   employeeName: string | null
   department: string | null
@@ -164,6 +168,7 @@ export type EarnedIncomeCountAggregateOutputType = {
   accrualYm: number
   paymentYm: number
   payDate: number
+  employeeId: number
   employeeCode: number
   employeeName: number
   department: number
@@ -202,6 +207,7 @@ export type EarnedIncomeAvgAggregateInputType = {
   uploadId?: true
   accrualYm?: true
   paymentYm?: true
+  employeeId?: true
   baseSalary?: true
   bonus?: true
   mealAllowance?: true
@@ -231,6 +237,7 @@ export type EarnedIncomeSumAggregateInputType = {
   uploadId?: true
   accrualYm?: true
   paymentYm?: true
+  employeeId?: true
   baseSalary?: true
   bonus?: true
   mealAllowance?: true
@@ -261,6 +268,7 @@ export type EarnedIncomeMinAggregateInputType = {
   accrualYm?: true
   paymentYm?: true
   payDate?: true
+  employeeId?: true
   employeeCode?: true
   employeeName?: true
   department?: true
@@ -298,6 +306,7 @@ export type EarnedIncomeMaxAggregateInputType = {
   accrualYm?: true
   paymentYm?: true
   payDate?: true
+  employeeId?: true
   employeeCode?: true
   employeeName?: true
   department?: true
@@ -335,6 +344,7 @@ export type EarnedIncomeCountAggregateInputType = {
   accrualYm?: true
   paymentYm?: true
   payDate?: true
+  employeeId?: true
   employeeCode?: true
   employeeName?: true
   department?: true
@@ -459,6 +469,7 @@ export type EarnedIncomeGroupByOutputType = {
   accrualYm: number
   paymentYm: number
   payDate: Date
+  employeeId: bigint | null
   employeeCode: string
   employeeName: string
   department: string | null
@@ -519,6 +530,7 @@ export type EarnedIncomeWhereInput = {
   accrualYm?: Prisma.IntFilter<"EarnedIncome"> | number
   paymentYm?: Prisma.IntFilter<"EarnedIncome"> | number
   payDate?: Prisma.DateTimeFilter<"EarnedIncome"> | Date | string
+  employeeId?: Prisma.BigIntNullableFilter<"EarnedIncome"> | bigint | number | null
   employeeCode?: Prisma.StringFilter<"EarnedIncome"> | string
   employeeName?: Prisma.StringFilter<"EarnedIncome"> | string
   department?: Prisma.StringNullableFilter<"EarnedIncome"> | string | null
@@ -549,6 +561,7 @@ export type EarnedIncomeWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"EarnedIncome"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EarnedIncome"> | Date | string
   upload?: Prisma.XOR<Prisma.UploadScalarRelationFilter, Prisma.UploadWhereInput>
+  employee?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
   itemValues?: Prisma.EarnedIncomeItemValueListRelationFilter
 }
 
@@ -558,6 +571,7 @@ export type EarnedIncomeOrderByWithRelationInput = {
   accrualYm?: Prisma.SortOrder
   paymentYm?: Prisma.SortOrder
   payDate?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrderInput | Prisma.SortOrder
   employeeCode?: Prisma.SortOrder
   employeeName?: Prisma.SortOrder
   department?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -588,6 +602,7 @@ export type EarnedIncomeOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   upload?: Prisma.UploadOrderByWithRelationInput
+  employee?: Prisma.EmployeeOrderByWithRelationInput
   itemValues?: Prisma.EarnedIncomeItemValueOrderByRelationAggregateInput
   _relevance?: Prisma.EarnedIncomeOrderByRelevanceInput
 }
@@ -602,6 +617,7 @@ export type EarnedIncomeWhereUniqueInput = Prisma.AtLeast<{
   accrualYm?: Prisma.IntFilter<"EarnedIncome"> | number
   paymentYm?: Prisma.IntFilter<"EarnedIncome"> | number
   payDate?: Prisma.DateTimeFilter<"EarnedIncome"> | Date | string
+  employeeId?: Prisma.BigIntNullableFilter<"EarnedIncome"> | bigint | number | null
   employeeCode?: Prisma.StringFilter<"EarnedIncome"> | string
   employeeName?: Prisma.StringFilter<"EarnedIncome"> | string
   department?: Prisma.StringNullableFilter<"EarnedIncome"> | string | null
@@ -632,6 +648,7 @@ export type EarnedIncomeWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"EarnedIncome"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EarnedIncome"> | Date | string
   upload?: Prisma.XOR<Prisma.UploadScalarRelationFilter, Prisma.UploadWhereInput>
+  employee?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
   itemValues?: Prisma.EarnedIncomeItemValueListRelationFilter
 }, "id" | "uploadId_employeeCode_accrualYm_paymentYm_payDate">
 
@@ -641,6 +658,7 @@ export type EarnedIncomeOrderByWithAggregationInput = {
   accrualYm?: Prisma.SortOrder
   paymentYm?: Prisma.SortOrder
   payDate?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrderInput | Prisma.SortOrder
   employeeCode?: Prisma.SortOrder
   employeeName?: Prisma.SortOrder
   department?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -686,6 +704,7 @@ export type EarnedIncomeScalarWhereWithAggregatesInput = {
   accrualYm?: Prisma.IntWithAggregatesFilter<"EarnedIncome"> | number
   paymentYm?: Prisma.IntWithAggregatesFilter<"EarnedIncome"> | number
   payDate?: Prisma.DateTimeWithAggregatesFilter<"EarnedIncome"> | Date | string
+  employeeId?: Prisma.BigIntNullableWithAggregatesFilter<"EarnedIncome"> | bigint | number | null
   employeeCode?: Prisma.StringWithAggregatesFilter<"EarnedIncome"> | string
   employeeName?: Prisma.StringWithAggregatesFilter<"EarnedIncome"> | string
   department?: Prisma.StringNullableWithAggregatesFilter<"EarnedIncome"> | string | null
@@ -752,6 +771,7 @@ export type EarnedIncomeCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   upload: Prisma.UploadCreateNestedOneWithoutEarnedRowsInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutEarnedIncomesInput
   itemValues?: Prisma.EarnedIncomeItemValueCreateNestedManyWithoutEarnedIncomeInput
 }
 
@@ -761,6 +781,7 @@ export type EarnedIncomeUncheckedCreateInput = {
   accrualYm: number
   paymentYm: number
   payDate: Date | string
+  employeeId?: bigint | number | null
   employeeCode: string
   employeeName: string
   department?: string | null
@@ -828,6 +849,7 @@ export type EarnedIncomeUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   upload?: Prisma.UploadUpdateOneRequiredWithoutEarnedRowsNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutEarnedIncomesNestedInput
   itemValues?: Prisma.EarnedIncomeItemValueUpdateManyWithoutEarnedIncomeNestedInput
 }
 
@@ -837,6 +859,7 @@ export type EarnedIncomeUncheckedUpdateInput = {
   accrualYm?: Prisma.IntFieldUpdateOperationsInput | number
   paymentYm?: Prisma.IntFieldUpdateOperationsInput | number
   payDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   employeeCode?: Prisma.StringFieldUpdateOperationsInput | string
   employeeName?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -875,6 +898,7 @@ export type EarnedIncomeCreateManyInput = {
   accrualYm: number
   paymentYm: number
   payDate: Date | string
+  employeeId?: bigint | number | null
   employeeCode: string
   employeeName: string
   department?: string | null
@@ -948,6 +972,7 @@ export type EarnedIncomeUncheckedUpdateManyInput = {
   accrualYm?: Prisma.IntFieldUpdateOperationsInput | number
   paymentYm?: Prisma.IntFieldUpdateOperationsInput | number
   payDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   employeeCode?: Prisma.StringFieldUpdateOperationsInput | string
   employeeName?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1009,6 +1034,7 @@ export type EarnedIncomeCountOrderByAggregateInput = {
   accrualYm?: Prisma.SortOrder
   paymentYm?: Prisma.SortOrder
   payDate?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrder
   employeeCode?: Prisma.SortOrder
   employeeName?: Prisma.SortOrder
   department?: Prisma.SortOrder
@@ -1045,6 +1071,7 @@ export type EarnedIncomeAvgOrderByAggregateInput = {
   uploadId?: Prisma.SortOrder
   accrualYm?: Prisma.SortOrder
   paymentYm?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrder
   baseSalary?: Prisma.SortOrder
   bonus?: Prisma.SortOrder
   mealAllowance?: Prisma.SortOrder
@@ -1075,6 +1102,7 @@ export type EarnedIncomeMaxOrderByAggregateInput = {
   accrualYm?: Prisma.SortOrder
   paymentYm?: Prisma.SortOrder
   payDate?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrder
   employeeCode?: Prisma.SortOrder
   employeeName?: Prisma.SortOrder
   department?: Prisma.SortOrder
@@ -1112,6 +1140,7 @@ export type EarnedIncomeMinOrderByAggregateInput = {
   accrualYm?: Prisma.SortOrder
   paymentYm?: Prisma.SortOrder
   payDate?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrder
   employeeCode?: Prisma.SortOrder
   employeeName?: Prisma.SortOrder
   department?: Prisma.SortOrder
@@ -1148,6 +1177,7 @@ export type EarnedIncomeSumOrderByAggregateInput = {
   uploadId?: Prisma.SortOrder
   accrualYm?: Prisma.SortOrder
   paymentYm?: Prisma.SortOrder
+  employeeId?: Prisma.SortOrder
   baseSalary?: Prisma.SortOrder
   bonus?: Prisma.SortOrder
   mealAllowance?: Prisma.SortOrder
@@ -1249,6 +1279,48 @@ export type EarnedIncomeUpdateOneRequiredWithoutItemValuesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EarnedIncomeUpdateToOneWithWhereWithoutItemValuesInput, Prisma.EarnedIncomeUpdateWithoutItemValuesInput>, Prisma.EarnedIncomeUncheckedUpdateWithoutItemValuesInput>
 }
 
+export type EarnedIncomeCreateNestedManyWithoutEmployeeInput = {
+  create?: Prisma.XOR<Prisma.EarnedIncomeCreateWithoutEmployeeInput, Prisma.EarnedIncomeUncheckedCreateWithoutEmployeeInput> | Prisma.EarnedIncomeCreateWithoutEmployeeInput[] | Prisma.EarnedIncomeUncheckedCreateWithoutEmployeeInput[]
+  connectOrCreate?: Prisma.EarnedIncomeCreateOrConnectWithoutEmployeeInput | Prisma.EarnedIncomeCreateOrConnectWithoutEmployeeInput[]
+  createMany?: Prisma.EarnedIncomeCreateManyEmployeeInputEnvelope
+  connect?: Prisma.EarnedIncomeWhereUniqueInput | Prisma.EarnedIncomeWhereUniqueInput[]
+}
+
+export type EarnedIncomeUncheckedCreateNestedManyWithoutEmployeeInput = {
+  create?: Prisma.XOR<Prisma.EarnedIncomeCreateWithoutEmployeeInput, Prisma.EarnedIncomeUncheckedCreateWithoutEmployeeInput> | Prisma.EarnedIncomeCreateWithoutEmployeeInput[] | Prisma.EarnedIncomeUncheckedCreateWithoutEmployeeInput[]
+  connectOrCreate?: Prisma.EarnedIncomeCreateOrConnectWithoutEmployeeInput | Prisma.EarnedIncomeCreateOrConnectWithoutEmployeeInput[]
+  createMany?: Prisma.EarnedIncomeCreateManyEmployeeInputEnvelope
+  connect?: Prisma.EarnedIncomeWhereUniqueInput | Prisma.EarnedIncomeWhereUniqueInput[]
+}
+
+export type EarnedIncomeUpdateManyWithoutEmployeeNestedInput = {
+  create?: Prisma.XOR<Prisma.EarnedIncomeCreateWithoutEmployeeInput, Prisma.EarnedIncomeUncheckedCreateWithoutEmployeeInput> | Prisma.EarnedIncomeCreateWithoutEmployeeInput[] | Prisma.EarnedIncomeUncheckedCreateWithoutEmployeeInput[]
+  connectOrCreate?: Prisma.EarnedIncomeCreateOrConnectWithoutEmployeeInput | Prisma.EarnedIncomeCreateOrConnectWithoutEmployeeInput[]
+  upsert?: Prisma.EarnedIncomeUpsertWithWhereUniqueWithoutEmployeeInput | Prisma.EarnedIncomeUpsertWithWhereUniqueWithoutEmployeeInput[]
+  createMany?: Prisma.EarnedIncomeCreateManyEmployeeInputEnvelope
+  set?: Prisma.EarnedIncomeWhereUniqueInput | Prisma.EarnedIncomeWhereUniqueInput[]
+  disconnect?: Prisma.EarnedIncomeWhereUniqueInput | Prisma.EarnedIncomeWhereUniqueInput[]
+  delete?: Prisma.EarnedIncomeWhereUniqueInput | Prisma.EarnedIncomeWhereUniqueInput[]
+  connect?: Prisma.EarnedIncomeWhereUniqueInput | Prisma.EarnedIncomeWhereUniqueInput[]
+  update?: Prisma.EarnedIncomeUpdateWithWhereUniqueWithoutEmployeeInput | Prisma.EarnedIncomeUpdateWithWhereUniqueWithoutEmployeeInput[]
+  updateMany?: Prisma.EarnedIncomeUpdateManyWithWhereWithoutEmployeeInput | Prisma.EarnedIncomeUpdateManyWithWhereWithoutEmployeeInput[]
+  deleteMany?: Prisma.EarnedIncomeScalarWhereInput | Prisma.EarnedIncomeScalarWhereInput[]
+}
+
+export type EarnedIncomeUncheckedUpdateManyWithoutEmployeeNestedInput = {
+  create?: Prisma.XOR<Prisma.EarnedIncomeCreateWithoutEmployeeInput, Prisma.EarnedIncomeUncheckedCreateWithoutEmployeeInput> | Prisma.EarnedIncomeCreateWithoutEmployeeInput[] | Prisma.EarnedIncomeUncheckedCreateWithoutEmployeeInput[]
+  connectOrCreate?: Prisma.EarnedIncomeCreateOrConnectWithoutEmployeeInput | Prisma.EarnedIncomeCreateOrConnectWithoutEmployeeInput[]
+  upsert?: Prisma.EarnedIncomeUpsertWithWhereUniqueWithoutEmployeeInput | Prisma.EarnedIncomeUpsertWithWhereUniqueWithoutEmployeeInput[]
+  createMany?: Prisma.EarnedIncomeCreateManyEmployeeInputEnvelope
+  set?: Prisma.EarnedIncomeWhereUniqueInput | Prisma.EarnedIncomeWhereUniqueInput[]
+  disconnect?: Prisma.EarnedIncomeWhereUniqueInput | Prisma.EarnedIncomeWhereUniqueInput[]
+  delete?: Prisma.EarnedIncomeWhereUniqueInput | Prisma.EarnedIncomeWhereUniqueInput[]
+  connect?: Prisma.EarnedIncomeWhereUniqueInput | Prisma.EarnedIncomeWhereUniqueInput[]
+  update?: Prisma.EarnedIncomeUpdateWithWhereUniqueWithoutEmployeeInput | Prisma.EarnedIncomeUpdateWithWhereUniqueWithoutEmployeeInput[]
+  updateMany?: Prisma.EarnedIncomeUpdateManyWithWhereWithoutEmployeeInput | Prisma.EarnedIncomeUpdateManyWithWhereWithoutEmployeeInput[]
+  deleteMany?: Prisma.EarnedIncomeScalarWhereInput | Prisma.EarnedIncomeScalarWhereInput[]
+}
+
 export type EarnedIncomeCreateWithoutUploadInput = {
   id?: bigint | number
   accrualYm: number
@@ -1283,6 +1355,7 @@ export type EarnedIncomeCreateWithoutUploadInput = {
   netPayment: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  employee?: Prisma.EmployeeCreateNestedOneWithoutEarnedIncomesInput
   itemValues?: Prisma.EarnedIncomeItemValueCreateNestedManyWithoutEarnedIncomeInput
 }
 
@@ -1291,6 +1364,7 @@ export type EarnedIncomeUncheckedCreateWithoutUploadInput = {
   accrualYm: number
   paymentYm: number
   payDate: Date | string
+  employeeId?: bigint | number | null
   employeeCode: string
   employeeName: string
   department?: string | null
@@ -1358,6 +1432,7 @@ export type EarnedIncomeScalarWhereInput = {
   accrualYm?: Prisma.IntFilter<"EarnedIncome"> | number
   paymentYm?: Prisma.IntFilter<"EarnedIncome"> | number
   payDate?: Prisma.DateTimeFilter<"EarnedIncome"> | Date | string
+  employeeId?: Prisma.BigIntNullableFilter<"EarnedIncome"> | bigint | number | null
   employeeCode?: Prisma.StringFilter<"EarnedIncome"> | string
   employeeName?: Prisma.StringFilter<"EarnedIncome"> | string
   department?: Prisma.StringNullableFilter<"EarnedIncome"> | string | null
@@ -1424,6 +1499,7 @@ export type EarnedIncomeCreateWithoutItemValuesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   upload: Prisma.UploadCreateNestedOneWithoutEarnedRowsInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutEarnedIncomesInput
 }
 
 export type EarnedIncomeUncheckedCreateWithoutItemValuesInput = {
@@ -1432,6 +1508,7 @@ export type EarnedIncomeUncheckedCreateWithoutItemValuesInput = {
   accrualYm: number
   paymentYm: number
   payDate: Date | string
+  employeeId?: bigint | number | null
   employeeCode: string
   employeeName: string
   department?: string | null
@@ -1514,6 +1591,7 @@ export type EarnedIncomeUpdateWithoutItemValuesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   upload?: Prisma.UploadUpdateOneRequiredWithoutEarnedRowsNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutEarnedIncomesNestedInput
 }
 
 export type EarnedIncomeUncheckedUpdateWithoutItemValuesInput = {
@@ -1522,6 +1600,7 @@ export type EarnedIncomeUncheckedUpdateWithoutItemValuesInput = {
   accrualYm?: Prisma.IntFieldUpdateOperationsInput | number
   paymentYm?: Prisma.IntFieldUpdateOperationsInput | number
   payDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
   employeeCode?: Prisma.StringFieldUpdateOperationsInput | string
   employeeName?: Prisma.StringFieldUpdateOperationsInput | string
   department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1553,11 +1632,114 @@ export type EarnedIncomeUncheckedUpdateWithoutItemValuesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type EarnedIncomeCreateWithoutEmployeeInput = {
+  id?: bigint | number
+  accrualYm: number
+  paymentYm: number
+  payDate: Date | string
+  employeeCode: string
+  employeeName: string
+  department?: string | null
+  position?: string | null
+  jobType?: string | null
+  baseSalary: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bonus: runtime.Decimal | runtime.DecimalJsLike | number | string
+  mealAllowance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  allowance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  travelExpense: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalPayment: runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionDeduction: runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsurance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsurance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareInsurance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  incomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  localIncomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsuranceAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsuranceAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidIncomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidLocalIncomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlIncomeTaxAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlLocalIncomeTaxAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalDeduction: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netPayment: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  upload: Prisma.UploadCreateNestedOneWithoutEarnedRowsInput
+  itemValues?: Prisma.EarnedIncomeItemValueCreateNestedManyWithoutEarnedIncomeInput
+}
+
+export type EarnedIncomeUncheckedCreateWithoutEmployeeInput = {
+  id?: bigint | number
+  uploadId: bigint | number
+  accrualYm: number
+  paymentYm: number
+  payDate: Date | string
+  employeeCode: string
+  employeeName: string
+  department?: string | null
+  position?: string | null
+  jobType?: string | null
+  baseSalary: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bonus: runtime.Decimal | runtime.DecimalJsLike | number | string
+  mealAllowance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  allowance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  travelExpense: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalPayment: runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionDeduction: runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsurance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsurance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareInsurance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  incomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  localIncomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsuranceAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsuranceAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidIncomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidLocalIncomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlIncomeTaxAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlLocalIncomeTaxAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalDeduction: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netPayment: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  itemValues?: Prisma.EarnedIncomeItemValueUncheckedCreateNestedManyWithoutEarnedIncomeInput
+}
+
+export type EarnedIncomeCreateOrConnectWithoutEmployeeInput = {
+  where: Prisma.EarnedIncomeWhereUniqueInput
+  create: Prisma.XOR<Prisma.EarnedIncomeCreateWithoutEmployeeInput, Prisma.EarnedIncomeUncheckedCreateWithoutEmployeeInput>
+}
+
+export type EarnedIncomeCreateManyEmployeeInputEnvelope = {
+  data: Prisma.EarnedIncomeCreateManyEmployeeInput | Prisma.EarnedIncomeCreateManyEmployeeInput[]
+  skipDuplicates?: boolean
+}
+
+export type EarnedIncomeUpsertWithWhereUniqueWithoutEmployeeInput = {
+  where: Prisma.EarnedIncomeWhereUniqueInput
+  update: Prisma.XOR<Prisma.EarnedIncomeUpdateWithoutEmployeeInput, Prisma.EarnedIncomeUncheckedUpdateWithoutEmployeeInput>
+  create: Prisma.XOR<Prisma.EarnedIncomeCreateWithoutEmployeeInput, Prisma.EarnedIncomeUncheckedCreateWithoutEmployeeInput>
+}
+
+export type EarnedIncomeUpdateWithWhereUniqueWithoutEmployeeInput = {
+  where: Prisma.EarnedIncomeWhereUniqueInput
+  data: Prisma.XOR<Prisma.EarnedIncomeUpdateWithoutEmployeeInput, Prisma.EarnedIncomeUncheckedUpdateWithoutEmployeeInput>
+}
+
+export type EarnedIncomeUpdateManyWithWhereWithoutEmployeeInput = {
+  where: Prisma.EarnedIncomeScalarWhereInput
+  data: Prisma.XOR<Prisma.EarnedIncomeUpdateManyMutationInput, Prisma.EarnedIncomeUncheckedUpdateManyWithoutEmployeeInput>
+}
+
 export type EarnedIncomeCreateManyUploadInput = {
   id?: bigint | number
   accrualYm: number
   paymentYm: number
   payDate: Date | string
+  employeeId?: bigint | number | null
   employeeCode: string
   employeeName: string
   department?: string | null
@@ -1623,11 +1805,163 @@ export type EarnedIncomeUpdateWithoutUploadInput = {
   netPayment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employee?: Prisma.EmployeeUpdateOneWithoutEarnedIncomesNestedInput
   itemValues?: Prisma.EarnedIncomeItemValueUpdateManyWithoutEarnedIncomeNestedInput
 }
 
 export type EarnedIncomeUncheckedUpdateWithoutUploadInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  accrualYm?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentYm?: Prisma.IntFieldUpdateOperationsInput | number
+  payDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  employeeCode?: Prisma.StringFieldUpdateOperationsInput | string
+  employeeName?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseSalary?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bonus?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  mealAllowance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  allowance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  travelExpense?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalPayment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionDeduction?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsurance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsurance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareInsurance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  incomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  localIncomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsuranceAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsuranceAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidIncomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidLocalIncomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlIncomeTaxAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlLocalIncomeTaxAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalDeduction?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netPayment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  itemValues?: Prisma.EarnedIncomeItemValueUncheckedUpdateManyWithoutEarnedIncomeNestedInput
+}
+
+export type EarnedIncomeUncheckedUpdateManyWithoutUploadInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  accrualYm?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentYm?: Prisma.IntFieldUpdateOperationsInput | number
+  payDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  employeeCode?: Prisma.StringFieldUpdateOperationsInput | string
+  employeeName?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseSalary?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bonus?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  mealAllowance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  allowance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  travelExpense?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalPayment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionDeduction?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsurance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsurance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareInsurance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  incomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  localIncomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsuranceAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsuranceAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidIncomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidLocalIncomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlIncomeTaxAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlLocalIncomeTaxAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalDeduction?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netPayment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type EarnedIncomeCreateManyEmployeeInput = {
+  id?: bigint | number
+  uploadId: bigint | number
+  accrualYm: number
+  paymentYm: number
+  payDate: Date | string
+  employeeCode: string
+  employeeName: string
+  department?: string | null
+  position?: string | null
+  jobType?: string | null
+  baseSalary: runtime.Decimal | runtime.DecimalJsLike | number | string
+  bonus: runtime.Decimal | runtime.DecimalJsLike | number | string
+  mealAllowance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  allowance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  travelExpense: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalPayment: runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionDeduction: runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsurance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsurance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareInsurance: runtime.Decimal | runtime.DecimalJsLike | number | string
+  incomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  localIncomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsuranceAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsuranceAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidIncomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidLocalIncomeTax: runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlIncomeTaxAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlLocalIncomeTaxAdj: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalDeduction: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netPayment: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type EarnedIncomeUpdateWithoutEmployeeInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  accrualYm?: Prisma.IntFieldUpdateOperationsInput | number
+  paymentYm?: Prisma.IntFieldUpdateOperationsInput | number
+  payDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employeeCode?: Prisma.StringFieldUpdateOperationsInput | string
+  employeeName?: Prisma.StringFieldUpdateOperationsInput | string
+  department?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  position?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  baseSalary?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  bonus?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  mealAllowance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  allowance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  travelExpense?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalPayment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionDeduction?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsurance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsurance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareInsurance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  incomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  localIncomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  healthInsuranceAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  nationalPensionAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  employmentInsuranceAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  longTermCareAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidIncomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  prepaidLocalIncomeTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlIncomeTaxAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  addlLocalIncomeTaxAdj?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalDeduction?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netPayment?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  upload?: Prisma.UploadUpdateOneRequiredWithoutEarnedRowsNestedInput
+  itemValues?: Prisma.EarnedIncomeItemValueUpdateManyWithoutEarnedIncomeNestedInput
+}
+
+export type EarnedIncomeUncheckedUpdateWithoutEmployeeInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  uploadId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   accrualYm?: Prisma.IntFieldUpdateOperationsInput | number
   paymentYm?: Prisma.IntFieldUpdateOperationsInput | number
   payDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1663,8 +1997,9 @@ export type EarnedIncomeUncheckedUpdateWithoutUploadInput = {
   itemValues?: Prisma.EarnedIncomeItemValueUncheckedUpdateManyWithoutEarnedIncomeNestedInput
 }
 
-export type EarnedIncomeUncheckedUpdateManyWithoutUploadInput = {
+export type EarnedIncomeUncheckedUpdateManyWithoutEmployeeInput = {
   id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  uploadId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   accrualYm?: Prisma.IntFieldUpdateOperationsInput | number
   paymentYm?: Prisma.IntFieldUpdateOperationsInput | number
   payDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1736,6 +2071,7 @@ export type EarnedIncomeSelect<ExtArgs extends runtime.Types.Extensions.Internal
   accrualYm?: boolean
   paymentYm?: boolean
   payDate?: boolean
+  employeeId?: boolean
   employeeCode?: boolean
   employeeName?: boolean
   department?: boolean
@@ -1766,6 +2102,7 @@ export type EarnedIncomeSelect<ExtArgs extends runtime.Types.Extensions.Internal
   createdAt?: boolean
   updatedAt?: boolean
   upload?: boolean | Prisma.UploadDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.EarnedIncome$employeeArgs<ExtArgs>
   itemValues?: boolean | Prisma.EarnedIncome$itemValuesArgs<ExtArgs>
   _count?: boolean | Prisma.EarnedIncomeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["earnedIncome"]>
@@ -1778,6 +2115,7 @@ export type EarnedIncomeSelectScalar = {
   accrualYm?: boolean
   paymentYm?: boolean
   payDate?: boolean
+  employeeId?: boolean
   employeeCode?: boolean
   employeeName?: boolean
   department?: boolean
@@ -1809,9 +2147,10 @@ export type EarnedIncomeSelectScalar = {
   updatedAt?: boolean
 }
 
-export type EarnedIncomeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uploadId" | "accrualYm" | "paymentYm" | "payDate" | "employeeCode" | "employeeName" | "department" | "position" | "jobType" | "baseSalary" | "bonus" | "mealAllowance" | "allowance" | "travelExpense" | "totalPayment" | "nationalPensionDeduction" | "healthInsurance" | "employmentInsurance" | "longTermCareInsurance" | "incomeTax" | "localIncomeTax" | "healthInsuranceAdj" | "nationalPensionAdj" | "employmentInsuranceAdj" | "longTermCareAdj" | "prepaidIncomeTax" | "prepaidLocalIncomeTax" | "addlIncomeTaxAdj" | "addlLocalIncomeTaxAdj" | "totalDeduction" | "netPayment" | "createdAt" | "updatedAt", ExtArgs["result"]["earnedIncome"]>
+export type EarnedIncomeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "uploadId" | "accrualYm" | "paymentYm" | "payDate" | "employeeId" | "employeeCode" | "employeeName" | "department" | "position" | "jobType" | "baseSalary" | "bonus" | "mealAllowance" | "allowance" | "travelExpense" | "totalPayment" | "nationalPensionDeduction" | "healthInsurance" | "employmentInsurance" | "longTermCareInsurance" | "incomeTax" | "localIncomeTax" | "healthInsuranceAdj" | "nationalPensionAdj" | "employmentInsuranceAdj" | "longTermCareAdj" | "prepaidIncomeTax" | "prepaidLocalIncomeTax" | "addlIncomeTaxAdj" | "addlLocalIncomeTaxAdj" | "totalDeduction" | "netPayment" | "createdAt" | "updatedAt", ExtArgs["result"]["earnedIncome"]>
 export type EarnedIncomeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   upload?: boolean | Prisma.UploadDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.EarnedIncome$employeeArgs<ExtArgs>
   itemValues?: boolean | Prisma.EarnedIncome$itemValuesArgs<ExtArgs>
   _count?: boolean | Prisma.EarnedIncomeCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1820,6 +2159,7 @@ export type $EarnedIncomePayload<ExtArgs extends runtime.Types.Extensions.Intern
   name: "EarnedIncome"
   objects: {
     upload: Prisma.$UploadPayload<ExtArgs>
+    employee: Prisma.$EmployeePayload<ExtArgs> | null
     itemValues: Prisma.$EarnedIncomeItemValuePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1828,6 +2168,7 @@ export type $EarnedIncomePayload<ExtArgs extends runtime.Types.Extensions.Intern
     accrualYm: number
     paymentYm: number
     payDate: Date
+    employeeId: bigint | null
     employeeCode: string
     employeeName: string
     department: string | null
@@ -2198,6 +2539,7 @@ readonly fields: EarnedIncomeFieldRefs;
 export interface Prisma__EarnedIncomeClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   upload<T extends Prisma.UploadDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UploadDefaultArgs<ExtArgs>>): Prisma.Prisma__UploadClient<runtime.Types.Result.GetResult<Prisma.$UploadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  employee<T extends Prisma.EarnedIncome$employeeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EarnedIncome$employeeArgs<ExtArgs>>): Prisma.Prisma__EmployeeClient<runtime.Types.Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   itemValues<T extends Prisma.EarnedIncome$itemValuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EarnedIncome$itemValuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EarnedIncomeItemValuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2233,6 +2575,7 @@ export interface EarnedIncomeFieldRefs {
   readonly accrualYm: Prisma.FieldRef<"EarnedIncome", 'Int'>
   readonly paymentYm: Prisma.FieldRef<"EarnedIncome", 'Int'>
   readonly payDate: Prisma.FieldRef<"EarnedIncome", 'DateTime'>
+  readonly employeeId: Prisma.FieldRef<"EarnedIncome", 'BigInt'>
   readonly employeeCode: Prisma.FieldRef<"EarnedIncome", 'String'>
   readonly employeeName: Prisma.FieldRef<"EarnedIncome", 'String'>
   readonly department: Prisma.FieldRef<"EarnedIncome", 'String'>
@@ -2458,6 +2801,11 @@ export type EarnedIncomeFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Skip the first `n` EarnedIncomes.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of EarnedIncomes.
+   */
   distinct?: Prisma.EarnedIncomeScalarFieldEnum | Prisma.EarnedIncomeScalarFieldEnum[]
 }
 
@@ -2602,6 +2950,25 @@ export type EarnedIncomeDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many EarnedIncomes to delete.
    */
   limit?: number
+}
+
+/**
+ * EarnedIncome.employee
+ */
+export type EarnedIncome$employeeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Employee
+   */
+  select?: Prisma.EmployeeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Employee
+   */
+  omit?: Prisma.EmployeeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmployeeInclude<ExtArgs> | null
+  where?: Prisma.EmployeeWhereInput
 }
 
 /**

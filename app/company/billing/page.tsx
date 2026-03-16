@@ -7,9 +7,6 @@ export default function CompanyBillingPage() {
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
             이용 요금 안내
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            서비스 이용 요금에 대한 안내입니다.
-          </p>
         </div>
 
         {/* 무료 이용 안내 */}
@@ -52,8 +49,8 @@ export default function CompanyBillingPage() {
             <ul className="mt-4 space-y-3">
               {[
                 "현재 서비스 이용에 대한 요금은 없습니다.",
-                "향후 유료 전환 시에도, 이용 요금은 담당 세무대리인이 부담합니다.",
-                "귀사에 직접 요금이 청구되는 것은 아닙니다.",
+                "향후 유료 전환 시에도, 현재 서비스의 이용 요금은 담당 세무대리인이 부담합니다.",
+                "귀사에 요금이 직접 청구되지 않습니다.",
                 "담당 세무대리인이 귀사에 특별히 제공하는 서비스입니다.",
               ].map((text) => (
                 <li key={text} className="flex items-start gap-3">

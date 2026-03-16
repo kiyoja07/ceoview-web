@@ -7,6 +7,7 @@ import type {
   ApiErrorResponse,
   AuthMessageState,
 } from "@/types/agent/auth";
+import PhoneInput, { validatePhone } from "@/app/_components/PhoneInput";
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow";
@@ -66,6 +67,13 @@ export default function AgentProfilePage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    const phoneError = validatePhone(phone);
+    if (phoneError) {
+      setMessage({ type: "error", text: phoneError });
+      return;
+    }
+
     setSaving(true);
     setMessage(null);
 
@@ -168,13 +176,7 @@ export default function AgentProfilePage() {
             <label className="mb-1.5 block text-sm font-medium text-gray-700">
               휴대폰 번호
             </label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-              placeholder="010-0000-0000"
-              className={inputBase}
-            />
+            <PhoneInput value={phone} onChange={setPhone} theme="blue" />
           </div>
 
           <div>

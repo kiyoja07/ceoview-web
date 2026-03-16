@@ -189,6 +189,12 @@ export default function CompanyDashboardPage() {
               급여 내역 보기
             </Link>
             <Link
+              href="/company/organization/employees"
+              className="inline-flex items-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100"
+            >
+              직원 관리
+            </Link>
+            <Link
               href="/company/organization"
               className="inline-flex items-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100"
             >

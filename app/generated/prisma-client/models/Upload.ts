@@ -1748,6 +1748,11 @@ export type UploadFindManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Skip the first `n` Uploads.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Uploads.
+   */
   distinct?: Prisma.UploadScalarFieldEnum | Prisma.UploadScalarFieldEnum[]
 }
 

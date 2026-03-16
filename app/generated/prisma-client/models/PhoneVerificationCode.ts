@@ -1169,6 +1169,11 @@ export type PhoneVerificationCodeFindManyArgs<ExtArgs extends runtime.Types.Exte
    * Skip the first `n` PhoneVerificationCodes.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of PhoneVerificationCodes.
+   */
   distinct?: Prisma.PhoneVerificationCodeScalarFieldEnum | Prisma.PhoneVerificationCodeScalarFieldEnum[]
 }
 

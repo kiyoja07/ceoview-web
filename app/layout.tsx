@@ -14,10 +14,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Admin System",
-    default: "Admin System",
+    template: "%s | 경영한눈",
+    default: "경영한눈",
   },
-  description: "Admin System SaaS",
+  description:
+    "경영한눈은 중소사업자와 스타트업을 위한 종합 경영 관리 솔루션입니다. 급여, 회계, 세무 등 다양한 기능을 통해 사업 운영을 간편하게 지원합니다.",
 };
 
 export default function RootLayout({
@@ -26,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground font-sans antialiased`}
       >

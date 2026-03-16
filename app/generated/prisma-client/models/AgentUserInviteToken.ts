@@ -1387,6 +1387,11 @@ export type AgentUserInviteTokenFindManyArgs<ExtArgs extends runtime.Types.Exten
    * Skip the first `n` AgentUserInviteTokens.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of AgentUserInviteTokens.
+   */
   distinct?: Prisma.AgentUserInviteTokenScalarFieldEnum | Prisma.AgentUserInviteTokenScalarFieldEnum[]
 }
 

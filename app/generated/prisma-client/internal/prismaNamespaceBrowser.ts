@@ -71,7 +71,12 @@ export const ModelName = {
   EarnedIncomeItemValue: 'EarnedIncomeItemValue',
   BusinessIncome: 'BusinessIncome',
   OtherIncome: 'OtherIncome',
-  DailyIncomeLabor: 'DailyIncomeLabor'
+  DailyIncomeLabor: 'DailyIncomeLabor',
+  Employee: 'Employee',
+  BusinessIncomeEmployee: 'BusinessIncomeEmployee',
+  OtherIncomeEmployee: 'OtherIncomeEmployee',
+  OtherIncomeLaborEmployee: 'OtherIncomeLaborEmployee',
+  EmployeeBankAccount: 'EmployeeBankAccount'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -313,6 +318,7 @@ export const EarnedIncomeScalarFieldEnum = {
   accrualYm: 'accrualYm',
   paymentYm: 'paymentYm',
   payDate: 'payDate',
+  employeeId: 'employeeId',
   employeeCode: 'employeeCode',
   employeeName: 'employeeName',
   department: 'department',
@@ -444,6 +450,120 @@ export const DailyIncomeLaborScalarFieldEnum = {
 } as const
 
 export type DailyIncomeLaborScalarFieldEnum = (typeof DailyIncomeLaborScalarFieldEnum)[keyof typeof DailyIncomeLaborScalarFieldEnum]
+
+
+export const EmployeeScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  jobCategory: 'jobCategory',
+  residenceType: 'residenceType',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  landlinePhone: 'landlinePhone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate',
+  zipcode: 'zipcode',
+  address: 'address',
+  addressDetail: 'addressDetail',
+  hasSpouse: 'hasSpouse',
+  dependentUnder20: 'dependentUnder20',
+  dependentOver60: 'dependentOver60',
+  deductionSenior: 'deductionSenior',
+  deductionDisabled: 'deductionDisabled',
+  deductionWomen: 'deductionWomen',
+  deductionChildren: 'deductionChildren',
+  deductionBirthAdoption: 'deductionBirthAdoption',
+  deductionSingleParent: 'deductionSingleParent',
+  employmentInsurance: 'employmentInsurance',
+  payGrade: 'payGrade',
+  nationalPension: 'nationalPension',
+  healthInsurance: 'healthInsurance',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
+
+
+export const BusinessIncomeEmployeeScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type BusinessIncomeEmployeeScalarFieldEnum = (typeof BusinessIncomeEmployeeScalarFieldEnum)[keyof typeof BusinessIncomeEmployeeScalarFieldEnum]
+
+
+export const OtherIncomeEmployeeScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type OtherIncomeEmployeeScalarFieldEnum = (typeof OtherIncomeEmployeeScalarFieldEnum)[keyof typeof OtherIncomeEmployeeScalarFieldEnum]
+
+
+export const OtherIncomeLaborEmployeeScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type OtherIncomeLaborEmployeeScalarFieldEnum = (typeof OtherIncomeLaborEmployeeScalarFieldEnum)[keyof typeof OtherIncomeLaborEmployeeScalarFieldEnum]
+
+
+export const EmployeeBankAccountScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  accountHolder: 'accountHolder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type EmployeeBankAccountScalarFieldEnum = (typeof EmployeeBankAccountScalarFieldEnum)[keyof typeof EmployeeBankAccountScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -619,4 +739,93 @@ export const DailyIncomeLaborOrderByRelevanceFieldEnum = {
 } as const
 
 export type DailyIncomeLaborOrderByRelevanceFieldEnum = (typeof DailyIncomeLaborOrderByRelevanceFieldEnum)[keyof typeof DailyIncomeLaborOrderByRelevanceFieldEnum]
+
+
+export const EmployeeOrderByRelevanceFieldEnum = {
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  jobCategory: 'jobCategory',
+  residenceType: 'residenceType',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  landlinePhone: 'landlinePhone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate',
+  zipcode: 'zipcode',
+  address: 'address',
+  addressDetail: 'addressDetail',
+  hasSpouse: 'hasSpouse',
+  dependentUnder20: 'dependentUnder20',
+  dependentOver60: 'dependentOver60',
+  deductionSenior: 'deductionSenior',
+  deductionDisabled: 'deductionDisabled',
+  deductionWomen: 'deductionWomen',
+  deductionChildren: 'deductionChildren',
+  deductionBirthAdoption: 'deductionBirthAdoption',
+  deductionSingleParent: 'deductionSingleParent',
+  employmentInsurance: 'employmentInsurance',
+  payGrade: 'payGrade',
+  nationalPension: 'nationalPension',
+  healthInsurance: 'healthInsurance'
+} as const
+
+export type EmployeeOrderByRelevanceFieldEnum = (typeof EmployeeOrderByRelevanceFieldEnum)[keyof typeof EmployeeOrderByRelevanceFieldEnum]
+
+
+export const BusinessIncomeEmployeeOrderByRelevanceFieldEnum = {
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate'
+} as const
+
+export type BusinessIncomeEmployeeOrderByRelevanceFieldEnum = (typeof BusinessIncomeEmployeeOrderByRelevanceFieldEnum)[keyof typeof BusinessIncomeEmployeeOrderByRelevanceFieldEnum]
+
+
+export const OtherIncomeEmployeeOrderByRelevanceFieldEnum = {
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate'
+} as const
+
+export type OtherIncomeEmployeeOrderByRelevanceFieldEnum = (typeof OtherIncomeEmployeeOrderByRelevanceFieldEnum)[keyof typeof OtherIncomeEmployeeOrderByRelevanceFieldEnum]
+
+
+export const OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum = {
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate'
+} as const
+
+export type OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum = (typeof OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum)[keyof typeof OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum]
+
+
+export const EmployeeBankAccountOrderByRelevanceFieldEnum = {
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  accountHolder: 'accountHolder'
+} as const
+
+export type EmployeeBankAccountOrderByRelevanceFieldEnum = (typeof EmployeeBankAccountOrderByRelevanceFieldEnum)[keyof typeof EmployeeBankAccountOrderByRelevanceFieldEnum]
 

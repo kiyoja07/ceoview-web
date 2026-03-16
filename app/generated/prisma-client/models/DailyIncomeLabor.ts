@@ -1778,6 +1778,11 @@ export type DailyIncomeLaborFindManyArgs<ExtArgs extends runtime.Types.Extension
    * Skip the first `n` DailyIncomeLabors.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of DailyIncomeLabors.
+   */
   distinct?: Prisma.DailyIncomeLaborScalarFieldEnum | Prisma.DailyIncomeLaborScalarFieldEnum[]
 }
 

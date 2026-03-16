@@ -1827,6 +1827,11 @@ export type AgentOrganizationFindManyArgs<ExtArgs extends runtime.Types.Extensio
    * Skip the first `n` AgentOrganizations.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of AgentOrganizations.
+   */
   distinct?: Prisma.AgentOrganizationScalarFieldEnum | Prisma.AgentOrganizationScalarFieldEnum[]
 }
 

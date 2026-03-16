@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import Script from "next/script";
 import type { CompanyAuthMessageState } from "@/types/company/auth";
+import AddressInput, {
+  type AddressValue,
+} from "@/app/_components/AddressInput";
+import DateInput from "@/app/_components/DateInput";
 import type {
   CompanyInfoResponse,
   CompanyInfoUpdateBody,
@@ -35,44 +38,13 @@ export default function CompanyOrganizationInfoPage() {
   const [businessName, setBusinessName] = useState("");
   const [representativeName, setRepresentativeName] = useState("");
   const [openingDate, setOpeningDate] = useState("");
-  const [zipcode, setZipcode] = useState("");
-  const [address, setAddress] = useState("");
-  const [addressDetail, setAddressDetail] = useState("");
+  const [addressValue, setAddressValue] = useState<AddressValue>({
+    zipcode: "",
+    address: "",
+    addressDetail: "",
+  });
 
   const [message, setMessage] = useState<CompanyAuthMessageState>(null);
-
-  const openPostcodePopup = useCallback(() => {
-    if (!canManage) return;
-    const daum = (
-      window as unknown as {
-        daum?: {
-          Postcode: new (opts: {
-            oncomplete: (data: {
-              zonecode: string;
-              address: string;
-              roadAddress: string;
-              jibunAddress: string;
-              userSelectedType: string;
-            }) => void;
-          }) => { open: () => void };
-        };
-      }
-    ).daum;
-    if (!daum) return;
-    new daum.Postcode({
-      oncomplete(data) {
-        setZipcode(data.zonecode);
-        setAddress(
-          data.userSelectedType === "R" ? data.roadAddress : data.jibunAddress,
-        );
-        setAddressDetail("");
-        // 상세주소 입력란에 포커스
-        setTimeout(() => {
-          document.getElementById("addressDetail")?.focus();
-        }, 100);
-      },
-    }).open();
-  }, [canManage]);
 
   useEffect(() => {
     const load = async () => {
@@ -117,9 +89,11 @@ export default function CompanyOrganizationInfoPage() {
         setBusinessName(data.company.businessName || "");
         setRepresentativeName(data.company.representativeName || "");
         setOpeningDate(data.company.openingDate || "");
-        setZipcode(data.company.zipcode || "");
-        setAddress(data.company.address || "");
-        setAddressDetail(data.company.addressDetail || "");
+        setAddressValue({
+          zipcode: data.company.zipcode || "",
+          address: data.company.address || "",
+          addressDetail: data.company.addressDetail || "",
+        });
       } catch {
         setMessage({
           type: "error",
@@ -148,9 +122,9 @@ export default function CompanyOrganizationInfoPage() {
           businessName,
           representativeName,
           openingDate,
-          zipcode,
-          address,
-          addressDetail,
+          zipcode: addressValue.zipcode,
+          address: addressValue.address,
+          addressDetail: addressValue.addressDetail,
         } satisfies CompanyInfoUpdateBody),
       });
 
@@ -173,9 +147,11 @@ export default function CompanyOrganizationInfoPage() {
       setBusinessName(data.company.businessName || "");
       setRepresentativeName(data.company.representativeName || "");
       setOpeningDate(data.company.openingDate || "");
-      setZipcode(data.company.zipcode || "");
-      setAddress(data.company.address || "");
-      setAddressDetail(data.company.addressDetail || "");
+      setAddressValue({
+        zipcode: data.company.zipcode || "",
+        address: data.company.address || "",
+        addressDetail: data.company.addressDetail || "",
+      });
 
       setMessage({
         type: "success",
@@ -201,17 +177,13 @@ export default function CompanyOrganizationInfoPage() {
 
   return (
     <div className="min-h-screen bg-app-bg">
-      <Script
-        src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
-        strategy="lazyOnload"
-      />
       <div className="mx-auto max-w-2xl p-6 lg:p-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            회사 정보 변경
+            회사 정보 변경ㄴ
           </h1>
           <p className="text-sm text-gray-500">
-            내 회사 정보를 조회하고 수정할 수 있습니다.
+            우리 회사 정보를 조회하고 수정할 수 있습니다.
           </p>
           {!canManage && (
             <p className="mt-1 text-xs text-amber-700">
@@ -283,72 +255,20 @@ export default function CompanyOrganizationInfoPage() {
             <label className="mb-1.5 block text-sm font-medium text-gray-700">
               개업일
             </label>
-            <input
-              type="text"
-              inputMode="numeric"
-              placeholder="YYYY-MM-DD"
-              maxLength={10}
+            <DateInput
               value={openingDate}
-              onChange={(event) => {
-                const raw = event.target.value
-                  .replace(/[^\d]/g, "")
-                  .slice(0, 8);
-                let formatted = raw;
-                if (raw.length > 4)
-                  formatted = `${raw.slice(0, 4)}-${raw.slice(4)}`;
-                if (raw.length > 6)
-                  formatted = `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6)}`;
-                setOpeningDate(formatted);
-              }}
-              className={inputBase}
+              onChange={setOpeningDate}
               disabled={!canManage}
+              theme="emerald"
             />
           </div>
 
-          <div className="space-y-3">
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
-              주소
-            </label>
-
-            {/* 우편번호 + 검색 버튼 */}
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={zipcode}
-                readOnly
-                placeholder="우편번호"
-                className={`${inputBase} max-w-35 ${readOnlyInputBase}`}
-              />
-              <button
-                type="button"
-                onClick={openPostcodePopup}
-                disabled={!canManage}
-                className="shrink-0 rounded-lg bg-gray-700 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
-              >
-                주소 검색
-              </button>
-            </div>
-
-            {/* 기본주소 (읽기전용) */}
-            <input
-              type="text"
-              value={address}
-              readOnly
-              placeholder="주소 검색을 눌러 주소를 입력하세요"
-              className={`${inputBase} ${readOnlyInputBase}`}
-            />
-
-            {/* 상세주소 */}
-            <input
-              id="addressDetail"
-              type="text"
-              value={addressDetail}
-              onChange={(event) => setAddressDetail(event.target.value)}
-              placeholder="상세주소를 입력하세요"
-              className={inputBase}
-              disabled={!canManage}
-            />
-          </div>
+          <AddressInput
+            value={addressValue}
+            onChange={setAddressValue}
+            disabled={!canManage}
+            theme="emerald"
+          />
 
           {message && (
             <div

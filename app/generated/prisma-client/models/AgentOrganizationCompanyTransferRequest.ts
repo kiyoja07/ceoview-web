@@ -1539,6 +1539,11 @@ export type AgentOrganizationCompanyTransferRequestFindManyArgs<ExtArgs extends 
    * Skip the first `n` AgentOrganizationCompanyTransferRequests.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of AgentOrganizationCompanyTransferRequests.
+   */
   distinct?: Prisma.AgentOrganizationCompanyTransferRequestScalarFieldEnum | Prisma.AgentOrganizationCompanyTransferRequestScalarFieldEnum[]
 }
 

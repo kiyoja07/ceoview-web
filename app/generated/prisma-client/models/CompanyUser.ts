@@ -1823,6 +1823,11 @@ export type CompanyUserFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Skip the first `n` CompanyUsers.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of CompanyUsers.
+   */
   distinct?: Prisma.CompanyUserScalarFieldEnum | Prisma.CompanyUserScalarFieldEnum[]
 }
 

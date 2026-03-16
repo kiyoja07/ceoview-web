@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.4.2
- * Query Engine version: 94a226be1cf2967af2541cca5529f0f7ba866919
+ * Prisma Client JS version: 7.5.0
+ * Query Engine version: 280c870be64f457428992c43c1f6d557fab6e29e
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.4.2",
-  engine: "94a226be1cf2967af2541cca5529f0f7ba866919"
+  client: "7.5.0",
+  engine: "280c870be64f457428992c43c1f6d557fab6e29e"
 }
 
 /**
@@ -404,7 +404,12 @@ export const ModelName = {
   EarnedIncomeItemValue: 'EarnedIncomeItemValue',
   BusinessIncome: 'BusinessIncome',
   OtherIncome: 'OtherIncome',
-  DailyIncomeLabor: 'DailyIncomeLabor'
+  DailyIncomeLabor: 'DailyIncomeLabor',
+  Employee: 'Employee',
+  BusinessIncomeEmployee: 'BusinessIncomeEmployee',
+  OtherIncomeEmployee: 'OtherIncomeEmployee',
+  OtherIncomeLaborEmployee: 'OtherIncomeLaborEmployee',
+  EmployeeBankAccount: 'EmployeeBankAccount'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -420,7 +425,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyMagicLinkToken" | "phoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor"
+    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyMagicLinkToken" | "phoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1810,6 +1815,336 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Employee: {
+      payload: Prisma.$EmployeePayload<ExtArgs>
+      fields: Prisma.EmployeeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmployeeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmployeeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        findFirst: {
+          args: Prisma.EmployeeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmployeeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        findMany: {
+          args: Prisma.EmployeeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>[]
+        }
+        create: {
+          args: Prisma.EmployeeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        createMany: {
+          args: Prisma.EmployeeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.EmployeeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        update: {
+          args: Prisma.EmployeeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        deleteMany: {
+          args: Prisma.EmployeeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmployeeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.EmployeeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeePayload>
+        }
+        aggregate: {
+          args: Prisma.EmployeeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmployee>
+        }
+        groupBy: {
+          args: Prisma.EmployeeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmployeeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeCountAggregateOutputType> | number
+        }
+      }
+    }
+    BusinessIncomeEmployee: {
+      payload: Prisma.$BusinessIncomeEmployeePayload<ExtArgs>
+      fields: Prisma.BusinessIncomeEmployeeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BusinessIncomeEmployeeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessIncomeEmployeePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BusinessIncomeEmployeeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessIncomeEmployeePayload>
+        }
+        findFirst: {
+          args: Prisma.BusinessIncomeEmployeeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessIncomeEmployeePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BusinessIncomeEmployeeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessIncomeEmployeePayload>
+        }
+        findMany: {
+          args: Prisma.BusinessIncomeEmployeeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessIncomeEmployeePayload>[]
+        }
+        create: {
+          args: Prisma.BusinessIncomeEmployeeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessIncomeEmployeePayload>
+        }
+        createMany: {
+          args: Prisma.BusinessIncomeEmployeeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.BusinessIncomeEmployeeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessIncomeEmployeePayload>
+        }
+        update: {
+          args: Prisma.BusinessIncomeEmployeeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessIncomeEmployeePayload>
+        }
+        deleteMany: {
+          args: Prisma.BusinessIncomeEmployeeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BusinessIncomeEmployeeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.BusinessIncomeEmployeeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessIncomeEmployeePayload>
+        }
+        aggregate: {
+          args: Prisma.BusinessIncomeEmployeeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBusinessIncomeEmployee>
+        }
+        groupBy: {
+          args: Prisma.BusinessIncomeEmployeeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BusinessIncomeEmployeeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BusinessIncomeEmployeeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BusinessIncomeEmployeeCountAggregateOutputType> | number
+        }
+      }
+    }
+    OtherIncomeEmployee: {
+      payload: Prisma.$OtherIncomeEmployeePayload<ExtArgs>
+      fields: Prisma.OtherIncomeEmployeeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OtherIncomeEmployeeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeEmployeePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OtherIncomeEmployeeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeEmployeePayload>
+        }
+        findFirst: {
+          args: Prisma.OtherIncomeEmployeeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeEmployeePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OtherIncomeEmployeeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeEmployeePayload>
+        }
+        findMany: {
+          args: Prisma.OtherIncomeEmployeeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeEmployeePayload>[]
+        }
+        create: {
+          args: Prisma.OtherIncomeEmployeeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeEmployeePayload>
+        }
+        createMany: {
+          args: Prisma.OtherIncomeEmployeeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.OtherIncomeEmployeeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeEmployeePayload>
+        }
+        update: {
+          args: Prisma.OtherIncomeEmployeeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeEmployeePayload>
+        }
+        deleteMany: {
+          args: Prisma.OtherIncomeEmployeeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OtherIncomeEmployeeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.OtherIncomeEmployeeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeEmployeePayload>
+        }
+        aggregate: {
+          args: Prisma.OtherIncomeEmployeeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOtherIncomeEmployee>
+        }
+        groupBy: {
+          args: Prisma.OtherIncomeEmployeeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OtherIncomeEmployeeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OtherIncomeEmployeeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OtherIncomeEmployeeCountAggregateOutputType> | number
+        }
+      }
+    }
+    OtherIncomeLaborEmployee: {
+      payload: Prisma.$OtherIncomeLaborEmployeePayload<ExtArgs>
+      fields: Prisma.OtherIncomeLaborEmployeeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OtherIncomeLaborEmployeeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeLaborEmployeePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OtherIncomeLaborEmployeeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeLaborEmployeePayload>
+        }
+        findFirst: {
+          args: Prisma.OtherIncomeLaborEmployeeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeLaborEmployeePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OtherIncomeLaborEmployeeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeLaborEmployeePayload>
+        }
+        findMany: {
+          args: Prisma.OtherIncomeLaborEmployeeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeLaborEmployeePayload>[]
+        }
+        create: {
+          args: Prisma.OtherIncomeLaborEmployeeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeLaborEmployeePayload>
+        }
+        createMany: {
+          args: Prisma.OtherIncomeLaborEmployeeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.OtherIncomeLaborEmployeeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeLaborEmployeePayload>
+        }
+        update: {
+          args: Prisma.OtherIncomeLaborEmployeeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeLaborEmployeePayload>
+        }
+        deleteMany: {
+          args: Prisma.OtherIncomeLaborEmployeeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OtherIncomeLaborEmployeeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.OtherIncomeLaborEmployeeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OtherIncomeLaborEmployeePayload>
+        }
+        aggregate: {
+          args: Prisma.OtherIncomeLaborEmployeeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOtherIncomeLaborEmployee>
+        }
+        groupBy: {
+          args: Prisma.OtherIncomeLaborEmployeeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OtherIncomeLaborEmployeeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OtherIncomeLaborEmployeeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OtherIncomeLaborEmployeeCountAggregateOutputType> | number
+        }
+      }
+    }
+    EmployeeBankAccount: {
+      payload: Prisma.$EmployeeBankAccountPayload<ExtArgs>
+      fields: Prisma.EmployeeBankAccountFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmployeeBankAccountFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeBankAccountPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmployeeBankAccountFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeBankAccountPayload>
+        }
+        findFirst: {
+          args: Prisma.EmployeeBankAccountFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeBankAccountPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmployeeBankAccountFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeBankAccountPayload>
+        }
+        findMany: {
+          args: Prisma.EmployeeBankAccountFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeBankAccountPayload>[]
+        }
+        create: {
+          args: Prisma.EmployeeBankAccountCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeBankAccountPayload>
+        }
+        createMany: {
+          args: Prisma.EmployeeBankAccountCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.EmployeeBankAccountDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeBankAccountPayload>
+        }
+        update: {
+          args: Prisma.EmployeeBankAccountUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeBankAccountPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmployeeBankAccountDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmployeeBankAccountUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.EmployeeBankAccountUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeBankAccountPayload>
+        }
+        aggregate: {
+          args: Prisma.EmployeeBankAccountAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmployeeBankAccount>
+        }
+        groupBy: {
+          args: Prisma.EmployeeBankAccountGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeBankAccountGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmployeeBankAccountCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeBankAccountCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2072,6 +2407,7 @@ export const EarnedIncomeScalarFieldEnum = {
   accrualYm: 'accrualYm',
   paymentYm: 'paymentYm',
   payDate: 'payDate',
+  employeeId: 'employeeId',
   employeeCode: 'employeeCode',
   employeeName: 'employeeName',
   department: 'department',
@@ -2203,6 +2539,120 @@ export const DailyIncomeLaborScalarFieldEnum = {
 } as const
 
 export type DailyIncomeLaborScalarFieldEnum = (typeof DailyIncomeLaborScalarFieldEnum)[keyof typeof DailyIncomeLaborScalarFieldEnum]
+
+
+export const EmployeeScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  jobCategory: 'jobCategory',
+  residenceType: 'residenceType',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  landlinePhone: 'landlinePhone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate',
+  zipcode: 'zipcode',
+  address: 'address',
+  addressDetail: 'addressDetail',
+  hasSpouse: 'hasSpouse',
+  dependentUnder20: 'dependentUnder20',
+  dependentOver60: 'dependentOver60',
+  deductionSenior: 'deductionSenior',
+  deductionDisabled: 'deductionDisabled',
+  deductionWomen: 'deductionWomen',
+  deductionChildren: 'deductionChildren',
+  deductionBirthAdoption: 'deductionBirthAdoption',
+  deductionSingleParent: 'deductionSingleParent',
+  employmentInsurance: 'employmentInsurance',
+  payGrade: 'payGrade',
+  nationalPension: 'nationalPension',
+  healthInsurance: 'healthInsurance',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
+
+
+export const BusinessIncomeEmployeeScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type BusinessIncomeEmployeeScalarFieldEnum = (typeof BusinessIncomeEmployeeScalarFieldEnum)[keyof typeof BusinessIncomeEmployeeScalarFieldEnum]
+
+
+export const OtherIncomeEmployeeScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type OtherIncomeEmployeeScalarFieldEnum = (typeof OtherIncomeEmployeeScalarFieldEnum)[keyof typeof OtherIncomeEmployeeScalarFieldEnum]
+
+
+export const OtherIncomeLaborEmployeeScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type OtherIncomeLaborEmployeeScalarFieldEnum = (typeof OtherIncomeLaborEmployeeScalarFieldEnum)[keyof typeof OtherIncomeLaborEmployeeScalarFieldEnum]
+
+
+export const EmployeeBankAccountScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  accountHolder: 'accountHolder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type EmployeeBankAccountScalarFieldEnum = (typeof EmployeeBankAccountScalarFieldEnum)[keyof typeof EmployeeBankAccountScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2378,6 +2828,95 @@ export const DailyIncomeLaborOrderByRelevanceFieldEnum = {
 } as const
 
 export type DailyIncomeLaborOrderByRelevanceFieldEnum = (typeof DailyIncomeLaborOrderByRelevanceFieldEnum)[keyof typeof DailyIncomeLaborOrderByRelevanceFieldEnum]
+
+
+export const EmployeeOrderByRelevanceFieldEnum = {
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  jobCategory: 'jobCategory',
+  residenceType: 'residenceType',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  landlinePhone: 'landlinePhone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate',
+  zipcode: 'zipcode',
+  address: 'address',
+  addressDetail: 'addressDetail',
+  hasSpouse: 'hasSpouse',
+  dependentUnder20: 'dependentUnder20',
+  dependentOver60: 'dependentOver60',
+  deductionSenior: 'deductionSenior',
+  deductionDisabled: 'deductionDisabled',
+  deductionWomen: 'deductionWomen',
+  deductionChildren: 'deductionChildren',
+  deductionBirthAdoption: 'deductionBirthAdoption',
+  deductionSingleParent: 'deductionSingleParent',
+  employmentInsurance: 'employmentInsurance',
+  payGrade: 'payGrade',
+  nationalPension: 'nationalPension',
+  healthInsurance: 'healthInsurance'
+} as const
+
+export type EmployeeOrderByRelevanceFieldEnum = (typeof EmployeeOrderByRelevanceFieldEnum)[keyof typeof EmployeeOrderByRelevanceFieldEnum]
+
+
+export const BusinessIncomeEmployeeOrderByRelevanceFieldEnum = {
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate'
+} as const
+
+export type BusinessIncomeEmployeeOrderByRelevanceFieldEnum = (typeof BusinessIncomeEmployeeOrderByRelevanceFieldEnum)[keyof typeof BusinessIncomeEmployeeOrderByRelevanceFieldEnum]
+
+
+export const OtherIncomeEmployeeOrderByRelevanceFieldEnum = {
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate'
+} as const
+
+export type OtherIncomeEmployeeOrderByRelevanceFieldEnum = (typeof OtherIncomeEmployeeOrderByRelevanceFieldEnum)[keyof typeof OtherIncomeEmployeeOrderByRelevanceFieldEnum]
+
+
+export const OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum = {
+  employeeCode: 'employeeCode',
+  name: 'name',
+  residentNumber: 'residentNumber',
+  department: 'department',
+  positionTitle: 'positionTitle',
+  email: 'email',
+  phone: 'phone',
+  hireDate: 'hireDate',
+  resignDate: 'resignDate'
+} as const
+
+export type OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum = (typeof OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum)[keyof typeof OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum]
+
+
+export const EmployeeBankAccountOrderByRelevanceFieldEnum = {
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  accountHolder: 'accountHolder'
+} as const
+
+export type EmployeeBankAccountOrderByRelevanceFieldEnum = (typeof EmployeeBankAccountOrderByRelevanceFieldEnum)[keyof typeof EmployeeBankAccountOrderByRelevanceFieldEnum]
 
 
 
@@ -2592,6 +3131,11 @@ export type GlobalOmitConfig = {
   businessIncome?: Prisma.BusinessIncomeOmit
   otherIncome?: Prisma.OtherIncomeOmit
   dailyIncomeLabor?: Prisma.DailyIncomeLaborOmit
+  employee?: Prisma.EmployeeOmit
+  businessIncomeEmployee?: Prisma.BusinessIncomeEmployeeOmit
+  otherIncomeEmployee?: Prisma.OtherIncomeEmployeeOmit
+  otherIncomeLaborEmployee?: Prisma.OtherIncomeLaborEmployeeOmit
+  employeeBankAccount?: Prisma.EmployeeBankAccountOmit
 }
 
 /* Types for Logging */

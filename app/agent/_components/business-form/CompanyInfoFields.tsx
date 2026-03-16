@@ -1,4 +1,5 @@
-import { INPUT_BASE, formatOpeningDate } from "./shared";
+import { INPUT_BASE } from "./shared";
+import DateInput from "@/app/_components/DateInput";
 
 interface CompanyInfoFieldsProps {
   businessName: string;
@@ -75,16 +76,10 @@ export default function CompanyInfoFields({
           <label className="mb-1.5 block text-sm font-medium text-gray-700">
             개업일
           </label>
-          <input
-            type="text"
-            inputMode="numeric"
+          <DateInput
             value={openingDate}
-            onChange={(e) =>
-              onOpeningDateChange(formatOpeningDate(e.target.value))
-            }
-            placeholder="YYYY-MM-DD"
-            maxLength={10}
-            className={`${INPUT_BASE} font-mono tracking-wide`}
+            onChange={onOpeningDateChange}
+            theme="blue"
           />
         </div>
       </div>

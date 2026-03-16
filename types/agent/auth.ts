@@ -54,7 +54,9 @@ export type CreateOrganizationBody = {
   organizationName?: string | null;
   representativeName?: string | null;
   openingDate?: string | null;
+  zipcode?: string | null;
   address?: string | null;
+  addressDetail?: string | null;
   userName?: string;
   userPhone?: string | null;
 };

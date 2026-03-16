@@ -1342,6 +1342,11 @@ export type CompanyUserInviteHistoryFindManyArgs<ExtArgs extends runtime.Types.E
    * Skip the first `n` CompanyUserInviteHistories.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of CompanyUserInviteHistories.
+   */
   distinct?: Prisma.CompanyUserInviteHistoryScalarFieldEnum | Prisma.CompanyUserInviteHistoryScalarFieldEnum[]
 }
 

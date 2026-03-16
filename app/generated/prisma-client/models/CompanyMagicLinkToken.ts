@@ -1136,6 +1136,11 @@ export type CompanyMagicLinkTokenFindManyArgs<ExtArgs extends runtime.Types.Exte
    * Skip the first `n` CompanyMagicLinkTokens.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of CompanyMagicLinkTokens.
+   */
   distinct?: Prisma.CompanyMagicLinkTokenScalarFieldEnum | Prisma.CompanyMagicLinkTokenScalarFieldEnum[]
 }
 

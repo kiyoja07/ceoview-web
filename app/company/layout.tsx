@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const cookieStore = await cookies();
     const token = cookieStore.get(COMPANY_SESSION_COOKIE)?.value;
     const payload = verifyCompanySessionToken(token);
-    if (!payload) return { title: "Company Console" };
+    if (!payload) return { title: "Company Dashboard" };
 
     const user = await prisma.companyUser.findUnique({
       where: { id: BigInt(payload.userId) },
@@ -27,9 +27,9 @@ export async function generateMetadata(): Promise<Metadata> {
     });
 
     const companyName = user?.company?.businessName;
-    return { title: companyName || "Company Console" };
+    return { title: companyName || "Company Dashboard" };
   } catch {
-    return { title: "Company Console" };
+    return { title: "Company Dashboard" };
   }
 }
 

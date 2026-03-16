@@ -1573,6 +1573,11 @@ export type BusinessIncomeFindManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Skip the first `n` BusinessIncomes.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of BusinessIncomes.
+   */
   distinct?: Prisma.BusinessIncomeScalarFieldEnum | Prisma.BusinessIncomeScalarFieldEnum[]
 }
 

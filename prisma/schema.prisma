@@ -104,6 +104,10 @@ model Company {
   earnedIncomeItemDefinitions EarnedIncomeItemDefinition[]
   companyUsers                CompanyUser[]
   companyUserInviteHistories  CompanyUserInviteHistory[]
+  employees                   Employee[]
+  businessIncomeEmployees     BusinessIncomeEmployee[]
+  otherIncomeEmployees        OtherIncomeEmployee[]
+  otherIncomeLaborEmployees   OtherIncomeLaborEmployee[]
   organizationLink            AgentOrganizationCompany?
   transferRequest             AgentOrganizationCompanyTransferRequest?
 
@@ -427,6 +431,9 @@ model EarnedIncome {
   paymentYm Int      @map("지급년월")
   payDate   DateTime @map("지급일") @db.Date
 
+  employeeId BigInt?   @map("employee_id") @db.UnsignedBigInt
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+
   employeeCode String  @map("사원코드") @db.VarChar(50)
   employeeName String  @map("사원명") @db.VarChar(100)
   department   String? @map("부서") @db.VarChar(50)
@@ -465,6 +472,7 @@ model EarnedIncome {
 
   @@unique([uploadId, employeeCode, accrualYm, paymentYm, payDate])
   @@index([employeeCode, accrualYm, paymentYm, payDate])
+  @@index([employeeId])
   @@map("earned_income")
 }
 
@@ -625,4 +633,177 @@ model DailyIncomeLabor {
   @@index([employeeCode, employeeName])
   @@index([identificationNumber])
   @@map("daily_income_labor")
+}
+
+/**
+ * ---------------------------
+ * 직원 관리
+ * ---------------------------
+ */
+
+model Employee {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  employeeCode    String? @map("employee_code") @db.VarChar(50)
+  name            String  @db.VarChar(100)
+  residentNumber  String? @map("resident_number") @db.VarChar(20)
+  nationalityType String? @map("nationality_type") @db.VarChar(20) // 내·외국인
+  jobCategory     String? @map("job_category") @db.VarChar(50) // 직종구분
+  residenceType   String? @map("residence_type") @db.VarChar(20) // 거주구분
+  department      String? @map("department") @db.VarChar(50) // 부서
+  positionTitle   String? @map("position_title") @db.VarChar(50) // 직책명
+  email           String? @db.VarChar(255)
+  phone           String? @db.VarChar(30) // 휴대폰
+  landlinePhone   String? @map("landline_phone") @db.VarChar(30) // 전화번호
+  hireDate        String? @map("hire_date") @db.VarChar(10)
+  resignDate      String? @map("resign_date") @db.VarChar(10)
+  zipcode         String? @map("zipcode") @db.VarChar(10)
+  address         String? @map("address") @db.VarChar(255)
+  addressDetail   String? @map("address_detail") @db.VarChar(255)
+
+  // 부양가족 공제
+  hasSpouse        String? @map("has_spouse") @db.VarChar(10) // 배우자 유무
+  dependentUnder20 String? @map("dependent_under_20") @db.VarChar(10) // 부양가족공제_20세이하
+  dependentOver60  String? @map("dependent_over_60") @db.VarChar(10) // 부양가족공제_60세이상
+
+  // 추가 공제
+  deductionSenior        String? @map("deduction_senior") @db.VarChar(10) // 추가공제_경로우대
+  deductionDisabled      String? @map("deduction_disabled") @db.VarChar(10) // 추가공제_장애인
+  deductionWomen         String? @map("deduction_women") @db.VarChar(10) // 추가공제_부녀자
+  deductionChildren      String? @map("deduction_children") @db.VarChar(10) // 추가공제_자녀
+  deductionBirthAdoption String? @map("deduction_birth_adoption") @db.VarChar(10) // 추가공제_출산입양
+  deductionSingleParent  String? @map("deduction_single_parent") @db.VarChar(10) // 추가공제_한부모
+
+  // 보험/호봉
+  employmentInsurance String? @map("employment_insurance") @db.VarChar(20) // 고용보험
+  payGrade            String? @map("pay_grade") @db.VarChar(20) // 호봉
+  nationalPension     String? @map("national_pension") @db.VarChar(20) // 국민연금
+  healthInsurance     String? @map("health_insurance") @db.VarChar(20) // 건강보험
+
+  bankAccounts  EmployeeBankAccount[]
+  earnedIncomes EarnedIncome[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@unique([companyId, employeeCode])
+  @@index([companyId, name])
+  @@index([companyId, deletedAt, createdAt])
+  @@map("employee")
+}
+
+/**
+ * ---------------------------
+ * 사업소득자 (더미)
+ * ---------------------------
+ */
+
+model BusinessIncomeEmployee {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  employeeCode   String? @map("employee_code") @db.VarChar(50)
+  name           String  @db.VarChar(100)
+  residentNumber String? @map("resident_number") @db.VarChar(20)
+  department     String? @map("department") @db.VarChar(50)
+  positionTitle  String? @map("position_title") @db.VarChar(50)
+  email          String? @db.VarChar(255)
+  phone          String? @db.VarChar(30)
+  hireDate       String? @map("hire_date") @db.VarChar(10)
+  resignDate     String? @map("resign_date") @db.VarChar(10)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@unique([companyId, employeeCode])
+  @@index([companyId, deletedAt, createdAt])
+  @@map("business_income_employee")
+}
+
+/**
+ * ---------------------------
+ * 기타소득자 (더미)
+ * ---------------------------
+ */
+
+model OtherIncomeEmployee {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  employeeCode   String? @map("employee_code") @db.VarChar(50)
+  name           String  @db.VarChar(100)
+  residentNumber String? @map("resident_number") @db.VarChar(20)
+  department     String? @map("department") @db.VarChar(50)
+  positionTitle  String? @map("position_title") @db.VarChar(50)
+  email          String? @db.VarChar(255)
+  phone          String? @db.VarChar(30)
+  hireDate       String? @map("hire_date") @db.VarChar(10)
+  resignDate     String? @map("resign_date") @db.VarChar(10)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@unique([companyId, employeeCode])
+  @@index([companyId, deletedAt, createdAt])
+  @@map("other_income_employee")
+}
+
+/**
+ * ---------------------------
+ * 일용소득자 (더미)
+ * ---------------------------
+ */
+
+model OtherIncomeLaborEmployee {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  employeeCode   String? @map("employee_code") @db.VarChar(50)
+  name           String  @db.VarChar(100)
+  residentNumber String? @map("resident_number") @db.VarChar(20)
+  department     String? @map("department") @db.VarChar(50)
+  positionTitle  String? @map("position_title") @db.VarChar(50)
+  email          String? @db.VarChar(255)
+  phone          String? @db.VarChar(30)
+  hireDate       String? @map("hire_date") @db.VarChar(10)
+  resignDate     String? @map("resign_date") @db.VarChar(10)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@unique([companyId, employeeCode])
+  @@index([companyId, deletedAt, createdAt])
+  @@map("other_income_labor_employee")
+}
+
+model EmployeeBankAccount {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  employeeId BigInt   @map("employee_id") @db.UnsignedBigInt
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  bankName      String @map("bank_name") @db.VarChar(50)
+  accountNumber String @map("account_number") @db.VarChar(50)
+  accountHolder String @map("account_holder") @db.VarChar(100)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([employeeId])
+  @@index([employeeId, deletedAt])
+  @@map("employee_bank_account")
 }

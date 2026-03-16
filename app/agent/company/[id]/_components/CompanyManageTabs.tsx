@@ -11,6 +11,7 @@ function getTabs(companyId: string) {
       href: `/agent/company/${companyId}/salary-publication`,
       label: "급여 관리",
     },
+    { href: `/agent/company/${companyId}/employee`, label: "직원 관리" },
   ] as const;
 }
 

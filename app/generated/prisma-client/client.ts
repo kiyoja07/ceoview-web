@@ -146,3 +146,28 @@ export type OtherIncome = Prisma.OtherIncomeModel
  * 
  */
 export type DailyIncomeLabor = Prisma.DailyIncomeLaborModel
+/**
+ * Model Employee
+ * 
+ */
+export type Employee = Prisma.EmployeeModel
+/**
+ * Model BusinessIncomeEmployee
+ * 
+ */
+export type BusinessIncomeEmployee = Prisma.BusinessIncomeEmployeeModel
+/**
+ * Model OtherIncomeEmployee
+ * 
+ */
+export type OtherIncomeEmployee = Prisma.OtherIncomeEmployeeModel
+/**
+ * Model OtherIncomeLaborEmployee
+ * 
+ */
+export type OtherIncomeLaborEmployee = Prisma.OtherIncomeLaborEmployeeModel
+/**
+ * Model EmployeeBankAccount
+ * 
+ */
+export type EmployeeBankAccount = Prisma.EmployeeBankAccountModel

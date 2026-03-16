@@ -14,6 +14,8 @@ export type AgentOrganizationInfoResponse = {
     organizationName: string | null;
     representativeName: string | null;
     openingDate: string | null;
+    zipcode: string | null;
     address: string | null;
+    addressDetail: string | null;
   };
 };
