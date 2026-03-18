@@ -7,13 +7,19 @@ import { formatCell } from "../utils";
 export function ResultPreview({
   result,
   saving,
+  publishing,
   onSave,
+  onPublish,
 }: {
   result: EmployeeUploadResult;
   saving: boolean;
+  publishing: boolean;
   onSave: () => void;
+  onPublish: () => void;
 }) {
   const visibleCols = result.columns.filter((col) => !col.startsWith("_"));
+  const isPublished =
+    result.published === true || result.publishStatus === "PUBLISHED";
 
   return (
     <div className="space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
@@ -22,12 +28,14 @@ export function ResultPreview({
         <div className="flex items-center gap-3">
           <div
             className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-              result.saved
+              isPublished
                 ? "bg-emerald-100 text-emerald-600"
-                : "bg-amber-100 text-amber-600"
+                : result.saved
+                  ? "bg-blue-100 text-blue-600"
+                  : "bg-amber-100 text-amber-600"
             }`}
           >
-            {result.saved ? (
+            {isPublished ? (
               <svg
                 className="h-4 w-4"
                 fill="none"
@@ -39,6 +47,20 @@ export function ResultPreview({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   d="m4.5 12.75 6 6 9-13.5"
+                />
+              </svg>
+            ) : result.saved ? (
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.5 6.75h-9a2.25 2.25 0 0 0-2.25 2.25v8.25A2.25 2.25 0 0 0 7.5 19.5h9a2.25 2.25 0 0 0 2.25-2.25V9a2.25 2.25 0 0 0-2.25-2.25ZM8.25 6V4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V6"
                 />
               </svg>
             ) : (
@@ -64,7 +86,11 @@ export function ResultPreview({
           </div>
           <div>
             <h2 className="text-lg font-bold text-gray-900">
-              {result.saved ? "직원 저장 완료" : "매핑 결과 미리보기"}
+              {isPublished
+                ? "발행 완료"
+                : result.saved
+                  ? "저장 완료 (미발행)"
+                  : "매핑 결과 미리보기"}
             </h2>
             <p className="text-xs text-gray-500">
               {result.totalRows}명 · 시트: {result.sheetName}
@@ -77,12 +103,12 @@ export function ResultPreview({
             type="button"
             onClick={onSave}
             disabled={saving}
-            className="cursor-pointer rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-emerald-400"
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-emerald-400"
           >
             {saving ? (
-              <span className="inline-flex items-center gap-1.5">
+              <>
                 <svg
-                  className="h-3.5 w-3.5 animate-spin"
+                  className="h-4 w-4 animate-spin"
                   viewBox="0 0 24 24"
                   fill="none"
                 >
@@ -101,11 +127,88 @@ export function ResultPreview({
                   />
                 </svg>
                 저장 중…
-              </span>
+              </>
             ) : (
-              "직원 저장하기"
+              "DB에 저장"
             )}
           </button>
+        )}
+        {result.saved && !isPublished && (
+          <button
+            type="button"
+            onClick={onPublish}
+            disabled={publishing}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-blue-700 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-blue-400"
+          >
+            {publishing ? (
+              <>
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+                발행 중…
+              </>
+            ) : (
+              "발행하기"
+            )}
+          </button>
+        )}
+      </div>
+
+      {/* Publication status */}
+      <div
+        className={`rounded-xl border px-4 py-3 text-sm ${
+          isPublished
+            ? "border-green-200 bg-green-50 text-green-800"
+            : result.saved
+              ? "border-blue-200 bg-blue-50 text-blue-800"
+              : "border-amber-200 bg-amber-50 text-amber-800"
+        }`}
+      >
+        <p className="font-semibold">
+          현재 상태:{" "}
+          {isPublished
+            ? "PUBLISHED (회사 조회 가능)"
+            : result.saved
+              ? "SAVED (미발행)"
+              : "미리보기"}
+        </p>
+        {!result.saved && (
+          <p className="mt-1 text-xs text-amber-700">
+            아래 데이터는 미리보기 상태입니다.{" "}
+            <strong className="font-semibold text-amber-900">
+              &ldquo;DB에 저장&rdquo; 후 &ldquo;발행하기&rdquo;까지 완료해야
+              회사 조회 가능
+            </strong>
+            됩니다.
+          </p>
+        )}
+        {result.saved && !isPublished && (
+          <p className="mt-1 text-xs text-blue-700">
+            {result.savedCount}명이 DB에 저장되었습니다. 발행 후 거래처 조회가
+            가능합니다.
+          </p>
+        )}
+        {isPublished && (
+          <p className="mt-1 text-xs text-green-700">
+            발행 완료되었습니다. 거래처에서 해당 직원 데이터를 조회할 수
+            있습니다.
+          </p>
         )}
       </div>
 

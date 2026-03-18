@@ -115,6 +115,7 @@ export async function GET(
             resignDate: true,
             phone: true,
             email: true,
+            publishStatus: true,
             createdAt: true,
             bankAccounts: {
               where: { deletedAt: null },
@@ -143,6 +144,7 @@ export async function GET(
         resignDate: emp.resignDate,
         phone: emp.phone,
         email: emp.email,
+        publishStatus: emp.publishStatus ?? "SAVED",
         createdAt: emp.createdAt.toISOString(),
         bankAccount: emp.bankAccounts[0] ?? null,
       }));
@@ -201,6 +203,7 @@ export async function GET(
           resignDate: true,
           phone: true,
           email: true,
+          publishStatus: true,
           createdAt: true,
         },
         orderBy: [{ name: "asc" }, { id: "asc" }],
@@ -220,6 +223,7 @@ export async function GET(
       resignDate: emp.resignDate,
       phone: emp.phone,
       email: emp.email,
+      publishStatus: emp.publishStatus ?? "SAVED",
       createdAt: emp.createdAt.toISOString(),
       bankAccount: null,
     }));

@@ -53,6 +53,7 @@ export async function GET(request: NextRequest) {
     const where: {
       companyId: bigint;
       deletedAt: null;
+      publishStatus: "PUBLISHED";
       OR?: {
         name?: { contains: string };
         employeeCode?: { contains: string };
@@ -61,6 +62,7 @@ export async function GET(request: NextRequest) {
     } = {
       companyId: auth.companyId,
       deletedAt: null,
+      publishStatus: "PUBLISHED",
     };
 
     if (search) {

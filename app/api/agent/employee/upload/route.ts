@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
-import { parseEmployeeRegistration } from "./parser";
+import {
+  parseEmployeeRegistration,
+  parseBusinessIncomeEmployeeRegistration,
+  parseOtherIncomeEmployeeRegistration,
+} from "./parser";
+import type { IncomeType } from "@/types/agent/employee";
 
 async function requireAgentOrganizationId(request: NextRequest) {
   const userId = getAgentUserIdFromRequest(request);
@@ -65,6 +70,8 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     const companyId = formData.get("companyId") as string | null;
+    const incomeType =
+      (formData.get("incomeType") as IncomeType) ?? "EARNED_INCOME";
     const save = formData.get("save") === "true";
 
     if (!file) {
@@ -134,6 +141,29 @@ export async function POST(request: NextRequest) {
     }
 
     const worksheet = workbook.Sheets[sheetName];
+
+    if (incomeType === "BUSINESS_INCOME") {
+      return handleBusinessIncome(
+        worksheet,
+        fileName,
+        sheetName,
+        companyId,
+        parsedCompanyId,
+        save,
+      );
+    }
+
+    if (incomeType === "OTHER_INCOME") {
+      return handleOtherIncome(
+        worksheet,
+        fileName,
+        sheetName,
+        companyId,
+        parsedCompanyId,
+        save,
+      );
+    }
+
     const { columns, rows } = parseEmployeeRegistration(worksheet);
 
     if (rows.length === 0) {
@@ -291,6 +321,7 @@ export async function POST(request: NextRequest) {
             payGrade,
             nationalPension,
             healthInsurance,
+            publishStatus: "SAVED",
             deletedAt: null,
           },
           create: {
@@ -324,6 +355,7 @@ export async function POST(request: NextRequest) {
             payGrade,
             nationalPension,
             healthInsurance,
+            publishStatus: "SAVED",
           },
         });
 
@@ -361,11 +393,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         saved: true,
+        published: false,
+        publishStatus: "SAVED",
         savedCount,
         skippedCount,
         fileName,
         sheetName,
         companyId,
+        incomeType,
         totalRows: rows.length,
         matchedCount,
         unmatchedCount,
@@ -382,6 +417,7 @@ export async function POST(request: NextRequest) {
       fileName,
       sheetName,
       companyId,
+      incomeType,
       totalRows: rows.length,
       matchedCount,
       unmatchedCount,
@@ -396,4 +432,354 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
+}
+
+async function handleBusinessIncome(
+  worksheet: XLSX.WorkSheet,
+  fileName: string,
+  sheetName: string,
+  companyId: string,
+  parsedCompanyId: bigint,
+  save: boolean,
+) {
+  const { columns, rows } = parseBusinessIncomeEmployeeRegistration(worksheet);
+
+  if (rows.length === 0) {
+    return NextResponse.json(
+      { error: "엑셀 파일에 직원 데이터가 없습니다." },
+      { status: 400 },
+    );
+  }
+
+  // 코드 컬럼 확인
+  if (!columns.includes("코드")) {
+    return NextResponse.json(
+      {
+        error: `코드 컬럼을 찾을 수 없습니다.\n(감지된 컬럼: ${columns.join(", ")})`,
+      },
+      { status: 400 },
+    );
+  }
+
+  // 급여(사업소득) 데이터에서 사원코드 목록 조회
+  const salaryEmployeeCodes = await prisma.businessIncome.findMany({
+    where: {
+      upload: { companyId: parsedCompanyId },
+    },
+    select: { employeeCode: true, employeeName: true },
+    distinct: ["employeeCode"],
+  });
+
+  const salaryCodeSet = new Set(salaryEmployeeCodes.map((r) => r.employeeCode));
+  const salaryCodeNameMap = new Map(
+    salaryEmployeeCodes.map((r) => [r.employeeCode, r.employeeName]),
+  );
+
+  // 기존 사업소득자 테이블에서 사원코드 목록 조회
+  const existingEmployees = await prisma.businessIncomeEmployee.findMany({
+    where: {
+      companyId: parsedCompanyId,
+      deletedAt: null,
+      employeeCode: { not: null },
+    },
+    select: { employeeCode: true },
+  });
+  const existingCodeSet = new Set(existingEmployees.map((e) => e.employeeCode));
+
+  // 매핑 결과 생성
+  const mappedRows: Record<string, unknown>[] = rows.map((row) => {
+    const code = String(row["코드"] ?? "").trim();
+    const hasSalary = salaryCodeSet.has(code);
+    const salaryName = salaryCodeNameMap.get(code) ?? null;
+    const alreadyRegistered = existingCodeSet.has(code);
+
+    return {
+      ...row,
+      _employeeCode: code,
+      _hasSalaryMatch: hasSalary,
+      _salaryEmployeeName: salaryName,
+      _alreadyRegistered: alreadyRegistered,
+    };
+  });
+
+  const matchedCount = mappedRows.filter((r) => r._hasSalaryMatch).length;
+  const unmatchedCount = mappedRows.filter((r) => !r._hasSalaryMatch).length;
+  const alreadyRegisteredCount = mappedRows.filter(
+    (r) => r._alreadyRegistered,
+  ).length;
+
+  if (save) {
+    let savedCount = 0;
+    let skippedCount = 0;
+
+    for (const row of mappedRows) {
+      const code = String(row._employeeCode ?? "").trim();
+      if (!code) continue;
+
+      const name = toStr(row["성명"]) ?? "";
+      if (!name) continue;
+
+      const residentNumber = toStr(row["주민(외국인)등록번호"]);
+      const nationalityType = toStr(row["내/외국인"]);
+      const incomeCategory = toStr(row["소득구분"]);
+      const residenceType = toStr(row["거주구분"]);
+      const businessName = toStr(row["상호"]);
+      const businessRegistrationNumber = toStr(row["사업자등록번호"]);
+      const businessAddress = toStr(row["사업장주소"]);
+      const address = toStr(row["소득자주소"]);
+      const zipcode = toStr(row["우편번호"]);
+
+      await prisma.businessIncomeEmployee.upsert({
+        where: {
+          companyId_employeeCode: {
+            companyId: parsedCompanyId,
+            employeeCode: code,
+          },
+        },
+        update: {
+          name,
+          residentNumber,
+          nationalityType,
+          incomeCategory,
+          residenceType,
+          businessName,
+          businessRegistrationNumber,
+          businessAddress,
+          address,
+          zipcode,
+          publishStatus: "SAVED",
+          deletedAt: null,
+        },
+        create: {
+          companyId: parsedCompanyId,
+          employeeCode: code,
+          name,
+          residentNumber,
+          nationalityType,
+          incomeCategory,
+          residenceType,
+          businessName,
+          businessRegistrationNumber,
+          businessAddress,
+          address,
+          zipcode,
+          publishStatus: "SAVED",
+        },
+      });
+
+      savedCount++;
+    }
+
+    skippedCount = mappedRows.length - savedCount;
+
+    return NextResponse.json({
+      success: true,
+      saved: true,
+      published: false,
+      publishStatus: "SAVED",
+      savedCount,
+      skippedCount,
+      fileName,
+      sheetName,
+      companyId,
+      incomeType: "BUSINESS_INCOME",
+      totalRows: rows.length,
+      matchedCount,
+      unmatchedCount,
+      alreadyRegisteredCount,
+      columns,
+      rows: mappedRows.slice(0, 100),
+    });
+  }
+
+  // 미리보기만 반환
+  return NextResponse.json({
+    success: true,
+    saved: false,
+    fileName,
+    sheetName,
+    companyId,
+    incomeType: "BUSINESS_INCOME",
+    totalRows: rows.length,
+    matchedCount,
+    unmatchedCount,
+    alreadyRegisteredCount,
+    columns,
+    rows: mappedRows,
+  });
+}
+
+async function handleOtherIncome(
+  worksheet: XLSX.WorkSheet,
+  fileName: string,
+  sheetName: string,
+  companyId: string,
+  parsedCompanyId: bigint,
+  save: boolean,
+) {
+  const { columns, rows } = parseOtherIncomeEmployeeRegistration(worksheet);
+
+  if (rows.length === 0) {
+    return NextResponse.json(
+      { error: "엑셀 파일에 직원 데이터가 없습니다." },
+      { status: 400 },
+    );
+  }
+
+  // 코드 컬럼 확인
+  if (!columns.includes("코드")) {
+    return NextResponse.json(
+      {
+        error: `코드 컬럼을 찾을 수 없습니다.\n(감지된 컬럼: ${columns.join(", ")})`,
+      },
+      { status: 400 },
+    );
+  }
+
+  // 급여(기타소득) 데이터에서 사원코드 목록 조회
+  const salaryEmployeeCodes = await prisma.otherIncome.findMany({
+    where: {
+      upload: { companyId: parsedCompanyId },
+    },
+    select: { employeeCode: true, employeeName: true },
+    distinct: ["employeeCode"],
+  });
+
+  const salaryCodeSet = new Set(salaryEmployeeCodes.map((r) => r.employeeCode));
+  const salaryCodeNameMap = new Map(
+    salaryEmployeeCodes.map((r) => [r.employeeCode, r.employeeName]),
+  );
+
+  // 기존 기타소득자 테이블에서 사원코드 목록 조회
+  const existingEmployees = await prisma.otherIncomeEmployee.findMany({
+    where: {
+      companyId: parsedCompanyId,
+      deletedAt: null,
+      employeeCode: { not: null },
+    },
+    select: { employeeCode: true },
+  });
+  const existingCodeSet = new Set(existingEmployees.map((e) => e.employeeCode));
+
+  // 매핑 결과 생성
+  const mappedRows: Record<string, unknown>[] = rows.map((row) => {
+    const code = String(row["코드"] ?? "").trim();
+    const hasSalary = salaryCodeSet.has(code);
+    const salaryName = salaryCodeNameMap.get(code) ?? null;
+    const alreadyRegistered = existingCodeSet.has(code);
+
+    return {
+      ...row,
+      _employeeCode: code,
+      _hasSalaryMatch: hasSalary,
+      _salaryEmployeeName: salaryName,
+      _alreadyRegistered: alreadyRegistered,
+    };
+  });
+
+  const matchedCount = mappedRows.filter((r) => r._hasSalaryMatch).length;
+  const unmatchedCount = mappedRows.filter((r) => !r._hasSalaryMatch).length;
+  const alreadyRegisteredCount = mappedRows.filter(
+    (r) => r._alreadyRegistered,
+  ).length;
+
+  if (save) {
+    let savedCount = 0;
+    let skippedCount = 0;
+
+    for (const row of mappedRows) {
+      const code = String(row._employeeCode ?? "").trim();
+      if (!code) continue;
+
+      const name = toStr(row["성명"]) ?? "";
+      if (!name) continue;
+
+      const residentNumber = toStr(row["주민(외국인)등록번호"]);
+      const nationalityType = toStr(row["내/외국인"]);
+      const incomeCategory = toStr(row["소득구분"]);
+      const residenceType = toStr(row["거주구분"]);
+      const personType = toStr(row["법인/개인구분"]);
+      const businessRegistrationNumber = toStr(row["사업자등록번호"]);
+      const businessAddress = toStr(row["사업장주소"]);
+      const zipcode = toStr(row["우편번호"]);
+      const phone = toStr(row["전화번호"]);
+
+      await prisma.otherIncomeEmployee.upsert({
+        where: {
+          companyId_employeeCode: {
+            companyId: parsedCompanyId,
+            employeeCode: code,
+          },
+        },
+        update: {
+          name,
+          residentNumber,
+          nationalityType,
+          incomeCategory,
+          residenceType,
+          personType,
+          businessRegistrationNumber,
+          businessAddress,
+          zipcode,
+          phone,
+          publishStatus: "SAVED",
+          deletedAt: null,
+        },
+        create: {
+          companyId: parsedCompanyId,
+          employeeCode: code,
+          name,
+          residentNumber,
+          nationalityType,
+          incomeCategory,
+          residenceType,
+          personType,
+          businessRegistrationNumber,
+          businessAddress,
+          zipcode,
+          phone,
+          publishStatus: "SAVED",
+        },
+      });
+
+      savedCount++;
+    }
+
+    skippedCount = mappedRows.length - savedCount;
+
+    return NextResponse.json({
+      success: true,
+      saved: true,
+      published: false,
+      publishStatus: "SAVED",
+      savedCount,
+      skippedCount,
+      fileName,
+      sheetName,
+      companyId,
+      incomeType: "OTHER_INCOME",
+      totalRows: rows.length,
+      matchedCount,
+      unmatchedCount,
+      alreadyRegisteredCount,
+      columns,
+      rows: mappedRows.slice(0, 100),
+    });
+  }
+
+  // 미리보기만 반환
+  return NextResponse.json({
+    success: true,
+    saved: false,
+    fileName,
+    sheetName,
+    companyId,
+    incomeType: "OTHER_INCOME",
+    totalRows: rows.length,
+    matchedCount,
+    unmatchedCount,
+    alreadyRegisteredCount,
+    columns,
+    rows: mappedRows,
+  });
 }

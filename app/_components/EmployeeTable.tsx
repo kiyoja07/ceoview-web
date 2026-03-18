@@ -17,6 +17,7 @@ export type EmployeeRow = {
   resignDate: string | null;
   phone: string | null;
   email: string | null;
+  publishStatus?: "SAVED" | "PUBLISHED";
   createdAt: string;
   bankAccount: {
     bankName: string;
@@ -40,6 +41,12 @@ type EmployeeTableProps = {
   onDelete: (employeeId: string, name: string) => void;
   onPageChange: (page: number) => void;
   detailBaseUrl?: string;
+  /** Publication toggle callbacks (optional – only rendered when provided) */
+  onPublishToggle?: (
+    employeeId: string,
+    newStatus: "SAVED" | "PUBLISHED",
+  ) => void;
+  publishLoading?: boolean;
 };
 
 // ────────────────────────────────────────────────────────────
@@ -103,6 +110,8 @@ export default function EmployeeTable({
   listError,
   onPageChange,
   detailBaseUrl,
+  onPublishToggle,
+  publishLoading,
 }: EmployeeTableProps) {
   return (
     <>
@@ -163,6 +172,9 @@ export default function EmployeeTable({
                     <th className="px-4 py-3 text-left">퇴사일</th>
                     <th className="px-4 py-3 text-left">연락처</th>
                     <th className="px-4 py-3 text-left">이메일</th>
+                    {onPublishToggle && (
+                      <th className="px-4 py-3 text-center">공개상태</th>
+                    )}
                     <th className="px-4 py-3 text-center">관리</th>
                   </tr>
                 </thead>
@@ -213,6 +225,38 @@ export default function EmployeeTable({
                       <td className="px-4 py-3 text-gray-600">
                         {emp.email ?? "-"}
                       </td>
+                      {onPublishToggle && (
+                        <td className="px-4 py-3 text-center">
+                          <button
+                            type="button"
+                            disabled={publishLoading}
+                            onClick={() =>
+                              onPublishToggle(
+                                emp.id,
+                                emp.publishStatus === "PUBLISHED"
+                                  ? "SAVED"
+                                  : "PUBLISHED",
+                              )
+                            }
+                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition ${
+                              emp.publishStatus === "PUBLISHED"
+                                ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                                : "bg-amber-100 text-amber-700 hover:bg-amber-200"
+                            } disabled:cursor-not-allowed disabled:opacity-50`}
+                          >
+                            <span
+                              className={`inline-block h-2 w-2 rounded-full ${
+                                emp.publishStatus === "PUBLISHED"
+                                  ? "bg-blue-500"
+                                  : "bg-amber-500"
+                              }`}
+                            />
+                            {emp.publishStatus === "PUBLISHED"
+                              ? "공개됨"
+                              : "비공개"}
+                          </button>
+                        </td>
+                      )}
                       <td className="px-4 py-3 text-center">
                         <div className="flex items-center justify-center gap-1">
                           {detailBaseUrl && (

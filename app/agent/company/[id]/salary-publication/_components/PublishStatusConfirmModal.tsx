@@ -1,3 +1,5 @@
+import { getPublishStatusLabel } from "../_lib/format";
+
 type PublishStatus = "SAVED" | "PUBLISHED";
 
 export type PublishStatusConfirmModalProps = {
@@ -24,21 +26,23 @@ export default function PublishStatusConfirmModal({
             {fileName ?? "파일명 없음"}
           </span>
           {" 항목을 "}
-          {publishStatus === "PUBLISHED" ? (
-            <span className="font-semibold text-blue-700">PUBLISHED</span>
-          ) : (
-            <span className="font-semibold text-amber-700">SAVED</span>
-          )}
+          <span
+            className={`font-semibold ${
+              publishStatus === "PUBLISHED" ? "text-blue-700" : "text-amber-700"
+            }`}
+          >
+            {getPublishStatusLabel(publishStatus)}
+          </span>
           {" 상태로 변경하시겠습니까?"}
         </p>
         {publishStatus === "PUBLISHED" && (
           <p className="mt-2 text-xs text-blue-600">
-            PUBLISHED로 변경하면 거래처에서 해당 급여를 조회할 수 있습니다.
+            공개됨으로 변경하면 거래처에서 해당 급여를 조회할 수 있습니다.
           </p>
         )}
         {publishStatus === "SAVED" && (
           <p className="mt-2 text-xs text-amber-600">
-            SAVED로 변경하면 거래처에서 해당 급여를 조회할 수 없게 됩니다.
+            비공개로 변경하면 거래처에서 해당 급여를 조회할 수 없게 됩니다.
           </p>
         )}
         <div className="mt-5 flex items-center justify-end gap-2">

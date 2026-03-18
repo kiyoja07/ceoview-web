@@ -14,7 +14,7 @@ export function FileUploadField({
   return (
     <div>
       <label className="mb-1.5 block text-sm font-medium text-gray-700">
-        사원등록 엑셀 파일 <span className="text-red-500">*</span>
+        직원 등록 엑셀 파일 <span className="text-red-500">*</span>
       </label>
 
       {!file ? (
@@ -35,10 +35,10 @@ export function FileUploadField({
             </svg>
           </div>
           <p className="text-sm font-medium text-gray-700">
-            클릭하여 사원등록 엑셀 파일을 선택하세요
+            클릭하여 직원 등록 엑셀 파일을 선택하세요
           </p>
           <p className="mt-1 text-xs text-gray-400">
-            위하고 사원등록 양식 (.xlsx, .xls)
+            위하고 직원 등록 양식 (.xlsx, .xls)
           </p>
           <input
             ref={fileInputRef}

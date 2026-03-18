@@ -39,6 +39,9 @@ export interface EarnedIncomeRow {
   dynamicDeductionItems?: EarnedIncomeDynamicItem[];
   totalDeduction: string;
   netPayment: string;
+  employeeEmail?: string | null;
+  employeePhone?: string | null;
+  lastSentAt?: string | null;
 }
 
 export interface BusinessIncomeRow {

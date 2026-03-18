@@ -1,14 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import EmployeeTable from "@/app/_components/EmployeeTable";
 import type { EmployeeRow } from "@/app/_components/EmployeeTable";
+import EmployeePublishConfirmModal from "../employee-publication/_components/EmployeePublishConfirmModal";
 
 // ────────────────────────────────────────────────────────────
 // Types
 // ────────────────────────────────────────────────────────────
+
+type PublishStatus = "SAVED" | "PUBLISHED";
 
 type EmployeeListResponse = {
   success: boolean;
@@ -25,15 +28,28 @@ type CompanyInfo = {
   businessName: string | null;
 };
 
+type PendingAction =
+  | {
+      kind: "individual";
+      employeeId: string;
+      employeeName: string;
+      publishStatus: PublishStatus;
+    }
+  | {
+      kind: "bulk";
+      publishStatus: PublishStatus;
+      count: number;
+    };
+
 // ────────────────────────────────────────────────────────────
 // Income type tabs
 // ────────────────────────────────────────────────────────────
 
 const INCOME_TYPES = [
   { value: "EARNED_INCOME", label: "근로소득자" },
-  { value: "OTHER_INCOME_LABOR", label: "일용소득자" },
   { value: "BUSINESS_INCOME", label: "사업소득자" },
   { value: "OTHER_INCOME", label: "기타소득자" },
+  { value: "OTHER_INCOME_LABOR", label: "일용소득자" },
 ] as const;
 
 type IncomeType = (typeof INCOME_TYPES)[number]["value"];
@@ -72,6 +88,12 @@ export default function AgentCompanyEmployeePage() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [incomeType, setIncomeType] = useState<IncomeType>("EARNED_INCOME");
+
+  // Publication state
+  const [publishLoading, setPublishLoading] = useState(false);
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(
+    null,
+  );
 
   // ── Auth guard helper ──
   const handleAuthError = useCallback(
@@ -194,6 +216,79 @@ export default function AgentCompanyEmployeePage() {
     }
   };
 
+  // ── Run publish action ──
+  const runPublishAction = useCallback(
+    async (action: PendingAction) => {
+      if (!companyId) return;
+      setPublishLoading(true);
+
+      try {
+        const bodyPayload =
+          action.kind === "individual"
+            ? {
+                action: "setEmployeeStatus",
+                employeeId: action.employeeId,
+                incomeType,
+                publishStatus: action.publishStatus,
+              }
+            : {
+                action: "setBulkStatus",
+                incomeType,
+                publishStatus: action.publishStatus,
+              };
+
+        const res = await fetch(
+          `/api/agent/company/${companyId}/employee-publication`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bodyPayload),
+          },
+        );
+
+        if (handleAuthError(res.status)) return;
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => null);
+          alert(body?.error || "상태 변경에 실패했습니다.");
+          return;
+        }
+
+        // Reload list to get updated publishStatus
+        void loadEmployees();
+      } catch {
+        alert("서버 연결에 실패했습니다.");
+      } finally {
+        setPublishLoading(false);
+      }
+    },
+    [companyId, incomeType, handleAuthError, loadEmployees],
+  );
+
+  // ── Handle individual publish toggle (called from table row) ──
+  const handlePublishToggle = useCallback(
+    (employeeId: string, newStatus: "SAVED" | "PUBLISHED") => {
+      const emp = employees.find((e) => e.id === employeeId);
+      setPendingAction({
+        kind: "individual",
+        employeeId,
+        employeeName: emp?.name ?? "",
+        publishStatus: newStatus,
+      });
+    },
+    [employees],
+  );
+
+  // ── Publication counts ──
+  const publishedCount = useMemo(
+    () => employees.filter((e) => e.publishStatus === "PUBLISHED").length,
+    [employees],
+  );
+  const savedCount = useMemo(
+    () => employees.filter((e) => e.publishStatus !== "PUBLISHED").length,
+    [employees],
+  );
+
   // ── Title ──
   const titleCompany = company
     ? company.businessName
@@ -219,7 +314,7 @@ export default function AgentCompanyEmployeePage() {
         </div>
 
         {/* Income type tabs */}
-        <div className="mb-5 flex gap-1 rounded-xl bg-gray-100 p-1">
+        <div className="mb-5 flex gap-4 rounded-xl bg-gray-100 p-1">
           {INCOME_TYPES.map((type) => (
             <button
               key={type.value}
@@ -228,7 +323,7 @@ export default function AgentCompanyEmployeePage() {
               className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
                 incomeType === type.value
                   ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  : "text-gray-500 hover:text-gray-700 border border-gray-300 "
               }`}
             >
               {type.label}
@@ -237,7 +332,7 @@ export default function AgentCompanyEmployeePage() {
         </div>
 
         {/* Action bar */}
-        <div className="mb-5 flex gap-2">
+        <div className="mb-5 flex flex-wrap items-center gap-2">
           <Link
             href={`/agent/company/${companyId}/employee/new`}
             className="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700"
@@ -245,11 +340,54 @@ export default function AgentCompanyEmployeePage() {
             직원 개별 등록
           </Link>
           <Link
-            href={`/agent/employee/new?companyId=${companyId}`}
+            href={`/agent/employees/new?companyId=${companyId}`}
             className="inline-flex items-center rounded-lg border border-emerald-600 px-3 py-2 text-xs font-semibold text-emerald-600 transition hover:bg-emerald-50"
           >
             직원 엑셀 파일 등록
           </Link>
+
+          {/* Bulk publish actions */}
+          <div className="ml-auto flex items-center gap-2">
+            {!listLoading && employees.length > 0 && (
+              <>
+                <span className="text-xs text-gray-500">
+                  공개 {publishedCount}명 · 비공개 {savedCount}명
+                </span>
+                {publishedCount > 0 && (
+                  <button
+                    type="button"
+                    disabled={publishLoading}
+                    onClick={() =>
+                      setPendingAction({
+                        kind: "bulk",
+                        publishStatus: "SAVED",
+                        count: publishedCount,
+                      })
+                    }
+                    className="inline-flex rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    전체 비공개
+                  </button>
+                )}
+                {savedCount > 0 && (
+                  <button
+                    type="button"
+                    disabled={publishLoading}
+                    onClick={() =>
+                      setPendingAction({
+                        kind: "bulk",
+                        publishStatus: "PUBLISHED",
+                        count: savedCount,
+                      })
+                    }
+                    className="inline-flex rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    전체 공개
+                  </button>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
         {/* ── 직원 현황 ── */}
@@ -268,8 +406,28 @@ export default function AgentCompanyEmployeePage() {
           onDelete={handleDelete}
           onPageChange={setPage}
           detailBaseUrl={`/agent/company/${companyId}/employee`}
+          onPublishToggle={handlePublishToggle}
+          publishLoading={publishLoading}
         />
       </div>
+
+      {/* Publish confirm modal */}
+      {pendingAction && (
+        <EmployeePublishConfirmModal
+          targetLabel={
+            pendingAction.kind === "individual"
+              ? pendingAction.employeeName
+              : `현재 소득유형 전체 ${pendingAction.count}명`
+          }
+          publishStatus={pendingAction.publishStatus}
+          onCancel={() => setPendingAction(null)}
+          onConfirm={() => {
+            const action = pendingAction;
+            setPendingAction(null);
+            void runPublishAction(action);
+          }}
+        />
+      )}
     </div>
   );
 }

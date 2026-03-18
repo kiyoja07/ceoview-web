@@ -12,6 +12,10 @@ function getTabs(companyId: string) {
       label: "급여 관리",
     },
     { href: `/agent/company/${companyId}/employee`, label: "직원 관리" },
+    {
+      href: `/agent/company/${companyId}/employee-publication`,
+      label: "직원 발행 관리",
+    },
   ] as const;
 }
 

@@ -54,6 +54,14 @@ export const UploadType = {
 export type UploadType = (typeof UploadType)[keyof typeof UploadType]
 
 
+export const EmployeePublishStatus = {
+  SAVED: 'SAVED',
+  PUBLISHED: 'PUBLISHED'
+} as const
+
+export type EmployeePublishStatus = (typeof EmployeePublishStatus)[keyof typeof EmployeePublishStatus]
+
+
 export const AgentBillingPlan = {
   STARTER: 'STARTER',
   GROWTH: 'GROWTH',
@@ -61,3 +69,20 @@ export const AgentBillingPlan = {
 } as const
 
 export type AgentBillingPlan = (typeof AgentBillingPlan)[keyof typeof AgentBillingPlan]
+
+
+export const PayslipChannel = {
+  EMAIL: 'EMAIL',
+  SMS: 'SMS',
+  KAKAO: 'KAKAO'
+} as const
+
+export type PayslipChannel = (typeof PayslipChannel)[keyof typeof PayslipChannel]
+
+
+export const PayslipNotificationStatus = {
+  SENT: 'SENT',
+  FAILED: 'FAILED'
+} as const
+
+export type PayslipNotificationStatus = (typeof PayslipNotificationStatus)[keyof typeof PayslipNotificationStatus]

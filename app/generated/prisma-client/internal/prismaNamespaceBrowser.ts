@@ -67,6 +67,8 @@ export const ModelName = {
   Upload: 'Upload',
   CompanyActiveUpload: 'CompanyActiveUpload',
   EarnedIncome: 'EarnedIncome',
+  PayslipNotification: 'PayslipNotification',
+  PayslipAccessToken: 'PayslipAccessToken',
   EarnedIncomeItemDefinition: 'EarnedIncomeItemDefinition',
   EarnedIncomeItemValue: 'EarnedIncomeItemValue',
   BusinessIncome: 'BusinessIncome',
@@ -353,6 +355,34 @@ export const EarnedIncomeScalarFieldEnum = {
 export type EarnedIncomeScalarFieldEnum = (typeof EarnedIncomeScalarFieldEnum)[keyof typeof EarnedIncomeScalarFieldEnum]
 
 
+export const PayslipNotificationScalarFieldEnum = {
+  id: 'id',
+  earnedIncomeId: 'earnedIncomeId',
+  channel: 'channel',
+  recipient: 'recipient',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  sentAt: 'sentAt'
+} as const
+
+export type PayslipNotificationScalarFieldEnum = (typeof PayslipNotificationScalarFieldEnum)[keyof typeof PayslipNotificationScalarFieldEnum]
+
+
+export const PayslipAccessTokenScalarFieldEnum = {
+  id: 'id',
+  earnedIncomeId: 'earnedIncomeId',
+  channel: 'channel',
+  recipient: 'recipient',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PayslipAccessTokenScalarFieldEnum = (typeof PayslipAccessTokenScalarFieldEnum)[keyof typeof PayslipAccessTokenScalarFieldEnum]
+
+
 export const EarnedIncomeItemDefinitionScalarFieldEnum = {
   id: 'id',
   companyId: 'companyId',
@@ -484,6 +514,7 @@ export const EmployeeScalarFieldEnum = {
   payGrade: 'payGrade',
   nationalPension: 'nationalPension',
   healthInsurance: 'healthInsurance',
+  publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -498,12 +529,21 @@ export const BusinessIncomeEmployeeScalarFieldEnum = {
   employeeCode: 'employeeCode',
   name: 'name',
   residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  incomeCategory: 'incomeCategory',
+  residenceType: 'residenceType',
+  businessName: 'businessName',
+  businessRegistrationNumber: 'businessRegistrationNumber',
+  businessAddress: 'businessAddress',
+  address: 'address',
+  zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -518,12 +558,20 @@ export const OtherIncomeEmployeeScalarFieldEnum = {
   employeeCode: 'employeeCode',
   name: 'name',
   residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  incomeCategory: 'incomeCategory',
+  residenceType: 'residenceType',
+  personType: 'personType',
+  businessRegistrationNumber: 'businessRegistrationNumber',
+  businessAddress: 'businessAddress',
+  zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -544,6 +592,7 @@ export const OtherIncomeLaborEmployeeScalarFieldEnum = {
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -703,6 +752,22 @@ export const EarnedIncomeOrderByRelevanceFieldEnum = {
 export type EarnedIncomeOrderByRelevanceFieldEnum = (typeof EarnedIncomeOrderByRelevanceFieldEnum)[keyof typeof EarnedIncomeOrderByRelevanceFieldEnum]
 
 
+export const PayslipNotificationOrderByRelevanceFieldEnum = {
+  recipient: 'recipient',
+  errorMessage: 'errorMessage'
+} as const
+
+export type PayslipNotificationOrderByRelevanceFieldEnum = (typeof PayslipNotificationOrderByRelevanceFieldEnum)[keyof typeof PayslipNotificationOrderByRelevanceFieldEnum]
+
+
+export const PayslipAccessTokenOrderByRelevanceFieldEnum = {
+  recipient: 'recipient',
+  tokenHash: 'tokenHash'
+} as const
+
+export type PayslipAccessTokenOrderByRelevanceFieldEnum = (typeof PayslipAccessTokenOrderByRelevanceFieldEnum)[keyof typeof PayslipAccessTokenOrderByRelevanceFieldEnum]
+
+
 export const EarnedIncomeItemDefinitionOrderByRelevanceFieldEnum = {
   code: 'code',
   name: 'name'
@@ -780,6 +845,14 @@ export const BusinessIncomeEmployeeOrderByRelevanceFieldEnum = {
   employeeCode: 'employeeCode',
   name: 'name',
   residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  incomeCategory: 'incomeCategory',
+  residenceType: 'residenceType',
+  businessName: 'businessName',
+  businessRegistrationNumber: 'businessRegistrationNumber',
+  businessAddress: 'businessAddress',
+  address: 'address',
+  zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',
@@ -795,6 +868,13 @@ export const OtherIncomeEmployeeOrderByRelevanceFieldEnum = {
   employeeCode: 'employeeCode',
   name: 'name',
   residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  incomeCategory: 'incomeCategory',
+  residenceType: 'residenceType',
+  personType: 'personType',
+  businessRegistrationNumber: 'businessRegistrationNumber',
+  businessAddress: 'businessAddress',
+  zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',

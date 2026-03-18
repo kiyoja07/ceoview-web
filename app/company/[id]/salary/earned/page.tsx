@@ -11,6 +11,7 @@ import {
 import YearMonthPicker from "../components/filters/YearMonthPicker";
 import { INCOME_META } from "../constants";
 import { BulkPayslipDownload } from "../components/BulkPayslipDownload";
+import { BulkPayslipSend } from "../components/BulkPayslipSend";
 import { PayslipModal } from "../components/PayslipModal";
 import { SummaryCardsRow } from "../components/SummaryCardsRow";
 import { ErrorPanel } from "../components/common/ErrorPanel";
@@ -43,7 +44,7 @@ export default function SalaryEarnedPage() {
 
   const [payslipRow, setPayslipRow] = useState<EarnedIncomeRow | null>(null);
 
-  const { earnedData, loading, error } = useSalaryData({
+  const { earnedData, loading, error, refetch } = useSalaryData({
     companyId: id,
     currentPage,
     filterAccrualYm,
@@ -213,14 +214,24 @@ export default function SalaryEarnedPage() {
             </div>
           </div>
           {data && !loading && data.total > 0 && (
-            <BulkPayslipDownload
-              companyId={id}
-              incomeType="earned"
-              company={company}
-              totalCount={data.total}
-              accrualYm={filterAccrualYm || undefined}
-              paymentYm={filterPaymentYm || undefined}
-            />
+            <div className="flex items-center gap-2">
+              <BulkPayslipSend
+                companyId={id}
+                incomeType="earned"
+                totalCount={data.total}
+                accrualYm={filterAccrualYm || undefined}
+                paymentYm={filterPaymentYm || undefined}
+                onSent={refetch}
+              />
+              <BulkPayslipDownload
+                companyId={id}
+                incomeType="earned"
+                company={company}
+                totalCount={data.total}
+                accrualYm={filterAccrualYm || undefined}
+                paymentYm={filterPaymentYm || undefined}
+              />
+            </div>
           )}
         </div>
 
@@ -324,7 +335,9 @@ export default function SalaryEarnedPage() {
           row={payslipRow}
           incomeType="earned"
           company={company}
+          companyId={id}
           onClose={() => setPayslipRow(null)}
+          onSent={refetch}
         />
       )}
     </div>

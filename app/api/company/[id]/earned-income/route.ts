@@ -67,6 +67,9 @@ export async function GET(
       prisma.earnedIncome.findMany({
         where,
         include: {
+          employee: {
+            select: { email: true, phone: true },
+          },
           itemValues: {
             include: {
               itemDefinition: {
@@ -77,6 +80,12 @@ export async function GET(
                 },
               },
             },
+          },
+          payslipNotifications: {
+            where: { status: "SENT" },
+            orderBy: { sentAt: "desc" },
+            take: 1,
+            select: { sentAt: true },
           },
         },
         orderBy: [
@@ -89,8 +98,35 @@ export async function GET(
       }),
     ]);
 
+    // Fallback: for rows without a linked employee, look up by employeeCode
+    const unlinkedCodes = [
+      ...new Set(rows.filter((r) => !r.employee).map((r) => r.employeeCode)),
+    ];
+    const employeeByCode = new Map<
+      string,
+      { email: string | null; phone: string | null }
+    >();
+    if (unlinkedCodes.length > 0) {
+      const employees = await prisma.employee.findMany({
+        where: {
+          companyId,
+          employeeCode: { in: unlinkedCodes },
+          deletedAt: null,
+        },
+        select: { employeeCode: true, email: true, phone: true },
+      });
+      for (const emp of employees) {
+        if (emp.employeeCode) {
+          employeeByCode.set(emp.employeeCode, {
+            email: emp.email,
+            phone: emp.phone,
+          });
+        }
+      }
+    }
+
     const serializedRows = rows.map((row) => {
-      const { itemValues, ...baseRow } = row;
+      const { itemValues, employee, payslipNotifications, ...baseRow } = row;
       const dynamicPaymentItems = itemValues
         .filter((item) => item.itemDefinition.kind === "PAYMENT")
         .map((item) => ({
@@ -110,11 +146,16 @@ export async function GET(
           (item) => item.code === EARNED_ITEM_CODE_STUDENT_LOAN_REPAYMENT,
         )?.amount ?? 0;
 
+      const fallback = employeeByCode.get(baseRow.employeeCode);
+
       return serialize({
         ...baseRow,
         dynamicPaymentItems,
         dynamicDeductionItems,
         studentLoanRepayment,
+        employeeEmail: employee?.email ?? fallback?.email ?? null,
+        employeePhone: employee?.phone ?? fallback?.phone ?? null,
+        lastSentAt: payslipNotifications[0]?.sentAt ?? null,
       });
     });
 
@@ -128,8 +169,9 @@ export async function GET(
     });
   } catch (error) {
     console.error("근로소득 조회 실패:", error);
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: "근로소득 데이터를 불러오는 데 실패했습니다." },
+      { error: "근로소득 데이터를 불러오는 데 실패했습니다.", detail: message },
       { status: 500 },
     );
   }

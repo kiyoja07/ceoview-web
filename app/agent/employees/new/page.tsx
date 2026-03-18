@@ -37,6 +37,7 @@ export default function EmployeeNewPage() {
 
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
   const [message, setMessage] = useState<MessageState>(null);
   const [result, setResult] = useState<EmployeeUploadResult | null>(null);
 
@@ -166,7 +167,7 @@ export default function EmployeeNewPage() {
         setResult(data);
         setMessage({
           type: "success",
-          text: `직원 저장 완료 — ${data.savedCount}명이 저장되었습니다.`,
+          text: `직원 저장 완료 — ${data.savedCount}명이 저장되었습니다. 이제 발행하면 회사에서 조회할 수 있습니다.`,
         });
       } else {
         setMessage({
@@ -178,6 +179,51 @@ export default function EmployeeNewPage() {
       setMessage({ type: "error", text: "서버 연결에 실패했습니다." });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!result?.saved || result.published) return;
+
+    setPublishing(true);
+    setMessage(null);
+
+    try {
+      const res = await fetch("/api/agent/employee/upload/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companyId,
+          incomeType,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.published) {
+        setResult((prev) =>
+          prev
+            ? {
+                ...prev,
+                published: true,
+                publishStatus: "PUBLISHED",
+              }
+            : prev,
+        );
+        setMessage({
+          type: "success",
+          text: `발행 완료 — ${data.publishedCount}명이 발행되었습니다. 이제 회사에서 조회할 수 있습니다.`,
+        });
+      } else {
+        setMessage({
+          type: "error",
+          text: data.error || "발행에 실패했습니다.",
+        });
+      }
+    } catch {
+      setMessage({ type: "error", text: "서버 연결에 실패했습니다." });
+    } finally {
+      setPublishing(false);
     }
   };
 
@@ -292,7 +338,7 @@ export default function EmployeeNewPage() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                   />
                 </svg>
-                파싱 중...
+                데이터 추출 중...
               </span>
             ) : (
               "엑셀 파일 업로드 및 매핑 확인"
@@ -302,7 +348,13 @@ export default function EmployeeNewPage() {
 
         {/* Result Preview */}
         {result && (
-          <ResultPreview result={result} saving={saving} onSave={handleSave} />
+          <ResultPreview
+            result={result}
+            saving={saving}
+            publishing={publishing}
+            onSave={handleSave}
+            onPublish={handlePublish}
+          />
         )}
       </div>
     </div>

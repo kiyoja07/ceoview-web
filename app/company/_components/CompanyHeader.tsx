@@ -65,7 +65,7 @@ export function CompanyHeader() {
   }
 
   const salaryHref = profile?.company?.id
-    ? `/company/${profile.company.id}/salary`
+    ? `/company/${profile.company.id}/salary/dashboard`
     : "/company/dashboard";
 
   const navItems: CompanyHeaderNavItem[] = [

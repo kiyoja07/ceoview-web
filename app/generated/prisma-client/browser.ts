@@ -98,6 +98,16 @@ export type CompanyActiveUpload = Prisma.CompanyActiveUploadModel
  */
 export type EarnedIncome = Prisma.EarnedIncomeModel
 /**
+ * Model PayslipNotification
+ * 
+ */
+export type PayslipNotification = Prisma.PayslipNotificationModel
+/**
+ * Model PayslipAccessToken
+ * 
+ */
+export type PayslipAccessToken = Prisma.PayslipAccessTokenModel
+/**
  * Model EarnedIncomeItemDefinition
  * 
  */

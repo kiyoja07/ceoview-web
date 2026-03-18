@@ -23,6 +23,7 @@ interface UseSalaryDataResult {
   otherData: OtherApiResponse | null;
   loading: boolean;
   error: string | null;
+  refetch: () => Promise<void>;
 }
 
 export function useSalaryData({
@@ -124,5 +125,6 @@ export function useSalaryData({
     otherData,
     loading,
     error,
+    refetch: fetchData,
   };
 }

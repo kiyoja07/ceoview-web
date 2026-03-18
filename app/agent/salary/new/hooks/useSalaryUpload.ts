@@ -67,7 +67,7 @@ export function useSalaryUpload(params: UseSalaryUploadParams) {
         setResult(data);
         setMessage({
           type: "success",
-          text: `${data.incomeTypeLabel} 엑셀 파싱 완료 — ${data.totalRows}건`,
+          text: `${data.incomeTypeLabel} 엑셀 데이터 추출 완료 — ${data.totalRows}건`,
         });
       } else {
         setMessage({

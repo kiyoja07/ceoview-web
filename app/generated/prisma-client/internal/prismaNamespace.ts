@@ -400,6 +400,8 @@ export const ModelName = {
   Upload: 'Upload',
   CompanyActiveUpload: 'CompanyActiveUpload',
   EarnedIncome: 'EarnedIncome',
+  PayslipNotification: 'PayslipNotification',
+  PayslipAccessToken: 'PayslipAccessToken',
   EarnedIncomeItemDefinition: 'EarnedIncomeItemDefinition',
   EarnedIncomeItemValue: 'EarnedIncomeItemValue',
   BusinessIncome: 'BusinessIncome',
@@ -425,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyMagicLinkToken" | "phoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount"
+    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyMagicLinkToken" | "phoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "payslipNotification" | "payslipAccessToken" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1485,6 +1487,138 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PayslipNotification: {
+      payload: Prisma.$PayslipNotificationPayload<ExtArgs>
+      fields: Prisma.PayslipNotificationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PayslipNotificationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipNotificationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PayslipNotificationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipNotificationPayload>
+        }
+        findFirst: {
+          args: Prisma.PayslipNotificationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipNotificationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PayslipNotificationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipNotificationPayload>
+        }
+        findMany: {
+          args: Prisma.PayslipNotificationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipNotificationPayload>[]
+        }
+        create: {
+          args: Prisma.PayslipNotificationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipNotificationPayload>
+        }
+        createMany: {
+          args: Prisma.PayslipNotificationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.PayslipNotificationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipNotificationPayload>
+        }
+        update: {
+          args: Prisma.PayslipNotificationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipNotificationPayload>
+        }
+        deleteMany: {
+          args: Prisma.PayslipNotificationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PayslipNotificationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.PayslipNotificationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipNotificationPayload>
+        }
+        aggregate: {
+          args: Prisma.PayslipNotificationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePayslipNotification>
+        }
+        groupBy: {
+          args: Prisma.PayslipNotificationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PayslipNotificationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PayslipNotificationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PayslipNotificationCountAggregateOutputType> | number
+        }
+      }
+    }
+    PayslipAccessToken: {
+      payload: Prisma.$PayslipAccessTokenPayload<ExtArgs>
+      fields: Prisma.PayslipAccessTokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PayslipAccessTokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipAccessTokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PayslipAccessTokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipAccessTokenPayload>
+        }
+        findFirst: {
+          args: Prisma.PayslipAccessTokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipAccessTokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PayslipAccessTokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipAccessTokenPayload>
+        }
+        findMany: {
+          args: Prisma.PayslipAccessTokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipAccessTokenPayload>[]
+        }
+        create: {
+          args: Prisma.PayslipAccessTokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipAccessTokenPayload>
+        }
+        createMany: {
+          args: Prisma.PayslipAccessTokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.PayslipAccessTokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipAccessTokenPayload>
+        }
+        update: {
+          args: Prisma.PayslipAccessTokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipAccessTokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.PayslipAccessTokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PayslipAccessTokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.PayslipAccessTokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PayslipAccessTokenPayload>
+        }
+        aggregate: {
+          args: Prisma.PayslipAccessTokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePayslipAccessToken>
+        }
+        groupBy: {
+          args: Prisma.PayslipAccessTokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PayslipAccessTokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PayslipAccessTokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PayslipAccessTokenCountAggregateOutputType> | number
+        }
+      }
+    }
     EarnedIncomeItemDefinition: {
       payload: Prisma.$EarnedIncomeItemDefinitionPayload<ExtArgs>
       fields: Prisma.EarnedIncomeItemDefinitionFieldRefs
@@ -2442,6 +2576,34 @@ export const EarnedIncomeScalarFieldEnum = {
 export type EarnedIncomeScalarFieldEnum = (typeof EarnedIncomeScalarFieldEnum)[keyof typeof EarnedIncomeScalarFieldEnum]
 
 
+export const PayslipNotificationScalarFieldEnum = {
+  id: 'id',
+  earnedIncomeId: 'earnedIncomeId',
+  channel: 'channel',
+  recipient: 'recipient',
+  status: 'status',
+  errorMessage: 'errorMessage',
+  sentAt: 'sentAt'
+} as const
+
+export type PayslipNotificationScalarFieldEnum = (typeof PayslipNotificationScalarFieldEnum)[keyof typeof PayslipNotificationScalarFieldEnum]
+
+
+export const PayslipAccessTokenScalarFieldEnum = {
+  id: 'id',
+  earnedIncomeId: 'earnedIncomeId',
+  channel: 'channel',
+  recipient: 'recipient',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PayslipAccessTokenScalarFieldEnum = (typeof PayslipAccessTokenScalarFieldEnum)[keyof typeof PayslipAccessTokenScalarFieldEnum]
+
+
 export const EarnedIncomeItemDefinitionScalarFieldEnum = {
   id: 'id',
   companyId: 'companyId',
@@ -2573,6 +2735,7 @@ export const EmployeeScalarFieldEnum = {
   payGrade: 'payGrade',
   nationalPension: 'nationalPension',
   healthInsurance: 'healthInsurance',
+  publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -2587,12 +2750,21 @@ export const BusinessIncomeEmployeeScalarFieldEnum = {
   employeeCode: 'employeeCode',
   name: 'name',
   residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  incomeCategory: 'incomeCategory',
+  residenceType: 'residenceType',
+  businessName: 'businessName',
+  businessRegistrationNumber: 'businessRegistrationNumber',
+  businessAddress: 'businessAddress',
+  address: 'address',
+  zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -2607,12 +2779,20 @@ export const OtherIncomeEmployeeScalarFieldEnum = {
   employeeCode: 'employeeCode',
   name: 'name',
   residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  incomeCategory: 'incomeCategory',
+  residenceType: 'residenceType',
+  personType: 'personType',
+  businessRegistrationNumber: 'businessRegistrationNumber',
+  businessAddress: 'businessAddress',
+  zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -2633,6 +2813,7 @@ export const OtherIncomeLaborEmployeeScalarFieldEnum = {
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -2792,6 +2973,22 @@ export const EarnedIncomeOrderByRelevanceFieldEnum = {
 export type EarnedIncomeOrderByRelevanceFieldEnum = (typeof EarnedIncomeOrderByRelevanceFieldEnum)[keyof typeof EarnedIncomeOrderByRelevanceFieldEnum]
 
 
+export const PayslipNotificationOrderByRelevanceFieldEnum = {
+  recipient: 'recipient',
+  errorMessage: 'errorMessage'
+} as const
+
+export type PayslipNotificationOrderByRelevanceFieldEnum = (typeof PayslipNotificationOrderByRelevanceFieldEnum)[keyof typeof PayslipNotificationOrderByRelevanceFieldEnum]
+
+
+export const PayslipAccessTokenOrderByRelevanceFieldEnum = {
+  recipient: 'recipient',
+  tokenHash: 'tokenHash'
+} as const
+
+export type PayslipAccessTokenOrderByRelevanceFieldEnum = (typeof PayslipAccessTokenOrderByRelevanceFieldEnum)[keyof typeof PayslipAccessTokenOrderByRelevanceFieldEnum]
+
+
 export const EarnedIncomeItemDefinitionOrderByRelevanceFieldEnum = {
   code: 'code',
   name: 'name'
@@ -2869,6 +3066,14 @@ export const BusinessIncomeEmployeeOrderByRelevanceFieldEnum = {
   employeeCode: 'employeeCode',
   name: 'name',
   residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  incomeCategory: 'incomeCategory',
+  residenceType: 'residenceType',
+  businessName: 'businessName',
+  businessRegistrationNumber: 'businessRegistrationNumber',
+  businessAddress: 'businessAddress',
+  address: 'address',
+  zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',
@@ -2884,6 +3089,13 @@ export const OtherIncomeEmployeeOrderByRelevanceFieldEnum = {
   employeeCode: 'employeeCode',
   name: 'name',
   residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  incomeCategory: 'incomeCategory',
+  residenceType: 'residenceType',
+  personType: 'personType',
+  businessRegistrationNumber: 'businessRegistrationNumber',
+  businessAddress: 'businessAddress',
+  zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',
@@ -3003,9 +3215,30 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
+ * Reference to a field of type 'PayslipChannel'
+ */
+export type EnumPayslipChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PayslipChannel'>
+    
+
+
+/**
+ * Reference to a field of type 'PayslipNotificationStatus'
+ */
+export type EnumPayslipNotificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PayslipNotificationStatus'>
+    
+
+
+/**
  * Reference to a field of type 'PayrollItemKind'
  */
 export type EnumPayrollItemKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PayrollItemKind'>
+    
+
+
+/**
+ * Reference to a field of type 'EmployeePublishStatus'
+ */
+export type EnumEmployeePublishStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmployeePublishStatus'>
     
 
 
@@ -3126,6 +3359,8 @@ export type GlobalOmitConfig = {
   upload?: Prisma.UploadOmit
   companyActiveUpload?: Prisma.CompanyActiveUploadOmit
   earnedIncome?: Prisma.EarnedIncomeOmit
+  payslipNotification?: Prisma.PayslipNotificationOmit
+  payslipAccessToken?: Prisma.PayslipAccessTokenOmit
   earnedIncomeItemDefinition?: Prisma.EarnedIncomeItemDefinitionOmit
   earnedIncomeItemValue?: Prisma.EarnedIncomeItemValueOmit
   businessIncome?: Prisma.BusinessIncomeOmit

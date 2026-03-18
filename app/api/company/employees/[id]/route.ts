@@ -72,6 +72,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         id: employeeId,
         companyId: auth.companyId,
         deletedAt: null,
+        publishStatus: "PUBLISHED",
       },
       include: {
         bankAccounts: {
@@ -179,6 +180,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
           id: employeeId,
           companyId: auth.companyId,
           deletedAt: null,
+          publishStatus: "PUBLISHED",
         },
         select: {
           id: true,
@@ -401,6 +403,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
         id: employeeId,
         companyId: auth.companyId,
         deletedAt: null,
+        publishStatus: "PUBLISHED",
       },
       select: { id: true },
     });

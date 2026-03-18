@@ -16,11 +16,14 @@ export interface EmployeeMappedRow extends Record<string, unknown> {
 export interface EmployeeUploadResult {
   success: boolean;
   saved: boolean;
+  published?: boolean;
+  publishStatus?: "SAVED" | "PUBLISHED";
   savedCount?: number;
   skippedCount?: number;
   fileName: string;
   sheetName: string;
   companyId: string;
+  incomeType: IncomeType;
   totalRows: number;
   matchedCount: number;
   unmatchedCount: number;

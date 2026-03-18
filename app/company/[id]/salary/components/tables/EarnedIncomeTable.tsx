@@ -29,7 +29,10 @@ const COMPANY_BURDEN_COLS = [
 ] as const;
 
 type CompanyBurdenKey = (typeof COMPANY_BURDEN_COLS)[number]["key"];
-type CompanyBurdenData = Record<CompanyBurdenKey | "totalCompanyBurden", number>;
+type CompanyBurdenData = Record<
+  CompanyBurdenKey | "totalCompanyBurden",
+  number
+>;
 
 // 산재보험 평균 요율 (업종별 상이)
 const INDUSTRIAL_ACCIDENT_RATE = 0.007;
@@ -40,7 +43,9 @@ function computeCompanyBurden(row: EarnedIncomeRow): CompanyBurdenData {
   const companyLongTermCare = Number(row.longTermCareInsurance);
   const companyEmploymentInsurance = Number(row.employmentInsurance);
   const totalPay = Number(row.totalPayment);
-  const companyIndustrialAccident = Math.round(totalPay * INDUSTRIAL_ACCIDENT_RATE);
+  const companyIndustrialAccident = Math.round(
+    totalPay * INDUSTRIAL_ACCIDENT_RATE,
+  );
   const severancePay = Math.round(totalPay / 12);
 
   return {
@@ -273,7 +278,9 @@ export function EarnedIncomeTable({
             실수령액
           </th>
           <th
-            colSpan={showCompanyBurdenDetail ? COMPANY_BURDEN_COLS.length + 1 : 1}
+            colSpan={
+              showCompanyBurdenDetail ? COMPANY_BURDEN_COLS.length + 1 : 1
+            }
             className="border-l border-gray-100 bg-orange-50 px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-orange-600 whitespace-nowrap"
           >
             <button
@@ -305,6 +312,12 @@ export function EarnedIncomeTable({
             className="border-l border-gray-100 bg-purple-50 px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-purple-600"
           >
             총 인건비
+          </th>
+          <th
+            colSpan={1}
+            className="border-l border-gray-100 bg-indigo-50 px-4 py-2 text-center text-xs font-semibold uppercase tracking-wider text-indigo-600"
+          >
+            발송
           </th>
         </tr>
         <tr className="border-b border-gray-200 bg-gray-50">
@@ -377,6 +390,9 @@ export function EarnedIncomeTable({
             ))}
           <th className="whitespace-nowrap border-l border-gray-100 px-4 py-3 text-right text-xs font-semibold text-purple-600">
             총 인건비
+          </th>
+          <th className="whitespace-nowrap border-l border-gray-100 px-4 py-3 text-center text-xs font-semibold text-indigo-600">
+            발송 상태
           </th>
         </tr>
       </thead>
@@ -456,7 +472,9 @@ export function EarnedIncomeTable({
                 {formatNumber(row.netPayment)}
               </td>
               <td className="whitespace-nowrap border-l border-gray-50 px-4 py-3 text-right tabular-nums font-semibold text-orange-600">
-                {formatNumber(companyBurden.byRow.get(row.id)?.totalCompanyBurden ?? 0)}
+                {formatNumber(
+                  companyBurden.byRow.get(row.id)?.totalCompanyBurden ?? 0,
+                )}
               </td>
               {showCompanyBurdenDetail &&
                 COMPANY_BURDEN_COLS.map((col) => (
@@ -464,11 +482,43 @@ export function EarnedIncomeTable({
                     key={col.key}
                     className="whitespace-nowrap px-4 py-3 text-right tabular-nums text-gray-500"
                   >
-                    {formatNumber(companyBurden.byRow.get(row.id)?.[col.key] ?? 0)}
+                    {formatNumber(
+                      companyBurden.byRow.get(row.id)?.[col.key] ?? 0,
+                    )}
                   </td>
                 ))}
               <td className="whitespace-nowrap border-l border-gray-50 px-4 py-3 text-right tabular-nums font-bold text-purple-700">
-                {formatNumber(Number(row.totalPayment) + (companyBurden.byRow.get(row.id)?.totalCompanyBurden ?? 0))}
+                {formatNumber(
+                  Number(row.totalPayment) +
+                    (companyBurden.byRow.get(row.id)?.totalCompanyBurden ?? 0),
+                )}
+              </td>
+              <td className="whitespace-nowrap border-l border-gray-50 px-4 py-3 text-center">
+                {row.lastSentAt ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-[11px] font-medium text-green-700 ring-1 ring-green-200">
+                    <svg
+                      className="h-3 w-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="m4.5 12.75 6 6 9-13.5"
+                      />
+                    </svg>
+                    {new Date(row.lastSentAt).toLocaleString("ko-KR", {
+                      month: "numeric",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                ) : (
+                  <span className="text-xs text-gray-300">—</span>
+                )}
               </td>
             </tr>
           ))
@@ -524,8 +574,11 @@ export function EarnedIncomeTable({
                 </td>
               ))}
             <td className="whitespace-nowrap border-l border-gray-100 px-4 py-3 text-right tabular-nums font-bold text-purple-700">
-              {formatNumber(sum.totalPayment + (companyBurden.sum?.totalCompanyBurden ?? 0))}
+              {formatNumber(
+                sum.totalPayment + (companyBurden.sum?.totalCompanyBurden ?? 0),
+              )}
             </td>
+            <td className="whitespace-nowrap border-l border-gray-100 px-4 py-3" />
           </tr>
         </tfoot>
       )}

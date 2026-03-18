@@ -368,6 +368,40 @@ export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
 }
 
+export type EnumPayslipChannelFilter<$PrismaModel = never> = {
+  equals?: $Enums.PayslipChannel | Prisma.EnumPayslipChannelFieldRefInput<$PrismaModel>
+  in?: $Enums.PayslipChannel[]
+  notIn?: $Enums.PayslipChannel[]
+  not?: Prisma.NestedEnumPayslipChannelFilter<$PrismaModel> | $Enums.PayslipChannel
+}
+
+export type EnumPayslipNotificationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.PayslipNotificationStatus | Prisma.EnumPayslipNotificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PayslipNotificationStatus[]
+  notIn?: $Enums.PayslipNotificationStatus[]
+  not?: Prisma.NestedEnumPayslipNotificationStatusFilter<$PrismaModel> | $Enums.PayslipNotificationStatus
+}
+
+export type EnumPayslipChannelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PayslipChannel | Prisma.EnumPayslipChannelFieldRefInput<$PrismaModel>
+  in?: $Enums.PayslipChannel[]
+  notIn?: $Enums.PayslipChannel[]
+  not?: Prisma.NestedEnumPayslipChannelWithAggregatesFilter<$PrismaModel> | $Enums.PayslipChannel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPayslipChannelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPayslipChannelFilter<$PrismaModel>
+}
+
+export type EnumPayslipNotificationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PayslipNotificationStatus | Prisma.EnumPayslipNotificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PayslipNotificationStatus[]
+  notIn?: $Enums.PayslipNotificationStatus[]
+  not?: Prisma.NestedEnumPayslipNotificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.PayslipNotificationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPayslipNotificationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPayslipNotificationStatusFilter<$PrismaModel>
+}
+
 export type EnumPayrollItemKindFilter<$PrismaModel = never> = {
   equals?: $Enums.PayrollItemKind | Prisma.EnumPayrollItemKindFieldRefInput<$PrismaModel>
   in?: $Enums.PayrollItemKind[]
@@ -410,6 +444,23 @@ export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
+}
+
+export type EnumEmployeePublishStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeePublishStatus | Prisma.EnumEmployeePublishStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.EmployeePublishStatus[]
+  notIn?: $Enums.EmployeePublishStatus[]
+  not?: Prisma.NestedEnumEmployeePublishStatusFilter<$PrismaModel> | $Enums.EmployeePublishStatus
+}
+
+export type EnumEmployeePublishStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeePublishStatus | Prisma.EnumEmployeePublishStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.EmployeePublishStatus[]
+  notIn?: $Enums.EmployeePublishStatus[]
+  not?: Prisma.NestedEnumEmployeePublishStatusWithAggregatesFilter<$PrismaModel> | $Enums.EmployeePublishStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEmployeePublishStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEmployeePublishStatusFilter<$PrismaModel>
 }
 
 export type NestedBigIntFilter<$PrismaModel = never> = {
@@ -783,6 +834,40 @@ export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
 }
 
+export type NestedEnumPayslipChannelFilter<$PrismaModel = never> = {
+  equals?: $Enums.PayslipChannel | Prisma.EnumPayslipChannelFieldRefInput<$PrismaModel>
+  in?: $Enums.PayslipChannel[]
+  notIn?: $Enums.PayslipChannel[]
+  not?: Prisma.NestedEnumPayslipChannelFilter<$PrismaModel> | $Enums.PayslipChannel
+}
+
+export type NestedEnumPayslipNotificationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.PayslipNotificationStatus | Prisma.EnumPayslipNotificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PayslipNotificationStatus[]
+  notIn?: $Enums.PayslipNotificationStatus[]
+  not?: Prisma.NestedEnumPayslipNotificationStatusFilter<$PrismaModel> | $Enums.PayslipNotificationStatus
+}
+
+export type NestedEnumPayslipChannelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PayslipChannel | Prisma.EnumPayslipChannelFieldRefInput<$PrismaModel>
+  in?: $Enums.PayslipChannel[]
+  notIn?: $Enums.PayslipChannel[]
+  not?: Prisma.NestedEnumPayslipChannelWithAggregatesFilter<$PrismaModel> | $Enums.PayslipChannel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPayslipChannelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPayslipChannelFilter<$PrismaModel>
+}
+
+export type NestedEnumPayslipNotificationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PayslipNotificationStatus | Prisma.EnumPayslipNotificationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.PayslipNotificationStatus[]
+  notIn?: $Enums.PayslipNotificationStatus[]
+  not?: Prisma.NestedEnumPayslipNotificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.PayslipNotificationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPayslipNotificationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPayslipNotificationStatusFilter<$PrismaModel>
+}
+
 export type NestedEnumPayrollItemKindFilter<$PrismaModel = never> = {
   equals?: $Enums.PayrollItemKind | Prisma.EnumPayrollItemKindFieldRefInput<$PrismaModel>
   in?: $Enums.PayrollItemKind[]
@@ -825,6 +910,23 @@ export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumEmployeePublishStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeePublishStatus | Prisma.EnumEmployeePublishStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.EmployeePublishStatus[]
+  notIn?: $Enums.EmployeePublishStatus[]
+  not?: Prisma.NestedEnumEmployeePublishStatusFilter<$PrismaModel> | $Enums.EmployeePublishStatus
+}
+
+export type NestedEnumEmployeePublishStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.EmployeePublishStatus | Prisma.EnumEmployeePublishStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.EmployeePublishStatus[]
+  notIn?: $Enums.EmployeePublishStatus[]
+  not?: Prisma.NestedEnumEmployeePublishStatusWithAggregatesFilter<$PrismaModel> | $Enums.EmployeePublishStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumEmployeePublishStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumEmployeePublishStatusFilter<$PrismaModel>
 }
 
 

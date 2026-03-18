@@ -156,10 +156,27 @@ async function setUploadToSaved(upload: UploadRow) {
   return true;
 }
 
+type UploadAggregateInfo = {
+  accrualYm: string | null;
+  paymentYm: string | null;
+  rowCount: number;
+};
+
+function formatYm(min: number | null, max: number | null): string | null {
+  if (min == null || max == null) return null;
+  const fmt = (v: number) => {
+    const y = Math.floor(v / 100);
+    const m = String(v % 100).padStart(2, "0");
+    return `${y}-${m}`;
+  };
+  return min === max ? fmt(min) : `${fmt(min)}~${fmt(max)}`;
+}
+
 function serializeUpload(
   upload: UploadRow,
   pointer: ActivePointerRow | null,
   canManage: boolean,
+  aggregate: UploadAggregateInfo,
 ) {
   const isPublished = Boolean(pointer && pointer.uploadId === upload.id);
 
@@ -175,6 +192,9 @@ function serializeUpload(
     companyVisible: isPublished,
     publishStatus: (isPublished ? "PUBLISHED" : "SAVED") as PublicationStatus,
     canManage,
+    accrualYm: aggregate.accrualYm,
+    paymentYm: aggregate.paymentYm,
+    rowCount: aggregate.rowCount,
   };
 }
 
@@ -226,6 +246,74 @@ async function buildStatusSnapshot(
     }),
   ]);
 
+  const uploadIds = uploads.map((u) => u.id);
+
+  const [earnedAgg, businessAgg, otherAgg, dailyAgg] = await Promise.all([
+    prisma.earnedIncome.groupBy({
+      by: ["uploadId"],
+      where: { uploadId: { in: uploadIds } },
+      _count: true,
+      _min: { accrualYm: true, paymentYm: true },
+      _max: { accrualYm: true, paymentYm: true },
+    }),
+    prisma.businessIncome.groupBy({
+      by: ["uploadId"],
+      where: { uploadId: { in: uploadIds } },
+      _count: true,
+      _min: { accrualYm: true, paymentYm: true },
+      _max: { accrualYm: true, paymentYm: true },
+    }),
+    prisma.otherIncome.groupBy({
+      by: ["uploadId"],
+      where: { uploadId: { in: uploadIds } },
+      _count: true,
+      _min: { accrualYm: true, paymentYm: true },
+      _max: { accrualYm: true, paymentYm: true },
+    }),
+    prisma.dailyIncomeLabor.groupBy({
+      by: ["uploadId"],
+      where: { uploadId: { in: uploadIds } },
+      _count: true,
+    }),
+  ]);
+
+  const aggregateMap = new Map<string, UploadAggregateInfo>();
+
+  for (const row of earnedAgg) {
+    aggregateMap.set(row.uploadId.toString(), {
+      accrualYm: formatYm(row._min.accrualYm, row._max.accrualYm),
+      paymentYm: formatYm(row._min.paymentYm, row._max.paymentYm),
+      rowCount: row._count,
+    });
+  }
+  for (const row of businessAgg) {
+    aggregateMap.set(row.uploadId.toString(), {
+      accrualYm: formatYm(row._min.accrualYm, row._max.accrualYm),
+      paymentYm: formatYm(row._min.paymentYm, row._max.paymentYm),
+      rowCount: row._count,
+    });
+  }
+  for (const row of otherAgg) {
+    aggregateMap.set(row.uploadId.toString(), {
+      accrualYm: formatYm(row._min.accrualYm, row._max.accrualYm),
+      paymentYm: formatYm(row._min.paymentYm, row._max.paymentYm),
+      rowCount: row._count,
+    });
+  }
+  for (const row of dailyAgg) {
+    aggregateMap.set(row.uploadId.toString(), {
+      accrualYm: null,
+      paymentYm: null,
+      rowCount: row._count,
+    });
+  }
+
+  const defaultAggregate: UploadAggregateInfo = {
+    accrualYm: null,
+    paymentYm: null,
+    rowCount: 0,
+  };
+
   const pointerByType = new Map<SalaryIncomeType, ActivePointerRow>();
   for (const pointer of pointers) {
     pointerByType.set(pointer.type as SalaryIncomeType, {
@@ -239,17 +327,22 @@ async function buildStatusSnapshot(
   const list = uploads
     .map((upload) => {
       const canManage = canManageUpload(upload.memo, agentUserId);
-      const pointer = pointerByType.get(upload.type as SalaryIncomeType) ?? null;
+      const pointer =
+        pointerByType.get(upload.type as SalaryIncomeType) ?? null;
       const isPublished = Boolean(pointer && pointer.uploadId === upload.id);
 
       if (!canManage && !isPublished) {
         return null;
       }
 
+      const aggregate =
+        aggregateMap.get(upload.id.toString()) ?? defaultAggregate;
+
       return serializeUpload(
         upload as UploadRow,
         isPublished ? pointer : null,
         canManage,
+        aggregate,
       );
     })
     .filter((item): item is NonNullable<typeof item> => item !== null);
@@ -285,7 +378,10 @@ export async function GET(
       return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
 
-    const hasAccess = await ensureCompanyAccess(parsed.companyId, auth.organizationId);
+    const hasAccess = await ensureCompanyAccess(
+      parsed.companyId,
+      auth.organizationId,
+    );
     if (!hasAccess) {
       return NextResponse.json(
         { error: "접근 가능한 거래처를 찾을 수 없습니다." },
@@ -328,7 +424,10 @@ export async function POST(
       return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
 
-    const hasAccess = await ensureCompanyAccess(parsed.companyId, auth.organizationId);
+    const hasAccess = await ensureCompanyAccess(
+      parsed.companyId,
+      auth.organizationId,
+    );
     if (!hasAccess) {
       return NextResponse.json(
         { error: "접근 가능한 거래처를 찾을 수 없습니다." },
@@ -364,7 +463,10 @@ export async function POST(
 
       const parsedUpload = parseUploadId(uploadIdRaw);
       if ("error" in parsedUpload) {
-        return NextResponse.json({ error: parsedUpload.error }, { status: 400 });
+        return NextResponse.json(
+          { error: parsedUpload.error },
+          { status: 400 },
+        );
       }
 
       const upload = await findUploadInCompany(
@@ -382,7 +484,9 @@ export async function POST(
 
       if (!canManageUpload(upload.memo, auth.userId)) {
         return NextResponse.json(
-          { error: "해당 업로드를 저장한 에이전트만 상태를 변경할 수 있습니다." },
+          {
+            error: "해당 업로드를 저장한 에이전트만 상태를 변경할 수 있습니다.",
+          },
           { status: 403 },
         );
       }

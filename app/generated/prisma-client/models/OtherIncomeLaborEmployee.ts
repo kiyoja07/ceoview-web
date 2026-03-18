@@ -48,6 +48,7 @@ export type OtherIncomeLaborEmployeeMinAggregateOutputType = {
   phone: string | null
   hireDate: string | null
   resignDate: string | null
+  publishStatus: $Enums.EmployeePublishStatus | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -65,6 +66,7 @@ export type OtherIncomeLaborEmployeeMaxAggregateOutputType = {
   phone: string | null
   hireDate: string | null
   resignDate: string | null
+  publishStatus: $Enums.EmployeePublishStatus | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -82,6 +84,7 @@ export type OtherIncomeLaborEmployeeCountAggregateOutputType = {
   phone: number
   hireDate: number
   resignDate: number
+  publishStatus: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -111,6 +114,7 @@ export type OtherIncomeLaborEmployeeMinAggregateInputType = {
   phone?: true
   hireDate?: true
   resignDate?: true
+  publishStatus?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -128,6 +132,7 @@ export type OtherIncomeLaborEmployeeMaxAggregateInputType = {
   phone?: true
   hireDate?: true
   resignDate?: true
+  publishStatus?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -145,6 +150,7 @@ export type OtherIncomeLaborEmployeeCountAggregateInputType = {
   phone?: true
   hireDate?: true
   resignDate?: true
+  publishStatus?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -249,6 +255,7 @@ export type OtherIncomeLaborEmployeeGroupByOutputType = {
   phone: string | null
   hireDate: string | null
   resignDate: string | null
+  publishStatus: $Enums.EmployeePublishStatus
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -289,6 +296,7 @@ export type OtherIncomeLaborEmployeeWhereInput = {
   phone?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   hireDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   resignDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFilter<"OtherIncomeLaborEmployee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"OtherIncomeLaborEmployee"> | Date | string | null
@@ -307,6 +315,7 @@ export type OtherIncomeLaborEmployeeOrderByWithRelationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   hireDate?: Prisma.SortOrderInput | Prisma.SortOrder
   resignDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -330,6 +339,7 @@ export type OtherIncomeLaborEmployeeWhereUniqueInput = Prisma.AtLeast<{
   phone?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   hireDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   resignDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFilter<"OtherIncomeLaborEmployee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"OtherIncomeLaborEmployee"> | Date | string | null
@@ -348,6 +358,7 @@ export type OtherIncomeLaborEmployeeOrderByWithAggregationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   hireDate?: Prisma.SortOrderInput | Prisma.SortOrder
   resignDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -373,6 +384,7 @@ export type OtherIncomeLaborEmployeeScalarWhereWithAggregatesInput = {
   phone?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
   hireDate?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
   resignDate?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusWithAggregatesFilter<"OtherIncomeLaborEmployee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"OtherIncomeLaborEmployee"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"OtherIncomeLaborEmployee"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | Date | string | null
@@ -389,6 +401,7 @@ export type OtherIncomeLaborEmployeeCreateInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -407,6 +420,7 @@ export type OtherIncomeLaborEmployeeUncheckedCreateInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -423,6 +437,7 @@ export type OtherIncomeLaborEmployeeUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -441,6 +456,7 @@ export type OtherIncomeLaborEmployeeUncheckedUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -458,6 +474,7 @@ export type OtherIncomeLaborEmployeeCreateManyInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -474,6 +491,7 @@ export type OtherIncomeLaborEmployeeUpdateManyMutationInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -491,6 +509,7 @@ export type OtherIncomeLaborEmployeeUncheckedUpdateManyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -529,6 +548,7 @@ export type OtherIncomeLaborEmployeeCountOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   hireDate?: Prisma.SortOrder
   resignDate?: Prisma.SortOrder
+  publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -551,6 +571,7 @@ export type OtherIncomeLaborEmployeeMaxOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   hireDate?: Prisma.SortOrder
   resignDate?: Prisma.SortOrder
+  publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -568,6 +589,7 @@ export type OtherIncomeLaborEmployeeMinOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   hireDate?: Prisma.SortOrder
   resignDate?: Prisma.SortOrder
+  publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -631,6 +653,7 @@ export type OtherIncomeLaborEmployeeCreateWithoutCompanyInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -647,6 +670,7 @@ export type OtherIncomeLaborEmployeeUncheckedCreateWithoutCompanyInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -693,6 +717,7 @@ export type OtherIncomeLaborEmployeeScalarWhereInput = {
   phone?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   hireDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   resignDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFilter<"OtherIncomeLaborEmployee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"OtherIncomeLaborEmployee"> | Date | string | null
@@ -709,6 +734,7 @@ export type OtherIncomeLaborEmployeeCreateManyCompanyInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -725,6 +751,7 @@ export type OtherIncomeLaborEmployeeUpdateWithoutCompanyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -741,6 +768,7 @@ export type OtherIncomeLaborEmployeeUncheckedUpdateWithoutCompanyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -757,6 +785,7 @@ export type OtherIncomeLaborEmployeeUncheckedUpdateManyWithoutCompanyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -776,6 +805,7 @@ export type OtherIncomeLaborEmployeeSelect<ExtArgs extends runtime.Types.Extensi
   phone?: boolean
   hireDate?: boolean
   resignDate?: boolean
+  publishStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -796,12 +826,13 @@ export type OtherIncomeLaborEmployeeSelectScalar = {
   phone?: boolean
   hireDate?: boolean
   resignDate?: boolean
+  publishStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type OtherIncomeLaborEmployeeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "employeeCode" | "name" | "residentNumber" | "department" | "positionTitle" | "email" | "phone" | "hireDate" | "resignDate" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["otherIncomeLaborEmployee"]>
+export type OtherIncomeLaborEmployeeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "employeeCode" | "name" | "residentNumber" | "department" | "positionTitle" | "email" | "phone" | "hireDate" | "resignDate" | "publishStatus" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["otherIncomeLaborEmployee"]>
 export type OtherIncomeLaborEmployeeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }
@@ -823,6 +854,7 @@ export type $OtherIncomeLaborEmployeePayload<ExtArgs extends runtime.Types.Exten
     phone: string | null
     hireDate: string | null
     resignDate: string | null
+    publishStatus: $Enums.EmployeePublishStatus
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -1207,6 +1239,7 @@ export interface OtherIncomeLaborEmployeeFieldRefs {
   readonly phone: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
   readonly hireDate: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
   readonly resignDate: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
+  readonly publishStatus: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'EmployeePublishStatus'>
   readonly createdAt: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'DateTime'>

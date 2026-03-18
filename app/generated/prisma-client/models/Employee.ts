@@ -68,6 +68,7 @@ export type EmployeeMinAggregateOutputType = {
   payGrade: string | null
   nationalPension: string | null
   healthInsurance: string | null
+  publishStatus: $Enums.EmployeePublishStatus | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -105,6 +106,7 @@ export type EmployeeMaxAggregateOutputType = {
   payGrade: string | null
   nationalPension: string | null
   healthInsurance: string | null
+  publishStatus: $Enums.EmployeePublishStatus | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -142,6 +144,7 @@ export type EmployeeCountAggregateOutputType = {
   payGrade: number
   nationalPension: number
   healthInsurance: number
+  publishStatus: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -191,6 +194,7 @@ export type EmployeeMinAggregateInputType = {
   payGrade?: true
   nationalPension?: true
   healthInsurance?: true
+  publishStatus?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -228,6 +232,7 @@ export type EmployeeMaxAggregateInputType = {
   payGrade?: true
   nationalPension?: true
   healthInsurance?: true
+  publishStatus?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -265,6 +270,7 @@ export type EmployeeCountAggregateInputType = {
   payGrade?: true
   nationalPension?: true
   healthInsurance?: true
+  publishStatus?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -389,6 +395,7 @@ export type EmployeeGroupByOutputType = {
   payGrade: string | null
   nationalPension: string | null
   healthInsurance: string | null
+  publishStatus: $Enums.EmployeePublishStatus
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -449,6 +456,7 @@ export type EmployeeWhereInput = {
   payGrade?: Prisma.StringNullableFilter<"Employee"> | string | null
   nationalPension?: Prisma.StringNullableFilter<"Employee"> | string | null
   healthInsurance?: Prisma.StringNullableFilter<"Employee"> | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFilter<"Employee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFilter<"Employee"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Employee"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Employee"> | Date | string | null
@@ -489,6 +497,7 @@ export type EmployeeOrderByWithRelationInput = {
   payGrade?: Prisma.SortOrderInput | Prisma.SortOrder
   nationalPension?: Prisma.SortOrderInput | Prisma.SortOrder
   healthInsurance?: Prisma.SortOrderInput | Prisma.SortOrder
+  publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -534,6 +543,7 @@ export type EmployeeWhereUniqueInput = Prisma.AtLeast<{
   payGrade?: Prisma.StringNullableFilter<"Employee"> | string | null
   nationalPension?: Prisma.StringNullableFilter<"Employee"> | string | null
   healthInsurance?: Prisma.StringNullableFilter<"Employee"> | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFilter<"Employee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFilter<"Employee"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Employee"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Employee"> | Date | string | null
@@ -574,6 +584,7 @@ export type EmployeeOrderByWithAggregationInput = {
   payGrade?: Prisma.SortOrderInput | Prisma.SortOrder
   nationalPension?: Prisma.SortOrderInput | Prisma.SortOrder
   healthInsurance?: Prisma.SortOrderInput | Prisma.SortOrder
+  publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -619,6 +630,7 @@ export type EmployeeScalarWhereWithAggregatesInput = {
   payGrade?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
   nationalPension?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
   healthInsurance?: Prisma.StringNullableWithAggregatesFilter<"Employee"> | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusWithAggregatesFilter<"Employee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Employee"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Employee"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Employee"> | Date | string | null
@@ -655,6 +667,7 @@ export type EmployeeCreateInput = {
   payGrade?: string | null
   nationalPension?: string | null
   healthInsurance?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -695,6 +708,7 @@ export type EmployeeUncheckedCreateInput = {
   payGrade?: string | null
   nationalPension?: string | null
   healthInsurance?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -733,6 +747,7 @@ export type EmployeeUpdateInput = {
   payGrade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nationalPension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   healthInsurance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -773,6 +788,7 @@ export type EmployeeUncheckedUpdateInput = {
   payGrade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nationalPension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   healthInsurance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -812,6 +828,7 @@ export type EmployeeCreateManyInput = {
   payGrade?: string | null
   nationalPension?: string | null
   healthInsurance?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -848,6 +865,7 @@ export type EmployeeUpdateManyMutationInput = {
   payGrade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nationalPension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   healthInsurance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -885,6 +903,7 @@ export type EmployeeUncheckedUpdateManyInput = {
   payGrade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nationalPension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   healthInsurance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -948,6 +967,7 @@ export type EmployeeCountOrderByAggregateInput = {
   payGrade?: Prisma.SortOrder
   nationalPension?: Prisma.SortOrder
   healthInsurance?: Prisma.SortOrder
+  publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -990,6 +1010,7 @@ export type EmployeeMaxOrderByAggregateInput = {
   payGrade?: Prisma.SortOrder
   nationalPension?: Prisma.SortOrder
   healthInsurance?: Prisma.SortOrder
+  publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -1027,6 +1048,7 @@ export type EmployeeMinOrderByAggregateInput = {
   payGrade?: Prisma.SortOrder
   nationalPension?: Prisma.SortOrder
   healthInsurance?: Prisma.SortOrder
+  publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -1100,6 +1122,10 @@ export type EmployeeUpdateOneWithoutEarnedIncomesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EmployeeUpdateToOneWithWhereWithoutEarnedIncomesInput, Prisma.EmployeeUpdateWithoutEarnedIncomesInput>, Prisma.EmployeeUncheckedUpdateWithoutEarnedIncomesInput>
 }
 
+export type EnumEmployeePublishStatusFieldUpdateOperationsInput = {
+  set?: $Enums.EmployeePublishStatus
+}
+
 export type EmployeeCreateNestedOneWithoutBankAccountsInput = {
   create?: Prisma.XOR<Prisma.EmployeeCreateWithoutBankAccountsInput, Prisma.EmployeeUncheckedCreateWithoutBankAccountsInput>
   connectOrCreate?: Prisma.EmployeeCreateOrConnectWithoutBankAccountsInput
@@ -1145,6 +1171,7 @@ export type EmployeeCreateWithoutCompanyInput = {
   payGrade?: string | null
   nationalPension?: string | null
   healthInsurance?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1183,6 +1210,7 @@ export type EmployeeUncheckedCreateWithoutCompanyInput = {
   payGrade?: string | null
   nationalPension?: string | null
   healthInsurance?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1251,6 +1279,7 @@ export type EmployeeScalarWhereInput = {
   payGrade?: Prisma.StringNullableFilter<"Employee"> | string | null
   nationalPension?: Prisma.StringNullableFilter<"Employee"> | string | null
   healthInsurance?: Prisma.StringNullableFilter<"Employee"> | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFilter<"Employee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFilter<"Employee"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Employee"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Employee"> | Date | string | null
@@ -1287,6 +1316,7 @@ export type EmployeeCreateWithoutEarnedIncomesInput = {
   payGrade?: string | null
   nationalPension?: string | null
   healthInsurance?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1326,6 +1356,7 @@ export type EmployeeUncheckedCreateWithoutEarnedIncomesInput = {
   payGrade?: string | null
   nationalPension?: string | null
   healthInsurance?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1379,6 +1410,7 @@ export type EmployeeUpdateWithoutEarnedIncomesInput = {
   payGrade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nationalPension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   healthInsurance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1418,6 +1450,7 @@ export type EmployeeUncheckedUpdateWithoutEarnedIncomesInput = {
   payGrade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nationalPension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   healthInsurance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1455,6 +1488,7 @@ export type EmployeeCreateWithoutBankAccountsInput = {
   payGrade?: string | null
   nationalPension?: string | null
   healthInsurance?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1494,6 +1528,7 @@ export type EmployeeUncheckedCreateWithoutBankAccountsInput = {
   payGrade?: string | null
   nationalPension?: string | null
   healthInsurance?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1547,6 +1582,7 @@ export type EmployeeUpdateWithoutBankAccountsInput = {
   payGrade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nationalPension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   healthInsurance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1586,6 +1622,7 @@ export type EmployeeUncheckedUpdateWithoutBankAccountsInput = {
   payGrade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nationalPension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   healthInsurance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1623,6 +1660,7 @@ export type EmployeeCreateManyCompanyInput = {
   payGrade?: string | null
   nationalPension?: string | null
   healthInsurance?: string | null
+  publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1659,6 +1697,7 @@ export type EmployeeUpdateWithoutCompanyInput = {
   payGrade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nationalPension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   healthInsurance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1697,6 +1736,7 @@ export type EmployeeUncheckedUpdateWithoutCompanyInput = {
   payGrade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nationalPension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   healthInsurance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1735,6 +1775,7 @@ export type EmployeeUncheckedUpdateManyWithoutCompanyInput = {
   payGrade?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nationalPension?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   healthInsurance?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1812,6 +1853,7 @@ export type EmployeeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   payGrade?: boolean
   nationalPension?: boolean
   healthInsurance?: boolean
+  publishStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -1855,12 +1897,13 @@ export type EmployeeSelectScalar = {
   payGrade?: boolean
   nationalPension?: boolean
   healthInsurance?: boolean
+  publishStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type EmployeeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "employeeCode" | "name" | "residentNumber" | "nationalityType" | "jobCategory" | "residenceType" | "department" | "positionTitle" | "email" | "phone" | "landlinePhone" | "hireDate" | "resignDate" | "zipcode" | "address" | "addressDetail" | "hasSpouse" | "dependentUnder20" | "dependentOver60" | "deductionSenior" | "deductionDisabled" | "deductionWomen" | "deductionChildren" | "deductionBirthAdoption" | "deductionSingleParent" | "employmentInsurance" | "payGrade" | "nationalPension" | "healthInsurance" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["employee"]>
+export type EmployeeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "employeeCode" | "name" | "residentNumber" | "nationalityType" | "jobCategory" | "residenceType" | "department" | "positionTitle" | "email" | "phone" | "landlinePhone" | "hireDate" | "resignDate" | "zipcode" | "address" | "addressDetail" | "hasSpouse" | "dependentUnder20" | "dependentOver60" | "deductionSenior" | "deductionDisabled" | "deductionWomen" | "deductionChildren" | "deductionBirthAdoption" | "deductionSingleParent" | "employmentInsurance" | "payGrade" | "nationalPension" | "healthInsurance" | "publishStatus" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["employee"]>
 export type EmployeeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   bankAccounts?: boolean | Prisma.Employee$bankAccountsArgs<ExtArgs>
@@ -1907,6 +1950,7 @@ export type $EmployeePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     payGrade: string | null
     nationalPension: string | null
     healthInsurance: string | null
+    publishStatus: $Enums.EmployeePublishStatus
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -2313,6 +2357,7 @@ export interface EmployeeFieldRefs {
   readonly payGrade: Prisma.FieldRef<"Employee", 'String'>
   readonly nationalPension: Prisma.FieldRef<"Employee", 'String'>
   readonly healthInsurance: Prisma.FieldRef<"Employee", 'String'>
+  readonly publishStatus: Prisma.FieldRef<"Employee", 'EmployeePublishStatus'>
   readonly createdAt: Prisma.FieldRef<"Employee", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Employee", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Employee", 'DateTime'>
