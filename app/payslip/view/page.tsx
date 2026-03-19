@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { formatEmployeePhone } from "@/app/lib/employee-contact";
+import { createEmployeeSignupGrant } from "@/app/lib/employee-signup-grant";
 import prisma from "@/app/lib/prisma";
 import { hashPayslipAccessToken } from "@/app/lib/payslip-access";
 import { buildEarnedPayslipData } from "@/app/lib/payslip-earned";
@@ -46,6 +48,22 @@ function InvalidPayslipView({
   );
 }
 
+function maskEmail(value: string) {
+  const [localPart, domain = ""] = value.split("@");
+  if (!localPart) return value;
+
+  const visible = localPart.slice(0, 2);
+  const masked = `${visible}${"*".repeat(Math.max(localPart.length - visible.length, 1))}`;
+  return domain ? `${masked}@${domain}` : masked;
+}
+
+function maskPhone(value: string) {
+  const formatted = formatEmployeePhone(value);
+  const digits = formatted.replace(/\D/g, "");
+  if (digits.length < 4) return formatted;
+  return formatted.replace(digits.slice(-4), "****");
+}
+
 export default async function PayslipViewPage({
   searchParams,
 }: {
@@ -82,6 +100,7 @@ export default async function PayslipViewPage({
             include: {
               company: {
                 select: {
+                  id: true,
                   businessName: true,
                   businessNumber: true,
                 },
@@ -131,5 +150,80 @@ export default async function PayslipViewPage({
     businessNumber: accessToken.earnedIncome.upload.company.businessNumber,
   });
 
-  return <PayslipViewer payslipData={payslipData} />;
+  const companyId = accessToken.earnedIncome.upload.company.id;
+  const resolvedEmployee =
+    accessToken.earnedIncome.employeeId != null
+      ? await prisma.employee.findFirst({
+          where: {
+            id: accessToken.earnedIncome.employeeId,
+            companyId,
+            deletedAt: null,
+          },
+          select: {
+            id: true,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                phone: true,
+                isActive: true,
+              },
+            },
+          },
+        })
+      : await prisma.employee.findFirst({
+          where: {
+            companyId,
+            employeeCode: accessToken.earnedIncome.employeeCode,
+            deletedAt: null,
+          },
+          select: {
+            id: true,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                phone: true,
+                isActive: true,
+              },
+            },
+          },
+        });
+
+  const employeeAccount = resolvedEmployee?.user ?? null;
+  const employeeAccountExists = Boolean(employeeAccount);
+  const employeeAccountActive = employeeAccount?.isActive ?? false;
+  const signupGrant =
+    resolvedEmployee && !employeeAccountExists
+      ? createEmployeeSignupGrant({
+          employeeId: resolvedEmployee.id,
+          companyId,
+          recipient: accessToken.recipient,
+          channel: accessToken.channel,
+        })
+      : null;
+  const signupContactHint =
+    accessToken.channel === "EMAIL"
+      ? accessToken.recipient.trim().toLowerCase()
+      : formatEmployeePhone(accessToken.recipient);
+  const employeeLoginHint = employeeAccount?.phone
+    ? `등록된 전화번호: ${maskPhone(employeeAccount.phone)}`
+    : employeeAccount?.email
+      ? `등록된 이메일: ${maskEmail(employeeAccount.email)}`
+      : null;
+  const employeeSignupUnavailableReason = resolvedEmployee
+    ? null
+    : "직원 정보가 연결되어 있지 않아 직원 계정을 만들 수 없습니다. 회사 담당자에게 문의해 주세요.";
+
+  return (
+    <PayslipViewer
+      payslipData={payslipData}
+      signupGrant={signupGrant}
+      employeeAccountExists={employeeAccountExists}
+      employeeAccountActive={employeeAccountActive}
+      employeeLoginHint={employeeLoginHint}
+      signupContactHint={signupContactHint}
+      employeeSignupUnavailableReason={employeeSignupUnavailableReason}
+    />
+  );
 }

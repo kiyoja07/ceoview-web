@@ -57,7 +57,7 @@ export type SendCompanyUserInviteBody = {
 
 export type SendCompanyUserInviteResponse = {
   message: string;
-  /** phone 초대 시 공유 가능한 초대 URL */
+  /** phone 초대 시 SMS와 함께 운영용으로 확인 가능한 초대 URL */
   inviteUrl?: string;
 };
 

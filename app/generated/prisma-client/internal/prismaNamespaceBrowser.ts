@@ -75,6 +75,8 @@ export const ModelName = {
   OtherIncome: 'OtherIncome',
   DailyIncomeLabor: 'DailyIncomeLabor',
   Employee: 'Employee',
+  EmployeeUser: 'EmployeeUser',
+  EmployeeMagicLinkToken: 'EmployeeMagicLinkToken',
   BusinessIncomeEmployee: 'BusinessIncomeEmployee',
   OtherIncomeEmployee: 'OtherIncomeEmployee',
   OtherIncomeLaborEmployee: 'OtherIncomeLaborEmployee',
@@ -523,6 +525,35 @@ export const EmployeeScalarFieldEnum = {
 export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
 
 
+export const EmployeeUserScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  email: 'email',
+  phone: 'phone',
+  name: 'name',
+  zipcode: 'zipcode',
+  address: 'address',
+  addressDetail: 'addressDetail',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EmployeeUserScalarFieldEnum = (typeof EmployeeUserScalarFieldEnum)[keyof typeof EmployeeUserScalarFieldEnum]
+
+
+export const EmployeeMagicLinkTokenScalarFieldEnum = {
+  id: 'id',
+  employeeUserId: 'employeeUserId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EmployeeMagicLinkTokenScalarFieldEnum = (typeof EmployeeMagicLinkTokenScalarFieldEnum)[keyof typeof EmployeeMagicLinkTokenScalarFieldEnum]
+
+
 export const BusinessIncomeEmployeeScalarFieldEnum = {
   id: 'id',
   companyId: 'companyId',
@@ -839,6 +870,25 @@ export const EmployeeOrderByRelevanceFieldEnum = {
 } as const
 
 export type EmployeeOrderByRelevanceFieldEnum = (typeof EmployeeOrderByRelevanceFieldEnum)[keyof typeof EmployeeOrderByRelevanceFieldEnum]
+
+
+export const EmployeeUserOrderByRelevanceFieldEnum = {
+  email: 'email',
+  phone: 'phone',
+  name: 'name',
+  zipcode: 'zipcode',
+  address: 'address',
+  addressDetail: 'addressDetail'
+} as const
+
+export type EmployeeUserOrderByRelevanceFieldEnum = (typeof EmployeeUserOrderByRelevanceFieldEnum)[keyof typeof EmployeeUserOrderByRelevanceFieldEnum]
+
+
+export const EmployeeMagicLinkTokenOrderByRelevanceFieldEnum = {
+  tokenHash: 'tokenHash'
+} as const
+
+export type EmployeeMagicLinkTokenOrderByRelevanceFieldEnum = (typeof EmployeeMagicLinkTokenOrderByRelevanceFieldEnum)[keyof typeof EmployeeMagicLinkTokenOrderByRelevanceFieldEnum]
 
 
 export const BusinessIncomeEmployeeOrderByRelevanceFieldEnum = {

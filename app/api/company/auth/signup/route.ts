@@ -10,7 +10,7 @@ import {
   getCompanyMagicLinkTtlMinutes,
   isValidEmail,
 } from "@/app/lib/company-magic-link";
-import { sendNcloudMail } from "@/app/lib/ncloud-mailer";
+import { sendEmail } from "@/app/lib/messages/email";
 import type { CompanySignupBody } from "@/types/company/auth";
 
 function isUniqueConstraintError(error: unknown): error is { code: string } {
@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
 </body>
 </html>`.trim();
 
-      await sendNcloudMail({
+      await sendEmail({
         to: user.email,
         title,
         body: bodyHtml,

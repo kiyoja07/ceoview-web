@@ -21,6 +21,7 @@ export type EarnedIncomeDynamicItemInput = {
 export type MappedEarnedIncomeRow = {
   earnedIncomeData: {
     uploadId: bigint;
+    employeeId?: bigint;
     accrualYm: number;
     paymentYm: number;
     payDate: Date;

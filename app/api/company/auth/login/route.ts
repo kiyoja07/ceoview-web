@@ -11,8 +11,8 @@ import {
   COMPANY_ONBOARDING_PENDING_MARKER,
   createPlaceholderBusinessNumber,
 } from "@/app/lib/company-onboarding";
-import { sendNcloudMail } from "@/app/lib/ncloud-mailer";
-import { sendNcloudSms } from "@/app/lib/ncloud-sms";
+import { sendEmail } from "@/app/lib/messages/email";
+import { sendSms } from "@/app/lib/messages/sms";
 import type { CompanyLoginBody } from "@/types/company/auth";
 
 type ContactType = "email" | "phone";
@@ -365,7 +365,7 @@ export async function POST(request: NextRequest) {
 </body>
 </html>`.trim();
 
-      await sendNcloudMail({
+      await sendEmail({
         to: user.email,
         title,
         body: bodyHtml,
@@ -384,7 +384,7 @@ export async function POST(request: NextRequest) {
       `유효시간: ${ttlMinutes}분`,
     ].join("\n");
 
-    await sendNcloudSms({
+    await sendSms({
       to: phoneToSend,
       subject: "Company 로그인 링크",
       content: smsContent,

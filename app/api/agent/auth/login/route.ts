@@ -7,7 +7,7 @@ import {
   getMagicLinkTtlMinutes,
   isValidEmail,
 } from "@/app/lib/agent-magic-link";
-import { sendNcloudMagicLinkMail } from "@/app/lib/ncloud-mailer";
+import { sendEmail } from "@/app/lib/messages/email";
 import type { LoginBody } from "@/types/agent/auth";
 
 export async function POST(request: NextRequest) {
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
 </html>
 `.trim();
 
-    await sendNcloudMagicLinkMail({
+    await sendEmail({
       to: user.email,
       title,
       body: mailBody,

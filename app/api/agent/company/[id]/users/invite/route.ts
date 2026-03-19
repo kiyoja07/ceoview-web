@@ -7,7 +7,8 @@ import {
   createCompanyUserInviteToken,
   getCompanyUserInviteTtlHours,
 } from "@/app/lib/company-user-invite";
-import { sendNcloudMail } from "@/app/lib/ncloud-mailer";
+import { sendEmail } from "@/app/lib/messages/email";
+import { sendSms } from "@/app/lib/messages/sms";
 import type { SendCompanyUserInviteBody } from "@/types/agent/company";
 
 function isValidPhone(phone: string) {
@@ -271,7 +272,7 @@ export async function POST(
 </body>
 </html>`.trim();
 
-      await sendNcloudMail({
+      await sendEmail({
         to: contact,
         title,
         body: bodyHtml,
@@ -282,9 +283,20 @@ export async function POST(
       });
     }
 
-    // phone 초대: 직접 공유할 수 있는 링크 반환
+    await sendSms({
+      to: contact,
+      subject: `${companyLabel} 거래처 초대`,
+      content: [
+        `[관리자 시스템] ${companyLabel} 거래처 초대 안내`,
+        `${auth.user.name} 님이 거래처 사용자로 초대했습니다.`,
+        "아래 링크를 눌러 가입을 진행해주세요.",
+        inviteUrl,
+        `유효시간: ${ttlHours}시간`,
+      ].join("\n"),
+    });
+
     return NextResponse.json({
-      message: `초대 링크가 생성되었습니다. ${ttlHours}시간 내에 전달해주세요.`,
+      message: `${contact} 번호로 초대 문자를 발송했습니다.`,
       inviteUrl,
     });
   } catch (error) {

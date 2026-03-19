@@ -408,6 +408,8 @@ export const ModelName = {
   OtherIncome: 'OtherIncome',
   DailyIncomeLabor: 'DailyIncomeLabor',
   Employee: 'Employee',
+  EmployeeUser: 'EmployeeUser',
+  EmployeeMagicLinkToken: 'EmployeeMagicLinkToken',
   BusinessIncomeEmployee: 'BusinessIncomeEmployee',
   OtherIncomeEmployee: 'OtherIncomeEmployee',
   OtherIncomeLaborEmployee: 'OtherIncomeLaborEmployee',
@@ -427,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyMagicLinkToken" | "phoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "payslipNotification" | "payslipAccessToken" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount"
+    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyMagicLinkToken" | "phoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "payslipNotification" | "payslipAccessToken" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "employeeUser" | "employeeMagicLinkToken" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2015,6 +2017,138 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    EmployeeUser: {
+      payload: Prisma.$EmployeeUserPayload<ExtArgs>
+      fields: Prisma.EmployeeUserFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmployeeUserFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeUserPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmployeeUserFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeUserPayload>
+        }
+        findFirst: {
+          args: Prisma.EmployeeUserFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeUserPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmployeeUserFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeUserPayload>
+        }
+        findMany: {
+          args: Prisma.EmployeeUserFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeUserPayload>[]
+        }
+        create: {
+          args: Prisma.EmployeeUserCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeUserPayload>
+        }
+        createMany: {
+          args: Prisma.EmployeeUserCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.EmployeeUserDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeUserPayload>
+        }
+        update: {
+          args: Prisma.EmployeeUserUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeUserPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmployeeUserDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmployeeUserUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.EmployeeUserUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeUserPayload>
+        }
+        aggregate: {
+          args: Prisma.EmployeeUserAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmployeeUser>
+        }
+        groupBy: {
+          args: Prisma.EmployeeUserGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeUserGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmployeeUserCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeUserCountAggregateOutputType> | number
+        }
+      }
+    }
+    EmployeeMagicLinkToken: {
+      payload: Prisma.$EmployeeMagicLinkTokenPayload<ExtArgs>
+      fields: Prisma.EmployeeMagicLinkTokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmployeeMagicLinkTokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeMagicLinkTokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmployeeMagicLinkTokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeMagicLinkTokenPayload>
+        }
+        findFirst: {
+          args: Prisma.EmployeeMagicLinkTokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeMagicLinkTokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmployeeMagicLinkTokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeMagicLinkTokenPayload>
+        }
+        findMany: {
+          args: Prisma.EmployeeMagicLinkTokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeMagicLinkTokenPayload>[]
+        }
+        create: {
+          args: Prisma.EmployeeMagicLinkTokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeMagicLinkTokenPayload>
+        }
+        createMany: {
+          args: Prisma.EmployeeMagicLinkTokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.EmployeeMagicLinkTokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeMagicLinkTokenPayload>
+        }
+        update: {
+          args: Prisma.EmployeeMagicLinkTokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeMagicLinkTokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmployeeMagicLinkTokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmployeeMagicLinkTokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.EmployeeMagicLinkTokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmployeeMagicLinkTokenPayload>
+        }
+        aggregate: {
+          args: Prisma.EmployeeMagicLinkTokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmployeeMagicLinkToken>
+        }
+        groupBy: {
+          args: Prisma.EmployeeMagicLinkTokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeMagicLinkTokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmployeeMagicLinkTokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmployeeMagicLinkTokenCountAggregateOutputType> | number
+        }
+      }
+    }
     BusinessIncomeEmployee: {
       payload: Prisma.$BusinessIncomeEmployeePayload<ExtArgs>
       fields: Prisma.BusinessIncomeEmployeeFieldRefs
@@ -2744,6 +2878,35 @@ export const EmployeeScalarFieldEnum = {
 export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
 
 
+export const EmployeeUserScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  email: 'email',
+  phone: 'phone',
+  name: 'name',
+  zipcode: 'zipcode',
+  address: 'address',
+  addressDetail: 'addressDetail',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EmployeeUserScalarFieldEnum = (typeof EmployeeUserScalarFieldEnum)[keyof typeof EmployeeUserScalarFieldEnum]
+
+
+export const EmployeeMagicLinkTokenScalarFieldEnum = {
+  id: 'id',
+  employeeUserId: 'employeeUserId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EmployeeMagicLinkTokenScalarFieldEnum = (typeof EmployeeMagicLinkTokenScalarFieldEnum)[keyof typeof EmployeeMagicLinkTokenScalarFieldEnum]
+
+
 export const BusinessIncomeEmployeeScalarFieldEnum = {
   id: 'id',
   companyId: 'companyId',
@@ -3062,6 +3225,25 @@ export const EmployeeOrderByRelevanceFieldEnum = {
 export type EmployeeOrderByRelevanceFieldEnum = (typeof EmployeeOrderByRelevanceFieldEnum)[keyof typeof EmployeeOrderByRelevanceFieldEnum]
 
 
+export const EmployeeUserOrderByRelevanceFieldEnum = {
+  email: 'email',
+  phone: 'phone',
+  name: 'name',
+  zipcode: 'zipcode',
+  address: 'address',
+  addressDetail: 'addressDetail'
+} as const
+
+export type EmployeeUserOrderByRelevanceFieldEnum = (typeof EmployeeUserOrderByRelevanceFieldEnum)[keyof typeof EmployeeUserOrderByRelevanceFieldEnum]
+
+
+export const EmployeeMagicLinkTokenOrderByRelevanceFieldEnum = {
+  tokenHash: 'tokenHash'
+} as const
+
+export type EmployeeMagicLinkTokenOrderByRelevanceFieldEnum = (typeof EmployeeMagicLinkTokenOrderByRelevanceFieldEnum)[keyof typeof EmployeeMagicLinkTokenOrderByRelevanceFieldEnum]
+
+
 export const BusinessIncomeEmployeeOrderByRelevanceFieldEnum = {
   employeeCode: 'employeeCode',
   name: 'name',
@@ -3367,6 +3549,8 @@ export type GlobalOmitConfig = {
   otherIncome?: Prisma.OtherIncomeOmit
   dailyIncomeLabor?: Prisma.DailyIncomeLaborOmit
   employee?: Prisma.EmployeeOmit
+  employeeUser?: Prisma.EmployeeUserOmit
+  employeeMagicLinkToken?: Prisma.EmployeeMagicLinkTokenOmit
   businessIncomeEmployee?: Prisma.BusinessIncomeEmployeeOmit
   otherIncomeEmployee?: Prisma.OtherIncomeEmployeeOmit
   otherIncomeLaborEmployee?: Prisma.OtherIncomeLaborEmployeeOmit

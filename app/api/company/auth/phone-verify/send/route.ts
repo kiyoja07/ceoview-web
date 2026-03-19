@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getCompanyUserIdFromRequest } from "@/app/lib/company-auth";
-import { sendNcloudSms } from "@/app/lib/ncloud-sms";
+import { sendSms } from "@/app/lib/messages/sms";
 
 /** 인증번호 유효 시간(분) */
 const CODE_TTL_MINUTES = 3;
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     });
 
     // SMS 발송
-    await sendNcloudSms({
+    await sendSms({
       to: phoneDigits,
       content: `[인증번호] ${code}\n본인 확인 인증번호입니다. ${CODE_TTL_MINUTES}분 이내에 입력해주세요.`,
     });

@@ -160,7 +160,7 @@ export function InviteCompanyUserModal({
                   </button>
                 </div>
                 <p className="mt-1.5 text-xs text-gray-400">
-                  이 링크를 전화번호 사용자에게 직접 전달해주세요.
+                  문자 수신이 어려운 경우 이 링크를 직접 전달할 수 있습니다.
                 </p>
               </div>
             )}

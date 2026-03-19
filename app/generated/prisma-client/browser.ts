@@ -138,6 +138,16 @@ export type DailyIncomeLabor = Prisma.DailyIncomeLaborModel
  */
 export type Employee = Prisma.EmployeeModel
 /**
+ * Model EmployeeUser
+ * 
+ */
+export type EmployeeUser = Prisma.EmployeeUserModel
+/**
+ * Model EmployeeMagicLinkToken
+ * 
+ */
+export type EmployeeMagicLinkToken = Prisma.EmployeeMagicLinkTokenModel
+/**
  * Model BusinessIncomeEmployee
  * 
  */

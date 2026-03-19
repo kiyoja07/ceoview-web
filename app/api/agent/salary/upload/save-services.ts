@@ -100,6 +100,32 @@ function filterEarnedRows(rows: Record<string, unknown>[]) {
   });
 }
 
+async function loadEmployeeIdByCode(
+  companyId: bigint,
+  tx: typeof prisma,
+) {
+  const employees = await tx.employee.findMany({
+    where: {
+      companyId,
+      deletedAt: null,
+      employeeCode: { not: null },
+    },
+    select: {
+      id: true,
+      employeeCode: true,
+    },
+  });
+
+  return new Map(
+    employees
+      .filter(
+        (employee): employee is { id: bigint; employeeCode: string } =>
+          Boolean(employee.employeeCode),
+      )
+      .map((employee) => [employee.employeeCode.trim(), employee.id] as const),
+  );
+}
+
 export async function publishUpload(
   organizationId: bigint,
   agentUserId: bigint,
@@ -312,6 +338,7 @@ export async function saveEarnedIncome(
       },
     });
 
+    const employeeIdByCode = await loadEmployeeIdByCode(company.id, tx);
     const earnedRows = dataRows.map((row) =>
       mapEarnedIncomeRow(row, upload.id, overrides),
     );
@@ -357,8 +384,14 @@ export async function saveEarnedIncome(
 
     let savedCount = 0;
     for (const mapped of earnedRows) {
+      const resolvedEmployeeId = employeeIdByCode.get(
+        mapped.earnedIncomeData.employeeCode.trim(),
+      );
       const earnedIncome = await tx.earnedIncome.create({
-        data: mapped.earnedIncomeData,
+        data: {
+          ...mapped.earnedIncomeData,
+          employeeId: resolvedEmployeeId,
+        },
         select: { id: true },
       });
       savedCount += 1;

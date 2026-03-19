@@ -8,7 +8,7 @@ import {
   hashAgentInviteToken,
   isValidEmail,
 } from "@/app/lib/agent-invite";
-import { sendNcloudMail } from "@/app/lib/ncloud-mailer";
+import { sendEmail } from "@/app/lib/messages/email";
 import type { SendAgentInviteBody } from "@/types/agent/invite";
 
 function maskEmail(email: string) {
@@ -269,7 +269,7 @@ export async function POST(request: NextRequest) {
 </body>
 </html>`.trim();
 
-    await sendNcloudMail({
+    await sendEmail({
       to: invitedEmail,
       title,
       body: bodyHtml,
