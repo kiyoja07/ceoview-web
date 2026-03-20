@@ -252,7 +252,7 @@ export default function EmployeeTable({
                               }`}
                             />
                             {emp.publishStatus === "PUBLISHED"
-                              ? "공개됨"
+                              ? "공개"
                               : "비공개"}
                           </button>
                         </td>

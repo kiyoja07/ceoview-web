@@ -34,7 +34,7 @@ export function formatDateTime(value: string) {
 }
 
 export function getPublishStatusLabel(status: ActionType) {
-  return status === "PUBLISHED" ? "공개됨" : "비공개";
+  return status === "PUBLISHED" ? "공개" : "비공개";
 }
 
 function formatNumericTextWithComma(value: string) {

@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const cookieStore = await cookies();
     const token = cookieStore.get(AGENT_SESSION_COOKIE)?.value;
     const payload = verifyAgentSessionToken(token);
-    if (!payload) return { title: "Agent Console" };
+    if (!payload) return { title: "세무대리인 대시보드" };
 
     const user = await prisma.agentUser.findUnique({
       where: { id: BigInt(payload.userId) },
@@ -25,9 +25,9 @@ export async function generateMetadata(): Promise<Metadata> {
     });
 
     const orgName = user?.agentOrganization?.organizationName;
-    return { title: orgName || "Agent Console" };
+    return { title: orgName || "세무대리인 대시보드" };
   } catch {
-    return { title: "Agent Console" };
+    return { title: "세무대리인 대시보드" };
   }
 }
 

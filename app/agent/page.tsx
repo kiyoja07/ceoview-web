@@ -1,8 +1,19 @@
-"use client";
-
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import {
+  AGENT_SESSION_COOKIE,
+  verifyAgentSessionToken,
+} from "@/app/lib/agent-auth";
 
-export default function AgentHomePage() {
+export default async function AgentHomePage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(AGENT_SESSION_COOKIE)?.value;
+
+  if (verifyAgentSessionToken(token)) {
+    redirect("/agent/company");
+  }
+
   return (
     <div className="min-h-screen bg-app-bg">
       <div className="mx-auto flex min-h-screen max-w-md items-center p-6">

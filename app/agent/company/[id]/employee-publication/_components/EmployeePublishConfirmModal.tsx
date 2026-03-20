@@ -22,8 +22,8 @@ export default function EmployeePublishConfirmModal({
         <p className="mt-2 text-sm text-gray-600">
           <span className="font-semibold text-gray-900">{targetLabel}</span>
           {isPublish
-            ? "을(를) PUBLISHED 상태로 변경하시겠습니까? company에서 조회할 수 있게 됩니다."
-            : "을(를) SAVED 상태로 변경하시겠습니까? company에서 더 이상 조회할 수 없게 됩니다."}
+            ? "을(를) 공개 상태로 변경하시겠습니까? 거래처에서 조회할 수 있게 됩니다."
+            : "을(를) 비공개 상태로 변경하시겠습니까? 거래처에서 더 이상 조회할 수 없게 됩니다."}
         </p>
         <div className="mt-5 flex justify-end gap-2">
           <button
@@ -42,7 +42,7 @@ export default function EmployeePublishConfirmModal({
                 : "bg-amber-600 hover:bg-amber-700"
             }`}
           >
-            {isPublish ? "PUBLISHED로 변경" : "SAVED로 변경"}
+            {isPublish ? "공개로 변경" : "비공개로 변경"}
           </button>
         </div>
       </div>

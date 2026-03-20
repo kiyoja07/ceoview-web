@@ -9,6 +9,8 @@ import type {
   CompanyOnboardingBody,
 } from "@/types/company/auth";
 import DateInput from "@/app/_components/DateInput";
+import BizStatusResult from "@/app/agent/_components/business-form/BizStatusResult";
+import type { BizStatusData } from "@/app/agent/_components/business-form/shared";
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-shadow";
@@ -36,6 +38,10 @@ export default function CompanyAuthOnboardingPage() {
   const [address, setAddress] = useState("");
 
   const [message, setMessage] = useState<CompanyAuthMessageState>(null);
+
+  const [bizValidating, setBizValidating] = useState(false);
+  const [bizStatus, setBizStatus] = useState<BizStatusData | null>(null);
+  const [bizError, setBizError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -66,6 +72,30 @@ export default function CompanyAuthOnboardingPage() {
     () => (loading ? "저장 중..." : "온보딩 완료"),
     [loading],
   );
+
+  const handleValidate = async () => {
+    setBizValidating(true);
+    setBizStatus(null);
+    setBizError(null);
+    try {
+      const res = await fetch("/api/company/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ businessNumber }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        setBizError(err.error || "조회에 실패했습니다.");
+        return;
+      }
+      const data = (await res.json()) as BizStatusData;
+      setBizStatus(data);
+    } catch {
+      setBizError("서버 연결에 실패했습니다.");
+    } finally {
+      setBizValidating(false);
+    }
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -120,7 +150,7 @@ export default function CompanyAuthOnboardingPage() {
       <div className="mx-auto max-w-2xl p-6 lg:p-8">
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            Company 온보딩
+            사업자 정보 등록
           </h1>
           <p className="mt-1 text-sm text-gray-500">
             처음 로그인하셨네요. 서비스 사용을 위해 기본 정보를 완료해주세요.
@@ -170,12 +200,78 @@ export default function CompanyAuthOnboardingPage() {
               required
               maxLength={12}
               value={businessNumber}
-              onChange={(e) =>
-                setBusinessNumber(formatBusinessNumber(e.target.value))
-              }
+              onChange={(e) => {
+                setBusinessNumber(formatBusinessNumber(e.target.value));
+                setBizStatus(null);
+                setBizError(null);
+              }}
               className={`${inputBase} font-mono tracking-wide`}
               placeholder="000-00-00000"
             />
+            {(() => {
+              const digits = businessNumber.replace(/\D/g, "");
+              const isValid = digits.length === 10;
+              const isContinuingBusiness =
+                bizStatus?.b_stt?.includes("계속사업자") ?? false;
+              return (
+                <>
+                  {isValid && !isContinuingBusiness && (
+                    <button
+                      type="button"
+                      onClick={handleValidate}
+                      disabled={bizValidating}
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {bizValidating ? (
+                        <>
+                          <svg
+                            className="h-3.5 w-3.5 animate-spin"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                            />
+                          </svg>
+                          조회 중...
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            className="h-3.5 w-3.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                            />
+                          </svg>
+                          국세청에 사업자 상태 조회
+                        </>
+                      )}
+                    </button>
+                  )}
+                  {bizStatus && <BizStatusResult bizStatus={bizStatus} />}
+                  {bizError && (
+                    <p className="mt-1.5 text-xs text-red-600">{bizError}</p>
+                  )}
+                </>
+              );
+            })()}
           </div>
 
           <div>

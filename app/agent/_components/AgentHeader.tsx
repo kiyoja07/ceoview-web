@@ -7,9 +7,7 @@ import type { HeaderProfile, NavItem } from "@/types/agent/header";
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/agent/company", label: "거래처" },
-  { href: "/agent/employees", label: "직원" },
-  { href: "/agent/salary", label: "급여" },
-  { href: "/agent/organization/profile", label: "계정" },
+  { href: "/agent/organization", label: "조직 설정" },
   { href: "/agent/billing", label: "결제" },
 ];
 

@@ -1,15 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import type { CompanyRow, IncomeTypeEmployeeStatus } from "./types";
 import { formatBusinessNumber } from "./helpers";
-import { IconUpload, IconEye } from "./icons";
 
-function IconPublish() {
+function IconChevronRight() {
   return (
     <svg
-      className="h-3.5 w-3.5"
+      className="h-4 w-4 shrink-0 text-gray-400"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -18,13 +16,11 @@ function IconPublish() {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"
+        d="M9 5.25 15 12l-6 6.75"
       />
     </svg>
   );
 }
-
-/* ────────────── Income Type Badge ────────────── */
 
 function IncomeTypeBadge({ item }: { item: IncomeTypeEmployeeStatus }) {
   if (item.totalCount === 0) {
@@ -62,11 +58,7 @@ function IncomeTypeBadge({ item }: { item: IncomeTypeEmployeeStatus }) {
   );
 }
 
-/* ────────────── Company Card ────────────── */
-
 export function CompanyCard({ company }: { company: CompanyRow }) {
-  const [expanded, setExpanded] = useState(false);
-
   const statusColor = company.hasEmployees
     ? company.isFullyPublished
       ? "border-l-emerald-500"
@@ -76,16 +68,11 @@ export function CompanyCard({ company }: { company: CompanyRow }) {
     : "border-l-gray-200";
 
   return (
-    <div
-      className={`overflow-hidden rounded-xl border-l-4 bg-white shadow-sm ring-1 ring-gray-950/5 transition-all ${statusColor}`}
+    <Link
+      href={`/agent/company/${company.id}/employees`}
+      className={`block overflow-hidden rounded-xl border-l-4 bg-white shadow-sm ring-1 ring-gray-950/5 transition-all hover:-translate-y-0.5 hover:shadow-md ${statusColor}`}
     >
-      {/* Header row */}
-      <button
-        type="button"
-        onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center gap-4 px-5 py-4 text-left transition-colors hover:bg-gray-50/50"
-      >
-        {/* Business info */}
+      <div className="flex items-center gap-4 px-5 py-4">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h3 className="truncate text-sm font-semibold text-gray-900">
@@ -109,16 +96,20 @@ export function CompanyCard({ company }: { company: CompanyRow }) {
               </span>
             )}
           </p>
+
+          <div className="mt-3 flex flex-wrap gap-1.5 sm:hidden">
+            {company.incomeTypes.map((it) => (
+              <IncomeTypeBadge key={it.type} item={it} />
+            ))}
+          </div>
         </div>
 
-        {/* Income type badges */}
         <div className="hidden flex-wrap gap-1.5 sm:flex">
           {company.incomeTypes.map((it) => (
             <IncomeTypeBadge key={it.type} item={it} />
           ))}
         </div>
 
-        {/* Employee count */}
         <div className="hidden w-28 flex-col items-end gap-0.5 lg:flex">
           <span className="text-sm font-semibold text-gray-900">
             {company.totalCount}
@@ -144,174 +135,8 @@ export function CompanyCard({ company }: { company: CompanyRow }) {
           )}
         </div>
 
-        {/* Expand arrow */}
-        <svg
-          className={`h-4 w-4 shrink-0 text-gray-400 transition-transform ${expanded ? "rotate-180" : ""}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-          />
-        </svg>
-      </button>
-
-      {/* Expanded detail */}
-      {expanded && (
-        <div className="border-t border-gray-100 px-5 py-4">
-          {/* Mobile badges */}
-          <div className="mb-3 flex flex-wrap gap-1.5 sm:hidden">
-            {company.incomeTypes.map((it) => (
-              <IncomeTypeBadge key={it.type} item={it} />
-            ))}
-          </div>
-
-          {/* Mobile count */}
-          <div className="mb-3 lg:hidden">
-            <span className="text-sm font-semibold text-gray-900">
-              총 {company.totalCount}명
-            </span>
-            {company.hasEmployees && (
-              <span className="ml-2 text-xs text-gray-400">
-                재직 {company.activeCount} · 퇴직 {company.resignedCount}
-              </span>
-            )}
-          </div>
-
-          {/* Detail table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="pb-2 pr-4 text-left font-medium text-gray-500">
-                    소득유형
-                  </th>
-                  <th className="pb-2 pr-4 text-right font-medium text-gray-500">
-                    전체
-                  </th>
-                  <th className="pb-2 pr-4 text-right font-medium text-gray-500">
-                    발행
-                  </th>
-                  <th className="pb-2 pr-4 text-right font-medium text-gray-500">
-                    미발행
-                  </th>
-                  <th className="pb-2 pr-4 text-right font-medium text-gray-500">
-                    재직
-                  </th>
-                  <th className="pb-2 text-right font-medium text-gray-500">
-                    퇴직
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {company.incomeTypes.map((it) => (
-                  <tr key={it.type}>
-                    <td className="py-2 pr-4 font-medium text-gray-700">
-                      {it.label}
-                    </td>
-                    <td className="py-2 pr-4 text-right text-gray-900">
-                      {it.totalCount > 0 ? (
-                        <span>{it.totalCount}명</span>
-                      ) : (
-                        <span className="text-gray-300">-</span>
-                      )}
-                    </td>
-                    <td className="py-2 pr-4 text-right">
-                      {it.publishedCount > 0 ? (
-                        <span className="text-emerald-600">
-                          {it.publishedCount}명
-                        </span>
-                      ) : (
-                        <span className="text-gray-300">-</span>
-                      )}
-                    </td>
-                    <td className="py-2 pr-4 text-right">
-                      {it.savedCount > 0 ? (
-                        <span className="text-amber-600">
-                          {it.savedCount}명
-                        </span>
-                      ) : (
-                        <span className="text-gray-300">-</span>
-                      )}
-                    </td>
-                    <td className="py-2 pr-4 text-right">
-                      {it.activeCount > 0 ? (
-                        <span className="text-blue-600">
-                          {it.activeCount}명
-                        </span>
-                      ) : (
-                        <span className="text-gray-300">-</span>
-                      )}
-                    </td>
-                    <td className="py-2 text-right">
-                      {it.resignedCount > 0 ? (
-                        <span className="text-gray-500">
-                          {it.resignedCount}명
-                        </span>
-                      ) : (
-                        <span className="text-gray-300">-</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="border-t border-gray-200">
-                  <td className="pt-2 pr-4 font-semibold text-gray-800">
-                    합계
-                  </td>
-                  <td className="pt-2 pr-4 text-right font-semibold text-gray-900">
-                    {company.totalCount}명
-                  </td>
-                  <td className="pt-2 pr-4 text-right font-semibold text-emerald-600">
-                    {company.publishedCount}명
-                  </td>
-                  <td className="pt-2 pr-4 text-right font-semibold text-amber-600">
-                    {company.savedCount}명
-                  </td>
-                  <td className="pt-2 pr-4 text-right font-semibold text-blue-600">
-                    {company.activeCount}명
-                  </td>
-                  <td className="pt-2 text-right font-semibold text-gray-500">
-                    {company.resignedCount}명
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-
-          {/* Actions */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link
-              href={`/agent/employees/new?companyId=${company.id}`}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-all hover:bg-blue-700 active:scale-[0.97]"
-            >
-              <IconUpload />
-              직원 등록
-            </Link>
-            <Link
-              href={`/agent/company/${company.id}`}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-gray-700 ring-1 ring-gray-200 transition-all hover:bg-gray-50 active:scale-[0.97]"
-            >
-              <IconEye />
-              거래처 상세
-            </Link>
-            {company.hasEmployees && (
-              <Link
-                href={`/agent/company/${company.id}/employee-publication`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-gray-700 ring-1 ring-gray-200 transition-all hover:bg-gray-50 active:scale-[0.97]"
-              >
-                <IconPublish />
-                직원 발행 관리
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+        <IconChevronRight />
+      </div>
+    </Link>
   );
 }

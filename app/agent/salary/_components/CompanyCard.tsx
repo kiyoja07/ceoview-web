@@ -199,14 +199,14 @@ export function CompanyCard({ company }: { company: CompanyRow }) {
           {/* Actions */}
           <div className="mt-4 flex flex-wrap gap-2">
             <Link
-              href={`/agent/salary/new?companyId=${company.id}`}
+              href={`/agent/company/${company.id}/salary/upload`}
               className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-all hover:bg-blue-700 active:scale-[0.97]"
             >
               <IconUpload />
               급여 입력
             </Link>
             <Link
-              href={`/agent/company/${company.id}/salary-publication`}
+              href={`/agent/company/${company.id}/salary`}
               className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-gray-700 ring-1 ring-gray-200 transition-all hover:bg-gray-50 active:scale-[0.97]"
             >
               <IconEye />

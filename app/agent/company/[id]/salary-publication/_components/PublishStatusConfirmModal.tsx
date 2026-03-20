@@ -37,7 +37,7 @@ export default function PublishStatusConfirmModal({
         </p>
         {publishStatus === "PUBLISHED" && (
           <p className="mt-2 text-xs text-blue-600">
-            공개됨으로 변경하면 거래처에서 해당 급여를 조회할 수 있습니다.
+            공개로 변경하면 거래처에서 해당 급여를 조회할 수 있습니다.
           </p>
         )}
         {publishStatus === "SAVED" && (

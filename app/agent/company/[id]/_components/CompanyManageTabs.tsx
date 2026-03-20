@@ -2,24 +2,25 @@
 
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
-function getTabs(companyId: string) {
-  return [
-    { href: `/agent/company/${companyId}/info`, label: "거래처 정보 관리" },
-    { href: `/agent/company/${companyId}/users`, label: "거래처 사용자 관리" },
-    {
-      href: `/agent/company/${companyId}/salary-publication`,
-      label: "급여 관리",
-    },
-    { href: `/agent/company/${companyId}/employee`, label: "직원 관리" },
-    {
-      href: `/agent/company/${companyId}/employee-publication`,
-      label: "직원 발행 관리",
-    },
-  ] as const;
+type CompanyInfo = {
+  businessName: string | null;
+  businessNumber: string;
+};
+
+function formatBusinessNumber(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 10);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
 }
 
 function isActivePath(pathname: string, href: string) {
+  if (/^\/agent\/company\/[^/]+$/.test(href)) {
+    return pathname === href;
+  }
+
   if (pathname === href) return true;
   return pathname.startsWith(`${href}/`);
 }
@@ -28,28 +29,84 @@ export function CompanyManageTabs() {
   const pathname = usePathname();
   const params = useParams<{ id: string }>();
   const companyId = params?.id ?? "";
+  const [company, setCompany] = useState<CompanyInfo | null>(null);
 
-  const tabs = getTabs(companyId);
+  useEffect(() => {
+    if (!companyId) return;
+
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/agent/company/${companyId}/info`, {
+          cache: "no-store",
+        });
+        if (!res.ok || cancelled) return;
+        const data = (await res.json()) as CompanyInfo;
+        if (!cancelled) setCompany(data);
+      } catch {
+        // ignore
+      }
+    };
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [companyId]);
+
+  const tabs = useMemo(
+    () =>
+      [
+        { href: `/agent/company/${companyId}`, label: "개요" },
+        { href: `/agent/company/${companyId}/employees`, label: "직원" },
+        { href: `/agent/company/${companyId}/salary`, label: "급여" },
+        { href: `/agent/company/${companyId}/settings/info`, label: "설정" },
+      ] as const,
+    [companyId],
+  );
+
+  const companyLabel = company
+    ? company.businessName || formatBusinessNumber(company.businessNumber)
+    : `거래처 ${companyId}`;
 
   return (
-    <div className="border-b border-gray-200 bg-white/80 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-3 sm:px-6">
-        {tabs.map((item) => {
-          const active = isActivePath(pathname, item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`inline-flex rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-                active
-                  ? "bg-blue-100 text-blue-700"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-              }`}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
+    <div className="sticky top-14 z-20 border-b border-gray-700 bg-gray-800/95 backdrop-blur">
+      <div className="mx-auto flex h-11 max-w-6xl items-center gap-4 px-4 sm:px-6">
+        <div className="flex shrink-0 items-center gap-1.5 text-sm">
+          <Link
+            href="/agent/company"
+            className="text-gray-400 transition hover:text-white"
+          >
+            거래처
+          </Link>
+          <span className="text-gray-500">/</span>
+          <span className="font-medium text-white">{companyLabel}</span>
+        </div>
+
+        <nav className="min-w-0 flex-1 overflow-x-auto">
+          <ul className="flex min-w-max items-center gap-1">
+            {tabs.map((item) => {
+              const active =
+                item.label === "설정"
+                  ? pathname.startsWith(`/agent/company/${companyId}/settings`)
+                  : isActivePath(pathname, item.href);
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`inline-flex rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+                      active
+                        ? "bg-white/15 text-white"
+                        : "text-gray-400 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </div>
     </div>
   );

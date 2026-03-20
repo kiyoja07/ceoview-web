@@ -268,7 +268,7 @@ export function SalaryPageView({ viewMode }: SalaryPageViewProps) {
 
             {isAgentView && (
               <Link
-                href={`/agent/salary/new?companyId=${id}`}
+                href={`/agent/company/${id}/salary/upload`}
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-emerald-600 px-4 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow active:scale-[0.98]"
               >
                 <svg

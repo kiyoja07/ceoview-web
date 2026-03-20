@@ -8,8 +8,6 @@ function formatBusinessNumber(value: string) {
   return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
 }
 
-const CURRENT_YYYYMM = `${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-
 type CompanyTableProps = {
   companies: AgentCompanyListItem[];
 };
@@ -48,43 +46,71 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
               className="transition-colors hover:bg-blue-50/40"
             >
               <td className="px-4 py-3 font-mono text-sm font-medium text-gray-900">
-                {formatBusinessNumber(company.businessNumber)}
+                <Link
+                  href={`/agent/company/${company.id}`}
+                  className="hover:text-blue-700 hover:underline"
+                >
+                  {formatBusinessNumber(company.businessNumber)}
+                </Link>
               </td>
               <td className="px-4 py-3">
-                <span
-                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                    company.businessType === "INDIVIDUAL"
-                      ? "bg-sky-50 text-sky-700 ring-1 ring-sky-600/20"
-                      : "bg-violet-50 text-violet-700 ring-1 ring-violet-600/20"
-                  }`}
-                >
-                  {company.businessType === "INDIVIDUAL" ? "개인" : "법인"}
-                </span>
+                <Link href={`/agent/company/${company.id}`}>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                      company.businessType === "INDIVIDUAL"
+                        ? "bg-sky-50 text-sky-700 ring-1 ring-sky-600/20"
+                        : "bg-violet-50 text-violet-700 ring-1 ring-violet-600/20"
+                    }`}
+                  >
+                    {company.businessType === "INDIVIDUAL" ? "개인" : "법인"}
+                  </span>
+                </Link>
               </td>
               <td className="px-4 py-3 text-gray-700">
-                {company.businessName || (
-                  <span className="text-gray-300">—</span>
-                )}
+                <Link
+                  href={`/agent/company/${company.id}`}
+                  className="hover:text-blue-700 hover:underline"
+                >
+                  {company.businessName || (
+                    <span className="text-gray-300">—</span>
+                  )}
+                </Link>
               </td>
 
               <td className="px-4 py-3 text-gray-700">
-                {company.representativeName || (
-                  <span className="text-gray-300">—</span>
-                )}
+                <Link
+                  href={`/agent/company/${company.id}`}
+                  className="hover:text-blue-700 hover:underline"
+                >
+                  {company.representativeName || (
+                    <span className="text-gray-300">—</span>
+                  )}
+                </Link>
               </td>
               <td className="px-4 py-3 tabular-nums text-gray-500">
-                {new Date(company.updatedAt).toLocaleString("ko-KR")}
+                <Link
+                  href={`/agent/company/${company.id}`}
+                  className="hover:text-blue-700 hover:underline"
+                >
+                  {new Date(company.updatedAt).toLocaleString("ko-KR")}
+                </Link>
               </td>
               <td className="px-4 py-3 text-right">
                 <div className="inline-flex items-center gap-2">
                   <Link
-                    href={`/agent/company/${company.id}/users`}
-                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20 transition-all hover:bg-emerald-100 active:scale-[0.97]"
+                    href={`/agent/company/${company.id}`}
+                    className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-600/10 transition-all hover:bg-slate-200 active:scale-[0.97]"
                   >
-                    사용자
+                    개요
                   </Link>
                   <Link
-                    href={`/agent/company/${company.id}/salary-publication`}
+                    href={`/agent/company/${company.id}/employees`}
+                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20 transition-all hover:bg-emerald-100 active:scale-[0.97]"
+                  >
+                    직원
+                  </Link>
+                  <Link
+                    href={`/agent/company/${company.id}/salary`}
                     className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 ring-1 ring-amber-600/20 transition-all hover:bg-amber-100 active:scale-[0.97]"
                   >
                     급여

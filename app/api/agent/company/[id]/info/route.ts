@@ -70,7 +70,9 @@ export async function GET(
         businessName: true,
         representativeName: true,
         openingDate: true,
+        zipcode: true,
         address: true,
+        addressDetail: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -92,7 +94,9 @@ export async function GET(
       openingDate: company.openingDate
         ? company.openingDate.toISOString().slice(0, 10)
         : null,
+      zipcode: company.zipcode,
       address: company.address,
+      addressDetail: company.addressDetail,
       createdAt: company.createdAt.toISOString(),
       updatedAt: company.updatedAt.toISOString(),
     });
@@ -141,7 +145,14 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { businessName, representativeName, openingDate, address } = body;
+    const {
+      businessName,
+      representativeName,
+      openingDate,
+      zipcode,
+      address,
+      addressDetail,
+    } = body;
 
     const updated = await prisma.company.update({
       where: { id: parsed.companyId },
@@ -149,7 +160,9 @@ export async function PATCH(
         businessName: businessName ?? undefined,
         representativeName: representativeName ?? undefined,
         openingDate: openingDate ? new Date(openingDate) : undefined,
+        zipcode: zipcode ?? undefined,
         address: address ?? undefined,
+        addressDetail: addressDetail ?? undefined,
       },
       select: {
         id: true,
@@ -158,7 +171,9 @@ export async function PATCH(
         businessName: true,
         representativeName: true,
         openingDate: true,
+        zipcode: true,
         address: true,
+        addressDetail: true,
         updatedAt: true,
       },
     });
@@ -172,7 +187,9 @@ export async function PATCH(
       openingDate: updated.openingDate
         ? updated.openingDate.toISOString().slice(0, 10)
         : null,
+      zipcode: updated.zipcode,
       address: updated.address,
+      addressDetail: updated.addressDetail,
       updatedAt: updated.updatedAt.toISOString(),
     });
   } catch (error) {
