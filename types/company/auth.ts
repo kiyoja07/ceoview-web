@@ -18,13 +18,17 @@ export type CompanyAuthMeResponse = {
   loginProvider: string;
   hasCompany: boolean;
   profileComplete: boolean;
-  company: {
-    id: string;
-    businessNumber: string;
-    businessType: "INDIVIDUAL" | "CORPORATION";
-    businessName: string | null;
-    representativeName: string | null;
-  } | null;
+  currentCompanyId: string | null;
+  company: CompanyAuthCompanySummary | null;
+  companies: CompanyAuthCompanySummary[];
+};
+
+export type CompanyAuthCompanySummary = {
+  id: string;
+  businessNumber: string;
+  businessType: "INDIVIDUAL" | "CORPORATION";
+  businessName: string | null;
+  representativeName: string | null;
 };
 
 export type CompanyLoginBody = {

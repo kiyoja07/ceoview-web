@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import type { CompanyAuthMeResponse } from "@/types/company/auth";
 
 export default function CompanyHomePage() {
   const router = useRouter();
@@ -15,9 +16,11 @@ export default function CompanyHomePage() {
           return;
         }
 
-        const data = (await res.json()) as { profileComplete?: boolean };
+        const data = (await res.json()) as CompanyAuthMeResponse;
         router.replace(
-          data.profileComplete ? "/company/dashboard" : "/company/auth/onboarding",
+          data.profileComplete || data.companies.length > 1
+            ? "/company/dashboard"
+            : "/company/auth/onboarding",
         );
       } catch {
         router.replace("/company/auth/login");

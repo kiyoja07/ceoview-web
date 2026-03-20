@@ -65,7 +65,7 @@ export default function SalaryDashboardPage() {
   const [data, setData] = useState<SalaryStatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState<string | null>(null); // null = 전체
+  const [selectedYear, setSelectedYear] = useState<string>("__all__");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -129,13 +129,6 @@ export default function SalaryDashboardPage() {
     }
     return { byYear: grouped, sortedYears: years, yearSummaries: summaries };
   }, [activeMonths]);
-
-  // 최초 로드 시 현재 연도 자동 선택
-  useEffect(() => {
-    if (selectedYear === null) {
-      setSelectedYear(String(new Date().getFullYear()));
-    }
-  }, [selectedYear]);
 
   // 선택된 연도의 요약
   const currentSummary: YearSummary | null = selectedYear

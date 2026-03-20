@@ -39,7 +39,9 @@ export default function CompanyAuthLoginPage() {
 
         const data = (await res.json()) as CompanyAuthMeResponse;
         router.replace(
-          data.profileComplete ? "/company/dashboard" : "/company/auth/onboarding",
+          data.profileComplete || data.companies.length > 1
+            ? "/company/dashboard"
+            : "/company/auth/onboarding",
         );
       } finally {
         setChecking(false);

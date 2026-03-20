@@ -3,10 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import type {
-  CompanyHeaderNavItem,
-  CompanyHeaderProfile,
-} from "@/types/company/header";
+import type { CompanyHeaderProfile } from "@/types/company/header";
 
 function isActivePath(pathname: string, href: string) {
   if (pathname === href) return true;
@@ -19,6 +16,12 @@ function formatBusinessNumber(value: string) {
   if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
   return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
 }
+
+type CompanyHeaderNavItem = {
+  href: string;
+  label: string;
+  activePrefix?: string;
+};
 
 export function CompanyHeader() {
   const pathname = usePathname();
@@ -55,8 +58,20 @@ export function CompanyHeader() {
     };
 
     void fetchProfile();
+    const handleCompanySelectionChanged = () => {
+      void fetchProfile();
+    };
+    window.addEventListener(
+      "company-selection-changed",
+      handleCompanySelectionChanged,
+    );
+
     return () => {
       mounted = false;
+      window.removeEventListener(
+        "company-selection-changed",
+        handleCompanySelectionChanged,
+      );
     };
   }, [pathname]);
 
@@ -71,7 +86,12 @@ export function CompanyHeader() {
   const navItems: CompanyHeaderNavItem[] = [
     { href: "/company/dashboard", label: "대시보드" },
     { href: salaryHref, label: "급여" },
-    { href: "/company/organization/profile", label: "계정" },
+    { href: "/company/employees", label: "직원" },
+    {
+      href: "/company/settings/profile",
+      label: "설정",
+      activePrefix: "/company/settings",
+    },
     { href: "/company/billing", label: "결제" },
   ];
 
@@ -93,7 +113,9 @@ export function CompanyHeader() {
         <nav className="min-w-0 flex-1 overflow-x-auto">
           <ul className="flex min-w-max items-center gap-2">
             {navItems.map((item) => {
-              const active = isActivePath(pathname, item.href);
+              const active = item.activePrefix
+                ? pathname.startsWith(item.activePrefix)
+                : isActivePath(pathname, item.href);
               return (
                 <li key={item.href}>
                   <Link

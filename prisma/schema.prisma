@@ -108,6 +108,7 @@ model Company {
   activeUploads               CompanyActiveUpload[]
   earnedIncomeItemDefinitions EarnedIncomeItemDefinition[]
   companyUsers                CompanyUser[]
+  companyMemberships          CompanyUserCompany[]
   companyUserInviteHistories  CompanyUserInviteHistory[]
   employees                   Employee[]
   businessIncomeEmployees     BusinessIncomeEmployee[]
@@ -254,6 +255,7 @@ model CompanyUser {
   agentLinks             AgentCompanyCustomer[]
   magicLinkTokens        CompanyMagicLinkToken[]
   phoneVerificationCodes PhoneVerificationCode[]
+  companyMemberships     CompanyUserCompany[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -261,6 +263,23 @@ model CompanyUser {
   @@unique([loginProvider, providerUserId])
   @@index([companyId])
   @@map("company_user")
+}
+
+model CompanyUserCompany {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  companyUserId BigInt      @map("company_user_id") @db.UnsignedBigInt
+  companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
+
+  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyUserId, companyId])
+  @@index([companyId])
+  @@map("company_user_company")
 }
 
 // 고객 회사 사용자용 매직링크 토큰

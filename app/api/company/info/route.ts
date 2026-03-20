@@ -1,34 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
-import { getCompanyUserIdFromRequest } from "@/app/lib/company-auth";
-import { deriveBusinessType } from "@/app/lib/business-type";
+import { resolveCompanyAccessContext } from "@/app/lib/company-access";
 import type { CompanyInfoUpdateBody } from "@/types/company/users";
 
 async function requireCompanyMember(request: NextRequest) {
-  const userId = getCompanyUserIdFromRequest(request);
-  if (!userId) {
+  const context = await resolveCompanyAccessContext(request);
+  if (!context) {
     return { error: "로그인이 필요합니다.", status: 401 } as const;
   }
 
-  const user = await prisma.companyUser.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      isActive: true,
-      isMaster: true,
-      companyId: true,
-    },
-  });
-
-  if (!user || !user.isActive) {
-    return { error: "로그인이 필요합니다.", status: 401 } as const;
-  }
-
-  return {
-    userId: user.id,
-    companyId: user.companyId,
-    isMaster: user.isMaster,
-  } as const;
+  return context;
 }
 
 function serializeCompany(company: {
@@ -65,7 +46,7 @@ export async function GET(request: NextRequest) {
     }
 
     const company = await prisma.company.findUnique({
-      where: { id: auth.companyId },
+      where: { id: auth.currentCompanyId },
       select: {
         id: true,
         businessNumber: true,
@@ -133,7 +114,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const updated = await prisma.company.update({
-      where: { id: auth.companyId },
+      where: { id: auth.currentCompanyId },
       data: {
         businessName,
         representativeName,

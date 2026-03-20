@@ -296,6 +296,7 @@ export type CompanyUserWhereInput = {
   agentLinks?: Prisma.AgentCompanyCustomerListRelationFilter
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenListRelationFilter
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeListRelationFilter
+  companyMemberships?: Prisma.CompanyUserCompanyListRelationFilter
 }
 
 export type CompanyUserOrderByWithRelationInput = {
@@ -317,6 +318,7 @@ export type CompanyUserOrderByWithRelationInput = {
   agentLinks?: Prisma.AgentCompanyCustomerOrderByRelationAggregateInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenOrderByRelationAggregateInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeOrderByRelationAggregateInput
+  companyMemberships?: Prisma.CompanyUserCompanyOrderByRelationAggregateInput
   _relevance?: Prisma.CompanyUserOrderByRelevanceInput
 }
 
@@ -343,6 +345,7 @@ export type CompanyUserWhereUniqueInput = Prisma.AtLeast<{
   agentLinks?: Prisma.AgentCompanyCustomerListRelationFilter
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenListRelationFilter
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeListRelationFilter
+  companyMemberships?: Prisma.CompanyUserCompanyListRelationFilter
 }, "id" | "email" | "loginProvider_providerUserId">
 
 export type CompanyUserOrderByWithAggregationInput = {
@@ -405,6 +408,7 @@ export type CompanyUserCreateInput = {
   agentLinks?: Prisma.AgentCompanyCustomerCreateNestedManyWithoutCompanyUserInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenCreateNestedManyWithoutCompanyUserInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeCreateNestedManyWithoutCompanyUserInput
+  companyMemberships?: Prisma.CompanyUserCompanyCreateNestedManyWithoutCompanyUserInput
 }
 
 export type CompanyUserUncheckedCreateInput = {
@@ -425,6 +429,7 @@ export type CompanyUserUncheckedCreateInput = {
   agentLinks?: Prisma.AgentCompanyCustomerUncheckedCreateNestedManyWithoutCompanyUserInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUncheckedCreateNestedManyWithoutCompanyUserInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUncheckedCreateNestedManyWithoutCompanyUserInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedCreateNestedManyWithoutCompanyUserInput
 }
 
 export type CompanyUserUpdateInput = {
@@ -445,6 +450,7 @@ export type CompanyUserUpdateInput = {
   agentLinks?: Prisma.AgentCompanyCustomerUpdateManyWithoutCompanyUserNestedInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUpdateManyWithoutCompanyUserNestedInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUpdateManyWithoutCompanyUserNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUpdateManyWithoutCompanyUserNestedInput
 }
 
 export type CompanyUserUncheckedUpdateInput = {
@@ -465,6 +471,7 @@ export type CompanyUserUncheckedUpdateInput = {
   agentLinks?: Prisma.AgentCompanyCustomerUncheckedUpdateManyWithoutCompanyUserNestedInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUncheckedUpdateManyWithoutCompanyUserNestedInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUncheckedUpdateManyWithoutCompanyUserNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedUpdateManyWithoutCompanyUserNestedInput
 }
 
 export type CompanyUserCreateManyInput = {
@@ -646,6 +653,20 @@ export type CompanyUserUncheckedUpdateManyWithoutCompanyNestedInput = {
   deleteMany?: Prisma.CompanyUserScalarWhereInput | Prisma.CompanyUserScalarWhereInput[]
 }
 
+export type CompanyUserCreateNestedOneWithoutCompanyMembershipsInput = {
+  create?: Prisma.XOR<Prisma.CompanyUserCreateWithoutCompanyMembershipsInput, Prisma.CompanyUserUncheckedCreateWithoutCompanyMembershipsInput>
+  connectOrCreate?: Prisma.CompanyUserCreateOrConnectWithoutCompanyMembershipsInput
+  connect?: Prisma.CompanyUserWhereUniqueInput
+}
+
+export type CompanyUserUpdateOneRequiredWithoutCompanyMembershipsNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyUserCreateWithoutCompanyMembershipsInput, Prisma.CompanyUserUncheckedCreateWithoutCompanyMembershipsInput>
+  connectOrCreate?: Prisma.CompanyUserCreateOrConnectWithoutCompanyMembershipsInput
+  upsert?: Prisma.CompanyUserUpsertWithoutCompanyMembershipsInput
+  connect?: Prisma.CompanyUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUserUpdateToOneWithWhereWithoutCompanyMembershipsInput, Prisma.CompanyUserUpdateWithoutCompanyMembershipsInput>, Prisma.CompanyUserUncheckedUpdateWithoutCompanyMembershipsInput>
+}
+
 export type CompanyUserCreateNestedOneWithoutMagicLinkTokensInput = {
   create?: Prisma.XOR<Prisma.CompanyUserCreateWithoutMagicLinkTokensInput, Prisma.CompanyUserUncheckedCreateWithoutMagicLinkTokensInput>
   connectOrCreate?: Prisma.CompanyUserCreateOrConnectWithoutMagicLinkTokensInput
@@ -705,6 +726,7 @@ export type CompanyUserCreateWithoutCompanyInput = {
   agentLinks?: Prisma.AgentCompanyCustomerCreateNestedManyWithoutCompanyUserInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenCreateNestedManyWithoutCompanyUserInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeCreateNestedManyWithoutCompanyUserInput
+  companyMemberships?: Prisma.CompanyUserCompanyCreateNestedManyWithoutCompanyUserInput
 }
 
 export type CompanyUserUncheckedCreateWithoutCompanyInput = {
@@ -724,6 +746,7 @@ export type CompanyUserUncheckedCreateWithoutCompanyInput = {
   agentLinks?: Prisma.AgentCompanyCustomerUncheckedCreateNestedManyWithoutCompanyUserInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUncheckedCreateNestedManyWithoutCompanyUserInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUncheckedCreateNestedManyWithoutCompanyUserInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedCreateNestedManyWithoutCompanyUserInput
 }
 
 export type CompanyUserCreateOrConnectWithoutCompanyInput = {
@@ -772,6 +795,102 @@ export type CompanyUserScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"CompanyUser"> | Date | string
 }
 
+export type CompanyUserCreateWithoutCompanyMembershipsInput = {
+  id?: bigint | number
+  email: string
+  passwordHash?: string | null
+  loginProvider?: $Enums.LoginProvider
+  providerUserId?: string | null
+  name: string
+  phone?: string | null
+  birthday?: Date | string | null
+  gender?: string | null
+  isMaster?: boolean
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutCompanyUsersInput
+  agentLinks?: Prisma.AgentCompanyCustomerCreateNestedManyWithoutCompanyUserInput
+  magicLinkTokens?: Prisma.CompanyMagicLinkTokenCreateNestedManyWithoutCompanyUserInput
+  phoneVerificationCodes?: Prisma.PhoneVerificationCodeCreateNestedManyWithoutCompanyUserInput
+}
+
+export type CompanyUserUncheckedCreateWithoutCompanyMembershipsInput = {
+  id?: bigint | number
+  companyId: bigint | number
+  email: string
+  passwordHash?: string | null
+  loginProvider?: $Enums.LoginProvider
+  providerUserId?: string | null
+  name: string
+  phone?: string | null
+  birthday?: Date | string | null
+  gender?: string | null
+  isMaster?: boolean
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentLinks?: Prisma.AgentCompanyCustomerUncheckedCreateNestedManyWithoutCompanyUserInput
+  magicLinkTokens?: Prisma.CompanyMagicLinkTokenUncheckedCreateNestedManyWithoutCompanyUserInput
+  phoneVerificationCodes?: Prisma.PhoneVerificationCodeUncheckedCreateNestedManyWithoutCompanyUserInput
+}
+
+export type CompanyUserCreateOrConnectWithoutCompanyMembershipsInput = {
+  where: Prisma.CompanyUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyUserCreateWithoutCompanyMembershipsInput, Prisma.CompanyUserUncheckedCreateWithoutCompanyMembershipsInput>
+}
+
+export type CompanyUserUpsertWithoutCompanyMembershipsInput = {
+  update: Prisma.XOR<Prisma.CompanyUserUpdateWithoutCompanyMembershipsInput, Prisma.CompanyUserUncheckedUpdateWithoutCompanyMembershipsInput>
+  create: Prisma.XOR<Prisma.CompanyUserCreateWithoutCompanyMembershipsInput, Prisma.CompanyUserUncheckedCreateWithoutCompanyMembershipsInput>
+  where?: Prisma.CompanyUserWhereInput
+}
+
+export type CompanyUserUpdateToOneWithWhereWithoutCompanyMembershipsInput = {
+  where?: Prisma.CompanyUserWhereInput
+  data: Prisma.XOR<Prisma.CompanyUserUpdateWithoutCompanyMembershipsInput, Prisma.CompanyUserUncheckedUpdateWithoutCompanyMembershipsInput>
+}
+
+export type CompanyUserUpdateWithoutCompanyMembershipsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loginProvider?: Prisma.EnumLoginProviderFieldUpdateOperationsInput | $Enums.LoginProvider
+  providerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthday?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMaster?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutCompanyUsersNestedInput
+  agentLinks?: Prisma.AgentCompanyCustomerUpdateManyWithoutCompanyUserNestedInput
+  magicLinkTokens?: Prisma.CompanyMagicLinkTokenUpdateManyWithoutCompanyUserNestedInput
+  phoneVerificationCodes?: Prisma.PhoneVerificationCodeUpdateManyWithoutCompanyUserNestedInput
+}
+
+export type CompanyUserUncheckedUpdateWithoutCompanyMembershipsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  companyId?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loginProvider?: Prisma.EnumLoginProviderFieldUpdateOperationsInput | $Enums.LoginProvider
+  providerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthday?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMaster?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentLinks?: Prisma.AgentCompanyCustomerUncheckedUpdateManyWithoutCompanyUserNestedInput
+  magicLinkTokens?: Prisma.CompanyMagicLinkTokenUncheckedUpdateManyWithoutCompanyUserNestedInput
+  phoneVerificationCodes?: Prisma.PhoneVerificationCodeUncheckedUpdateManyWithoutCompanyUserNestedInput
+}
+
 export type CompanyUserCreateWithoutMagicLinkTokensInput = {
   id?: bigint | number
   email: string
@@ -789,6 +908,7 @@ export type CompanyUserCreateWithoutMagicLinkTokensInput = {
   company: Prisma.CompanyCreateNestedOneWithoutCompanyUsersInput
   agentLinks?: Prisma.AgentCompanyCustomerCreateNestedManyWithoutCompanyUserInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeCreateNestedManyWithoutCompanyUserInput
+  companyMemberships?: Prisma.CompanyUserCompanyCreateNestedManyWithoutCompanyUserInput
 }
 
 export type CompanyUserUncheckedCreateWithoutMagicLinkTokensInput = {
@@ -808,6 +928,7 @@ export type CompanyUserUncheckedCreateWithoutMagicLinkTokensInput = {
   updatedAt?: Date | string
   agentLinks?: Prisma.AgentCompanyCustomerUncheckedCreateNestedManyWithoutCompanyUserInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUncheckedCreateNestedManyWithoutCompanyUserInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedCreateNestedManyWithoutCompanyUserInput
 }
 
 export type CompanyUserCreateOrConnectWithoutMagicLinkTokensInput = {
@@ -843,6 +964,7 @@ export type CompanyUserUpdateWithoutMagicLinkTokensInput = {
   company?: Prisma.CompanyUpdateOneRequiredWithoutCompanyUsersNestedInput
   agentLinks?: Prisma.AgentCompanyCustomerUpdateManyWithoutCompanyUserNestedInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUpdateManyWithoutCompanyUserNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUpdateManyWithoutCompanyUserNestedInput
 }
 
 export type CompanyUserUncheckedUpdateWithoutMagicLinkTokensInput = {
@@ -862,6 +984,7 @@ export type CompanyUserUncheckedUpdateWithoutMagicLinkTokensInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   agentLinks?: Prisma.AgentCompanyCustomerUncheckedUpdateManyWithoutCompanyUserNestedInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUncheckedUpdateManyWithoutCompanyUserNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedUpdateManyWithoutCompanyUserNestedInput
 }
 
 export type CompanyUserCreateWithoutPhoneVerificationCodesInput = {
@@ -881,6 +1004,7 @@ export type CompanyUserCreateWithoutPhoneVerificationCodesInput = {
   company: Prisma.CompanyCreateNestedOneWithoutCompanyUsersInput
   agentLinks?: Prisma.AgentCompanyCustomerCreateNestedManyWithoutCompanyUserInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenCreateNestedManyWithoutCompanyUserInput
+  companyMemberships?: Prisma.CompanyUserCompanyCreateNestedManyWithoutCompanyUserInput
 }
 
 export type CompanyUserUncheckedCreateWithoutPhoneVerificationCodesInput = {
@@ -900,6 +1024,7 @@ export type CompanyUserUncheckedCreateWithoutPhoneVerificationCodesInput = {
   updatedAt?: Date | string
   agentLinks?: Prisma.AgentCompanyCustomerUncheckedCreateNestedManyWithoutCompanyUserInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUncheckedCreateNestedManyWithoutCompanyUserInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedCreateNestedManyWithoutCompanyUserInput
 }
 
 export type CompanyUserCreateOrConnectWithoutPhoneVerificationCodesInput = {
@@ -935,6 +1060,7 @@ export type CompanyUserUpdateWithoutPhoneVerificationCodesInput = {
   company?: Prisma.CompanyUpdateOneRequiredWithoutCompanyUsersNestedInput
   agentLinks?: Prisma.AgentCompanyCustomerUpdateManyWithoutCompanyUserNestedInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUpdateManyWithoutCompanyUserNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUpdateManyWithoutCompanyUserNestedInput
 }
 
 export type CompanyUserUncheckedUpdateWithoutPhoneVerificationCodesInput = {
@@ -954,6 +1080,7 @@ export type CompanyUserUncheckedUpdateWithoutPhoneVerificationCodesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   agentLinks?: Prisma.AgentCompanyCustomerUncheckedUpdateManyWithoutCompanyUserNestedInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUncheckedUpdateManyWithoutCompanyUserNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedUpdateManyWithoutCompanyUserNestedInput
 }
 
 export type CompanyUserCreateWithoutAgentLinksInput = {
@@ -973,6 +1100,7 @@ export type CompanyUserCreateWithoutAgentLinksInput = {
   company: Prisma.CompanyCreateNestedOneWithoutCompanyUsersInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenCreateNestedManyWithoutCompanyUserInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeCreateNestedManyWithoutCompanyUserInput
+  companyMemberships?: Prisma.CompanyUserCompanyCreateNestedManyWithoutCompanyUserInput
 }
 
 export type CompanyUserUncheckedCreateWithoutAgentLinksInput = {
@@ -992,6 +1120,7 @@ export type CompanyUserUncheckedCreateWithoutAgentLinksInput = {
   updatedAt?: Date | string
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUncheckedCreateNestedManyWithoutCompanyUserInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUncheckedCreateNestedManyWithoutCompanyUserInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedCreateNestedManyWithoutCompanyUserInput
 }
 
 export type CompanyUserCreateOrConnectWithoutAgentLinksInput = {
@@ -1027,6 +1156,7 @@ export type CompanyUserUpdateWithoutAgentLinksInput = {
   company?: Prisma.CompanyUpdateOneRequiredWithoutCompanyUsersNestedInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUpdateManyWithoutCompanyUserNestedInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUpdateManyWithoutCompanyUserNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUpdateManyWithoutCompanyUserNestedInput
 }
 
 export type CompanyUserUncheckedUpdateWithoutAgentLinksInput = {
@@ -1046,6 +1176,7 @@ export type CompanyUserUncheckedUpdateWithoutAgentLinksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUncheckedUpdateManyWithoutCompanyUserNestedInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUncheckedUpdateManyWithoutCompanyUserNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedUpdateManyWithoutCompanyUserNestedInput
 }
 
 export type CompanyUserCreateManyCompanyInput = {
@@ -1081,6 +1212,7 @@ export type CompanyUserUpdateWithoutCompanyInput = {
   agentLinks?: Prisma.AgentCompanyCustomerUpdateManyWithoutCompanyUserNestedInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUpdateManyWithoutCompanyUserNestedInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUpdateManyWithoutCompanyUserNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUpdateManyWithoutCompanyUserNestedInput
 }
 
 export type CompanyUserUncheckedUpdateWithoutCompanyInput = {
@@ -1100,6 +1232,7 @@ export type CompanyUserUncheckedUpdateWithoutCompanyInput = {
   agentLinks?: Prisma.AgentCompanyCustomerUncheckedUpdateManyWithoutCompanyUserNestedInput
   magicLinkTokens?: Prisma.CompanyMagicLinkTokenUncheckedUpdateManyWithoutCompanyUserNestedInput
   phoneVerificationCodes?: Prisma.PhoneVerificationCodeUncheckedUpdateManyWithoutCompanyUserNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedUpdateManyWithoutCompanyUserNestedInput
 }
 
 export type CompanyUserUncheckedUpdateManyWithoutCompanyInput = {
@@ -1127,12 +1260,14 @@ export type CompanyUserCountOutputType = {
   agentLinks: number
   magicLinkTokens: number
   phoneVerificationCodes: number
+  companyMemberships: number
 }
 
 export type CompanyUserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   agentLinks?: boolean | CompanyUserCountOutputTypeCountAgentLinksArgs
   magicLinkTokens?: boolean | CompanyUserCountOutputTypeCountMagicLinkTokensArgs
   phoneVerificationCodes?: boolean | CompanyUserCountOutputTypeCountPhoneVerificationCodesArgs
+  companyMemberships?: boolean | CompanyUserCountOutputTypeCountCompanyMembershipsArgs
 }
 
 /**
@@ -1166,6 +1301,13 @@ export type CompanyUserCountOutputTypeCountPhoneVerificationCodesArgs<ExtArgs ex
   where?: Prisma.PhoneVerificationCodeWhereInput
 }
 
+/**
+ * CompanyUserCountOutputType without action
+ */
+export type CompanyUserCountOutputTypeCountCompanyMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CompanyUserCompanyWhereInput
+}
+
 
 export type CompanyUserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1186,6 +1328,7 @@ export type CompanyUserSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   agentLinks?: boolean | Prisma.CompanyUser$agentLinksArgs<ExtArgs>
   magicLinkTokens?: boolean | Prisma.CompanyUser$magicLinkTokensArgs<ExtArgs>
   phoneVerificationCodes?: boolean | Prisma.CompanyUser$phoneVerificationCodesArgs<ExtArgs>
+  companyMemberships?: boolean | Prisma.CompanyUser$companyMembershipsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyUserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["companyUser"]>
 
@@ -1214,6 +1357,7 @@ export type CompanyUserInclude<ExtArgs extends runtime.Types.Extensions.Internal
   agentLinks?: boolean | Prisma.CompanyUser$agentLinksArgs<ExtArgs>
   magicLinkTokens?: boolean | Prisma.CompanyUser$magicLinkTokensArgs<ExtArgs>
   phoneVerificationCodes?: boolean | Prisma.CompanyUser$phoneVerificationCodesArgs<ExtArgs>
+  companyMemberships?: boolean | Prisma.CompanyUser$companyMembershipsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyUserCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -1224,6 +1368,7 @@ export type $CompanyUserPayload<ExtArgs extends runtime.Types.Extensions.Interna
     agentLinks: Prisma.$AgentCompanyCustomerPayload<ExtArgs>[]
     magicLinkTokens: Prisma.$CompanyMagicLinkTokenPayload<ExtArgs>[]
     phoneVerificationCodes: Prisma.$PhoneVerificationCodePayload<ExtArgs>[]
+    companyMemberships: Prisma.$CompanyUserCompanyPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -1584,6 +1729,7 @@ export interface Prisma__CompanyUserClient<T, Null = never, ExtArgs extends runt
   agentLinks<T extends Prisma.CompanyUser$agentLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyUser$agentLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentCompanyCustomerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   magicLinkTokens<T extends Prisma.CompanyUser$magicLinkTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyUser$magicLinkTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyMagicLinkTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   phoneVerificationCodes<T extends Prisma.CompanyUser$phoneVerificationCodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyUser$phoneVerificationCodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PhoneVerificationCodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  companyMemberships<T extends Prisma.CompanyUser$companyMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyUser$companyMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyUserCompanyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2044,6 +2190,30 @@ export type CompanyUser$phoneVerificationCodesArgs<ExtArgs extends runtime.Types
   take?: number
   skip?: number
   distinct?: Prisma.PhoneVerificationCodeScalarFieldEnum | Prisma.PhoneVerificationCodeScalarFieldEnum[]
+}
+
+/**
+ * CompanyUser.companyMemberships
+ */
+export type CompanyUser$companyMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CompanyUserCompany
+   */
+  select?: Prisma.CompanyUserCompanySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CompanyUserCompany
+   */
+  omit?: Prisma.CompanyUserCompanyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyUserCompanyInclude<ExtArgs> | null
+  where?: Prisma.CompanyUserCompanyWhereInput
+  orderBy?: Prisma.CompanyUserCompanyOrderByWithRelationInput | Prisma.CompanyUserCompanyOrderByWithRelationInput[]
+  cursor?: Prisma.CompanyUserCompanyWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CompanyUserCompanyScalarFieldEnum | Prisma.CompanyUserCompanyScalarFieldEnum[]
 }
 
 /**

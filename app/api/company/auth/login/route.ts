@@ -105,6 +105,11 @@ async function createPendingCompanyUser(params: {
                 ? createDefaultNameFromEmail(email)
                 : createDefaultNameFromPhone(params.phone as string),
             isMaster: true,
+            companyMemberships: {
+              create: {
+                companyId: company.id,
+              },
+            },
           },
           select: {
             id: true,

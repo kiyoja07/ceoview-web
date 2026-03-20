@@ -1,34 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
-import { getCompanyUserIdFromRequest } from "@/app/lib/company-auth";
+import { resolveCompanyAccessContext } from "@/app/lib/company-access";
 import type { EmployeeCreateBody } from "@/types/company/employees";
 import { getEmployeeStatus } from "@/types/company/employees";
 
 async function requireCompanyMember(request: NextRequest) {
-  const userId = getCompanyUserIdFromRequest(request);
-  if (!userId) {
+  const context = await resolveCompanyAccessContext(request);
+  if (!context) {
     return { error: "로그인이 필요합니다.", status: 401 } as const;
   }
 
-  const user = await prisma.companyUser.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      isActive: true,
-      isMaster: true,
-      companyId: true,
-    },
-  });
-
-  if (!user || !user.isActive) {
-    return { error: "로그인이 필요합니다.", status: 401 } as const;
-  }
-
-  return {
-    userId: user.id,
-    companyId: user.companyId,
-    isMaster: user.isMaster,
-  } as const;
+  return context;
 }
 
 function toId(value: bigint) {
@@ -60,7 +42,7 @@ export async function GET(request: NextRequest) {
         department?: { contains: string };
       }[];
     } = {
-      companyId: auth.companyId,
+      companyId: auth.currentCompanyId,
       deletedAt: null,
       publishStatus: "PUBLISHED",
     };
@@ -155,7 +137,7 @@ export async function POST(request: NextRequest) {
 
     const employee = await prisma.employee.create({
       data: {
-        companyId: auth.companyId,
+        companyId: auth.currentCompanyId,
         employeeCode: body.employeeCode?.trim() || null,
         name,
         residentNumber: body.residentNumber?.trim() || null,

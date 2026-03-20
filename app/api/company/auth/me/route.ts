@@ -1,28 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
-import { getCompanyUserIdFromRequest } from "@/app/lib/company-auth";
+import {
+  buildCompanyUserScope,
+  resolveCompanyAccessContext,
+} from "@/app/lib/company-access";
 import { isCompanyProfileComplete } from "@/app/lib/company-onboarding";
 import type { CompanyProfileUpdateBody } from "@/types/company/auth";
 
 async function requireActiveCompanyUser(request: NextRequest) {
-  const userId = getCompanyUserIdFromRequest(request);
-  if (!userId) {
+  const context = await resolveCompanyAccessContext(request);
+  if (!context) {
     return { error: "인증이 필요합니다.", status: 401 } as const;
   }
 
-  const user = await prisma.companyUser.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      isActive: true,
-    },
-  });
-
-  if (!user || !user.isActive) {
-    return { error: "인증이 필요합니다.", status: 401 } as const;
-  }
-
-  return { user } as const;
+  return { context } as const;
 }
 
 export async function GET(request: NextRequest) {
@@ -33,7 +24,7 @@ export async function GET(request: NextRequest) {
     }
 
     const user = await prisma.companyUser.findUnique({
-      where: { id: auth.user.id },
+      where: { id: auth.context.userId },
       select: {
         id: true,
         email: true,
@@ -42,17 +33,6 @@ export async function GET(request: NextRequest) {
         isMaster: true,
         isActive: true,
         loginProvider: true,
-        companyId: true,
-        company: {
-          select: {
-            id: true,
-            businessNumber: true,
-            businessType: true,
-            businessName: true,
-            representativeName: true,
-            address: true,
-          },
-        },
       },
     });
 
@@ -70,17 +50,25 @@ export async function GET(request: NextRequest) {
       phone: user.phone,
       isMaster: user.isMaster,
       loginProvider: user.loginProvider,
-      hasCompany: Boolean(user.companyId),
-      profileComplete: isCompanyProfileComplete(user.company?.address ?? null),
-      company: user.company
+      hasCompany: auth.context.companies.length > 0,
+      profileComplete: isCompanyProfileComplete(auth.context.company.address),
+      currentCompanyId: auth.context.currentCompanyId.toString(),
+      company: auth.context.company
         ? {
-            id: user.company.id.toString(),
-            businessNumber: user.company.businessNumber,
-            businessType: user.company.businessType,
-            businessName: user.company.businessName,
-            representativeName: user.company.representativeName,
+            id: auth.context.company.id.toString(),
+            businessNumber: auth.context.company.businessNumber,
+            businessType: auth.context.company.businessType,
+            businessName: auth.context.company.businessName,
+            representativeName: auth.context.company.representativeName,
           }
         : null,
+      companies: auth.context.companies.map((company) => ({
+        id: company.id.toString(),
+        businessNumber: company.businessNumber,
+        businessType: company.businessType,
+        businessName: company.businessName,
+        representativeName: company.representativeName,
+      })),
     });
   } catch (error) {
     console.error("Company me error:", error);
@@ -123,7 +111,7 @@ export async function PATCH(request: NextRequest) {
 
     // 휴대폰 번호 변경 시 인증 확인
     const currentUser = await prisma.companyUser.findUnique({
-      where: { id: auth.user.id },
+      where: { id: auth.context.userId },
       select: { phone: true },
     });
     const currentPhone = currentUser?.phone ?? null;
@@ -159,7 +147,7 @@ export async function PATCH(request: NextRequest) {
 
       if (
         !verification ||
-        verification.companyUserId !== auth.user.id ||
+        verification.companyUserId !== auth.context.userId ||
         verification.phone !== normalizedNewPhone ||
         !verification.verifiedAt
       ) {
@@ -183,8 +171,8 @@ export async function PATCH(request: NextRequest) {
     if (typeof body.isMaster === "boolean") {
       // 현재 사용자가 마스터인지 확인
       const self = await prisma.companyUser.findUnique({
-        where: { id: auth.user.id },
-        select: { isMaster: true, companyId: true },
+        where: { id: auth.context.userId },
+        select: { isMaster: true },
       });
 
       if (!self?.isMaster) {
@@ -198,10 +186,10 @@ export async function PATCH(request: NextRequest) {
       if (!body.isMaster) {
         const otherMasterCount = await prisma.companyUser.count({
           where: {
-            companyId: self.companyId,
             isMaster: true,
             isActive: true,
-            id: { not: auth.user.id },
+            id: { not: auth.context.userId },
+            ...buildCompanyUserScope(auth.context.currentCompanyId),
           },
         });
 
@@ -217,7 +205,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const updated = await prisma.companyUser.update({
-      where: { id: auth.user.id },
+      where: { id: auth.context.userId },
       data: updateData,
       select: {
         id: true,

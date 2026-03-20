@@ -59,6 +59,7 @@ export const ModelName = {
   AgentMagicLinkToken: 'AgentMagicLinkToken',
   AgentUserInviteToken: 'AgentUserInviteToken',
   CompanyUser: 'CompanyUser',
+  CompanyUserCompany: 'CompanyUserCompany',
   CompanyMagicLinkToken: 'CompanyMagicLinkToken',
   PhoneVerificationCode: 'PhoneVerificationCode',
   CompanyUserInviteHistory: 'CompanyUserInviteHistory',
@@ -218,6 +219,17 @@ export const CompanyUserScalarFieldEnum = {
 } as const
 
 export type CompanyUserScalarFieldEnum = (typeof CompanyUserScalarFieldEnum)[keyof typeof CompanyUserScalarFieldEnum]
+
+
+export const CompanyUserCompanyScalarFieldEnum = {
+  id: 'id',
+  companyUserId: 'companyUserId',
+  companyId: 'companyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CompanyUserCompanyScalarFieldEnum = (typeof CompanyUserCompanyScalarFieldEnum)[keyof typeof CompanyUserCompanyScalarFieldEnum]
 
 
 export const CompanyMagicLinkTokenScalarFieldEnum = {

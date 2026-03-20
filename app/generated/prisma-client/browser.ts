@@ -58,6 +58,11 @@ export type AgentUserInviteToken = Prisma.AgentUserInviteTokenModel
  */
 export type CompanyUser = Prisma.CompanyUserModel
 /**
+ * Model CompanyUserCompany
+ * 
+ */
+export type CompanyUserCompany = Prisma.CompanyUserCompanyModel
+/**
  * Model CompanyMagicLinkToken
  * 
  */

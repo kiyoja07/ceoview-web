@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
-import { getCompanyUserIdFromRequest } from "@/app/lib/company-auth";
+import { resolveCompanyAccessContext } from "@/app/lib/company-access";
 import { isCompanyProfileComplete } from "@/app/lib/company-onboarding";
 import { deriveBusinessType } from "@/app/lib/business-type";
 
@@ -50,8 +50,8 @@ function parseBody(body: CompanyOnboardingBody) {
 
 export async function POST(request: NextRequest) {
   try {
-    const userId = getCompanyUserIdFromRequest(request);
-    if (!userId) {
+    const access = await resolveCompanyAccessContext(request);
+    if (!access) {
       return NextResponse.json(
         { error: "로그인이 필요합니다." },
         { status: 401 },
@@ -85,16 +85,10 @@ export async function POST(request: NextRequest) {
 
     const updated = await prisma.$transaction(async (tx) => {
       const current = await tx.companyUser.findUnique({
-        where: { id: userId },
+        where: { id: access.userId },
         select: {
           id: true,
           isActive: true,
-          companyId: true,
-          company: {
-            select: {
-              address: true,
-            },
-          },
         },
       });
 
@@ -103,7 +97,7 @@ export async function POST(request: NextRequest) {
       }
 
       await tx.company.update({
-        where: { id: current.companyId },
+        where: { id: access.currentCompanyId },
         data: {
           businessNumber: parsed.businessNumber,
           businessType: parsed.businessType,
@@ -125,20 +119,22 @@ export async function POST(request: NextRequest) {
           email: true,
           name: true,
           phone: true,
-          company: {
-            select: {
-              id: true,
-              businessNumber: true,
-              businessType: true,
-              businessName: true,
-              representativeName: true,
-              address: true,
-            },
-          },
         },
       });
 
-      return user;
+      const company = await tx.company.findUnique({
+        where: { id: access.currentCompanyId },
+        select: {
+          id: true,
+          businessNumber: true,
+          businessType: true,
+          businessName: true,
+          representativeName: true,
+          address: true,
+        },
+      });
+
+      return company ? { user, company } : null;
     });
 
     if (!updated) {
@@ -149,10 +145,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      id: updated.id.toString(),
-      email: updated.email,
-      name: updated.name,
-      phone: updated.phone,
+      id: updated.user.id.toString(),
+      email: updated.user.email,
+      name: updated.user.name,
+      phone: updated.user.phone,
       profileComplete: isCompanyProfileComplete(updated.company.address),
       company: {
         id: updated.company.id.toString(),

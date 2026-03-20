@@ -29,5 +29,5 @@ export function getCompanyMagicLinkTtlMinutes() {
 
 export function buildCompanyMagicLinkUrl(request: NextRequest, token: string) {
   const baseUrl = getAppBaseUrl(request);
-  return `${baseUrl}/api/company/auth/magic-link?token=${encodeURIComponent(token)}`;
+  return `${baseUrl}/company/auth/magic-link?token=${encodeURIComponent(token)}`;
 }

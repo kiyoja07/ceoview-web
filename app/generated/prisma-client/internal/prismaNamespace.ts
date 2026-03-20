@@ -392,6 +392,7 @@ export const ModelName = {
   AgentMagicLinkToken: 'AgentMagicLinkToken',
   AgentUserInviteToken: 'AgentUserInviteToken',
   CompanyUser: 'CompanyUser',
+  CompanyUserCompany: 'CompanyUserCompany',
   CompanyMagicLinkToken: 'CompanyMagicLinkToken',
   PhoneVerificationCode: 'PhoneVerificationCode',
   CompanyUserInviteHistory: 'CompanyUserInviteHistory',
@@ -429,7 +430,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyMagicLinkToken" | "phoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "payslipNotification" | "payslipAccessToken" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "employeeUser" | "employeeMagicLinkToken" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount"
+    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyUserCompany" | "companyMagicLinkToken" | "phoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "payslipNotification" | "payslipAccessToken" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "employeeUser" | "employeeMagicLinkToken" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -958,6 +959,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.CompanyUserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CompanyUserCountAggregateOutputType> | number
+        }
+      }
+    }
+    CompanyUserCompany: {
+      payload: Prisma.$CompanyUserCompanyPayload<ExtArgs>
+      fields: Prisma.CompanyUserCompanyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CompanyUserCompanyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyUserCompanyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CompanyUserCompanyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyUserCompanyPayload>
+        }
+        findFirst: {
+          args: Prisma.CompanyUserCompanyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyUserCompanyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CompanyUserCompanyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyUserCompanyPayload>
+        }
+        findMany: {
+          args: Prisma.CompanyUserCompanyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyUserCompanyPayload>[]
+        }
+        create: {
+          args: Prisma.CompanyUserCompanyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyUserCompanyPayload>
+        }
+        createMany: {
+          args: Prisma.CompanyUserCompanyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.CompanyUserCompanyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyUserCompanyPayload>
+        }
+        update: {
+          args: Prisma.CompanyUserCompanyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyUserCompanyPayload>
+        }
+        deleteMany: {
+          args: Prisma.CompanyUserCompanyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CompanyUserCompanyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.CompanyUserCompanyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyUserCompanyPayload>
+        }
+        aggregate: {
+          args: Prisma.CompanyUserCompanyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCompanyUserCompany>
+        }
+        groupBy: {
+          args: Prisma.CompanyUserCompanyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CompanyUserCompanyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CompanyUserCompanyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CompanyUserCompanyCountAggregateOutputType> | number
         }
       }
     }
@@ -2573,6 +2640,17 @@ export const CompanyUserScalarFieldEnum = {
 export type CompanyUserScalarFieldEnum = (typeof CompanyUserScalarFieldEnum)[keyof typeof CompanyUserScalarFieldEnum]
 
 
+export const CompanyUserCompanyScalarFieldEnum = {
+  id: 'id',
+  companyUserId: 'companyUserId',
+  companyId: 'companyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CompanyUserCompanyScalarFieldEnum = (typeof CompanyUserCompanyScalarFieldEnum)[keyof typeof CompanyUserCompanyScalarFieldEnum]
+
+
 export const CompanyMagicLinkTokenScalarFieldEnum = {
   id: 'id',
   companyUserId: 'companyUserId',
@@ -3533,6 +3611,7 @@ export type GlobalOmitConfig = {
   agentMagicLinkToken?: Prisma.AgentMagicLinkTokenOmit
   agentUserInviteToken?: Prisma.AgentUserInviteTokenOmit
   companyUser?: Prisma.CompanyUserOmit
+  companyUserCompany?: Prisma.CompanyUserCompanyOmit
   companyMagicLinkToken?: Prisma.CompanyMagicLinkTokenOmit
   phoneVerificationCode?: Prisma.PhoneVerificationCodeOmit
   companyUserInviteHistory?: Prisma.CompanyUserInviteHistoryOmit

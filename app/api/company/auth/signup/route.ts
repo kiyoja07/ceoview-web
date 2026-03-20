@@ -92,6 +92,11 @@ export async function POST(request: NextRequest) {
               loginProvider: "LOCAL",
               name: createDefaultNameFromEmail(email),
               isMaster: payload.role === "master",
+              companyMemberships: {
+                create: {
+                  companyId: company.id,
+                },
+              },
             },
             select: { id: true, email: true, isActive: true },
           });
@@ -113,6 +118,20 @@ export async function POST(request: NextRequest) {
           { status: 500 },
         );
       }
+
+      await prisma.companyUserCompany.upsert({
+        where: {
+          companyUserId_companyId: {
+            companyUserId: user.id,
+            companyId: company.id,
+          },
+        },
+        update: {},
+        create: {
+          companyUserId: user.id,
+          companyId: company.id,
+        },
+      });
 
       if (!user.isActive) {
         return NextResponse.json({
@@ -290,6 +309,11 @@ export async function POST(request: NextRequest) {
           name,
           phone,
           isMaster: existingMasterCount === 0,
+          companyMemberships: {
+            create: {
+              companyId: company.id,
+            },
+          },
         },
         select: {
           id: true,
@@ -311,7 +335,7 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
 
-    attachCompanySession(response, user.id);
+    attachCompanySession(response, user.id, user.companyId);
     return response;
   } catch (error: unknown) {
     console.error("Company signup error:", error);

@@ -3,6 +3,7 @@ import type { NextRequest, NextResponse } from "next/server";
 import type { CompanySessionPayload } from "@/types/company/session";
 
 export const COMPANY_SESSION_COOKIE = "company_session";
+export const COMPANY_SELECTED_COMPANY_COOKIE = "company_selected_company";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 14;
 
 function getSecret() {
@@ -66,13 +67,54 @@ export function getCompanyUserIdFromRequest(request: NextRequest): bigint | null
   }
 }
 
+export function getSelectedCompanyIdFromRequest(
+  request: NextRequest,
+): bigint | null {
+  const value = request.cookies.get(COMPANY_SELECTED_COMPANY_COOKIE)?.value;
+  if (!value) return null;
+
+  try {
+    return BigInt(value);
+  } catch {
+    return null;
+  }
+}
+
 export function attachCompanySession(
   response: NextResponse,
   userId: bigint | string,
+  selectedCompanyId?: bigint | string | null,
 ) {
   response.cookies.set({
     name: COMPANY_SESSION_COOKIE,
     value: createCompanySessionToken(userId),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: SESSION_TTL_SECONDS,
+  });
+
+  if (selectedCompanyId !== undefined) {
+    response.cookies.set({
+      name: COMPANY_SELECTED_COMPANY_COOKIE,
+      value: selectedCompanyId ? selectedCompanyId.toString() : "",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: selectedCompanyId ? SESSION_TTL_SECONDS : 0,
+    });
+  }
+}
+
+export function attachCompanySelection(
+  response: NextResponse,
+  companyId: bigint | string,
+) {
+  response.cookies.set({
+    name: COMPANY_SELECTED_COMPANY_COOKIE,
+    value: companyId.toString(),
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -84,6 +126,15 @@ export function attachCompanySession(
 export function clearCompanySession(response: NextResponse) {
   response.cookies.set({
     name: COMPANY_SESSION_COOKIE,
+    value: "",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  });
+  response.cookies.set({
+    name: COMPANY_SELECTED_COMPANY_COOKIE,
     value: "",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

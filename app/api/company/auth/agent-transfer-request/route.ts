@@ -1,28 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
-import { getCompanyUserIdFromRequest } from "@/app/lib/company-auth";
+import { resolveCompanyAccessContext } from "@/app/lib/company-access";
 
 async function requireCompanyUser(request: NextRequest) {
-  const userId = getCompanyUserIdFromRequest(request);
-  if (!userId) {
+  const context = await resolveCompanyAccessContext(request);
+  if (!context) {
     return { error: "로그인이 필요합니다.", status: 401 } as const;
   }
 
-  const user = await prisma.companyUser.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      isActive: true,
-      isMaster: true,
-      companyId: true,
-    },
-  });
-
-  if (!user || !user.isActive) {
-    return { error: "로그인이 필요합니다.", status: 401 } as const;
-  }
-
-  return { user } as const;
+  return { user: context } as const;
 }
 
 export async function GET(request: NextRequest) {
@@ -35,7 +21,7 @@ export async function GET(request: NextRequest) {
     const pending = await prisma.agentOrganizationCompanyTransferRequest.findUnique(
       {
         where: {
-          companyId: auth.user.companyId,
+          companyId: auth.user.currentCompanyId,
         },
         select: {
           id: true,
@@ -108,7 +94,7 @@ export async function POST(request: NextRequest) {
       const pending =
         await tx.agentOrganizationCompanyTransferRequest.findUnique({
           where: {
-            companyId: auth.user.companyId,
+            companyId: auth.user.currentCompanyId,
           },
           select: {
             companyId: true,

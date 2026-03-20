@@ -1,27 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
-import { getCompanyUserIdFromRequest } from "@/app/lib/company-auth";
+import { resolveCompanyAccessContext } from "@/app/lib/company-access";
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = getCompanyUserIdFromRequest(request);
-    if (!userId) {
-      return NextResponse.json(
-        { error: "로그인이 필요합니다." },
-        { status: 401 },
-      );
-    }
-
-    const user = await prisma.companyUser.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        isActive: true,
-        companyId: true,
-      },
-    });
-
-    if (!user || !user.isActive) {
+    const access = await resolveCompanyAccessContext(request);
+    if (!access) {
       return NextResponse.json(
         { error: "로그인이 필요합니다." },
         { status: 401 },
@@ -29,7 +13,7 @@ export async function GET(request: NextRequest) {
     }
 
     const invites = await prisma.companyUserInviteHistory.findMany({
-      where: { companyId: user.companyId },
+      where: { companyId: access.currentCompanyId },
       orderBy: { createdAt: "desc" },
       take: 50,
       select: {
