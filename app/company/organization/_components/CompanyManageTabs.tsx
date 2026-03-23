@@ -7,6 +7,7 @@ const TAB_ITEMS = [
   { href: "/company/settings/profile", label: "내 정보" },
   { href: "/company/settings/info", label: "회사 정보" },
   { href: "/company/settings/users", label: "회사 사용자" },
+  { href: "/company/settings/billing", label: "결제" },
 ] as const;
 
 function isActivePath(pathname: string, href: string) {

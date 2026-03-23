@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import { sanitizeEmployeeRequestPayload } from "@/app/lib/company-change-request";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
+import type { EmployeeCreateBody } from "@/types/company/employees";
 import { getEmployeeStatus } from "@/types/company/employees";
 
 async function requireAgentOrganizationId(request: NextRequest) {
@@ -25,7 +27,7 @@ async function requireAgentOrganizationId(request: NextRequest) {
     } as const;
   }
 
-  return { organizationId: user.agentOrganizationId } as const;
+  return { userId, organizationId: user.agentOrganizationId } as const;
 }
 
 function toId(value: bigint) {
@@ -210,7 +212,12 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       );
     }
 
-    const body = await request.json();
+    const rawBody = (await request.json()) as {
+      requestId?: string;
+    } & Record<string, unknown>;
+    const body = sanitizeEmployeeRequestPayload(rawBody as EmployeeCreateBody);
+    const requestIdRaw =
+      typeof rawBody.requestId === "string" ? rawBody.requestId.trim() : "";
     const name = typeof body.name === "string" ? body.name.trim() : "";
     if (!name) {
       return NextResponse.json(
@@ -219,7 +226,40 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       );
     }
 
+    let requestId: bigint | null = null;
+    if (requestIdRaw) {
+      try {
+        requestId = BigInt(requestIdRaw);
+      } catch {
+        return NextResponse.json(
+          { error: "유효한 요청 ID가 아닙니다." },
+          { status: 400 },
+        );
+      }
+    }
+
     const employee = await prisma.$transaction(async (tx) => {
+      if (requestId) {
+        const changeRequest = await tx.companyChangeRequest.findFirst({
+          where: {
+            id: requestId,
+            companyId,
+            targetEmployeeId: employeeId,
+            scope: "EMPLOYEE",
+            action: "UPDATE",
+            status: "PENDING",
+            company: {
+              organizationLink: {
+                is: { agentOrganizationId: auth.organizationId },
+              },
+            },
+          },
+          select: { id: true },
+        });
+
+        if (!changeRequest) return null;
+      }
+
       const existing = await tx.employee.findFirst({
         where: { id: employeeId, companyId, deletedAt: null },
         select: {
@@ -325,6 +365,18 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         await tx.employeeBankAccount.updateMany({
           where: { id: { in: idsToSoftDelete }, deletedAt: null },
           data: { deletedAt: new Date() },
+        });
+      }
+
+      if (requestId) {
+        await tx.companyChangeRequest.update({
+          where: { id: requestId },
+          data: {
+            status: "APPROVED",
+            resolvedAt: new Date(),
+            resolvedByAgentUserId: auth.userId,
+            resolutionComment: null,
+          },
         });
       }
 

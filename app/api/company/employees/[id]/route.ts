@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import {
+  sanitizeEmployeeRequestPayload,
+  serializePendingRequestSummary,
+  snapshotEmployeeRecord,
+} from "@/app/lib/company-change-request";
 import { resolveCompanyAccessContext } from "@/app/lib/company-access";
 import type { EmployeeUpdateBody } from "@/types/company/employees";
 import { getEmployeeStatus } from "@/types/company/employees";
@@ -17,15 +22,19 @@ function toId(value: bigint) {
   return value.toString();
 }
 
-function parseBigIntId(value: string | undefined) {
-  if (!value) return null;
-
-  try {
-    return BigInt(value);
-  } catch {
-    return null;
-  }
-}
+const pendingRequestSelect = {
+  id: true,
+  scope: true,
+  action: true,
+  status: true,
+  targetEmployeeId: true,
+  requestedPayload: true,
+  currentSnapshot: true,
+  resolutionComment: true,
+  resolvedAt: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -49,20 +58,32 @@ export async function GET(request: NextRequest, context: RouteContext) {
       );
     }
 
-    const employee = await prisma.employee.findFirst({
-      where: {
-        id: employeeId,
-        companyId: auth.currentCompanyId,
-        deletedAt: null,
-        publishStatus: "PUBLISHED",
-      },
-      include: {
-        bankAccounts: {
-          where: { deletedAt: null },
-          orderBy: { createdAt: "asc" },
+    const [employee, pendingRequest] = await Promise.all([
+      prisma.employee.findFirst({
+        where: {
+          id: employeeId,
+          companyId: auth.currentCompanyId,
+          deletedAt: null,
+          publishStatus: "PUBLISHED",
         },
-      },
-    });
+        include: {
+          bankAccounts: {
+            where: { deletedAt: null },
+            orderBy: { createdAt: "asc" },
+          },
+        },
+      }),
+      prisma.companyChangeRequest.findFirst({
+        where: {
+          companyId: auth.currentCompanyId,
+          scope: "EMPLOYEE",
+          targetEmployeeId: employeeId,
+          status: "PENDING",
+        },
+        orderBy: { createdAt: "desc" },
+        select: pendingRequestSelect,
+      }),
+    ]);
 
     if (!employee) {
       return NextResponse.json(
@@ -111,6 +132,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
       })),
       createdAt: employee.createdAt.toISOString(),
       updatedAt: employee.updatedAt.toISOString(),
+      pendingRequest: pendingRequest
+        ? serializePendingRequestSummary(pendingRequest)
+        : null,
     });
   } catch (error) {
     console.error("Employee GET error:", error);
@@ -146,7 +170,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       );
     }
 
-    const body = (await request.json()) as EmployeeUpdateBody;
+    const body = sanitizeEmployeeRequestPayload(
+      (await request.json()) as EmployeeUpdateBody,
+    );
 
     const name = body.name?.trim();
     if (!name) {
@@ -156,198 +182,65 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       );
     }
 
-    const employee = await prisma.$transaction(async (tx) => {
-      const existing = await tx.employee.findFirst({
-        where: {
-          id: employeeId,
-          companyId: auth.currentCompanyId,
-          deletedAt: null,
-          publishStatus: "PUBLISHED",
+    const existing = await prisma.employee.findFirst({
+      where: {
+        id: employeeId,
+        companyId: auth.currentCompanyId,
+        deletedAt: null,
+        publishStatus: "PUBLISHED",
+      },
+      include: {
+        bankAccounts: {
+          where: { deletedAt: null },
+          orderBy: { createdAt: "asc" },
         },
-        select: {
-          id: true,
-          bankAccounts: {
-            where: { deletedAt: null },
-            select: { id: true },
-          },
-        },
-      });
-
-      if (!existing) {
-        return null;
-      }
-
-      const existingBankAccountIds = new Set(
-        existing.bankAccounts.map((bankAccount) => bankAccount.id.toString()),
-      );
-
-      const sanitizedBankAccounts =
-        body.bankAccounts
-          ?.filter((ba) => ba.bankName?.trim() && ba.accountNumber?.trim())
-          .map((ba) => ({
-            id: parseBigIntId(ba.id),
-            bankName: ba.bankName.trim(),
-            accountNumber: ba.accountNumber.trim(),
-            accountHolder: ba.accountHolder?.trim() || name,
-          })) ?? [];
-
-      const retainedBankAccountIds = new Set<string>();
-
-      await tx.employee.update({
-        where: { id: employeeId },
-        data: {
-          employeeCode: body.employeeCode?.trim() || null,
-          name,
-          residentNumber: body.residentNumber?.trim() || null,
-          nationalityType: body.nationalityType?.trim() || null,
-          jobCategory: body.jobCategory?.trim() || null,
-          residenceType: body.residenceType?.trim() || null,
-          department: body.department?.trim() || null,
-          positionTitle: body.positionTitle?.trim() || null,
-          email: body.email?.trim() || null,
-          phone: body.phone?.trim() || null,
-          landlinePhone: body.landlinePhone?.trim() || null,
-          hireDate: body.hireDate?.trim() || null,
-          resignDate: body.resignDate?.trim() || null,
-          zipcode: body.zipcode?.trim() || null,
-          address: body.address?.trim() || null,
-          addressDetail: body.addressDetail?.trim() || null,
-          hasSpouse: body.hasSpouse?.trim() || null,
-          dependentUnder20: body.dependentUnder20?.trim() || null,
-          dependentOver60: body.dependentOver60?.trim() || null,
-          deductionSenior: body.deductionSenior?.trim() || null,
-          deductionDisabled: body.deductionDisabled?.trim() || null,
-          deductionWomen: body.deductionWomen?.trim() || null,
-          deductionChildren: body.deductionChildren?.trim() || null,
-          deductionBirthAdoption: body.deductionBirthAdoption?.trim() || null,
-          deductionSingleParent: body.deductionSingleParent?.trim() || null,
-          employmentInsurance: body.employmentInsurance?.trim() || null,
-          payGrade: body.payGrade?.trim() || null,
-          nationalPension: body.nationalPension?.trim() || null,
-          healthInsurance: body.healthInsurance?.trim() || null,
-        },
-      });
-
-      for (const bankAccount of sanitizedBankAccounts) {
-        const existingBankAccountId = bankAccount.id?.toString();
-        if (
-          existingBankAccountId &&
-          existingBankAccountIds.has(existingBankAccountId)
-        ) {
-          retainedBankAccountIds.add(existingBankAccountId);
-          await tx.employeeBankAccount.update({
-            where: { id: bankAccount.id! },
-            data: {
-              bankName: bankAccount.bankName,
-              accountNumber: bankAccount.accountNumber,
-              accountHolder: bankAccount.accountHolder,
-              deletedAt: null,
-            },
-          });
-          continue;
-        }
-
-        await tx.employeeBankAccount.create({
-          data: {
-            employeeId,
-            bankName: bankAccount.bankName,
-            accountNumber: bankAccount.accountNumber,
-            accountHolder: bankAccount.accountHolder,
-          },
-        });
-      }
-
-      const bankAccountIdsToSoftDelete = existing.bankAccounts
-        .filter(
-          (bankAccount) =>
-            !retainedBankAccountIds.has(bankAccount.id.toString()),
-        )
-        .map((bankAccount) => bankAccount.id);
-
-      if (bankAccountIdsToSoftDelete.length > 0) {
-        await tx.employeeBankAccount.updateMany({
-          where: {
-            id: { in: bankAccountIdsToSoftDelete },
-            deletedAt: null,
-          },
-          data: {
-            deletedAt: new Date(),
-          },
-        });
-      }
-
-      return tx.employee.findUnique({
-        where: { id: employeeId },
-        include: {
-          bankAccounts: {
-            where: { deletedAt: null },
-            orderBy: { createdAt: "asc" },
-          },
-        },
-      });
+      },
     });
 
-    if (!employee) {
+    if (!existing) {
       return NextResponse.json(
         { error: "직원 정보를 찾을 수 없습니다." },
         { status: 404 },
       );
     }
 
-    return NextResponse.json({
-      id: toId(employee.id),
-      employeeCode: employee.employeeCode,
-      name: employee.name,
-      residentNumber: employee.residentNumber,
-      nationalityType: employee.nationalityType,
-      jobCategory: employee.jobCategory,
-      residenceType: employee.residenceType,
-      department: employee.department,
-      positionTitle: employee.positionTitle,
-      email: employee.email,
-      phone: employee.phone,
-      landlinePhone: employee.landlinePhone,
-      hireDate: employee.hireDate,
-      resignDate: employee.resignDate,
-      status: getEmployeeStatus(employee.hireDate, employee.resignDate),
-      zipcode: employee.zipcode,
-      address: employee.address,
-      addressDetail: employee.addressDetail,
-      hasSpouse: employee.hasSpouse,
-      dependentUnder20: employee.dependentUnder20,
-      dependentOver60: employee.dependentOver60,
-      deductionSenior: employee.deductionSenior,
-      deductionDisabled: employee.deductionDisabled,
-      deductionWomen: employee.deductionWomen,
-      deductionChildren: employee.deductionChildren,
-      deductionBirthAdoption: employee.deductionBirthAdoption,
-      deductionSingleParent: employee.deductionSingleParent,
-      employmentInsurance: employee.employmentInsurance,
-      payGrade: employee.payGrade,
-      nationalPension: employee.nationalPension,
-      healthInsurance: employee.healthInsurance,
-      bankAccounts: employee.bankAccounts.map((ba) => ({
-        id: toId(ba.id),
-        bankName: ba.bankName,
-        accountNumber: ba.accountNumber,
-        accountHolder: ba.accountHolder,
-      })),
-      createdAt: employee.createdAt.toISOString(),
-      updatedAt: employee.updatedAt.toISOString(),
+    const pendingRequest = await prisma.companyChangeRequest.findFirst({
+      where: {
+        companyId: auth.currentCompanyId,
+        scope: "EMPLOYEE",
+        targetEmployeeId: employeeId,
+        status: "PENDING",
+      },
+      select: { id: true },
     });
-  } catch (error) {
-    console.error("Employee PATCH error:", error);
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "code" in error &&
-      (error as { code: string }).code === "P2002"
-    ) {
+
+    if (pendingRequest) {
       return NextResponse.json(
-        { error: "이미 사용 중인 사원코드입니다." },
+        { error: "이미 처리 대기 중인 직원 변경 요청이 있습니다." },
         { status: 409 },
       );
     }
+
+    const createdRequest = await prisma.companyChangeRequest.create({
+      data: {
+        scope: "EMPLOYEE",
+        action: "UPDATE",
+        companyId: auth.currentCompanyId,
+        requestedByCompanyUserId: auth.userId,
+        targetEmployeeId: employeeId,
+        requestedPayload: body,
+        currentSnapshot: snapshotEmployeeRecord(existing),
+      },
+      select: pendingRequestSelect,
+    });
+
+    return NextResponse.json({
+      success: true,
+      request: serializePendingRequestSummary(createdRequest),
+      message: "직원 수정 요청이 제출되었습니다.",
+    });
+  } catch (error) {
+    console.error("Employee PATCH error:", error);
     return NextResponse.json(
       { error: "직원 정보 수정에 실패했습니다." },
       { status: 500 },
@@ -387,7 +280,12 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
         deletedAt: null,
         publishStatus: "PUBLISHED",
       },
-      select: { id: true },
+      include: {
+        bankAccounts: {
+          where: { deletedAt: null },
+          orderBy: { createdAt: "asc" },
+        },
+      },
     });
 
     if (!existing) {
@@ -397,27 +295,44 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       );
     }
 
-    const deletedAt = new Date();
+    const pendingRequest = await prisma.companyChangeRequest.findFirst({
+      where: {
+        companyId: auth.currentCompanyId,
+        scope: "EMPLOYEE",
+        targetEmployeeId: employeeId,
+        status: "PENDING",
+      },
+      select: { id: true },
+    });
 
-    await prisma.$transaction([
-      prisma.employeeBankAccount.updateMany({
-        where: {
-          employeeId,
-          deletedAt: null,
-        },
-        data: {
-          deletedAt,
-        },
-      }),
-      prisma.employee.update({
-        where: { id: employeeId },
-        data: {
-          deletedAt,
-        },
-      }),
-    ]);
+    if (pendingRequest) {
+      return NextResponse.json(
+        { error: "이미 처리 대기 중인 직원 변경 요청이 있습니다." },
+        { status: 409 },
+      );
+    }
 
-    return NextResponse.json({ success: true });
+    const createdRequest = await prisma.companyChangeRequest.create({
+      data: {
+        scope: "EMPLOYEE",
+        action: "DELETE",
+        companyId: auth.currentCompanyId,
+        requestedByCompanyUserId: auth.userId,
+        targetEmployeeId: employeeId,
+        requestedPayload: {
+          employeeId: employeeId.toString(),
+          name: existing.name,
+        },
+        currentSnapshot: snapshotEmployeeRecord(existing),
+      },
+      select: pendingRequestSelect,
+    });
+
+    return NextResponse.json({
+      success: true,
+      request: serializePendingRequestSummary(createdRequest),
+      message: "직원 삭제 요청이 제출되었습니다.",
+    });
   } catch (error) {
     console.error("Employee DELETE error:", error);
     return NextResponse.json(

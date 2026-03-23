@@ -40,6 +40,7 @@ export type AgentOrganizationMinAggregateOutputType = {
   businessType: $Enums.BusinessType | null
   organizationName: string | null
   representativeName: string | null
+  phone: string | null
   openingDate: Date | null
   address: string | null
   createdAt: Date | null
@@ -52,6 +53,7 @@ export type AgentOrganizationMaxAggregateOutputType = {
   businessType: $Enums.BusinessType | null
   organizationName: string | null
   representativeName: string | null
+  phone: string | null
   openingDate: Date | null
   address: string | null
   createdAt: Date | null
@@ -64,6 +66,7 @@ export type AgentOrganizationCountAggregateOutputType = {
   businessType: number
   organizationName: number
   representativeName: number
+  phone: number
   openingDate: number
   address: number
   createdAt: number
@@ -86,6 +89,7 @@ export type AgentOrganizationMinAggregateInputType = {
   businessType?: true
   organizationName?: true
   representativeName?: true
+  phone?: true
   openingDate?: true
   address?: true
   createdAt?: true
@@ -98,6 +102,7 @@ export type AgentOrganizationMaxAggregateInputType = {
   businessType?: true
   organizationName?: true
   representativeName?: true
+  phone?: true
   openingDate?: true
   address?: true
   createdAt?: true
@@ -110,6 +115,7 @@ export type AgentOrganizationCountAggregateInputType = {
   businessType?: true
   organizationName?: true
   representativeName?: true
+  phone?: true
   openingDate?: true
   address?: true
   createdAt?: true
@@ -209,6 +215,7 @@ export type AgentOrganizationGroupByOutputType = {
   businessType: $Enums.BusinessType
   organizationName: string | null
   representativeName: string | null
+  phone: string | null
   openingDate: Date | null
   address: string | null
   createdAt: Date
@@ -244,6 +251,7 @@ export type AgentOrganizationWhereInput = {
   businessType?: Prisma.EnumBusinessTypeFilter<"AgentOrganization"> | $Enums.BusinessType
   organizationName?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   representativeName?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
+  phone?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   openingDate?: Prisma.DateTimeNullableFilter<"AgentOrganization"> | Date | string | null
   address?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AgentOrganization"> | Date | string
@@ -262,6 +270,7 @@ export type AgentOrganizationOrderByWithRelationInput = {
   businessType?: Prisma.SortOrder
   organizationName?: Prisma.SortOrderInput | Prisma.SortOrder
   representativeName?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   openingDate?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -284,6 +293,7 @@ export type AgentOrganizationWhereUniqueInput = Prisma.AtLeast<{
   businessType?: Prisma.EnumBusinessTypeFilter<"AgentOrganization"> | $Enums.BusinessType
   organizationName?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   representativeName?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
+  phone?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   openingDate?: Prisma.DateTimeNullableFilter<"AgentOrganization"> | Date | string | null
   address?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AgentOrganization"> | Date | string
@@ -302,6 +312,7 @@ export type AgentOrganizationOrderByWithAggregationInput = {
   businessType?: Prisma.SortOrder
   organizationName?: Prisma.SortOrderInput | Prisma.SortOrder
   representativeName?: Prisma.SortOrderInput | Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   openingDate?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -322,6 +333,7 @@ export type AgentOrganizationScalarWhereWithAggregatesInput = {
   businessType?: Prisma.EnumBusinessTypeWithAggregatesFilter<"AgentOrganization"> | $Enums.BusinessType
   organizationName?: Prisma.StringNullableWithAggregatesFilter<"AgentOrganization"> | string | null
   representativeName?: Prisma.StringNullableWithAggregatesFilter<"AgentOrganization"> | string | null
+  phone?: Prisma.StringNullableWithAggregatesFilter<"AgentOrganization"> | string | null
   openingDate?: Prisma.DateTimeNullableWithAggregatesFilter<"AgentOrganization"> | Date | string | null
   address?: Prisma.StringNullableWithAggregatesFilter<"AgentOrganization"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AgentOrganization"> | Date | string
@@ -334,6 +346,7 @@ export type AgentOrganizationCreateInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -352,6 +365,7 @@ export type AgentOrganizationUncheckedCreateInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -370,6 +384,7 @@ export type AgentOrganizationUpdateInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -388,6 +403,7 @@ export type AgentOrganizationUncheckedUpdateInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -406,6 +422,7 @@ export type AgentOrganizationCreateManyInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -418,6 +435,7 @@ export type AgentOrganizationUpdateManyMutationInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -430,6 +448,7 @@ export type AgentOrganizationUncheckedUpdateManyInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -448,6 +467,7 @@ export type AgentOrganizationCountOrderByAggregateInput = {
   businessType?: Prisma.SortOrder
   organizationName?: Prisma.SortOrder
   representativeName?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   openingDate?: Prisma.SortOrder
   address?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -464,6 +484,7 @@ export type AgentOrganizationMaxOrderByAggregateInput = {
   businessType?: Prisma.SortOrder
   organizationName?: Prisma.SortOrder
   representativeName?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   openingDate?: Prisma.SortOrder
   address?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -476,6 +497,7 @@ export type AgentOrganizationMinOrderByAggregateInput = {
   businessType?: Prisma.SortOrder
   organizationName?: Prisma.SortOrder
   representativeName?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   openingDate?: Prisma.SortOrder
   address?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -618,6 +640,7 @@ export type AgentOrganizationCreateWithoutCompanyLinksInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -635,6 +658,7 @@ export type AgentOrganizationUncheckedCreateWithoutCompanyLinksInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -668,6 +692,7 @@ export type AgentOrganizationUpdateWithoutCompanyLinksInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -685,6 +710,7 @@ export type AgentOrganizationUncheckedUpdateWithoutCompanyLinksInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -702,6 +728,7 @@ export type AgentOrganizationCreateWithoutTransferRequestsFromInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -719,6 +746,7 @@ export type AgentOrganizationUncheckedCreateWithoutTransferRequestsFromInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -741,6 +769,7 @@ export type AgentOrganizationCreateWithoutTransferRequestsToInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -758,6 +787,7 @@ export type AgentOrganizationUncheckedCreateWithoutTransferRequestsToInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -791,6 +821,7 @@ export type AgentOrganizationUpdateWithoutTransferRequestsFromInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -808,6 +839,7 @@ export type AgentOrganizationUncheckedUpdateWithoutTransferRequestsFromInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -836,6 +868,7 @@ export type AgentOrganizationUpdateWithoutTransferRequestsToInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -853,6 +886,7 @@ export type AgentOrganizationUncheckedUpdateWithoutTransferRequestsToInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -870,6 +904,7 @@ export type AgentOrganizationCreateWithoutUsersInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -887,6 +922,7 @@ export type AgentOrganizationUncheckedCreateWithoutUsersInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -920,6 +956,7 @@ export type AgentOrganizationUpdateWithoutUsersInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -937,6 +974,7 @@ export type AgentOrganizationUncheckedUpdateWithoutUsersInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -954,6 +992,7 @@ export type AgentOrganizationCreateWithoutInviteTokensInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -971,6 +1010,7 @@ export type AgentOrganizationUncheckedCreateWithoutInviteTokensInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -1004,6 +1044,7 @@ export type AgentOrganizationUpdateWithoutInviteTokensInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1021,6 +1062,7 @@ export type AgentOrganizationUncheckedUpdateWithoutInviteTokensInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1038,6 +1080,7 @@ export type AgentOrganizationCreateWithoutBillingInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -1055,6 +1098,7 @@ export type AgentOrganizationUncheckedCreateWithoutBillingInput = {
   businessType: $Enums.BusinessType
   organizationName?: string | null
   representativeName?: string | null
+  phone?: string | null
   openingDate?: Date | string | null
   address?: string | null
   createdAt?: Date | string
@@ -1088,6 +1132,7 @@ export type AgentOrganizationUpdateWithoutBillingInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1105,6 +1150,7 @@ export type AgentOrganizationUncheckedUpdateWithoutBillingInput = {
   businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
   organizationName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1189,6 +1235,7 @@ export type AgentOrganizationSelect<ExtArgs extends runtime.Types.Extensions.Int
   businessType?: boolean
   organizationName?: boolean
   representativeName?: boolean
+  phone?: boolean
   openingDate?: boolean
   address?: boolean
   createdAt?: boolean
@@ -1210,13 +1257,14 @@ export type AgentOrganizationSelectScalar = {
   businessType?: boolean
   organizationName?: boolean
   representativeName?: boolean
+  phone?: boolean
   openingDate?: boolean
   address?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AgentOrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationNumber" | "businessType" | "organizationName" | "representativeName" | "openingDate" | "address" | "createdAt" | "updatedAt", ExtArgs["result"]["agentOrganization"]>
+export type AgentOrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationNumber" | "businessType" | "organizationName" | "representativeName" | "phone" | "openingDate" | "address" | "createdAt" | "updatedAt", ExtArgs["result"]["agentOrganization"]>
 export type AgentOrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.AgentOrganization$usersArgs<ExtArgs>
   billing?: boolean | Prisma.AgentOrganization$billingArgs<ExtArgs>
@@ -1243,6 +1291,7 @@ export type $AgentOrganizationPayload<ExtArgs extends runtime.Types.Extensions.I
     businessType: $Enums.BusinessType
     organizationName: string | null
     representativeName: string | null
+    phone: string | null
     openingDate: Date | null
     address: string | null
     createdAt: Date
@@ -1627,6 +1676,7 @@ export interface AgentOrganizationFieldRefs {
   readonly businessType: Prisma.FieldRef<"AgentOrganization", 'BusinessType'>
   readonly organizationName: Prisma.FieldRef<"AgentOrganization", 'String'>
   readonly representativeName: Prisma.FieldRef<"AgentOrganization", 'String'>
+  readonly phone: Prisma.FieldRef<"AgentOrganization", 'String'>
   readonly openingDate: Prisma.FieldRef<"AgentOrganization", 'DateTime'>
   readonly address: Prisma.FieldRef<"AgentOrganization", 'String'>
   readonly createdAt: Prisma.FieldRef<"AgentOrganization", 'DateTime'>

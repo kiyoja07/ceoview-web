@@ -5,11 +5,12 @@ import { usePathname } from "next/navigation";
 
 const TAB_ITEMS = [
   { href: "/agent/company", label: "거래처 목록" },
+  { href: "/agent/company/requests", label: "요청함" },
   { href: "/agent/company/employees", label: "직원 현황" },
   { href: "/agent/company/salary", label: "급여 현황" },
 ] as const;
 
-const TOP_LEVEL_SEGMENTS = new Set(["employees", "salary", "new"]);
+const TOP_LEVEL_SEGMENTS = new Set(["employees", "salary", "new", "requests"]);
 
 function isActivePath(pathname: string, href: string) {
   if (href === "/agent/company") {

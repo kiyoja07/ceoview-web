@@ -81,7 +81,8 @@ export const ModelName = {
   BusinessIncomeEmployee: 'BusinessIncomeEmployee',
   OtherIncomeEmployee: 'OtherIncomeEmployee',
   OtherIncomeLaborEmployee: 'OtherIncomeLaborEmployee',
-  EmployeeBankAccount: 'EmployeeBankAccount'
+  EmployeeBankAccount: 'EmployeeBankAccount',
+  CompanyChangeRequest: 'CompanyChangeRequest'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -106,6 +107,7 @@ export const AgentOrganizationScalarFieldEnum = {
   businessType: 'businessType',
   organizationName: 'organizationName',
   representativeName: 'representativeName',
+  phone: 'phone',
   openingDate: 'openingDate',
   address: 'address',
   createdAt: 'createdAt',
@@ -658,12 +660,47 @@ export const EmployeeBankAccountScalarFieldEnum = {
 export type EmployeeBankAccountScalarFieldEnum = (typeof EmployeeBankAccountScalarFieldEnum)[keyof typeof EmployeeBankAccountScalarFieldEnum]
 
 
+export const CompanyChangeRequestScalarFieldEnum = {
+  id: 'id',
+  scope: 'scope',
+  action: 'action',
+  status: 'status',
+  companyId: 'companyId',
+  requestedByCompanyUserId: 'requestedByCompanyUserId',
+  resolvedByAgentUserId: 'resolvedByAgentUserId',
+  targetEmployeeId: 'targetEmployeeId',
+  requestedPayload: 'requestedPayload',
+  currentSnapshot: 'currentSnapshot',
+  resolutionComment: 'resolutionComment',
+  resolvedAt: 'resolvedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CompanyChangeRequestScalarFieldEnum = (typeof CompanyChangeRequestScalarFieldEnum)[keyof typeof CompanyChangeRequestScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const NullsOrder = {
@@ -678,6 +715,7 @@ export const AgentOrganizationOrderByRelevanceFieldEnum = {
   organizationNumber: 'organizationNumber',
   organizationName: 'organizationName',
   representativeName: 'representativeName',
+  phone: 'phone',
   address: 'address'
 } as const
 
@@ -970,4 +1008,28 @@ export const EmployeeBankAccountOrderByRelevanceFieldEnum = {
 } as const
 
 export type EmployeeBankAccountOrderByRelevanceFieldEnum = (typeof EmployeeBankAccountOrderByRelevanceFieldEnum)[keyof typeof EmployeeBankAccountOrderByRelevanceFieldEnum]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const CompanyChangeRequestOrderByRelevanceFieldEnum = {
+  resolutionComment: 'resolutionComment'
+} as const
+
+export type CompanyChangeRequestOrderByRelevanceFieldEnum = (typeof CompanyChangeRequestOrderByRelevanceFieldEnum)[keyof typeof CompanyChangeRequestOrderByRelevanceFieldEnum]
 

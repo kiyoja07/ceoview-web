@@ -13,6 +13,10 @@ import DateInput from "@/app/_components/DateInput";
 import AddressInput, {
   type AddressValue,
 } from "@/app/_components/AddressInput";
+import {
+  formatOrganizationPhone,
+  validateOrganizationPhone,
+} from "@/app/lib/organization-phone";
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow";
@@ -36,6 +40,7 @@ export default function AgentInfoPage() {
   const [businessType, setBusinessType] = useState<BusinessType>("INDIVIDUAL");
   const [organizationName, setOrganizationName] = useState("");
   const [representativeName, setRepresentativeName] = useState("");
+  const [phone, setPhone] = useState("");
   const [openingDate, setOpeningDate] = useState("");
   const [addressValue, setAddressValue] = useState<AddressValue>({
     zipcode: "",
@@ -77,6 +82,7 @@ export default function AgentInfoPage() {
         setBusinessType(data.organization.businessType);
         setOrganizationName(data.organization.organizationName || "");
         setRepresentativeName(data.organization.representativeName || "");
+        setPhone(formatOrganizationPhone(data.organization.phone || ""));
         setOpeningDate(data.organization.openingDate || "");
         setAddressValue({
           zipcode: data.organization.zipcode || "",
@@ -98,6 +104,16 @@ export default function AgentInfoPage() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const phoneError = validateOrganizationPhone(phone);
+    if (phoneError) {
+      setMessage({
+        type: "error",
+        text: phoneError,
+      });
+      return;
+    }
+
     setLoading(true);
     setMessage(null);
 
@@ -107,8 +123,10 @@ export default function AgentInfoPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           organizationNumber,
+          businessType,
           organizationName: organizationName || null,
           representativeName: representativeName || null,
+          phone: phone || null,
           openingDate: openingDate || null,
           zipcode: addressValue.zipcode || null,
           address: addressValue.address || null,
@@ -222,6 +240,26 @@ export default function AgentInfoPage() {
                 disabled={!isMaster}
               />
             </div>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+              대표 전화번호
+            </label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(event) => {
+                setPhone(formatOrganizationPhone(event.target.value));
+              }}
+              placeholder="02-1234-5678"
+              className={inputBase}
+              disabled={!isMaster}
+              maxLength={13}
+            />
+            <p className="mt-1 text-xs text-gray-400">
+              거래처에게 담당 세무대리인 연락처로 표시됩니다.
+            </p>
           </div>
 
           <div>

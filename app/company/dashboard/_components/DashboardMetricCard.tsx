@@ -51,12 +51,14 @@ export function DashboardMetricCard({
 
   return (
     <div
-      className={`rounded-2xl border p-5 shadow-sm ring-1 ring-gray-950/5 ${style.shell}`}
+      className={`rounded-2xl border p-4 shadow-sm ring-1 ring-gray-950/5 ${style.shell}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-gray-600">{label}</p>
-          <p className={`mt-2 text-2xl font-bold tracking-tight ${style.value}`}>
+          <p
+            className={`mt-2 text-2xl font-bold tracking-tight ${style.value}`}
+          >
             {value}
           </p>
           {description && (
@@ -65,11 +67,11 @@ export function DashboardMetricCard({
             </p>
           )}
         </div>
-        <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-sm ${style.icon}`}
+        {/* <div
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl shadow-sm ${style.icon}`}
         >
           {icon}
-        </div>
+        </div> */}
       </div>
     </div>
   );

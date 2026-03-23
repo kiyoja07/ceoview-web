@@ -52,7 +52,11 @@ function createEmptyBucket(): MonthBucket {
 function getRecentYms(count: number) {
   const now = new Date();
   return Array.from({ length: count }, (_, index) => {
-    const date = new Date(now.getFullYear(), now.getMonth() - count + index + 1, 1);
+    const date = new Date(
+      now.getFullYear(),
+      now.getMonth() - count + index + 1,
+      1,
+    );
     return date.getFullYear() * 100 + (date.getMonth() + 1);
   });
 }
@@ -89,6 +93,7 @@ export async function GET(request: NextRequest) {
                     organizationName: true,
                     organizationNumber: true,
                     representativeName: true,
+                    phone: true,
                   },
                 },
               },
@@ -298,10 +303,15 @@ export async function GET(request: NextRequest) {
     let upcoming = 0;
     let leaving = 0;
     let inactive = 0;
+    let noHireDate = 0;
     let withContact = 0;
     let withEmail = 0;
     let withBankAccount = 0;
     let recentJoined = 0;
+
+    const latestBucket = latestMonth
+      ? (monthlyMap.get(latestMonth.ym) ?? createEmptyBucket())
+      : createEmptyBucket();
 
     for (const employee of employees) {
       const status = getEmployeeStatus(employee.hireDate, employee.resignDate);
@@ -311,7 +321,10 @@ export async function GET(request: NextRequest) {
       else if (status === "퇴사예정") leaving += 1;
       else if (status === "퇴사완료") inactive += 1;
 
-      if (employee.phone?.trim()) withContact += 1;
+      if (!employee.hireDate) noHireDate += 1;
+
+      if (employee.email?.trim() || employee.bankAccounts.length > 0)
+        withContact += 1;
       if (employee.email?.trim()) withEmail += 1;
       if (employee.bankAccounts.length > 0) withBankAccount += 1;
       if (employee.createdAt >= joinedThreshold) recentJoined += 1;
@@ -332,6 +345,7 @@ export async function GET(request: NextRequest) {
               company.organizationLink.agentOrganization.organizationNumber,
             representativeName:
               company.organizationLink.agentOrganization.representativeName,
+            phone: company.organizationLink.agentOrganization.phone,
           }
         : null,
       salary: {
@@ -355,10 +369,15 @@ export async function GET(request: NextRequest) {
         upcoming,
         leaving,
         inactive,
+        noHireDate,
         withContact,
         withEmail,
         withBankAccount,
         recentJoined,
+        earnedCount: latestBucket.earnedCount,
+        businessCount: latestBucket.businessCount,
+        otherCount: latestBucket.otherCount,
+        dailyCount: latestBucket.dailyCount,
       },
     };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import type { PendingRequestSummary } from "@/types/company/change-request";
 import AddressInput, { type AddressValue } from "./AddressInput";
 import BankAccountInput from "./BankAccountInput";
 import ResidentNumberInput, {
@@ -54,6 +55,7 @@ export type EmployeeFullDetail = {
   }[];
   createdAt: string;
   updatedAt: string;
+  pendingRequest?: PendingRequestSummary | null;
 };
 
 type EmployeeDetailModalProps = {

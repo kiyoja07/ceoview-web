@@ -3,6 +3,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { CompanyAuthMessageState } from "@/types/company/auth";
+import type {
+  CompanyMutationRequestResponse,
+  PendingRequestSummary,
+} from "@/types/company/change-request";
 import AddressInput, {
   type AddressValue,
 } from "@/app/_components/AddressInput";
@@ -30,6 +34,8 @@ export default function CompanyOrganizationInfoPage() {
   const [checking, setChecking] = useState(true);
   const [loading, setLoading] = useState(false);
   const [canManage, setCanManage] = useState(false);
+  const [pendingRequest, setPendingRequest] =
+    useState<PendingRequestSummary | null>(null);
 
   const [businessNumber, setBusinessNumber] = useState("");
   const [businessType, setBusinessType] = useState<
@@ -84,15 +90,21 @@ export default function CompanyOrganizationInfoPage() {
 
         const data = body as CompanyInfoResponse;
         setCanManage(data.canManageCompanyInfo);
+        setPendingRequest(data.pendingRequest);
         setBusinessNumber(formatBusinessNumber(data.company.businessNumber));
         setBusinessType(data.company.businessType);
-        setBusinessName(data.company.businessName || "");
-        setRepresentativeName(data.company.representativeName || "");
-        setOpeningDate(data.company.openingDate || "");
+        const source =
+          data.pendingRequest &&
+          typeof data.pendingRequest.requestedPayload === "object"
+            ? (data.pendingRequest.requestedPayload as CompanyInfoUpdateBody)
+            : data.company;
+        setBusinessName(source.businessName || "");
+        setRepresentativeName(source.representativeName || "");
+        setOpeningDate(source.openingDate || "");
         setAddressValue({
-          zipcode: data.company.zipcode || "",
-          address: data.company.address || "",
-          addressDetail: data.company.addressDetail || "",
+          zipcode: source.zipcode || "",
+          address: source.address || "",
+          addressDetail: source.addressDetail || "",
         });
       } catch {
         setMessage({
@@ -109,7 +121,7 @@ export default function CompanyOrganizationInfoPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!canManage) return;
+    if (!canManage || pendingRequest) return;
 
     setLoading(true);
     setMessage(null);
@@ -129,7 +141,7 @@ export default function CompanyOrganizationInfoPage() {
       });
 
       const body = (await res.json()) as
-        | CompanyInfoResponse
+        | CompanyMutationRequestResponse
         | { error?: string };
       if (!res.ok) {
         setMessage({
@@ -141,21 +153,12 @@ export default function CompanyOrganizationInfoPage() {
         return;
       }
 
-      const data = body as CompanyInfoResponse;
-      setCanManage(data.canManageCompanyInfo);
-      setBusinessType(data.company.businessType);
-      setBusinessName(data.company.businessName || "");
-      setRepresentativeName(data.company.representativeName || "");
-      setOpeningDate(data.company.openingDate || "");
-      setAddressValue({
-        zipcode: data.company.zipcode || "",
-        address: data.company.address || "",
-        addressDetail: data.company.addressDetail || "",
-      });
+      const data = body as CompanyMutationRequestResponse;
+      setPendingRequest(data.request);
 
       setMessage({
         type: "success",
-        text: "회사 정보가 수정되었습니다.",
+        text: data.message,
       });
     } catch {
       setMessage({
@@ -180,15 +183,24 @@ export default function CompanyOrganizationInfoPage() {
       <div className="mx-auto max-w-2xl p-6 lg:p-8">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            회사 정보 변경ㄴ
+            회사 정보 관리
           </h1>
           <p className="text-sm text-gray-500">
-            우리 회사 정보를 조회하고 수정할 수 있습니다.
+            우리 회사 정보를 조회하고 변경 요청할 수 있습니다.
           </p>
           {!canManage && (
             <p className="mt-1 text-xs text-amber-700">
               마스터 사용자만 회사 정보를 수정할 수 있습니다.
             </p>
+          )}
+          {pendingRequest && (
+            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              세무대리인에게 회사 정보의 변경 요청이 접수되었습니다. 잠시만
+              기다려주세요.
+              <div className="mt-1 text-xs text-amber-700">
+                접수일시 {new Date(pendingRequest.createdAt).toLocaleString()}
+              </div>
+            </div>
           )}
         </div>
 
@@ -234,7 +246,7 @@ export default function CompanyOrganizationInfoPage() {
                 value={businessName}
                 onChange={(event) => setBusinessName(event.target.value)}
                 className={inputBase}
-                disabled={!canManage}
+                disabled={!canManage || Boolean(pendingRequest)}
               />
             </div>
             <div>
@@ -246,7 +258,7 @@ export default function CompanyOrganizationInfoPage() {
                 value={representativeName}
                 onChange={(event) => setRepresentativeName(event.target.value)}
                 className={inputBase}
-                disabled={!canManage}
+                disabled={!canManage || Boolean(pendingRequest)}
               />
             </div>
           </div>
@@ -258,7 +270,7 @@ export default function CompanyOrganizationInfoPage() {
             <DateInput
               value={openingDate}
               onChange={setOpeningDate}
-              disabled={!canManage}
+              disabled={!canManage || Boolean(pendingRequest)}
               theme="emerald"
             />
           </div>
@@ -266,7 +278,7 @@ export default function CompanyOrganizationInfoPage() {
           <AddressInput
             value={addressValue}
             onChange={setAddressValue}
-            disabled={!canManage}
+            disabled={!canManage || Boolean(pendingRequest)}
             theme="emerald"
           />
 
@@ -284,11 +296,24 @@ export default function CompanyOrganizationInfoPage() {
 
           <button
             type="submit"
-            disabled={loading || !canManage}
+            disabled={loading || !canManage || Boolean(pendingRequest)}
             className="inline-flex w-full items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300"
           >
-            {loading ? "저장 중..." : "저장"}
+            {loading
+              ? "요청 제출 중..."
+              : pendingRequest
+                ? "검수 대기 중"
+                : "변경 요청"}
           </button>
+          {pendingRequest && (
+            <button
+              type="button"
+              onClick={() => router.push("/company/requests")}
+              className="inline-flex w-full items-center justify-center rounded-xl border border-emerald-200 bg-white px-4 py-2.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50"
+            >
+              요청 현황 보기
+            </button>
+          )}
         </form>
       </div>
     </div>

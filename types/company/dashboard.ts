@@ -30,6 +30,7 @@ export type CompanyDashboardResponse = {
     organizationName: string | null;
     organizationNumber: string;
     representativeName: string | null;
+    phone: string | null;
   } | null;
   salary: {
     hasData: boolean;
@@ -50,9 +51,14 @@ export type CompanyDashboardResponse = {
     upcoming: number;
     leaving: number;
     inactive: number;
+    noHireDate: number;
     withContact: number;
     withEmail: number;
     withBankAccount: number;
     recentJoined: number;
+    earnedCount: number;
+    businessCount: number;
+    otherCount: number;
+    dailyCount: number;
   };
 };

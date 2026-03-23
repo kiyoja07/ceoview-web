@@ -282,6 +282,7 @@ export type AgentUserWhereInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenListRelationFilter
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryListRelationFilter
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestListRelationFilter
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestListRelationFilter
 }
 
 export type AgentUserOrderByWithRelationInput = {
@@ -303,6 +304,7 @@ export type AgentUserOrderByWithRelationInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenOrderByRelationAggregateInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryOrderByRelationAggregateInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestOrderByRelationAggregateInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestOrderByRelationAggregateInput
   _relevance?: Prisma.AgentUserOrderByRelevanceInput
 }
 
@@ -329,6 +331,7 @@ export type AgentUserWhereUniqueInput = Prisma.AtLeast<{
   sentInviteTokens?: Prisma.AgentUserInviteTokenListRelationFilter
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryListRelationFilter
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestListRelationFilter
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestListRelationFilter
 }, "id" | "email" | "loginProvider_providerUserId">
 
 export type AgentUserOrderByWithAggregationInput = {
@@ -387,6 +390,7 @@ export type AgentUserCreateInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenCreateNestedManyWithoutInviterUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryCreateNestedManyWithoutInviterAgentUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserUncheckedCreateInput = {
@@ -407,6 +411,7 @@ export type AgentUserUncheckedCreateInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedCreateNestedManyWithoutInviterUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedCreateNestedManyWithoutInviterAgentUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserUpdateInput = {
@@ -427,6 +432,7 @@ export type AgentUserUpdateInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenUpdateManyWithoutInviterUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUpdateManyWithoutInviterAgentUserNestedInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserUncheckedUpdateInput = {
@@ -447,6 +453,7 @@ export type AgentUserUncheckedUpdateInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedUpdateManyWithoutInviterUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedUpdateManyWithoutInviterAgentUserNestedInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserCreateManyInput = {
@@ -574,6 +581,11 @@ export type AgentUserSumOrderByAggregateInput = {
   agentOrganizationId?: Prisma.SortOrder
 }
 
+export type AgentUserNullableScalarRelationFilter = {
+  is?: Prisma.AgentUserWhereInput | null
+  isNot?: Prisma.AgentUserWhereInput | null
+}
+
 export type AgentUserCreateNestedManyWithoutAgentOrganizationInput = {
   create?: Prisma.XOR<Prisma.AgentUserCreateWithoutAgentOrganizationInput, Prisma.AgentUserUncheckedCreateWithoutAgentOrganizationInput> | Prisma.AgentUserCreateWithoutAgentOrganizationInput[] | Prisma.AgentUserUncheckedCreateWithoutAgentOrganizationInput[]
   connectOrCreate?: Prisma.AgentUserCreateOrConnectWithoutAgentOrganizationInput | Prisma.AgentUserCreateOrConnectWithoutAgentOrganizationInput[]
@@ -694,6 +706,22 @@ export type AgentUserUpdateOneRequiredWithoutCustomerLinksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AgentUserUpdateToOneWithWhereWithoutCustomerLinksInput, Prisma.AgentUserUpdateWithoutCustomerLinksInput>, Prisma.AgentUserUncheckedUpdateWithoutCustomerLinksInput>
 }
 
+export type AgentUserCreateNestedOneWithoutResolvedChangeRequestsInput = {
+  create?: Prisma.XOR<Prisma.AgentUserCreateWithoutResolvedChangeRequestsInput, Prisma.AgentUserUncheckedCreateWithoutResolvedChangeRequestsInput>
+  connectOrCreate?: Prisma.AgentUserCreateOrConnectWithoutResolvedChangeRequestsInput
+  connect?: Prisma.AgentUserWhereUniqueInput
+}
+
+export type AgentUserUpdateOneWithoutResolvedChangeRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.AgentUserCreateWithoutResolvedChangeRequestsInput, Prisma.AgentUserUncheckedCreateWithoutResolvedChangeRequestsInput>
+  connectOrCreate?: Prisma.AgentUserCreateOrConnectWithoutResolvedChangeRequestsInput
+  upsert?: Prisma.AgentUserUpsertWithoutResolvedChangeRequestsInput
+  disconnect?: Prisma.AgentUserWhereInput | boolean
+  delete?: Prisma.AgentUserWhereInput | boolean
+  connect?: Prisma.AgentUserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AgentUserUpdateToOneWithWhereWithoutResolvedChangeRequestsInput, Prisma.AgentUserUpdateWithoutResolvedChangeRequestsInput>, Prisma.AgentUserUncheckedUpdateWithoutResolvedChangeRequestsInput>
+}
+
 export type AgentUserCreateWithoutAgentOrganizationInput = {
   id?: bigint | number
   email: string
@@ -711,6 +739,7 @@ export type AgentUserCreateWithoutAgentOrganizationInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenCreateNestedManyWithoutInviterUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryCreateNestedManyWithoutInviterAgentUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserUncheckedCreateWithoutAgentOrganizationInput = {
@@ -730,6 +759,7 @@ export type AgentUserUncheckedCreateWithoutAgentOrganizationInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedCreateNestedManyWithoutInviterUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedCreateNestedManyWithoutInviterAgentUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserCreateOrConnectWithoutAgentOrganizationInput = {
@@ -793,6 +823,7 @@ export type AgentUserCreateWithoutTransferRequestsInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenCreateNestedManyWithoutAgentUserInput
   sentInviteTokens?: Prisma.AgentUserInviteTokenCreateNestedManyWithoutInviterUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryCreateNestedManyWithoutInviterAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserUncheckedCreateWithoutTransferRequestsInput = {
@@ -812,6 +843,7 @@ export type AgentUserUncheckedCreateWithoutTransferRequestsInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenUncheckedCreateNestedManyWithoutAgentUserInput
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedCreateNestedManyWithoutInviterUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedCreateNestedManyWithoutInviterAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserCreateOrConnectWithoutTransferRequestsInput = {
@@ -847,6 +879,7 @@ export type AgentUserUpdateWithoutTransferRequestsInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenUpdateManyWithoutAgentUserNestedInput
   sentInviteTokens?: Prisma.AgentUserInviteTokenUpdateManyWithoutInviterUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUpdateManyWithoutInviterAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserUncheckedUpdateWithoutTransferRequestsInput = {
@@ -866,6 +899,7 @@ export type AgentUserUncheckedUpdateWithoutTransferRequestsInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenUncheckedUpdateManyWithoutAgentUserNestedInput
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedUpdateManyWithoutInviterUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedUpdateManyWithoutInviterAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserCreateWithoutMagicLinkTokensInput = {
@@ -885,6 +919,7 @@ export type AgentUserCreateWithoutMagicLinkTokensInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenCreateNestedManyWithoutInviterUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryCreateNestedManyWithoutInviterAgentUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserUncheckedCreateWithoutMagicLinkTokensInput = {
@@ -904,6 +939,7 @@ export type AgentUserUncheckedCreateWithoutMagicLinkTokensInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedCreateNestedManyWithoutInviterUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedCreateNestedManyWithoutInviterAgentUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserCreateOrConnectWithoutMagicLinkTokensInput = {
@@ -939,6 +975,7 @@ export type AgentUserUpdateWithoutMagicLinkTokensInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenUpdateManyWithoutInviterUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUpdateManyWithoutInviterAgentUserNestedInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserUncheckedUpdateWithoutMagicLinkTokensInput = {
@@ -958,6 +995,7 @@ export type AgentUserUncheckedUpdateWithoutMagicLinkTokensInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedUpdateManyWithoutInviterUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedUpdateManyWithoutInviterAgentUserNestedInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserCreateWithoutSentInviteTokensInput = {
@@ -977,6 +1015,7 @@ export type AgentUserCreateWithoutSentInviteTokensInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenCreateNestedManyWithoutAgentUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryCreateNestedManyWithoutInviterAgentUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserUncheckedCreateWithoutSentInviteTokensInput = {
@@ -996,6 +1035,7 @@ export type AgentUserUncheckedCreateWithoutSentInviteTokensInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenUncheckedCreateNestedManyWithoutAgentUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedCreateNestedManyWithoutInviterAgentUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserCreateOrConnectWithoutSentInviteTokensInput = {
@@ -1031,6 +1071,7 @@ export type AgentUserUpdateWithoutSentInviteTokensInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenUpdateManyWithoutAgentUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUpdateManyWithoutInviterAgentUserNestedInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserUncheckedUpdateWithoutSentInviteTokensInput = {
@@ -1050,6 +1091,7 @@ export type AgentUserUncheckedUpdateWithoutSentInviteTokensInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenUncheckedUpdateManyWithoutAgentUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedUpdateManyWithoutInviterAgentUserNestedInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserCreateWithoutSentCompanyUserInvitesInput = {
@@ -1069,6 +1111,7 @@ export type AgentUserCreateWithoutSentCompanyUserInvitesInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenCreateNestedManyWithoutAgentUserInput
   sentInviteTokens?: Prisma.AgentUserInviteTokenCreateNestedManyWithoutInviterUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserUncheckedCreateWithoutSentCompanyUserInvitesInput = {
@@ -1088,6 +1131,7 @@ export type AgentUserUncheckedCreateWithoutSentCompanyUserInvitesInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenUncheckedCreateNestedManyWithoutAgentUserInput
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedCreateNestedManyWithoutInviterUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserCreateOrConnectWithoutSentCompanyUserInvitesInput = {
@@ -1123,6 +1167,7 @@ export type AgentUserUpdateWithoutSentCompanyUserInvitesInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenUpdateManyWithoutAgentUserNestedInput
   sentInviteTokens?: Prisma.AgentUserInviteTokenUpdateManyWithoutInviterUserNestedInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserUncheckedUpdateWithoutSentCompanyUserInvitesInput = {
@@ -1142,6 +1187,7 @@ export type AgentUserUncheckedUpdateWithoutSentCompanyUserInvitesInput = {
   magicLinkTokens?: Prisma.AgentMagicLinkTokenUncheckedUpdateManyWithoutAgentUserNestedInput
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedUpdateManyWithoutInviterUserNestedInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserCreateWithoutCustomerLinksInput = {
@@ -1161,6 +1207,7 @@ export type AgentUserCreateWithoutCustomerLinksInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenCreateNestedManyWithoutInviterUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryCreateNestedManyWithoutInviterAgentUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserUncheckedCreateWithoutCustomerLinksInput = {
@@ -1180,6 +1227,7 @@ export type AgentUserUncheckedCreateWithoutCustomerLinksInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedCreateNestedManyWithoutInviterUserInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedCreateNestedManyWithoutInviterAgentUserInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedManyWithoutRequestedByAgentUserInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutResolvedByAgentUserInput
 }
 
 export type AgentUserCreateOrConnectWithoutCustomerLinksInput = {
@@ -1215,6 +1263,7 @@ export type AgentUserUpdateWithoutCustomerLinksInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenUpdateManyWithoutInviterUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUpdateManyWithoutInviterAgentUserNestedInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserUncheckedUpdateWithoutCustomerLinksInput = {
@@ -1230,6 +1279,103 @@ export type AgentUserUncheckedUpdateWithoutCustomerLinksInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  magicLinkTokens?: Prisma.AgentMagicLinkTokenUncheckedUpdateManyWithoutAgentUserNestedInput
+  sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedUpdateManyWithoutInviterUserNestedInput
+  sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedUpdateManyWithoutInviterAgentUserNestedInput
+  transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutResolvedByAgentUserNestedInput
+}
+
+export type AgentUserCreateWithoutResolvedChangeRequestsInput = {
+  id?: bigint | number
+  email: string
+  passwordHash?: string | null
+  loginProvider?: $Enums.LoginProvider
+  providerUserId?: string | null
+  name: string
+  phone?: string | null
+  isMaster?: boolean
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  agentOrganization?: Prisma.AgentOrganizationCreateNestedOneWithoutUsersInput
+  customerLinks?: Prisma.AgentCompanyCustomerCreateNestedManyWithoutAgentUserInput
+  magicLinkTokens?: Prisma.AgentMagicLinkTokenCreateNestedManyWithoutAgentUserInput
+  sentInviteTokens?: Prisma.AgentUserInviteTokenCreateNestedManyWithoutInviterUserInput
+  sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryCreateNestedManyWithoutInviterAgentUserInput
+  transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedManyWithoutRequestedByAgentUserInput
+}
+
+export type AgentUserUncheckedCreateWithoutResolvedChangeRequestsInput = {
+  id?: bigint | number
+  agentOrganizationId?: bigint | number | null
+  email: string
+  passwordHash?: string | null
+  loginProvider?: $Enums.LoginProvider
+  providerUserId?: string | null
+  name: string
+  phone?: string | null
+  isMaster?: boolean
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customerLinks?: Prisma.AgentCompanyCustomerUncheckedCreateNestedManyWithoutAgentUserInput
+  magicLinkTokens?: Prisma.AgentMagicLinkTokenUncheckedCreateNestedManyWithoutAgentUserInput
+  sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedCreateNestedManyWithoutInviterUserInput
+  sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedCreateNestedManyWithoutInviterAgentUserInput
+  transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedManyWithoutRequestedByAgentUserInput
+}
+
+export type AgentUserCreateOrConnectWithoutResolvedChangeRequestsInput = {
+  where: Prisma.AgentUserWhereUniqueInput
+  create: Prisma.XOR<Prisma.AgentUserCreateWithoutResolvedChangeRequestsInput, Prisma.AgentUserUncheckedCreateWithoutResolvedChangeRequestsInput>
+}
+
+export type AgentUserUpsertWithoutResolvedChangeRequestsInput = {
+  update: Prisma.XOR<Prisma.AgentUserUpdateWithoutResolvedChangeRequestsInput, Prisma.AgentUserUncheckedUpdateWithoutResolvedChangeRequestsInput>
+  create: Prisma.XOR<Prisma.AgentUserCreateWithoutResolvedChangeRequestsInput, Prisma.AgentUserUncheckedCreateWithoutResolvedChangeRequestsInput>
+  where?: Prisma.AgentUserWhereInput
+}
+
+export type AgentUserUpdateToOneWithWhereWithoutResolvedChangeRequestsInput = {
+  where?: Prisma.AgentUserWhereInput
+  data: Prisma.XOR<Prisma.AgentUserUpdateWithoutResolvedChangeRequestsInput, Prisma.AgentUserUncheckedUpdateWithoutResolvedChangeRequestsInput>
+}
+
+export type AgentUserUpdateWithoutResolvedChangeRequestsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loginProvider?: Prisma.EnumLoginProviderFieldUpdateOperationsInput | $Enums.LoginProvider
+  providerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMaster?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  agentOrganization?: Prisma.AgentOrganizationUpdateOneWithoutUsersNestedInput
+  customerLinks?: Prisma.AgentCompanyCustomerUpdateManyWithoutAgentUserNestedInput
+  magicLinkTokens?: Prisma.AgentMagicLinkTokenUpdateManyWithoutAgentUserNestedInput
+  sentInviteTokens?: Prisma.AgentUserInviteTokenUpdateManyWithoutInviterUserNestedInput
+  sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUpdateManyWithoutInviterAgentUserNestedInput
+  transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUpdateManyWithoutRequestedByAgentUserNestedInput
+}
+
+export type AgentUserUncheckedUpdateWithoutResolvedChangeRequestsInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  agentOrganizationId?: Prisma.NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  loginProvider?: Prisma.EnumLoginProviderFieldUpdateOperationsInput | $Enums.LoginProvider
+  providerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isMaster?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customerLinks?: Prisma.AgentCompanyCustomerUncheckedUpdateManyWithoutAgentUserNestedInput
   magicLinkTokens?: Prisma.AgentMagicLinkTokenUncheckedUpdateManyWithoutAgentUserNestedInput
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedUpdateManyWithoutInviterUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedUpdateManyWithoutInviterAgentUserNestedInput
@@ -1267,6 +1413,7 @@ export type AgentUserUpdateWithoutAgentOrganizationInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenUpdateManyWithoutInviterUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUpdateManyWithoutInviterAgentUserNestedInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserUncheckedUpdateWithoutAgentOrganizationInput = {
@@ -1286,6 +1433,7 @@ export type AgentUserUncheckedUpdateWithoutAgentOrganizationInput = {
   sentInviteTokens?: Prisma.AgentUserInviteTokenUncheckedUpdateManyWithoutInviterUserNestedInput
   sentCompanyUserInvites?: Prisma.CompanyUserInviteHistoryUncheckedUpdateManyWithoutInviterAgentUserNestedInput
   transferRequests?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateManyWithoutRequestedByAgentUserNestedInput
+  resolvedChangeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutResolvedByAgentUserNestedInput
 }
 
 export type AgentUserUncheckedUpdateManyWithoutAgentOrganizationInput = {
@@ -1313,6 +1461,7 @@ export type AgentUserCountOutputType = {
   sentInviteTokens: number
   sentCompanyUserInvites: number
   transferRequests: number
+  resolvedChangeRequests: number
 }
 
 export type AgentUserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1321,6 +1470,7 @@ export type AgentUserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   sentInviteTokens?: boolean | AgentUserCountOutputTypeCountSentInviteTokensArgs
   sentCompanyUserInvites?: boolean | AgentUserCountOutputTypeCountSentCompanyUserInvitesArgs
   transferRequests?: boolean | AgentUserCountOutputTypeCountTransferRequestsArgs
+  resolvedChangeRequests?: boolean | AgentUserCountOutputTypeCountResolvedChangeRequestsArgs
 }
 
 /**
@@ -1368,6 +1518,13 @@ export type AgentUserCountOutputTypeCountTransferRequestsArgs<ExtArgs extends ru
   where?: Prisma.AgentOrganizationCompanyTransferRequestWhereInput
 }
 
+/**
+ * AgentUserCountOutputType without action
+ */
+export type AgentUserCountOutputTypeCountResolvedChangeRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CompanyChangeRequestWhereInput
+}
+
 
 export type AgentUserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1388,6 +1545,7 @@ export type AgentUserSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   sentInviteTokens?: boolean | Prisma.AgentUser$sentInviteTokensArgs<ExtArgs>
   sentCompanyUserInvites?: boolean | Prisma.AgentUser$sentCompanyUserInvitesArgs<ExtArgs>
   transferRequests?: boolean | Prisma.AgentUser$transferRequestsArgs<ExtArgs>
+  resolvedChangeRequests?: boolean | Prisma.AgentUser$resolvedChangeRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.AgentUserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["agentUser"]>
 
@@ -1416,6 +1574,7 @@ export type AgentUserInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   sentInviteTokens?: boolean | Prisma.AgentUser$sentInviteTokensArgs<ExtArgs>
   sentCompanyUserInvites?: boolean | Prisma.AgentUser$sentCompanyUserInvitesArgs<ExtArgs>
   transferRequests?: boolean | Prisma.AgentUser$transferRequestsArgs<ExtArgs>
+  resolvedChangeRequests?: boolean | Prisma.AgentUser$resolvedChangeRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.AgentUserCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -1428,6 +1587,7 @@ export type $AgentUserPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     sentInviteTokens: Prisma.$AgentUserInviteTokenPayload<ExtArgs>[]
     sentCompanyUserInvites: Prisma.$CompanyUserInviteHistoryPayload<ExtArgs>[]
     transferRequests: Prisma.$AgentOrganizationCompanyTransferRequestPayload<ExtArgs>[]
+    resolvedChangeRequests: Prisma.$CompanyChangeRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -1788,6 +1948,7 @@ export interface Prisma__AgentUserClient<T, Null = never, ExtArgs extends runtim
   sentInviteTokens<T extends Prisma.AgentUser$sentInviteTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgentUser$sentInviteTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentUserInviteTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sentCompanyUserInvites<T extends Prisma.AgentUser$sentCompanyUserInvitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgentUser$sentCompanyUserInvitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyUserInviteHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transferRequests<T extends Prisma.AgentUser$transferRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgentUser$transferRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AgentOrganizationCompanyTransferRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  resolvedChangeRequests<T extends Prisma.AgentUser$resolvedChangeRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AgentUser$resolvedChangeRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyChangeRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2313,6 +2474,30 @@ export type AgentUser$transferRequestsArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.AgentOrganizationCompanyTransferRequestScalarFieldEnum | Prisma.AgentOrganizationCompanyTransferRequestScalarFieldEnum[]
+}
+
+/**
+ * AgentUser.resolvedChangeRequests
+ */
+export type AgentUser$resolvedChangeRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CompanyChangeRequest
+   */
+  select?: Prisma.CompanyChangeRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CompanyChangeRequest
+   */
+  omit?: Prisma.CompanyChangeRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyChangeRequestInclude<ExtArgs> | null
+  where?: Prisma.CompanyChangeRequestWhereInput
+  orderBy?: Prisma.CompanyChangeRequestOrderByWithRelationInput | Prisma.CompanyChangeRequestOrderByWithRelationInput[]
+  cursor?: Prisma.CompanyChangeRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CompanyChangeRequestScalarFieldEnum | Prisma.CompanyChangeRequestScalarFieldEnum[]
 }
 
 /**

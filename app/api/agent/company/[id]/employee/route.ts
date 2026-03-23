@@ -24,7 +24,7 @@ async function requireAgentOrganizationId(request: NextRequest) {
     } as const;
   }
 
-  return { organizationId: user.agentOrganizationId } as const;
+  return { userId, organizationId: user.agentOrganizationId } as const;
 }
 
 function parseCompanyId(id: string) {
@@ -276,6 +276,8 @@ export async function DELETE(
     const body = await request.json().catch(() => null);
     const employeeIdRaw =
       body && typeof body.employeeId === "string" ? body.employeeId.trim() : "";
+    const requestIdRaw =
+      body && typeof body.requestId === "string" ? body.requestId.trim() : "";
 
     if (!employeeIdRaw) {
       return NextResponse.json(
@@ -294,6 +296,18 @@ export async function DELETE(
       );
     }
 
+    let requestId: bigint | null = null;
+    if (requestIdRaw) {
+      try {
+        requestId = BigInt(requestIdRaw);
+      } catch {
+        return NextResponse.json(
+          { error: "유효한 요청 ID가 아닙니다." },
+          { status: 400 },
+        );
+      }
+    }
+
     const employee = await prisma.employee.findFirst({
       where: {
         id: employeeId,
@@ -310,14 +324,64 @@ export async function DELETE(
       );
     }
 
-    await prisma.employee.update({
-      where: { id: employee.id },
-      data: { deletedAt: new Date() },
+    await prisma.$transaction(async (tx) => {
+      if (requestId) {
+        const changeRequest = await tx.companyChangeRequest.findFirst({
+          where: {
+            id: requestId,
+            companyId: parsed.companyId,
+            targetEmployeeId: employeeId,
+            scope: "EMPLOYEE",
+            action: "DELETE",
+            status: "PENDING",
+            company: {
+              organizationLink: {
+                is: { agentOrganizationId: auth.organizationId },
+              },
+            },
+          },
+          select: { id: true },
+        });
+
+        if (!changeRequest) {
+          throw new Error("REQUEST_NOT_FOUND");
+        }
+      }
+
+      const deletedAt = new Date();
+
+      await tx.employeeBankAccount.updateMany({
+        where: { employeeId, deletedAt: null },
+        data: { deletedAt },
+      });
+
+      await tx.employee.update({
+        where: { id: employee.id },
+        data: { deletedAt },
+      });
+
+      if (requestId) {
+        await tx.companyChangeRequest.update({
+          where: { id: requestId },
+          data: {
+            status: "APPROVED",
+            resolvedAt: new Date(),
+            resolvedByAgentUserId: auth.userId,
+            resolutionComment: null,
+          },
+        });
+      }
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Agent employee DELETE error:", error);
+    if (error instanceof Error && error.message === "REQUEST_NOT_FOUND") {
+      return NextResponse.json(
+        { error: "처리 가능한 요청을 찾을 수 없습니다." },
+        { status: 404 },
+      );
+    }
     return NextResponse.json(
       { error: "직원 삭제에 실패했습니다." },
       { status: 500 },

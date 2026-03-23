@@ -16,6 +16,7 @@ type Props = {
   employee: EmployeeFullDetail;
   companyId: string;
   employeeId: string;
+  requestId?: string | null;
   onSave: (updated: EmployeeFullDetail) => void;
   onCancel: () => void;
   onAuthError: (status: number) => boolean;
@@ -25,6 +26,7 @@ export default function EmployeeEditMode({
   employee,
   companyId,
   employeeId,
+  requestId,
   onSave,
   onCancel,
   onAuthError,
@@ -186,6 +188,7 @@ export default function EmployeeEditMode({
             nationalPension: formNationalPension.trim() || null,
             healthInsurance: formHealthInsurance.trim() || null,
             bankAccounts: formBankAccounts,
+            requestId,
           }),
         },
       );

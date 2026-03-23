@@ -13,6 +13,10 @@ import EmailInput, { validateEmail } from "@/app/_components/EmailInput";
 import PhoneInput, { validatePhone } from "@/app/_components/PhoneInput";
 import DateInput, { validateDate } from "@/app/_components/DateInput";
 import type { EmployeeFullDetail } from "@/app/_components/EmployeeDetailModal";
+import type {
+  CompanyMutationRequestResponse,
+  PendingRequestSummary,
+} from "@/types/company/change-request";
 
 // ────────────────────────────────────────────────────────────
 // Helpers
@@ -82,6 +86,8 @@ export default function EmployeeDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [employee, setEmployee] = useState<EmployeeFullDetail | null>(null);
+  const [pendingRequest, setPendingRequest] =
+    useState<PendingRequestSummary | null>(null);
   const [editing, setEditing] = useState(false);
   const [showResidentNumber, setShowResidentNumber] = useState(false);
 
@@ -224,6 +230,7 @@ export default function EmployeeDetailPage() {
         if (cancelled) return;
         const data = body as EmployeeFullDetail;
         setEmployee(data);
+        setPendingRequest(data.pendingRequest ?? null);
         populateForm(data);
       } catch (err) {
         if (cancelled) return;
@@ -252,11 +259,21 @@ export default function EmployeeDetailPage() {
         method: "DELETE",
       });
       if (handleAuthError(res.status)) return;
+      const data = (await res.json().catch(() => null)) as
+        | CompanyMutationRequestResponse
+        | { error?: string }
+        | null;
       if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error || "삭제에 실패했습니다.");
+        throw new Error(
+          (data && "error" in data ? data.error : undefined) ||
+            "삭제에 실패했습니다.",
+        );
       }
-      router.replace("/company/employees");
+      if (!data || !("request" in data) || !data.request) {
+        throw new Error("삭제 요청 결과를 확인하지 못했습니다.");
+      }
+      setPendingRequest(data.request);
+      setDeleteConfirmOpen(false);
     } catch (err) {
       setDeleteError(
         err instanceof Error ? err.message : "삭제에 실패했습니다.",
@@ -267,6 +284,7 @@ export default function EmployeeDetailPage() {
   };
 
   const handleStartEdit = () => {
+    if (pendingRequest) return;
     if (employee) populateForm(employee);
     setSubmitError(null);
     setEditing(true);
@@ -365,11 +383,16 @@ export default function EmployeeDetailPage() {
         }),
       });
       if (handleAuthError(res.status)) return;
-      const body = await res.json();
+      const body = (await res.json()) as
+        | CompanyMutationRequestResponse
+        | { error?: string };
       if (!res.ok)
-        throw new Error(body?.error || "직원 정보 수정에 실패했습니다.");
-      const updated = body as EmployeeFullDetail;
-      setEmployee(updated);
+        throw new Error(
+          ("error" in body ? body.error : undefined) ||
+            "직원 정보 수정에 실패했습니다.",
+        );
+      const result = body as CompanyMutationRequestResponse;
+      setPendingRequest(result.request);
       setEditing(false);
     } catch (err) {
       setSubmitError(
@@ -409,19 +432,39 @@ export default function EmployeeDetailPage() {
             <button
               type="button"
               onClick={handleStartEdit}
+              disabled={Boolean(pendingRequest)}
               className={`rounded-lg px-4 py-2 text-sm font-medium text-white shadow-sm transition ${colors.button}`}
             >
-              수정
+              {pendingRequest ? "검수 대기 중" : "수정"}
             </button>
             <button
               type="button"
               onClick={() => setDeleteConfirmOpen(true)}
+              disabled={Boolean(pendingRequest)}
               className="rounded-lg px-4 py-2 text-sm font-medium text-red-600 shadow-sm ring-1 ring-red-200 transition hover:bg-red-50"
             >
               삭제
             </button>
           </div>
         </div>
+
+        {pendingRequest && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            현재 이 직원에 대한{" "}
+            {pendingRequest.action === "DELETE" ? "삭제" : "수정"} 요청이 접수
+            되었습니다.
+            <div className="mt-1 text-xs text-amber-700">
+              접수일시 {new Date(pendingRequest.createdAt).toLocaleString()}
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push("/company/requests")}
+              className="mt-3 rounded-lg bg-white px-3 py-2 text-sm font-medium text-emerald-700 ring-1 ring-emerald-200 transition hover:bg-emerald-50"
+            >
+              요청 현황 보기
+            </button>
+          </div>
+        )}
 
         {/* 기본 정보 */}
         <section className="rounded-xl bg-gray-50 p-4">

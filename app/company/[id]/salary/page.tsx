@@ -166,7 +166,7 @@ export default function SalaryPage() {
         <div className="mb-8">
           <Link
             href={`/company/${id}/salary/dashboard`}
-            className="mb-3 inline-flex items-center gap-1 text-sm text-gray-400 transition-colors hover:text-blue-600"
+            className="mb-3 inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-600 shadow-sm transition-all hover:bg-blue-50 hover:text-blue-600 active:scale-[0.98]"
           >
             <svg
               className="h-4 w-4"
@@ -181,7 +181,7 @@ export default function SalaryPage() {
                 d="M15.75 19.5 8.25 12l7.5-7.5"
               />
             </svg>
-            급여 대시보드
+            인건비 대시보드
           </Link>
           <div className="mb-2 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200">

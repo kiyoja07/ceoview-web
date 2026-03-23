@@ -71,6 +71,32 @@ export const AgentBillingPlan = {
 export type AgentBillingPlan = (typeof AgentBillingPlan)[keyof typeof AgentBillingPlan]
 
 
+export const CompanyChangeRequestScope = {
+  EMPLOYEE: 'EMPLOYEE',
+  COMPANY_INFO: 'COMPANY_INFO'
+} as const
+
+export type CompanyChangeRequestScope = (typeof CompanyChangeRequestScope)[keyof typeof CompanyChangeRequestScope]
+
+
+export const CompanyChangeRequestAction = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE'
+} as const
+
+export type CompanyChangeRequestAction = (typeof CompanyChangeRequestAction)[keyof typeof CompanyChangeRequestAction]
+
+
+export const CompanyChangeRequestStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type CompanyChangeRequestStatus = (typeof CompanyChangeRequestStatus)[keyof typeof CompanyChangeRequestStatus]
+
+
 export const PayslipChannel = {
   EMAIL: 'EMAIL',
   SMS: 'SMS',

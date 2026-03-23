@@ -94,3 +94,118 @@ export type EmployeeUpdateBody = EmployeeCreateBody;
 export type EmployeeDeleteBody = {
   employeeId: string;
 };
+
+// ---- 소득유형별 직원 등록 ----
+
+export type EmployeeIncomeType =
+  | "EARNED_INCOME"
+  | "BUSINESS_INCOME"
+  | "OTHER_INCOME"
+  | "OTHER_INCOME_LABOR";
+
+export const EMPLOYEE_INCOME_TYPE_OPTIONS = [
+  { value: "EARNED_INCOME", label: "근로소득자" },
+  { value: "BUSINESS_INCOME", label: "사업소득자" },
+  { value: "OTHER_INCOME", label: "기타소득자" },
+  { value: "OTHER_INCOME_LABOR", label: "일용소득자" },
+] as const satisfies ReadonlyArray<{
+  value: EmployeeIncomeType;
+  label: string;
+}>;
+
+export const EMPLOYEE_INCOME_TYPE_LABELS: Record<EmployeeIncomeType, string> = {
+  EARNED_INCOME: "근로소득자",
+  BUSINESS_INCOME: "사업소득자",
+  OTHER_INCOME: "기타소득자",
+  OTHER_INCOME_LABOR: "일용소득자",
+};
+
+export type EmployeeIncomeFilter = "ALL" | EmployeeIncomeType;
+export type EmployeeStatusFilter =
+  | "ALL"
+  | "ACTIVE"
+  | "UPCOMING"
+  | "LEAVING"
+  | "INACTIVE";
+
+export type CompanyEmployeeDashboardSummaryByIncomeType = {
+  incomeType: EmployeeIncomeType;
+  label: string;
+  total: number;
+  active: number;
+  upcoming: number;
+  leaving: number;
+  inactive: number;
+  withContact: number;
+  withEmail: number;
+  pendingRequests: number;
+};
+
+export type CompanyEmployeeDashboardSummary = {
+  total: number;
+  active: number;
+  upcoming: number;
+  leaving: number;
+  inactive: number;
+  withContact: number;
+  withEmail: number;
+  pendingRequests: number;
+  byIncomeType: CompanyEmployeeDashboardSummaryByIncomeType[];
+};
+
+export type BusinessIncomeEmployeeCreateBody = {
+  employeeCode?: string | null;
+  name: string;
+  residentNumber?: string | null;
+  nationalityType?: string | null;
+  incomeCategory?: string | null;
+  residenceType?: string | null;
+  businessName?: string | null;
+  businessRegistrationNumber?: string | null;
+  businessAddress?: string | null;
+  address?: string | null;
+  zipcode?: string | null;
+  department?: string | null;
+  positionTitle?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  hireDate?: string | null;
+  resignDate?: string | null;
+};
+
+export type OtherIncomeEmployeeCreateBody = {
+  employeeCode?: string | null;
+  name: string;
+  residentNumber?: string | null;
+  nationalityType?: string | null;
+  incomeCategory?: string | null;
+  residenceType?: string | null;
+  personType?: string | null;
+  businessRegistrationNumber?: string | null;
+  businessAddress?: string | null;
+  zipcode?: string | null;
+  department?: string | null;
+  positionTitle?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  hireDate?: string | null;
+  resignDate?: string | null;
+};
+
+export type OtherIncomeLaborEmployeeCreateBody = {
+  employeeCode?: string | null;
+  name: string;
+  residentNumber?: string | null;
+  department?: string | null;
+  positionTitle?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  hireDate?: string | null;
+  resignDate?: string | null;
+};
+
+export type AnyEmployeeCreateBody =
+  | ({ incomeType: "EARNED_INCOME" } & EmployeeCreateBody)
+  | ({ incomeType: "BUSINESS_INCOME" } & BusinessIncomeEmployeeCreateBody)
+  | ({ incomeType: "OTHER_INCOME" } & OtherIncomeEmployeeCreateBody)
+  | ({ incomeType: "OTHER_INCOME_LABOR" } & OtherIncomeLaborEmployeeCreateBody);

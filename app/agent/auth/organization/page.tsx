@@ -13,6 +13,7 @@ import BusinessRegistrationForm, {
 } from "@/app/agent/_components/business-form/BusinessRegistrationForm";
 import useBizValidation from "@/app/agent/_components/business-form/useBizValidation";
 import PhoneInput from "@/app/_components/PhoneInput";
+import { validateOrganizationPhone } from "@/app/lib/organization-phone";
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow";
@@ -26,6 +27,7 @@ export default function AgentOrganizationCreatePage() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [organizationPhone, setOrganizationPhone] = useState("");
   const [message, setMessage] = useState<AuthMessageState>(null);
 
   useEffect(() => {
@@ -59,6 +61,16 @@ export default function AgentOrganizationCreatePage() {
 
   const handleSubmit = useCallback(
     async (values: BusinessFormValues) => {
+      const organizationPhoneError =
+        validateOrganizationPhone(organizationPhone);
+      if (organizationPhoneError) {
+        setMessage({
+          type: "error",
+          text: organizationPhoneError,
+        });
+        return;
+      }
+
       try {
         const res = await fetch("/api/agent/auth/organization", {
           method: "POST",
@@ -68,6 +80,7 @@ export default function AgentOrganizationCreatePage() {
             businessType: values.businessType,
             organizationName: values.businessName || null,
             representativeName: values.representativeName || null,
+            phone: organizationPhone || null,
             openingDate: values.openingDate || null,
             address: values.address || null,
             userName: name,
@@ -96,7 +109,7 @@ export default function AgentOrganizationCreatePage() {
         });
       }
     },
-    [router, name, phone],
+    [router, name, phone, organizationPhone],
   );
 
   if (checking) {
@@ -139,31 +152,62 @@ export default function AgentOrganizationCreatePage() {
           message={message}
           onMessageChange={setMessage}
           beforeSections={
-            <section className="rounded-2xl border border-gray-100 bg-gray-50/70 p-5">
-              <h2 className="mb-3 text-sm font-semibold text-gray-800">
-                내 정보 (선택)
-              </h2>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <>
+              <section className="rounded-2xl border border-gray-100 bg-gray-50/70 p-5">
+                <h2 className="mb-3 text-sm font-semibold text-gray-800">
+                  내 정보 (선택)
+                </h2>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                      이름
+                    </label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      placeholder="홍길동"
+                      className={inputBase}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                      휴대폰 번호
+                    </label>
+                    <PhoneInput
+                      value={phone}
+                      onChange={setPhone}
+                      theme="blue"
+                    />
+                  </div>
+                </div>
+              </section>
+              <section className="rounded-2xl border border-gray-100 bg-gray-50/70 p-5">
+                <h2 className="mb-3 text-sm font-semibold text-gray-800">
+                  조직 연락처 (선택)
+                </h2>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                    이름
+                    대표 전화번호
                   </label>
                   <input
-                    type="text"
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    placeholder="홍길동"
+                    type="tel"
+                    value={organizationPhone}
+                    onChange={(event) => {
+                      const nextValue = event.target.value;
+                      const digits = nextValue.replace(/\D/g, "");
+                      setOrganizationPhone(digits ? nextValue : "");
+                    }}
+                    placeholder="02-1234-5678"
                     className={inputBase}
+                    maxLength={30}
                   />
+                  <p className="mt-1 text-xs text-gray-500">
+                    거래처 회사 대시보드에 담당 세무대리인 연락처로 표시됩니다.
+                  </p>
                 </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                    휴대폰 번호
-                  </label>
-                  <PhoneInput value={phone} onChange={setPhone} theme="blue" />
-                </div>
-              </div>
-            </section>
+              </section>
+            </>
           }
         />
       </div>

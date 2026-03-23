@@ -54,6 +54,23 @@ enum AgentBillingPlan {
   ENTERPRISE
 }
 
+enum CompanyChangeRequestScope {
+  EMPLOYEE
+  COMPANY_INFO
+}
+
+enum CompanyChangeRequestAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum CompanyChangeRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 /**
  * ---------------------------
  * 사용자 및 회사 관련 테이블
@@ -70,6 +87,7 @@ model AgentOrganization {
 
   organizationName   String?   @map("organization_name") @db.VarChar(200)
   representativeName String?   @map("representative_name") @db.VarChar(100)
+  phone              String?   @map("phone") @db.VarChar(30)
   openingDate        DateTime? @map("opening_date") @db.Date
   address            String?   @map("address") @db.VarChar(255)
 
@@ -116,6 +134,7 @@ model Company {
   otherIncomeLaborEmployees   OtherIncomeLaborEmployee[]
   organizationLink            AgentOrganizationCompany?
   transferRequest             AgentOrganizationCompanyTransferRequest?
+  changeRequests              CompanyChangeRequest[]
 
   @@map("company")
 }
@@ -181,6 +200,7 @@ model AgentUser {
   sentInviteTokens       AgentUserInviteToken[]                    @relation("InviterUserInviteTokens")
   sentCompanyUserInvites CompanyUserInviteHistory[]
   transferRequests       AgentOrganizationCompanyTransferRequest[]
+  resolvedChangeRequests CompanyChangeRequest[]                    @relation("ResolvedByAgentUser")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -256,6 +276,7 @@ model CompanyUser {
   magicLinkTokens        CompanyMagicLinkToken[]
   phoneVerificationCodes PhoneVerificationCode[]
   companyMemberships     CompanyUserCompany[]
+  changeRequests         CompanyChangeRequest[]  @relation("RequestedByCompanyUser")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -520,10 +541,10 @@ model PayslipNotification {
   earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id], onDelete: Cascade)
 
   channel      PayslipChannel
-  recipient    String                   @db.VarChar(255)
+  recipient    String                    @db.VarChar(255)
   status       PayslipNotificationStatus @default(SENT)
-  errorMessage String?                  @map("error_message") @db.VarChar(500)
-  sentAt       DateTime                 @default(now()) @map("sent_at")
+  errorMessage String?                   @map("error_message") @db.VarChar(500)
+  sentAt       DateTime                  @default(now()) @map("sent_at")
 
   @@index([earnedIncomeId])
   @@map("payslip_notification")
@@ -536,12 +557,12 @@ model PayslipAccessToken {
   earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id], onDelete: Cascade)
 
   channel   PayslipChannel
-  recipient String    @db.VarChar(255)
-  tokenHash String    @unique @map("token_hash") @db.Char(64)
-  expiresAt DateTime  @map("expires_at")
-  usedAt    DateTime? @map("used_at")
-  revokedAt DateTime? @map("revoked_at")
-  createdAt DateTime  @default(now()) @map("created_at")
+  recipient String         @db.VarChar(255)
+  tokenHash String         @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime       @map("expires_at")
+  usedAt    DateTime?      @map("used_at")
+  revokedAt DateTime?      @map("revoked_at")
+  createdAt DateTime       @default(now()) @map("created_at")
 
   @@index([earnedIncomeId, recipient, channel])
   @@index([expiresAt])
@@ -778,8 +799,8 @@ model EmployeeUser {
   employeeId BigInt   @unique @map("employee_id") @db.UnsignedBigInt
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
-  email String? @unique @db.VarChar(255)
-  phone String? @unique @db.VarChar(30)
+  email         String? @unique @db.VarChar(255)
+  phone         String? @unique @db.VarChar(30)
   name          String  @db.VarChar(100)
   zipcode       String? @map("zipcode") @db.VarChar(10)
   address       String? @map("address") @db.VarChar(255)
@@ -947,4 +968,38 @@ model EmployeeBankAccount {
   @@index([employeeId])
   @@index([employeeId, deletedAt])
   @@map("employee_bank_account")
+}
+
+model CompanyChangeRequest {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  scope  CompanyChangeRequestScope
+  action CompanyChangeRequestAction
+  status CompanyChangeRequestStatus @default(PENDING)
+
+  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  requestedByCompanyUserId BigInt      @map("requested_by_company_user_id") @db.UnsignedBigInt
+  requestedByCompanyUser   CompanyUser @relation("RequestedByCompanyUser", fields: [requestedByCompanyUserId], references: [id], onDelete: Cascade)
+
+  resolvedByAgentUserId BigInt?    @map("resolved_by_agent_user_id") @db.UnsignedBigInt
+  resolvedByAgentUser   AgentUser? @relation("ResolvedByAgentUser", fields: [resolvedByAgentUserId], references: [id], onDelete: SetNull)
+
+  targetEmployeeId BigInt? @map("target_employee_id") @db.UnsignedBigInt
+
+  requestedPayload Json  @map("requested_payload")
+  currentSnapshot  Json? @map("current_snapshot")
+
+  resolutionComment String?   @map("resolution_comment") @db.Text
+  resolvedAt        DateTime? @map("resolved_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([companyId, status, scope, createdAt])
+  @@index([requestedByCompanyUserId, status, createdAt])
+  @@index([resolvedByAgentUserId, status, createdAt])
+  @@index([targetEmployeeId, status, createdAt])
+  @@map("company_change_request")
 }

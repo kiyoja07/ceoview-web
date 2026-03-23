@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
-import { deriveBusinessType } from "@/app/lib/business-type";
+import { validateOrganizationPhone } from "@/app/lib/organization-phone";
 import type { CreateOrganizationBody } from "@/types/agent/auth";
 import type { BusinessType } from "@/types/agent/company";
 
@@ -10,6 +10,7 @@ type ParsedOrganizationInput = {
   businessType: BusinessType;
   organizationName: string | null;
   representativeName: string | null;
+  phone: string | null;
   openingDate: Date | null;
   address: string | null;
 };
@@ -25,6 +26,7 @@ function parseOrganizationBody(body: CreateOrganizationBody) {
   const businessType = body.businessType;
   const organizationName = body.organizationName?.trim() || null;
   const representativeName = body.representativeName?.trim() || null;
+  const phoneRaw = body.phone?.trim() ?? "";
   const openingDateRaw = body.openingDate?.trim() || null;
   const address = body.address?.trim() || null;
 
@@ -49,6 +51,14 @@ function parseOrganizationBody(body: CreateOrganizationBody) {
     } as const;
   }
 
+  const phoneError = validateOrganizationPhone(phoneRaw);
+  if (phoneError) {
+    return {
+      error: phoneError,
+      status: 400,
+    } as const;
+  }
+
   const openingDate = openingDateRaw ? new Date(openingDateRaw) : null;
   if (openingDate && Number.isNaN(openingDate.getTime())) {
     return {
@@ -63,6 +73,7 @@ function parseOrganizationBody(body: CreateOrganizationBody) {
       businessType,
       organizationName,
       representativeName,
+      phone: phoneRaw ? phoneRaw.slice(0, 30) : null,
       openingDate,
       address,
     } satisfies ParsedOrganizationInput,
@@ -134,6 +145,7 @@ export async function GET(request: NextRequest) {
         businessType: true,
         organizationName: true,
         representativeName: true,
+        phone: true,
         openingDate: true,
         address: true,
       },
@@ -230,6 +242,7 @@ export async function POST(request: NextRequest) {
         businessType: organization.businessType,
         organizationName: organization.organizationName,
         representativeName: organization.representativeName,
+        phone: organization.phone,
       },
       { status: 201 },
     );
@@ -293,6 +306,7 @@ export async function PATCH(request: NextRequest) {
         businessType: true,
         organizationName: true,
         representativeName: true,
+        phone: true,
         openingDate: true,
         address: true,
       },
@@ -304,6 +318,7 @@ export async function PATCH(request: NextRequest) {
       businessType: updated.businessType,
       organizationName: updated.organizationName,
       representativeName: updated.representativeName,
+      phone: updated.phone,
       openingDate: updated.openingDate
         ? updated.openingDate.toISOString().slice(0, 10)
         : null,

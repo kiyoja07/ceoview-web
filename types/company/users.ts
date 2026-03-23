@@ -1,3 +1,5 @@
+import type { PendingRequestSummary } from "@/types/company/change-request";
+
 export type CompanyUserItem = {
   id: string;
   email: string;
@@ -57,6 +59,7 @@ export type CompanyInfoResponse = {
     address: string | null;
     addressDetail: string | null;
   };
+  pendingRequest: PendingRequestSummary | null;
 };
 
 export type CompanyInfoUpdateBody = {

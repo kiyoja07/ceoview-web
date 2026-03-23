@@ -10,7 +10,7 @@ npx prisma generate && npx prisma db push
 
 ## Auth (Magic Link)
 
-로그인은 이메일 기반 `magic link` 방식입니다.
+로그인은 이메일 기반 `magic link` 방식.
 
 선택 환경변수:
 

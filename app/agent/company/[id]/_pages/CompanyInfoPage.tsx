@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import type { BusinessType } from "@/types/agent/company";
 import BizStatusResult from "@/app/agent/_components/business-form/BizStatusResult";
 import type { BizStatusData } from "@/app/agent/_components/business-form/shared";
@@ -10,6 +10,7 @@ import DateInput from "@/app/_components/DateInput";
 import AddressInput, {
   type AddressValue,
 } from "@/app/_components/AddressInput";
+import type { CompanyChangeRequestItem } from "@/types/company/change-request";
 
 type MessageState = { type: "success" | "error"; text: string } | null;
 
@@ -29,13 +30,13 @@ const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow";
 const readOnlyInputBase =
   "cursor-not-allowed border-gray-200 bg-gray-50 text-gray-500 focus:border-gray-200 focus:ring-0";
-const readOnlyDisplayBase =
-  "rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-500";
 
 export default function AgentCompanyInfoPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
   const companyId = params?.id;
+  const requestId = searchParams.get("requestId");
 
   const [checking, setChecking] = useState(true);
   const [businessNumber, setBusinessNumber] = useState("");
@@ -51,6 +52,8 @@ export default function AgentCompanyInfoPage() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<MessageState>(null);
+  const [requestItem, setRequestItem] =
+    useState<CompanyChangeRequestItem | null>(null);
 
   const [bizValidating, setBizValidating] = useState(false);
   const [bizStatus, setBizStatus] = useState<BizStatusData | null>(null);
@@ -61,30 +64,39 @@ export default function AgentCompanyInfoPage() {
 
     const loadCompany = async () => {
       try {
-        const res = await fetch(`/api/agent/company/${companyId}/info`, {
-          cache: "no-store",
-        });
+        const [companyRes, requestRes] = await Promise.all([
+          fetch(`/api/agent/company/${companyId}/info`, {
+            cache: "no-store",
+          }),
+          requestId
+            ? fetch(`/api/agent/company/requests/${requestId}`, {
+                cache: "no-store",
+              })
+            : Promise.resolve(null),
+        ]);
 
-        if (res.status === 401) {
+        if (companyRes.status === 401 || requestRes?.status === 401) {
           router.replace("/agent/auth/login");
           return;
         }
 
-        if (res.status === 403) {
+        if (companyRes.status === 403 || requestRes?.status === 403) {
           router.replace("/agent/auth/organization");
           return;
         }
 
-        if (!res.ok) {
-          const data = await res.json();
+        if (!companyRes.ok) {
+          const data = await companyRes.json();
           setMessage({
             type: "error",
-            text: data.error || "거래처 정보를 불러오지 못했습니다.",
+            text:
+              (data as { error?: string }).error ||
+              "거래처 정보를 불러오지 못했습니다.",
           });
           return;
         }
 
-        const data = (await res.json()) as CompanyInfo;
+        const data = (await companyRes.json()) as CompanyInfo;
 
         setBusinessNumber(formatBusinessNumber(data.businessNumber));
         setBusinessType(data.businessType);
@@ -96,6 +108,33 @@ export default function AgentCompanyInfoPage() {
           address: data.address || "",
           addressDetail: data.addressDetail || "",
         });
+
+        if (requestRes?.ok) {
+          const requestData = (await requestRes.json()) as {
+            item: CompanyChangeRequestItem;
+          };
+          setRequestItem(requestData.item);
+          if (requestData.item.scope === "COMPANY_INFO") {
+            const payload = requestData.item.requestedPayload as {
+              businessName?: string | null;
+              representativeName?: string | null;
+              openingDate?: string | null;
+              zipcode?: string | null;
+              address?: string | null;
+              addressDetail?: string | null;
+            };
+            setBusinessName(payload.businessName || "");
+            setRepresentativeName(payload.representativeName || "");
+            setOpeningDate(payload.openingDate || "");
+            setAddressValue({
+              zipcode: payload.zipcode || "",
+              address: payload.address || "",
+              addressDetail: payload.addressDetail || "",
+            });
+          }
+        } else {
+          setRequestItem(null);
+        }
       } catch {
         setMessage({
           type: "error",
@@ -107,7 +146,7 @@ export default function AgentCompanyInfoPage() {
     };
 
     void loadCompany();
-  }, [companyId, router]);
+  }, [companyId, requestId, router]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -127,6 +166,7 @@ export default function AgentCompanyInfoPage() {
           zipcode: addressValue.zipcode || null,
           address: addressValue.address || null,
           addressDetail: addressValue.addressDetail || null,
+          requestId,
         }),
       });
 
@@ -139,15 +179,22 @@ export default function AgentCompanyInfoPage() {
       if (!res.ok) {
         setMessage({
           type: "error",
-          text: data.error || "거래처 정보 수정에 실패했습니다.",
+          text:
+            (data as { error?: string }).error ||
+            "거래처 정보 수정에 실패했습니다.",
         });
         return;
       }
 
       setMessage({
         type: "success",
-        text: "거래처 정보가 수정되었습니다.",
+        text: requestId
+          ? "요청이 승인되어 거래처 정보가 반영되었습니다."
+          : "거래처 정보가 수정되었습니다.",
       });
+      if (requestId) {
+        router.replace("/agent/company/requests");
+      }
     } catch {
       setMessage({
         type: "error",
@@ -176,6 +223,46 @@ export default function AgentCompanyInfoPage() {
           <p className="text-sm text-gray-500">
             거래처의 기본 정보를 조회하고 수정할 수 있습니다.
           </p>
+          {requestItem && (
+            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              회사 정보 변경 요청이 접수 되었습니다.
+              <div className="mt-1 text-xs text-amber-700">
+                요청자 {requestItem.requestedByCompanyUser.name} · 접수일{" "}
+                {new Date(requestItem.createdAt).toLocaleString()}
+              </div>
+              <div className="mt-3 flex gap-2">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const reason = window.prompt("반려 사유를 입력해주세요.");
+                    if (!reason?.trim()) return;
+                    const res = await fetch(
+                      `/api/agent/company/requests/${requestItem.id}/reject`,
+                      {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          resolutionComment: reason.trim(),
+                        }),
+                      },
+                    );
+                    if (res.ok) {
+                      router.replace("/agent/company/requests");
+                    } else {
+                      const data = await res.json().catch(() => null);
+                      setMessage({
+                        type: "error",
+                        text: data?.error || "요청 반려에 실패했습니다.",
+                      });
+                    }
+                  }}
+                  className="rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50"
+                >
+                  반려
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <form
@@ -286,7 +373,7 @@ export default function AgentCompanyInfoPage() {
             <label className="mb-1.5 block text-sm font-medium text-gray-700">
               사업자구분
             </label>
-            <div className={readOnlyDisplayBase}>
+            <div className="rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-500">
               {businessType === "INDIVIDUAL" ? "개인사업자" : "법인"}
             </div>
             <p className="mt-1 text-xs text-gray-400">

@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import {
+  sanitizeEmployeeRequestPayload,
+  sanitizeBusinessIncomeEmployeePayload,
+  sanitizeOtherIncomeEmployeePayload,
+  sanitizeOtherIncomeLaborEmployeePayload,
+} from "@/app/lib/company-change-request";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
-import type { EmployeeCreateBody } from "@/types/company/employees";
+import type {
+  EmployeeCreateBody,
+  BusinessIncomeEmployeeCreateBody,
+  OtherIncomeEmployeeCreateBody,
+  OtherIncomeLaborEmployeeCreateBody,
+  EmployeeIncomeType,
+} from "@/types/company/employees";
 
 async function requireAgentOrganizationId(request: NextRequest) {
   const userId = getAgentUserIdFromRequest(request);
@@ -25,7 +37,7 @@ async function requireAgentOrganizationId(request: NextRequest) {
     } as const;
   }
 
-  return { organizationId: user.agentOrganizationId } as const;
+  return { userId, organizationId: user.agentOrganizationId } as const;
 }
 
 export async function POST(
@@ -67,9 +79,40 @@ export async function POST(
       );
     }
 
-    const body = (await request.json()) as EmployeeCreateBody;
+    const rawBody = (await request.json()) as Record<string, unknown> & {
+      requestId?: string;
+      incomeType?: EmployeeIncomeType;
+    };
+    const incomeType: EmployeeIncomeType =
+      rawBody.incomeType ?? "EARNED_INCOME";
+    const requestIdRaw =
+      typeof rawBody.requestId === "string" ? rawBody.requestId.trim() : "";
 
-    const name = body.name?.trim();
+    let sanitizedBody: Record<string, unknown>;
+    switch (incomeType) {
+      case "BUSINESS_INCOME":
+        sanitizedBody = sanitizeBusinessIncomeEmployeePayload(
+          rawBody as unknown as BusinessIncomeEmployeeCreateBody,
+        );
+        break;
+      case "OTHER_INCOME":
+        sanitizedBody = sanitizeOtherIncomeEmployeePayload(
+          rawBody as unknown as OtherIncomeEmployeeCreateBody,
+        );
+        break;
+      case "OTHER_INCOME_LABOR":
+        sanitizedBody = sanitizeOtherIncomeLaborEmployeePayload(
+          rawBody as unknown as OtherIncomeLaborEmployeeCreateBody,
+        );
+        break;
+      default:
+        sanitizedBody = sanitizeEmployeeRequestPayload(
+          rawBody as unknown as EmployeeCreateBody,
+        );
+        break;
+    }
+
+    const name = (sanitizedBody.name as string)?.trim();
     if (!name) {
       return NextResponse.json(
         { error: "이름을 입력해주세요." },
@@ -77,34 +120,196 @@ export async function POST(
       );
     }
 
-    const employee = await prisma.employee.create({
-      data: {
-        companyId,
-        name,
-        residentNumber: body.residentNumber?.trim() || null,
-        email: body.email?.trim() || null,
-        phone: body.phone?.trim() || null,
-        hireDate: body.hireDate?.trim() || null,
-        resignDate: body.resignDate?.trim() || null,
-        zipcode: body.zipcode?.trim() || null,
-        address: body.address?.trim() || null,
-        addressDetail: body.addressDetail?.trim() || null,
-        bankAccounts: {
-          create:
-            body.bankAccounts
-              ?.filter((ba) => ba.bankName?.trim() && ba.accountNumber?.trim())
-              .map((ba) => ({
-                bankName: ba.bankName.trim(),
-                accountNumber: ba.accountNumber.trim(),
-                accountHolder: ba.accountHolder?.trim() || name,
-              })) ?? [],
-        },
-      },
+    let requestId: bigint | null = null;
+    if (requestIdRaw) {
+      try {
+        requestId = BigInt(requestIdRaw);
+      } catch {
+        return NextResponse.json(
+          { error: "유효한 요청 ID가 아닙니다." },
+          { status: 400 },
+        );
+      }
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      if (requestId) {
+        const changeRequest = await tx.companyChangeRequest.findFirst({
+          where: {
+            id: requestId,
+            companyId,
+            scope: "EMPLOYEE",
+            action: "CREATE",
+            status: "PENDING",
+            company: {
+              organizationLink: {
+                is: { agentOrganizationId: auth.organizationId },
+              },
+            },
+          },
+          select: { id: true },
+        });
+
+        if (!changeRequest) {
+          return null;
+        }
+      }
+
+      let createdId: bigint;
+      let createdName: string;
+
+      if (incomeType === "BUSINESS_INCOME") {
+        const body = sanitizedBody as BusinessIncomeEmployeeCreateBody;
+        const created = await tx.businessIncomeEmployee.create({
+          data: {
+            companyId,
+            employeeCode: body.employeeCode?.trim() || null,
+            name,
+            residentNumber: body.residentNumber?.trim() || null,
+            nationalityType: body.nationalityType?.trim() || null,
+            incomeCategory: body.incomeCategory?.trim() || null,
+            residenceType: body.residenceType?.trim() || null,
+            businessName: body.businessName?.trim() || null,
+            businessRegistrationNumber:
+              body.businessRegistrationNumber?.trim() || null,
+            businessAddress: body.businessAddress?.trim() || null,
+            address: body.address?.trim() || null,
+            zipcode: body.zipcode?.trim() || null,
+            department: body.department?.trim() || null,
+            positionTitle: body.positionTitle?.trim() || null,
+            email: body.email?.trim() || null,
+            phone: body.phone?.trim() || null,
+            hireDate: body.hireDate?.trim() || null,
+            resignDate: body.resignDate?.trim() || null,
+            publishStatus: "PUBLISHED",
+          },
+        });
+        createdId = created.id;
+        createdName = created.name;
+      } else if (incomeType === "OTHER_INCOME") {
+        const body = sanitizedBody as OtherIncomeEmployeeCreateBody;
+        const created = await tx.otherIncomeEmployee.create({
+          data: {
+            companyId,
+            employeeCode: body.employeeCode?.trim() || null,
+            name,
+            residentNumber: body.residentNumber?.trim() || null,
+            nationalityType: body.nationalityType?.trim() || null,
+            incomeCategory: body.incomeCategory?.trim() || null,
+            residenceType: body.residenceType?.trim() || null,
+            personType: body.personType?.trim() || null,
+            businessRegistrationNumber:
+              body.businessRegistrationNumber?.trim() || null,
+            businessAddress: body.businessAddress?.trim() || null,
+            zipcode: body.zipcode?.trim() || null,
+            department: body.department?.trim() || null,
+            positionTitle: body.positionTitle?.trim() || null,
+            email: body.email?.trim() || null,
+            phone: body.phone?.trim() || null,
+            hireDate: body.hireDate?.trim() || null,
+            resignDate: body.resignDate?.trim() || null,
+            publishStatus: "PUBLISHED",
+          },
+        });
+        createdId = created.id;
+        createdName = created.name;
+      } else if (incomeType === "OTHER_INCOME_LABOR") {
+        const body = sanitizedBody as OtherIncomeLaborEmployeeCreateBody;
+        const created = await tx.otherIncomeLaborEmployee.create({
+          data: {
+            companyId,
+            employeeCode: body.employeeCode?.trim() || null,
+            name,
+            residentNumber: body.residentNumber?.trim() || null,
+            department: body.department?.trim() || null,
+            positionTitle: body.positionTitle?.trim() || null,
+            email: body.email?.trim() || null,
+            phone: body.phone?.trim() || null,
+            hireDate: body.hireDate?.trim() || null,
+            resignDate: body.resignDate?.trim() || null,
+            publishStatus: "PUBLISHED",
+          },
+        });
+        createdId = created.id;
+        createdName = created.name;
+      } else {
+        const body = sanitizedBody as EmployeeCreateBody;
+        const created = await tx.employee.create({
+          data: {
+            companyId,
+            employeeCode: body.employeeCode?.trim() || null,
+            name,
+            residentNumber: body.residentNumber?.trim() || null,
+            nationalityType: body.nationalityType?.trim() || null,
+            jobCategory: body.jobCategory?.trim() || null,
+            residenceType: body.residenceType?.trim() || null,
+            department: body.department?.trim() || null,
+            positionTitle: body.positionTitle?.trim() || null,
+            email: body.email?.trim() || null,
+            phone: body.phone?.trim() || null,
+            landlinePhone: body.landlinePhone?.trim() || null,
+            hireDate: body.hireDate?.trim() || null,
+            resignDate: body.resignDate?.trim() || null,
+            zipcode: body.zipcode?.trim() || null,
+            address: body.address?.trim() || null,
+            addressDetail: body.addressDetail?.trim() || null,
+            hasSpouse: body.hasSpouse?.trim() || null,
+            dependentUnder20: body.dependentUnder20?.trim() || null,
+            dependentOver60: body.dependentOver60?.trim() || null,
+            deductionSenior: body.deductionSenior?.trim() || null,
+            deductionDisabled: body.deductionDisabled?.trim() || null,
+            deductionWomen: body.deductionWomen?.trim() || null,
+            deductionChildren: body.deductionChildren?.trim() || null,
+            deductionBirthAdoption: body.deductionBirthAdoption?.trim() || null,
+            deductionSingleParent: body.deductionSingleParent?.trim() || null,
+            employmentInsurance: body.employmentInsurance?.trim() || null,
+            payGrade: body.payGrade?.trim() || null,
+            nationalPension: body.nationalPension?.trim() || null,
+            healthInsurance: body.healthInsurance?.trim() || null,
+            publishStatus: "PUBLISHED",
+            bankAccounts: {
+              create:
+                body.bankAccounts
+                  ?.filter(
+                    (ba) => ba.bankName?.trim() && ba.accountNumber?.trim(),
+                  )
+                  .map((ba) => ({
+                    bankName: ba.bankName.trim(),
+                    accountNumber: ba.accountNumber.trim(),
+                    accountHolder: ba.accountHolder?.trim() || name,
+                  })) ?? [],
+            },
+          },
+        });
+        createdId = created.id;
+        createdName = created.name;
+      }
+
+      if (requestId) {
+        await tx.companyChangeRequest.update({
+          where: { id: requestId },
+          data: {
+            status: "APPROVED",
+            targetEmployeeId: createdId,
+            resolvedAt: new Date(),
+            resolvedByAgentUserId: auth.userId,
+          },
+        });
+      }
+
+      return { id: createdId, name: createdName };
     });
 
+    if (!result) {
+      return NextResponse.json(
+        { error: "처리 가능한 요청을 찾을 수 없습니다." },
+        { status: 404 },
+      );
+    }
+
     return NextResponse.json({
-      id: employee.id.toString(),
-      name: employee.name,
+      id: result.id.toString(),
+      name: result.name,
     });
   } catch (error) {
     console.error("Agent employee create error:", error);

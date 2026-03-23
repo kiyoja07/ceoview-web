@@ -6,6 +6,7 @@ type Props = {
   employeeName: string;
   companyId: string;
   employeeId: string;
+  requestId?: string | null;
   onDeleted: () => void;
   onClose: () => void;
   onAuthError: (status: number) => boolean;
@@ -15,6 +16,7 @@ export default function DeleteConfirmModal({
   employeeName,
   companyId,
   employeeId,
+  requestId,
   onDeleted,
   onClose,
   onAuthError,
@@ -30,7 +32,7 @@ export default function DeleteConfirmModal({
       const res = await fetch(`/api/agent/company/${companyId}/employee`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ employeeId }),
+        body: JSON.stringify({ employeeId, requestId }),
       });
       if (onAuthError(res.status)) return;
       if (!res.ok) {
@@ -58,10 +60,12 @@ export default function DeleteConfirmModal({
         <h3 className="text-lg font-semibold text-gray-900">직원 삭제</h3>
         <p className="mt-2 text-sm text-gray-600">
           <span className="font-medium text-gray-900">{employeeName}</span>{" "}
-          직원을 삭제하시겠습니까?
+          {requestId ? "직원 삭제 요청을 승인하시겠습니까?" : "직원을 삭제하시겠습니까?"}
           <br />
           <span className="text-red-500">
-            삭제된 데이터는 복구할 수 없습니다.
+            {requestId
+              ? "승인 시 실제 직원 데이터가 삭제됩니다."
+              : "삭제된 데이터는 복구할 수 없습니다."}
           </span>
         </p>
 
@@ -88,7 +92,13 @@ export default function DeleteConfirmModal({
             disabled={deleting}
             className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-50"
           >
-            {deleting ? "삭제 중..." : "삭제"}
+            {deleting
+              ? requestId
+                ? "승인 처리 중..."
+                : "삭제 중..."
+              : requestId
+                ? "삭제 승인"
+                : "삭제"}
           </button>
         </div>
       </div>

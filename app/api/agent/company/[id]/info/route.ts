@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import { sanitizeCompanyInfoRequestPayload } from "@/app/lib/company-change-request";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
 
 function toId(value: bigint) {
@@ -28,7 +29,7 @@ async function requireAgentOrganizationId(request: NextRequest) {
     } as const;
   }
 
-  return { organizationId: user.agentOrganizationId } as const;
+  return { userId, organizationId: user.agentOrganizationId } as const;
 }
 
 function parseCompanyId(id: string) {
@@ -144,7 +145,19 @@ export async function PATCH(
       );
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => null);
+    const requestIdRaw =
+      body && typeof body.requestId === "string" ? body.requestId.trim() : "";
+    const sanitizedBody = sanitizeCompanyInfoRequestPayload(
+      (body ?? {}) as {
+        businessName?: string | null;
+        representativeName?: string | null;
+        openingDate?: string | null;
+        zipcode?: string | null;
+        address?: string | null;
+        addressDetail?: string | null;
+      },
+    );
     const {
       businessName,
       representativeName,
@@ -152,31 +165,95 @@ export async function PATCH(
       zipcode,
       address,
       addressDetail,
-    } = body;
+    } = sanitizedBody;
 
-    const updated = await prisma.company.update({
-      where: { id: parsed.companyId },
-      data: {
-        businessName: businessName ?? undefined,
-        representativeName: representativeName ?? undefined,
-        openingDate: openingDate ? new Date(openingDate) : undefined,
-        zipcode: zipcode ?? undefined,
-        address: address ?? undefined,
-        addressDetail: addressDetail ?? undefined,
-      },
-      select: {
-        id: true,
-        businessNumber: true,
-        businessType: true,
-        businessName: true,
-        representativeName: true,
-        openingDate: true,
-        zipcode: true,
-        address: true,
-        addressDetail: true,
-        updatedAt: true,
-      },
+    if (openingDate && Number.isNaN(new Date(openingDate).getTime())) {
+      return NextResponse.json(
+        { error: "개업일 형식이 올바르지 않습니다." },
+        { status: 400 },
+      );
+    }
+
+    let parsedRequestId: bigint | null = null;
+    if (requestIdRaw) {
+      try {
+        parsedRequestId = BigInt(requestIdRaw);
+      } catch {
+        return NextResponse.json(
+          { error: "유효한 요청 ID가 아닙니다." },
+          { status: 400 },
+        );
+      }
+    }
+
+    const updated = await prisma.$transaction(async (tx) => {
+      if (parsedRequestId) {
+        const changeRequest = await tx.companyChangeRequest.findFirst({
+          where: {
+            id: parsedRequestId,
+            companyId: parsed.companyId,
+            scope: "COMPANY_INFO",
+            action: "UPDATE",
+            status: "PENDING",
+            company: {
+              organizationLink: {
+                is: { agentOrganizationId: auth.organizationId },
+              },
+            },
+          },
+          select: { id: true },
+        });
+
+        if (!changeRequest) {
+          return null;
+        }
+      }
+
+      const updatedCompany = await tx.company.update({
+        where: { id: parsed.companyId },
+        data: {
+          businessName: businessName ?? null,
+          representativeName: representativeName ?? null,
+          openingDate: openingDate ? new Date(openingDate) : null,
+          zipcode: zipcode ?? null,
+          address: address ?? null,
+          addressDetail: addressDetail ?? null,
+        },
+        select: {
+          id: true,
+          businessNumber: true,
+          businessType: true,
+          businessName: true,
+          representativeName: true,
+          openingDate: true,
+          zipcode: true,
+          address: true,
+          addressDetail: true,
+          updatedAt: true,
+        },
+      });
+
+      if (parsedRequestId) {
+        await tx.companyChangeRequest.update({
+          where: { id: parsedRequestId },
+          data: {
+            status: "APPROVED",
+            resolvedAt: new Date(),
+            resolvedByAgentUserId: auth.userId,
+            resolutionComment: null,
+          },
+        });
+      }
+
+      return updatedCompany;
     });
+
+    if (!updated) {
+      return NextResponse.json(
+        { error: "처리 가능한 요청을 찾을 수 없습니다." },
+        { status: 404 },
+      );
+    }
 
     return NextResponse.json({
       id: toId(updated.id),

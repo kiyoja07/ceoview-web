@@ -172,7 +172,7 @@ export default function SalaryDashboardPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-                급여 대시보드
+                인건비 대시보드
               </h1>
               {data?.company && (
                 <p className="text-sm text-gray-500">

@@ -414,7 +414,8 @@ export const ModelName = {
   BusinessIncomeEmployee: 'BusinessIncomeEmployee',
   OtherIncomeEmployee: 'OtherIncomeEmployee',
   OtherIncomeLaborEmployee: 'OtherIncomeLaborEmployee',
-  EmployeeBankAccount: 'EmployeeBankAccount'
+  EmployeeBankAccount: 'EmployeeBankAccount',
+  CompanyChangeRequest: 'CompanyChangeRequest'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -430,7 +431,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyUserCompany" | "companyMagicLinkToken" | "phoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "payslipNotification" | "payslipAccessToken" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "employeeUser" | "employeeMagicLinkToken" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount"
+    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyUserCompany" | "companyMagicLinkToken" | "phoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "payslipNotification" | "payslipAccessToken" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "employeeUser" | "employeeMagicLinkToken" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount" | "companyChangeRequest"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2480,6 +2481,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CompanyChangeRequest: {
+      payload: Prisma.$CompanyChangeRequestPayload<ExtArgs>
+      fields: Prisma.CompanyChangeRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CompanyChangeRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyChangeRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CompanyChangeRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyChangeRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.CompanyChangeRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyChangeRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CompanyChangeRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyChangeRequestPayload>
+        }
+        findMany: {
+          args: Prisma.CompanyChangeRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyChangeRequestPayload>[]
+        }
+        create: {
+          args: Prisma.CompanyChangeRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyChangeRequestPayload>
+        }
+        createMany: {
+          args: Prisma.CompanyChangeRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.CompanyChangeRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyChangeRequestPayload>
+        }
+        update: {
+          args: Prisma.CompanyChangeRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyChangeRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.CompanyChangeRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CompanyChangeRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.CompanyChangeRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyChangeRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.CompanyChangeRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCompanyChangeRequest>
+        }
+        groupBy: {
+          args: Prisma.CompanyChangeRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CompanyChangeRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CompanyChangeRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CompanyChangeRequestCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2525,6 +2592,7 @@ export const AgentOrganizationScalarFieldEnum = {
   businessType: 'businessType',
   organizationName: 'organizationName',
   representativeName: 'representativeName',
+  phone: 'phone',
   openingDate: 'openingDate',
   address: 'address',
   createdAt: 'createdAt',
@@ -3077,12 +3145,47 @@ export const EmployeeBankAccountScalarFieldEnum = {
 export type EmployeeBankAccountScalarFieldEnum = (typeof EmployeeBankAccountScalarFieldEnum)[keyof typeof EmployeeBankAccountScalarFieldEnum]
 
 
+export const CompanyChangeRequestScalarFieldEnum = {
+  id: 'id',
+  scope: 'scope',
+  action: 'action',
+  status: 'status',
+  companyId: 'companyId',
+  requestedByCompanyUserId: 'requestedByCompanyUserId',
+  resolvedByAgentUserId: 'resolvedByAgentUserId',
+  targetEmployeeId: 'targetEmployeeId',
+  requestedPayload: 'requestedPayload',
+  currentSnapshot: 'currentSnapshot',
+  resolutionComment: 'resolutionComment',
+  resolvedAt: 'resolvedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CompanyChangeRequestScalarFieldEnum = (typeof CompanyChangeRequestScalarFieldEnum)[keyof typeof CompanyChangeRequestScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const NullsOrder = {
@@ -3097,6 +3200,7 @@ export const AgentOrganizationOrderByRelevanceFieldEnum = {
   organizationNumber: 'organizationNumber',
   organizationName: 'organizationName',
   representativeName: 'representativeName',
+  phone: 'phone',
   address: 'address'
 } as const
 
@@ -3391,6 +3495,30 @@ export const EmployeeBankAccountOrderByRelevanceFieldEnum = {
 export type EmployeeBankAccountOrderByRelevanceFieldEnum = (typeof EmployeeBankAccountOrderByRelevanceFieldEnum)[keyof typeof EmployeeBankAccountOrderByRelevanceFieldEnum]
 
 
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const CompanyChangeRequestOrderByRelevanceFieldEnum = {
+  resolutionComment: 'resolutionComment'
+} as const
+
+export type CompanyChangeRequestOrderByRelevanceFieldEnum = (typeof CompanyChangeRequestOrderByRelevanceFieldEnum)[keyof typeof CompanyChangeRequestOrderByRelevanceFieldEnum]
+
+
 
 /**
  * Field references
@@ -3499,6 +3627,41 @@ export type EnumPayrollItemKindFieldRefInput<$PrismaModel> = FieldRefInputType<$
  * Reference to a field of type 'EmployeePublishStatus'
  */
 export type EnumEmployeePublishStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmployeePublishStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'CompanyChangeRequestScope'
+ */
+export type EnumCompanyChangeRequestScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CompanyChangeRequestScope'>
+    
+
+
+/**
+ * Reference to a field of type 'CompanyChangeRequestAction'
+ */
+export type EnumCompanyChangeRequestActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CompanyChangeRequestAction'>
+    
+
+
+/**
+ * Reference to a field of type 'CompanyChangeRequestStatus'
+ */
+export type EnumCompanyChangeRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CompanyChangeRequestStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -3634,6 +3797,7 @@ export type GlobalOmitConfig = {
   otherIncomeEmployee?: Prisma.OtherIncomeEmployeeOmit
   otherIncomeLaborEmployee?: Prisma.OtherIncomeLaborEmployeeOmit
   employeeBankAccount?: Prisma.EmployeeBankAccountOmit
+  companyChangeRequest?: Prisma.CompanyChangeRequestOmit
 }
 
 /* Types for Logging */

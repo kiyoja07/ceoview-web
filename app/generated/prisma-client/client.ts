@@ -196,3 +196,8 @@ export type OtherIncomeLaborEmployee = Prisma.OtherIncomeLaborEmployeeModel
  * 
  */
 export type EmployeeBankAccount = Prisma.EmployeeBankAccountModel
+/**
+ * Model CompanyChangeRequest
+ * 
+ */
+export type CompanyChangeRequest = Prisma.CompanyChangeRequestModel

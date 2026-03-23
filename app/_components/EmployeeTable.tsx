@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { PendingRequestSummary } from "@/types/company/change-request";
 
 // ────────────────────────────────────────────────────────────
 // Types
@@ -19,6 +20,7 @@ export type EmployeeRow = {
   email: string | null;
   publishStatus?: "SAVED" | "PUBLISHED";
   createdAt: string;
+  pendingRequest?: PendingRequestSummary | null;
   bankAccount: {
     bankName: string;
     accountNumber: string;
