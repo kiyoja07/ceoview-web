@@ -3,51 +3,18 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { CHANGE_REQUEST_COPY } from "@/catalogs/ko/change-request";
+import {
+  CHANGE_REQUEST_ACTION_LABELS,
+  CHANGE_REQUEST_DETAIL_FIELD_LABELS,
+  CHANGE_REQUEST_SCOPE_LABELS,
+  CHANGE_REQUEST_STATUS_BADGE_CLASSES,
+  CHANGE_REQUEST_STATUS_LABELS,
+} from "@/catalogs/ko/change-request";
 import type {
   CompanyChangeRequestDetailResponse,
   CompanyChangeRequestItem,
 } from "@/types/company/change-request";
-
-const REQUEST_FIELD_LABELS = [
-  ["employeeCode", "사원코드"],
-  ["name", "이름"],
-  ["residentNumber", "주민등록번호"],
-  ["department", "부서"],
-  ["positionTitle", "직책"],
-  ["email", "이메일"],
-  ["phone", "휴대폰"],
-  ["hireDate", "입사일"],
-  ["resignDate", "퇴사일"],
-  ["zipcode", "우편번호"],
-  ["address", "주소"],
-  ["addressDetail", "상세주소"],
-  ["businessName", "상호명"],
-  ["representativeName", "대표자명"],
-  ["openingDate", "개업일"],
-  ["bankAccounts", "급여계좌"],
-] as const;
-
-function formatScope(scope: CompanyChangeRequestItem["scope"]) {
-  return scope === "EMPLOYEE" ? "직원" : "회사 정보";
-}
-
-function formatAction(action: CompanyChangeRequestItem["action"]) {
-  if (action === "CREATE") return "등록";
-  if (action === "UPDATE") return "수정";
-  return "삭제";
-}
-
-function formatStatus(status: CompanyChangeRequestItem["status"]) {
-  if (status === "PENDING") return "접수중";
-  if (status === "APPROVED") return "승인";
-  return "반려";
-}
-
-function getStatusClass(status: CompanyChangeRequestItem["status"]) {
-  if (status === "PENDING") return "bg-amber-100 text-amber-700";
-  if (status === "APPROVED") return "bg-emerald-100 text-emerald-700";
-  return "bg-rose-100 text-rose-700";
-}
 
 function formatValue(value: unknown) {
   if (typeof value === "string") {
@@ -86,7 +53,7 @@ function getChangedEntries(item: CompanyChangeRequestItem) {
   const requested =
     (item.requestedPayload as Record<string, unknown> | null) ?? {};
 
-  return REQUEST_FIELD_LABELS.map(([key, label]) => {
+  return CHANGE_REQUEST_DETAIL_FIELD_LABELS.map(({ key, label }) => {
     const currentValue = formatValue(current[key]);
     const requestedValue = formatValue(requested[key]);
 
@@ -104,7 +71,7 @@ function getRequestedEntries(item: CompanyChangeRequestItem) {
   const requested =
     (item.requestedPayload as Record<string, unknown> | null) ?? {};
 
-  return REQUEST_FIELD_LABELS.map(([key, label]) => ({
+  return CHANGE_REQUEST_DETAIL_FIELD_LABELS.map(({ key, label }) => ({
     key,
     label,
     value: formatValue(requested[key]),
@@ -140,7 +107,7 @@ export default function CompanyRequestDetailPage() {
         if (!res.ok) {
           throw new Error(
             ("error" in body ? body.error : undefined) ||
-              "요청 상세를 불러오지 못했습니다.",
+              CHANGE_REQUEST_COPY.detail.loadError,
           );
         }
         setItem((body as CompanyChangeRequestDetailResponse).item);
@@ -148,7 +115,7 @@ export default function CompanyRequestDetailPage() {
         setError(
           err instanceof Error
             ? err.message
-            : "요청 상세를 불러오지 못했습니다.",
+            : CHANGE_REQUEST_COPY.detail.loadError,
         );
       } finally {
         setLoading(false);
@@ -175,21 +142,23 @@ export default function CompanyRequestDetailPage() {
             href="/company/requests"
             className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100"
           >
-            요청 현황으로
+            {CHANGE_REQUEST_COPY.companyList.back}
           </Link>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-              요청 상세
+              {CHANGE_REQUEST_COPY.detail.title}
             </h1>
             <p className="mt-1 text-sm text-gray-500">
-              제출한 변경 요청의 내용과 처리 상태를 확인합니다.
+              {CHANGE_REQUEST_COPY.detail.description}
             </p>
           </div>
         </div>
 
         {loading ? (
           <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
-            <p className="text-sm text-gray-500">요청 상세를 불러오는 중...</p>
+            <p className="text-sm text-gray-500">
+              {CHANGE_REQUEST_COPY.detail.loading}
+            </p>
           </div>
         ) : error ? (
           <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
@@ -200,12 +169,13 @@ export default function CompanyRequestDetailPage() {
             <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-lg font-semibold text-gray-900">
-                  {formatScope(item.scope)} {formatAction(item.action)} 요청
+                  {CHANGE_REQUEST_SCOPE_LABELS[item.scope]}{" "}
+                  {CHANGE_REQUEST_ACTION_LABELS[item.action]} 요청
                 </span>
                 <span
-                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${getStatusClass(item.status)}`}
+                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${CHANGE_REQUEST_STATUS_BADGE_CLASSES[item.status]}`}
                 >
-                  {formatStatus(item.status)}
+                  {CHANGE_REQUEST_STATUS_LABELS[item.status]}
                 </span>
               </div>
               <dl className="mt-4 grid gap-3 sm:grid-cols-2">

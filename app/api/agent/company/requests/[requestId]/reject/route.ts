@@ -56,7 +56,7 @@ export async function POST(
 
     if (!resolutionComment) {
       return NextResponse.json(
-        { error: "반려 사유를 입력해주세요." },
+        { error: "보류 사유를 입력해주세요." },
         { status: 400 },
       );
     }
@@ -95,7 +95,7 @@ export async function POST(
   } catch (error) {
     console.error("Agent request reject error:", error);
     return NextResponse.json(
-      { error: "요청 반려에 실패했습니다." },
+      { error: "요청 보류에 실패했습니다." },
       { status: 500 },
     );
   }

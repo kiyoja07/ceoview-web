@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const TAB_ITEMS = [
-  { href: "/agent/company", label: "거래처 목록" },
-  { href: "/agent/company/requests", label: "요청함" },
-  { href: "/agent/company/employees", label: "직원 현황" },
-  { href: "/agent/company/salary", label: "급여 현황" },
-] as const;
+import { AGENT_COMPANY_MODULE_TABS } from "@/catalogs/ko/navigation";
 
 const TOP_LEVEL_SEGMENTS = new Set(["employees", "salary", "new", "requests"]);
 
@@ -33,6 +27,10 @@ function isCompanyDetailPath(pathname: string) {
 
 export function CompanyModuleTabs() {
   const pathname = usePathname();
+  const tabItems = AGENT_COMPANY_MODULE_TABS.filter(
+    (item): item is typeof item & { href: string } =>
+      typeof item.href === "string",
+  );
 
   if (isCompanyDetailPath(pathname)) {
     return null;
@@ -41,7 +39,7 @@ export function CompanyModuleTabs() {
   return (
     <div className="border-b border-gray-200 bg-white/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-3 sm:px-6">
-        {TAB_ITEMS.map((item) => {
+        {tabItems.map((item) => {
           const active = isActivePath(pathname, item.href);
           return (
             <Link

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
+import { PAYSLIP_INCOME_TAB_LABELS } from "@/catalogs/ko/salary";
 import { EarnedWithholdingReceiptTable } from "./EarnedWithholdingReceiptTable";
 import type { EarnedIncomeRow, Company, IncomeTab } from "../types";
 import { renderPayslipHtml } from "../lib/payslip-template";
 import {
   toPayslipData,
-  INCOME_TYPE_LABELS,
   type IncomeRow,
 } from "../lib/payslip-template";
 import { SendPayslipButton } from "./SendPayslipButton";
@@ -109,7 +109,7 @@ export function PayslipModal({
               {documentTitle}
             </span>
             <span className="rounded-lg bg-white/90 px-3 py-1.5 text-sm font-medium text-gray-600 shadow-sm ring-1 ring-gray-200">
-              {INCOME_TYPE_LABELS[incomeType]}
+              {PAYSLIP_INCOME_TAB_LABELS[incomeType]}
             </span>
             {/* {incomeType === "earned" && (
               <div className="ml-1 inline-flex rounded-lg bg-white p-0.5 shadow-sm ring-1 ring-gray-200">

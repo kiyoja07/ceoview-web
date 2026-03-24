@@ -2,6 +2,10 @@
 
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+  EMPLOYEE_INCOME_TYPE_OPTIONS,
+} from "@/catalogs/ko/employee";
+import { PROGRAM_TYPE_OPTIONS } from "@/catalogs/ko/salary";
 import type {
   Company,
   EmployeeUploadResult,
@@ -9,7 +13,6 @@ import type {
   MessageState,
   ProgramType,
 } from "@/types/agent/employee";
-import { INCOME_TYPES, PROGRAM_TYPES } from "./constants";
 import { CompanySelectField } from "./_components/CompanySelectField";
 import { FixedCompanyDisplay } from "./_components/FixedCompanyDisplay";
 import { FileUploadField } from "./_components/FileUploadField";
@@ -282,7 +285,7 @@ export default function EmployeeNewPage() {
           {/* Income Type */}
           <IncomeTypeSelector
             incomeType={incomeType}
-            options={INCOME_TYPES}
+            options={EMPLOYEE_INCOME_TYPE_OPTIONS}
             onChange={(value) => {
               setIncomeType(value);
               resetFeedback();
@@ -292,7 +295,7 @@ export default function EmployeeNewPage() {
           {/* Program Type */}
           <ProgramTypeSelector
             programType={programType}
-            options={PROGRAM_TYPES}
+            options={PROGRAM_TYPE_OPTIONS}
             onChange={(value) => {
               setProgramType(value);
               resetFeedback();

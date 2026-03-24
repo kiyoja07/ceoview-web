@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PAYSLIP_INCOME_TAB_LABELS } from "@/catalogs/ko/salary";
 import type { Company, IncomeTab } from "../types";
 
 interface BulkPayslipDownloadProps {
@@ -11,13 +12,6 @@ interface BulkPayslipDownloadProps {
   accrualYm?: string;
   paymentYm?: string;
 }
-
-const INCOME_TYPE_LABELS: Record<IncomeTab, string> = {
-  earned: "근로소득",
-  business: "사업소득",
-  daily: "일용직소득",
-  other: "기타소득",
-};
 
 const ENDPOINT_MAP: Record<IncomeTab, string> = {
   earned: "earned-income",
@@ -79,7 +73,7 @@ export function BulkPayslipDownload({
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `급여명세서_${INCOME_TYPE_LABELS[incomeType]}_${rows.length}명.zip`;
+      a.download = `급여명세서_${PAYSLIP_INCOME_TAB_LABELS[incomeType]}_${rows.length}명.zip`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

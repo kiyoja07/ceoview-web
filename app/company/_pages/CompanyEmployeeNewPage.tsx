@@ -11,13 +11,7 @@ import type {
   PendingRequestSummary,
 } from "@/types/company/change-request";
 import type { EmployeeIncomeType } from "@/types/company/employees";
-
-const INCOME_TYPE_OPTIONS: { value: EmployeeIncomeType; label: string }[] = [
-  { value: "EARNED_INCOME", label: "근로소득자" },
-  { value: "BUSINESS_INCOME", label: "사업소득자" },
-  { value: "OTHER_INCOME", label: "기타소득자" },
-  { value: "OTHER_INCOME_LABOR", label: "일용소득자" },
-];
+import { EMPLOYEE_INCOME_TYPE_OPTIONS } from "@/catalogs/ko/employee";
 
 export default function NewEmployeePage() {
   const router = useRouter();
@@ -85,13 +79,10 @@ export default function NewEmployeePage() {
       <div className="mx-auto max-w-3xl p-6 lg:p-8">
         <div className="mb-7">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            직원 등록
+            인건비 지급 대상자 등록
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            새 직원의 정보를 입력해주세요.
-          </p>
-          <p className="mt-1 text-sm text-gray-500">
-            직원들의 이메일과 연락처를 입력하시면, 급여명세서를 자동으로 발송할
+            인건비 지급 대상자들의 이메일과 연락처를 입력하시면, 급여명세서를 자동으로 발송할
             수 있습니다.
           </p>
         </div>
@@ -99,10 +90,10 @@ export default function NewEmployeePage() {
         {submittedRequest ? (
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-900 shadow-sm">
             <p className="text-base font-semibold">
-              직원 등록 요청이 제출되었습니다.
+              인건비 지급 대상자 등록 요청이 제출되었습니다.
             </p>
             <p className="mt-2">
-              세무대리인이 확인 후 최종 등록하면 직원 목록에 반영됩니다.
+              세무대리인이 확인 후 최종 등록하면 인건비 지급 대상자 목록에 반영됩니다.
             </p>
             <p className="mt-2 text-xs text-amber-700">
               접수일 {new Date(submittedRequest.createdAt).toLocaleString()}
@@ -131,7 +122,7 @@ export default function NewEmployeePage() {
                 소득유형 <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {INCOME_TYPE_OPTIONS.map((opt) => (
+                {EMPLOYEE_INCOME_TYPE_OPTIONS.map((opt) => (
                   <label
                     key={opt.value}
                     className={`flex cursor-pointer items-center justify-center rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-all ${

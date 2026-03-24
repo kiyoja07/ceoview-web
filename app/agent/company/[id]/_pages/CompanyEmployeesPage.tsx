@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import EmployeeTable from "@/app/_components/EmployeeTable";
 import type { EmployeeRow } from "@/app/_components/EmployeeTable";
+import { EMPLOYEE_INCOME_TYPE_OPTIONS } from "@/catalogs/ko/employee";
 import EmployeePublishConfirmModal from "../employee-publication/_components/EmployeePublishConfirmModal";
 
 // ────────────────────────────────────────────────────────────
@@ -45,14 +46,7 @@ type PendingAction =
 // Income type tabs
 // ────────────────────────────────────────────────────────────
 
-const INCOME_TYPES = [
-  { value: "EARNED_INCOME", label: "근로소득자" },
-  { value: "BUSINESS_INCOME", label: "사업소득자" },
-  { value: "OTHER_INCOME", label: "기타소득자" },
-  { value: "OTHER_INCOME_LABOR", label: "일용소득자" },
-] as const;
-
-type IncomeType = (typeof INCOME_TYPES)[number]["value"];
+type IncomeType = (typeof EMPLOYEE_INCOME_TYPE_OPTIONS)[number]["value"];
 
 // ────────────────────────────────────────────────────────────
 // Helpers
@@ -315,7 +309,7 @@ export default function AgentCompanyEmployeePage() {
 
         {/* Income type tabs */}
         <div className="mb-5 flex gap-4 rounded-xl bg-gray-100 p-1">
-          {INCOME_TYPES.map((type) => (
+          {EMPLOYEE_INCOME_TYPE_OPTIONS.map((type) => (
             <button
               key={type.value}
               type="button"

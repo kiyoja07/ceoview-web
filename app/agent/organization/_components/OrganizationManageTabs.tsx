@@ -2,12 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const TAB_ITEMS = [
-  { href: "/agent/organization/profile", label: "내 정보" },
-  { href: "/agent/organization/info", label: "회사 정보" },
-  { href: "/agent/organization/users", label: "회사 사용자" },
-] as const;
+import { AGENT_ORGANIZATION_MANAGE_TABS } from "@/catalogs/ko/navigation";
 
 function isActivePath(pathname: string, href: string) {
   if (pathname === href) return true;
@@ -16,11 +11,15 @@ function isActivePath(pathname: string, href: string) {
 
 export function OrganizationManageTabs() {
   const pathname = usePathname();
+  const tabItems = AGENT_ORGANIZATION_MANAGE_TABS.filter(
+    (item): item is typeof item & { href: string } =>
+      typeof item.href === "string",
+  );
 
   return (
     <div className="border-b border-gray-200 bg-white/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-3 sm:px-6">
-        {TAB_ITEMS.map((item) => {
+        {tabItems.map((item) => {
           const active = isActivePath(pathname, item.href);
           return (
             <Link

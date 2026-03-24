@@ -173,12 +173,9 @@ export default function CompanyOrganizationUsersPage() {
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">
               사용자 관리
             </h1>
-            {data && (
-              <p className="mt-1 text-sm text-gray-500">
-                {companyLabel} (
-                {formatBusinessNumber(data.company.businessNumber)})
-              </p>
-            )}
+            <p className="mt-1 text-sm text-gray-500">
+              급여 정보에 접근할 수 있는 사용자를 관리할 수 있습니다.
+            </p>
           </div>
 
           {data?.canManageUsers && (

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { AGENT_COMPANY_MANAGE_TABS } from "@/catalogs/ko/navigation";
 
 type CompanyInfo = {
   businessName: string | null;
@@ -56,12 +57,15 @@ export function CompanyManageTabs() {
 
   const tabs = useMemo(
     () =>
-      [
-        { href: `/agent/company/${companyId}`, label: "개요" },
-        { href: `/agent/company/${companyId}/employees`, label: "직원" },
-        { href: `/agent/company/${companyId}/salary`, label: "급여" },
-        { href: `/agent/company/${companyId}/settings/info`, label: "설정" },
-      ] as const,
+      AGENT_COMPANY_MANAGE_TABS.map((item) => ({
+        ...item,
+        href:
+          item.slug === "overview"
+            ? `/agent/company/${companyId}`
+            : item.slug === "settings"
+              ? `/agent/company/${companyId}/settings/info`
+              : `/agent/company/${companyId}/${item.slug}`,
+      })),
     [companyId],
   );
 

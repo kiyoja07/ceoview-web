@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { COMMON_ACTION_LABELS } from "@/catalogs/ko/common";
+import { COMPANY_HEADER_NAV_ITEMS } from "@/catalogs/ko/navigation";
 import type { CompanyHeaderProfile } from "@/types/company/header";
 
 function isActivePath(pathname: string, href: string) {
@@ -16,12 +18,6 @@ function formatBusinessNumber(value: string) {
   if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
   return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
 }
-
-type CompanyHeaderNavItem = {
-  href: string;
-  label: string;
-  activePrefix?: string;
-};
 
 export function CompanyHeader() {
   const pathname = usePathname();
@@ -86,18 +82,11 @@ export function CompanyHeader() {
     ? `/company/${profile.company.id}/salary/dashboard`
     : "/company/dashboard";
 
-  const navItems: CompanyHeaderNavItem[] = [
-    { href: "/company/dashboard", label: "대시보드" },
-    { href: salaryHref, label: "인건비" },
-    { href: "/company/employees", label: "지급 대상자" },
-    { href: "/company/requests", label: "요청 현황" },
-    {
-      href: "/company/settings/profile",
-      label: "설정",
-      activePrefix: "/company/settings",
-    },
-    // { href: "/company/billing", label: "결제" },
-  ];
+  const navItems = COMPANY_HEADER_NAV_ITEMS.map((item) =>
+    item.slug === "salary" ? { ...item, href: salaryHref } : item,
+  ).filter((item): item is typeof item & { href: string } =>
+    typeof item.href === "string",
+  );
 
   const companyLabel = profile?.company
     ? profile.company.businessName ||
@@ -150,7 +139,7 @@ export function CompanyHeader() {
             href="/company/auth/logout"
             className="hidden shrink-0 rounded-lg border border-emerald-700/40 px-3 py-1.5 text-sm font-medium text-emerald-100 transition hover:bg-white/10 hover:text-white md:inline-flex"
           >
-            로그아웃
+            {COMMON_ACTION_LABELS.logout}
           </Link>
 
           {/* Mobile menu button */}

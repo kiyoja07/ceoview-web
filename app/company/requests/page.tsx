@@ -3,33 +3,19 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { COMMON_ACTION_LABELS } from "@/catalogs/ko/common";
+import {
+  buildChangeRequestStatusFilterOptions,
+  CHANGE_REQUEST_ACTION_LABELS,
+  CHANGE_REQUEST_COPY,
+  CHANGE_REQUEST_SCOPE_LABELS,
+  CHANGE_REQUEST_STATUS_BADGE_CLASSES,
+  CHANGE_REQUEST_STATUS_LABELS,
+} from "@/catalogs/ko/change-request";
 import type {
   CompanyChangeRequestItem,
   CompanyChangeRequestListResponse,
-  CompanyChangeRequestStatus,
 } from "@/types/company/change-request";
-
-function formatScope(scope: CompanyChangeRequestItem["scope"]) {
-  return scope === "EMPLOYEE" ? "직원" : "회사 정보";
-}
-
-function formatAction(action: CompanyChangeRequestItem["action"]) {
-  if (action === "CREATE") return "등록";
-  if (action === "UPDATE") return "수정";
-  return "삭제";
-}
-
-function formatStatus(status: CompanyChangeRequestItem["status"]) {
-  if (status === "PENDING") return "접수중";
-  if (status === "APPROVED") return "승인";
-  return "반려";
-}
-
-function getStatusClass(status: CompanyChangeRequestItem["status"]) {
-  if (status === "PENDING") return "bg-amber-100 text-amber-700";
-  if (status === "APPROVED") return "bg-emerald-100 text-emerald-700";
-  return "bg-rose-100 text-rose-700";
-}
 
 export default function CompanyRequestsPage() {
   const router = useRouter();
@@ -66,7 +52,7 @@ export default function CompanyRequestsPage() {
         if (!res.ok) {
           throw new Error(
             ("error" in body ? body.error : undefined) ||
-              "요청 현황을 불러오지 못했습니다.",
+              CHANGE_REQUEST_COPY.companyList.loadError,
           );
         }
         const data = body as CompanyChangeRequestListResponse;
@@ -76,7 +62,7 @@ export default function CompanyRequestsPage() {
         setError(
           err instanceof Error
             ? err.message
-            : "요청 현황을 불러오지 못했습니다.",
+            : CHANGE_REQUEST_COPY.companyList.loadError,
         );
       } finally {
         setLoading(false);
@@ -92,26 +78,16 @@ export default function CompanyRequestsPage() {
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-              요청 현황
+              {CHANGE_REQUEST_COPY.companyList.title}
             </h1>
             <p className="mt-1 text-sm text-gray-500">
-              회사에서 제출한 변경 요청의 처리 상태를 확인합니다.
+              {CHANGE_REQUEST_COPY.companyList.description}
             </p>
           </div>
         </div>
 
         <div className="mb-4 flex flex-wrap gap-2">
-          {(
-            [
-              { key: "ALL", label: `전체 ${summary.total}` },
-              { key: "PENDING", label: `접수중 ${summary.pending}` },
-              { key: "APPROVED", label: `승인 ${summary.approved}` },
-              { key: "REJECTED", label: `반려 ${summary.rejected}` },
-            ] as const satisfies Array<{
-              key: "ALL" | CompanyChangeRequestStatus;
-              label: string;
-            }>
-          ).map((item) => (
+          {buildChangeRequestStatusFilterOptions(summary).map((item) => (
             <button
               key={item.key}
               type="button"
@@ -129,7 +105,9 @@ export default function CompanyRequestsPage() {
 
         {loading ? (
           <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
-            <p className="text-sm text-gray-500">요청 현황을 불러오는 중...</p>
+            <p className="text-sm text-gray-500">
+              {CHANGE_REQUEST_COPY.companyList.loading}
+            </p>
           </div>
         ) : error ? (
           <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
@@ -137,7 +115,9 @@ export default function CompanyRequestsPage() {
           </div>
         ) : items.length === 0 ? (
           <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
-            <p className="text-sm text-gray-500">등록된 요청이 없습니다.</p>
+            <p className="text-sm text-gray-500">
+              {CHANGE_REQUEST_COPY.companyList.empty}
+            </p>
           </div>
         ) : (
           <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-950/5">
@@ -163,16 +143,16 @@ export default function CompanyRequestsPage() {
                       }
                     >
                       <td className="px-4 py-3 text-gray-700">
-                        {formatScope(item.scope)}
+                        {CHANGE_REQUEST_SCOPE_LABELS[item.scope]}
                       </td>
                       <td className="px-4 py-3 text-gray-900">
-                        {formatAction(item.action)}
+                        {CHANGE_REQUEST_ACTION_LABELS[item.action]}
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${getStatusClass(item.status)}`}
+                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${CHANGE_REQUEST_STATUS_BADGE_CLASSES[item.status]}`}
                         >
-                          {formatStatus(item.status)}
+                          {CHANGE_REQUEST_STATUS_LABELS[item.status]}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-gray-600">
@@ -187,7 +167,7 @@ export default function CompanyRequestsPage() {
                           className="inline-flex rounded-lg bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100"
                           onClick={(event) => event.stopPropagation()}
                         >
-                          열기
+                          {COMMON_ACTION_LABELS.open}
                         </Link>
                       </td>
                     </tr>

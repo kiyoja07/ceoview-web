@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { INCOME_TYPES, MONTHS, PROGRAM_TYPES } from "./constants";
+import {
+  PROGRAM_TYPE_OPTIONS,
+  SALARY_INCOME_TYPE_OPTIONS,
+} from "@/catalogs/ko/salary";
+import { MONTHS } from "./constants";
 import { CompanySelect } from "./components/CompanySelect";
 import { FixedCompanyDisplay } from "./components/FixedCompanyDisplay";
 import { FileUploadField } from "./components/FileUploadField";
@@ -176,7 +180,7 @@ export default function SalaryNewPage() {
 
           <IncomeTypeSelector
             incomeType={incomeType}
-            options={INCOME_TYPES}
+            options={SALARY_INCOME_TYPE_OPTIONS}
             onChange={(value) => {
               setIncomeType(value);
               resetFeedback();
@@ -226,7 +230,7 @@ export default function SalaryNewPage() {
 
           <ProgramTypeSelector
             programType={programType}
-            options={PROGRAM_TYPES}
+            options={PROGRAM_TYPE_OPTIONS}
             onChange={setProgramType}
           />
 

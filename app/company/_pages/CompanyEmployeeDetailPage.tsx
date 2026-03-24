@@ -627,7 +627,7 @@ export default function EmployeeDetailPage() {
     return (
       <div className="space-y-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">직원 정보 수정</h2>
+          <h2 className="text-xl font-bold text-gray-900">지급 대상자 정보 수정</h2>
         </div>
 
         {/* 기본 정보 */}

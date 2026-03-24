@@ -1,8 +1,8 @@
 import type { Company, IncomeTab } from "../types";
+import { PAYSLIP_INCOME_TAB_LABELS } from "@/catalogs/ko/salary";
 import {
   renderPayslipHtml,
   toPayslipData,
-  INCOME_TYPE_LABELS,
   type PayslipData,
   type IncomeRow,
 } from "./payslip-template";
@@ -21,7 +21,7 @@ export function getEmployeeFileName(
   return getPayslipFileName({
     employeeName: row.employeeName,
     employeeCode: row.employeeCode,
-    incomeTypeLabel: INCOME_TYPE_LABELS[incomeType],
+    incomeTypeLabel: PAYSLIP_INCOME_TAB_LABELS[incomeType],
   });
 }
 

@@ -2,11 +2,7 @@
 
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-
-const TAB_ITEMS = [
-  { slug: "info", label: "기본 정보" },
-  { slug: "users", label: "거래처 사용자" },
-] as const;
+import { AGENT_COMPANY_SETTINGS_TABS } from "@/catalogs/ko/navigation";
 
 function isActivePath(pathname: string, href: string) {
   if (pathname === href) return true;
@@ -23,7 +19,7 @@ export function CompanySettingsTabs() {
       <div className="mx-auto flex h-10 max-w-6xl items-center px-4 sm:px-6">
         <nav className="min-w-0 overflow-x-auto">
           <ul className="flex min-w-max items-center gap-1">
-            {TAB_ITEMS.map((item) => {
+            {AGENT_COMPANY_SETTINGS_TABS.map((item) => {
               const href = `/agent/company/${companyId}/settings/${item.slug}`;
               const active = isActivePath(pathname, href);
               return (

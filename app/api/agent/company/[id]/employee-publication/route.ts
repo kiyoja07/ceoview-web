@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
+import {
+  SALARY_INCOME_TYPE_LABELS,
+  SALARY_INCOME_TYPES,
+} from "@/catalogs/ko/salary";
 
 type IncomeType =
   | "EARNED_INCOME"
@@ -10,19 +14,7 @@ type IncomeType =
 
 type PublishStatus = "SAVED" | "PUBLISHED";
 
-const INCOME_TYPE_LABELS: Record<IncomeType, string> = {
-  EARNED_INCOME: "근로소득",
-  BUSINESS_INCOME: "사업소득",
-  OTHER_INCOME: "기타소득",
-  OTHER_INCOME_LABOR: "일용소득",
-};
-
-const ALL_INCOME_TYPES: IncomeType[] = [
-  "EARNED_INCOME",
-  "BUSINESS_INCOME",
-  "OTHER_INCOME",
-  "OTHER_INCOME_LABOR",
-];
+const ALL_INCOME_TYPES: IncomeType[] = SALARY_INCOME_TYPES;
 
 function parseCompanyId(id: string) {
   try {
@@ -180,7 +172,7 @@ async function buildSnapshot(companyId: bigint) {
     const employees = serialize(rows);
     return {
       incomeType: type,
-      incomeTypeLabel: INCOME_TYPE_LABELS[type],
+      incomeTypeLabel: SALARY_INCOME_TYPE_LABELS[type],
       employees,
       totalCount: employees.length,
       savedCount: employees.filter((e) => e.publishStatus === "SAVED").length,

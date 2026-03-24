@@ -3,30 +3,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import type { EmployeeFullDetail } from "@/app/_components/EmployeeDetailModal";
+import { CHANGE_REQUEST_EMPLOYEE_COMPARISON_FIELD_LABELS } from "@/catalogs/ko/change-request";
 import EmployeeViewMode from "../employee/[employeeId]/_components/EmployeeViewMode";
 import EmployeeEditMode from "../employee/[employeeId]/_components/EmployeeEditMode";
 import DeleteConfirmModal from "../employee/[employeeId]/_components/DeleteConfirmModal";
 import type { CompanyChangeRequestItem } from "@/types/company/change-request";
-
-const REQUEST_FIELD_LABELS = [
-  ["employeeCode", "사원코드"],
-  ["name", "이름"],
-  ["residentNumber", "주민등록번호"],
-  ["department", "부서"],
-  ["positionTitle", "직책"],
-  ["email", "이메일"],
-  ["phone", "휴대폰"],
-  ["hireDate", "입사일"],
-  ["resignDate", "퇴사일"],
-  ["zipcode", "우편번호"],
-  ["address", "주소"],
-  ["addressDetail", "상세주소"],
-] as const;
-
-const REQUEST_COMPARISON_FIELDS = [
-  ...REQUEST_FIELD_LABELS,
-  ["bankAccounts", "급여계좌"],
-] as const;
 
 function applyRequestPayload(
   employee: EmployeeFullDetail,
@@ -117,18 +98,20 @@ function getChangedRequestEntries(requestItem: CompanyChangeRequestItem) {
   const requestedPayload =
     (requestItem.requestedPayload as Record<string, unknown> | null) ?? {};
 
-  return REQUEST_COMPARISON_FIELDS.map(([key, label]) => {
-    const currentValue = formatRequestValue(currentSnapshot[key]);
-    const requestedValue = formatRequestValue(requestedPayload[key]);
+  return CHANGE_REQUEST_EMPLOYEE_COMPARISON_FIELD_LABELS.map(
+    ({ key, label }) => {
+      const currentValue = formatRequestValue(currentSnapshot[key]);
+      const requestedValue = formatRequestValue(requestedPayload[key]);
 
-    return {
-      key,
-      label,
-      currentValue,
-      requestedValue,
-      changed: currentValue !== requestedValue,
-    };
-  }).filter((entry) => entry.changed);
+      return {
+        key,
+        label,
+        currentValue,
+        requestedValue,
+        changed: currentValue !== requestedValue,
+      };
+    },
+  ).filter((entry) => entry.changed);
 }
 
 // ────────────────────────────────────────────────────────────
@@ -399,7 +382,7 @@ export default function AgentEmployeeDetailPage() {
                 <button
                   type="button"
                   onClick={async () => {
-                    const reason = window.prompt("반려 사유를 입력해주세요.");
+                    const reason = window.prompt("보류 사유를 입력해주세요.");
                     if (!reason?.trim()) return;
                     const res = await fetch(
                       `/api/agent/company/requests/${requestItem.id}/reject`,
@@ -418,7 +401,7 @@ export default function AgentEmployeeDetailPage() {
                   disabled={approving}
                   className="rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  반려
+                  요청 보류
                 </button>
               </div>
             </div>

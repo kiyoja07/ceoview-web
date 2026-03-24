@@ -3,13 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import type { HeaderProfile, NavItem } from "@/types/agent/header";
-
-const NAV_ITEMS: NavItem[] = [
-  { href: "/agent/company", label: "거래처" },
-  { href: "/agent/organization", label: "조직 설정" },
-  { href: "/agent/billing", label: "결제" },
-];
+import { COMMON_ACTION_LABELS } from "@/catalogs/ko/common";
+import { AGENT_HEADER_NAV_ITEMS } from "@/catalogs/ko/navigation";
+import type { HeaderProfile } from "@/types/agent/header";
 
 function isActivePath(pathname: string, href: string) {
   if (pathname === href) return true;
@@ -63,6 +59,10 @@ export function AgentHeader() {
     : profile?.organization?.organizationNumber
       ? formatOrganizationNumber(profile.organization.organizationNumber)
       : "조직 미연결";
+  const navItems = AGENT_HEADER_NAV_ITEMS.filter(
+    (item): item is typeof item & { href: string } =>
+      typeof item.href === "string",
+  );
 
   return (
     <header className="sticky top-0 z-30 border-b border-gray-700 bg-agent-header backdrop-blur">
@@ -76,7 +76,7 @@ export function AgentHeader() {
 
         <nav className="min-w-0 flex-1 overflow-x-auto">
           <ul className="flex min-w-max items-center gap-2">
-            {NAV_ITEMS.map((item) => {
+            {navItems.map((item) => {
               const active = isActivePath(pathname, item.href);
               return (
                 <li key={item.href}>
@@ -109,7 +109,7 @@ export function AgentHeader() {
             href="/agent/auth/logout"
             className="shrink-0 rounded-lg border border-gray-500/40 px-3 py-1.5 text-sm font-medium text-gray-200 transition hover:bg-white/10"
           >
-            로그아웃
+            {COMMON_ACTION_LABELS.logout}
           </Link>
         </div>
       </div>

@@ -165,20 +165,17 @@ export default function SalaryDashboardPage() {
     <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-350 p-6 lg:p-8">
         {/* 헤더 */}
-        <div className="mb-6">
-          <div className="mb-2 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200">
-              <IconBuilding />
-            </div>
+        <div className="mb-8 rounded-3xl bg-linear-to-br from-blue-950 via-blue-900 to-indigo-800 px-6 py-7 text-white shadow-lg shadow-blue-200/60">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-                인건비 대시보드
+              <h1 className="mt-3 text-3xl font-bold tracking-tight">
+                인건비 지급 현황
               </h1>
               {data?.company && (
-                <p className="text-sm text-gray-500">
+                <p className="mt-2 text-sm text-blue-100/90">
                   {data.company.businessName ?? "이름 없음"}
-                  <span className="mx-1.5 text-gray-300">•</span>
-                  <span className="font-mono text-xs text-gray-400">
+                  <span className="mx-1.5 text-blue-300/50">•</span>
+                  <span className="font-mono text-xs text-blue-200/70">
                     {formatBusinessNumber(data.company.businessNumber)}
                   </span>
                 </p>

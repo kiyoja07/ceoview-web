@@ -1,20 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
-
-const INCOME_TYPE_LABELS: Record<string, string> = {
-  EARNED_INCOME: "근로소득",
-  BUSINESS_INCOME: "사업소득",
-  OTHER_INCOME: "기타소득",
-  OTHER_INCOME_LABOR: "일용소득",
-};
-
-const ALL_INCOME_TYPES = [
-  "EARNED_INCOME",
-  "BUSINESS_INCOME",
-  "OTHER_INCOME",
-  "OTHER_INCOME_LABOR",
-] as const;
+import {
+  SALARY_INCOME_TYPE_LABELS,
+  SALARY_INCOME_TYPES,
+} from "@/catalogs/ko/salary";
 
 async function requireAgentAuth(request: NextRequest) {
   const userId = getAgentUserIdFromRequest(request);
@@ -179,7 +169,7 @@ export async function GET(request: NextRequest) {
       const hasAnyUpload = !!typeMap && typeMap.size > 0;
       if (hasAnyUpload) companiesWithUploads++;
 
-      const incomeTypes = ALL_INCOME_TYPES.map((type) => {
+      const incomeTypes = SALARY_INCOME_TYPES.map((type) => {
         const latestUpload = typeMap?.get(type) ?? null;
         const activePointer = activeMap?.get(type) ?? null;
         const isPublished = !!activePointer;
@@ -187,7 +177,7 @@ export async function GET(request: NextRequest) {
 
         return {
           type,
-          label: INCOME_TYPE_LABELS[type],
+          label: SALARY_INCOME_TYPE_LABELS[type],
           hasUpload: !!latestUpload,
           isPublished,
           latestUpload: latestUpload

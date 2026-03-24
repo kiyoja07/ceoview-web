@@ -19,10 +19,12 @@ import type {
   EmployeeStatusFilter,
 } from "@/types/company/employees";
 import {
-  EMPLOYEE_INCOME_TYPE_LABELS,
-  EMPLOYEE_INCOME_TYPE_OPTIONS,
   getEmployeeStatus,
 } from "@/types/company/employees";
+import {
+  EMPLOYEE_INCOME_TYPE_LABELS,
+  EMPLOYEE_INCOME_TYPE_OPTIONS,
+} from "@/catalogs/ko/employee";
 
 async function requireCompanyMember(request: NextRequest) {
   const context = await resolveCompanyAccessContext(request);

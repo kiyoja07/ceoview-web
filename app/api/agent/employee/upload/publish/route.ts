@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
+import { SALARY_INCOME_TYPE_LABELS } from "@/catalogs/ko/salary";
 import type { IncomeType } from "@/types/agent/employee";
-
-const INCOME_TYPE_LABELS: Record<IncomeType, string> = {
-  EARNED_INCOME: "근로소득",
-  BUSINESS_INCOME: "사업소득",
-  OTHER_INCOME: "기타소득",
-  OTHER_INCOME_LABOR: "일용소득",
-};
 
 async function requireAgentOrganizationId(request: NextRequest) {
   const userId = getAgentUserIdFromRequest(request);
@@ -150,7 +144,7 @@ export async function POST(request: NextRequest) {
       publishStatus: "PUBLISHED",
       companyId,
       incomeType,
-      incomeTypeLabel: INCOME_TYPE_LABELS[incomeType],
+      incomeTypeLabel: SALARY_INCOME_TYPE_LABELS[incomeType],
       publishedCount,
     });
   } catch (error) {

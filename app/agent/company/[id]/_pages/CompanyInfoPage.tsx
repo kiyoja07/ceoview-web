@@ -234,7 +234,7 @@ export default function AgentCompanyInfoPage() {
                 <button
                   type="button"
                   onClick={async () => {
-                    const reason = window.prompt("반려 사유를 입력해주세요.");
+                    const reason = window.prompt("보류 사유를 입력해주세요.");
                     if (!reason?.trim()) return;
                     const res = await fetch(
                       `/api/agent/company/requests/${requestItem.id}/reject`,
@@ -252,13 +252,13 @@ export default function AgentCompanyInfoPage() {
                       const data = await res.json().catch(() => null);
                       setMessage({
                         type: "error",
-                        text: data?.error || "요청 반려에 실패했습니다.",
+                        text: data?.error || "요청 보류에 실패했습니다.",
                       });
                     }
                   }}
                   className="rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50"
                 >
-                  반려
+                  요청 보류
                 </button>
               </div>
             </div>

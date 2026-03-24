@@ -6,6 +6,7 @@ import type {
   DailyIncomeLaborRow,
   OtherIncomeRow,
 } from "@/app/company/[id]/salary/types";
+import { PAYSLIP_INCOME_TAB_LABELS } from "@/catalogs/ko/salary";
 import prisma from "@/app/lib/prisma";
 import {
   buildEarnedPayslipData,
@@ -46,13 +47,6 @@ const ACTIVE_UPLOAD_TYPES = [
   "OTHER_INCOME",
   "OTHER_INCOME_LABOR",
 ] as const;
-
-const TYPE_LABELS: Record<EmployeePayslipType, string> = {
-  earned: "근로소득",
-  business: "사업소득",
-  other: "기타소득",
-  daily: "일용직소득",
-};
 
 const TYPE_SORT_ORDER: Record<EmployeePayslipType, number> = {
   earned: 0,
@@ -322,15 +316,18 @@ export async function getEmployeePayslipCollection(
 
   const earnedEntries: EmployeePayslipEntry[] = earnedRows.map((row) => {
     const monthKey = buildMonthKey(row.paymentYm);
-    const payslipData = buildEarnedPayslipData(row, {
-      businessName: company.businessName,
-      businessNumber: company.businessNumber,
-    });
+    const payslipData = buildEarnedPayslipData(
+      row as unknown as Parameters<typeof buildEarnedPayslipData>[0],
+      {
+        businessName: company.businessName,
+        businessNumber: company.businessNumber,
+      },
+    );
 
     return {
       id: row.id.toString(),
       type: "earned",
-      incomeLabel: TYPE_LABELS.earned,
+      incomeLabel: PAYSLIP_INCOME_TAB_LABELS.earned,
       monthKey,
       monthLabel: monthKey,
       metaLabel: `귀속 ${formatPayslipYm(row.accrualYm)} · 지급 ${monthKey}`,
@@ -362,7 +359,7 @@ export async function getEmployeePayslipCollection(
     return {
       id: row.id.toString(),
       type: "business",
-      incomeLabel: TYPE_LABELS.business,
+      incomeLabel: PAYSLIP_INCOME_TAB_LABELS.business,
       monthKey,
       monthLabel: monthKey,
       metaLabel: `귀속 ${formatPayslipYm(row.accrualYm)} · 지급 ${monthKey}`,
@@ -397,7 +394,7 @@ export async function getEmployeePayslipCollection(
     return {
       id: row.id.toString(),
       type: "other",
-      incomeLabel: TYPE_LABELS.other,
+      incomeLabel: PAYSLIP_INCOME_TAB_LABELS.other,
       monthKey,
       monthLabel: monthKey,
       metaLabel: `귀속 ${formatPayslipYm(row.accrualYm)} · 지급 ${monthKey}`,
@@ -435,7 +432,7 @@ export async function getEmployeePayslipCollection(
     return {
       id: row.id.toString(),
       type: "daily",
-      incomeLabel: TYPE_LABELS.daily,
+      incomeLabel: PAYSLIP_INCOME_TAB_LABELS.daily,
       monthKey: null,
       monthLabel: "월 정보 없음",
       metaLabel:

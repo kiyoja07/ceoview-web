@@ -103,23 +103,6 @@ export type EmployeeIncomeType =
   | "OTHER_INCOME"
   | "OTHER_INCOME_LABOR";
 
-export const EMPLOYEE_INCOME_TYPE_OPTIONS = [
-  { value: "EARNED_INCOME", label: "근로소득자" },
-  { value: "BUSINESS_INCOME", label: "사업소득자" },
-  { value: "OTHER_INCOME", label: "기타소득자" },
-  { value: "OTHER_INCOME_LABOR", label: "일용소득자" },
-] as const satisfies ReadonlyArray<{
-  value: EmployeeIncomeType;
-  label: string;
-}>;
-
-export const EMPLOYEE_INCOME_TYPE_LABELS: Record<EmployeeIncomeType, string> = {
-  EARNED_INCOME: "근로소득자",
-  BUSINESS_INCOME: "사업소득자",
-  OTHER_INCOME: "기타소득자",
-  OTHER_INCOME_LABOR: "일용소득자",
-};
-
 export type EmployeeIncomeFilter = "ALL" | EmployeeIncomeType;
 export type EmployeeStatusFilter =
   | "ALL"

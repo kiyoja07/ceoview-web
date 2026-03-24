@@ -6,6 +6,7 @@ import type {
   Company,
   IncomeTab,
 } from "../types";
+import { PAYSLIP_INCOME_TAB_LABELS } from "@/catalogs/ko/salary";
 import { formatNumber, formatBusinessNumber, formatYm } from "./format";
 
 export interface PayslipItem {
@@ -44,13 +45,6 @@ export type IncomeRow =
   | BusinessIncomeRow
   | DailyIncomeLaborRow
   | OtherIncomeRow;
-
-export const INCOME_TYPE_LABELS: Record<IncomeTab, string> = {
-  earned: "근로소득",
-  business: "사업소득",
-  daily: "일용직소득",
-  other: "기타소득",
-};
 
 /* ───────── Payment / Deduction item extractors ───────── */
 
@@ -235,7 +229,7 @@ export function toPayslipData(
     businessNumber: company?.businessNumber ?? "",
     employeeName: row.employeeName,
     employeeCode: row.employeeCode,
-    incomeTypeLabel: INCOME_TYPE_LABELS[incomeType],
+    incomeTypeLabel: PAYSLIP_INCOME_TAB_LABELS[incomeType],
     incomeSubType: other?.incomeType ?? undefined,
     department: earned?.department ?? null,
     position: earned?.position ?? daily?.position ?? null,

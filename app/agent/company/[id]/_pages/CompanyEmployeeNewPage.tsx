@@ -6,15 +6,9 @@ import { EmployeeForm } from "@/app/company/organization/employees/_components/E
 import { BusinessIncomeEmployeeForm } from "@/app/company/organization/employees/_components/BusinessIncomeEmployeeForm";
 import { OtherIncomeEmployeeForm } from "@/app/company/organization/employees/_components/OtherIncomeEmployeeForm";
 import { OtherIncomeLaborEmployeeForm } from "@/app/company/organization/employees/_components/OtherIncomeLaborEmployeeForm";
+import { EMPLOYEE_INCOME_TYPE_OPTIONS } from "@/catalogs/ko/employee";
 import type { CompanyChangeRequestItem } from "@/types/company/change-request";
 import type { EmployeeIncomeType } from "@/types/company/employees";
-
-const INCOME_TYPE_OPTIONS: { value: EmployeeIncomeType; label: string }[] = [
-  { value: "EARNED_INCOME", label: "근로소득자" },
-  { value: "BUSINESS_INCOME", label: "사업소득자" },
-  { value: "OTHER_INCOME", label: "기타소득자" },
-  { value: "OTHER_INCOME_LABOR", label: "일용소득자" },
-];
 
 type CompanyInfo = {
   id: string;
@@ -165,7 +159,7 @@ export default function AgentCompanyEmployeeNewPage() {
               <button
                 type="button"
                 onClick={async () => {
-                  const reason = window.prompt("반려 사유를 입력해주세요.");
+                  const reason = window.prompt("보류 사유를 입력해주세요.");
                   if (!reason?.trim()) return;
                   const res = await fetch(
                     `/api/agent/company/requests/${requestItem.id}/reject`,
@@ -183,7 +177,7 @@ export default function AgentCompanyEmployeeNewPage() {
                 }}
                 className="mt-3 rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50"
               >
-                반려
+                요청 보류
               </button>
             </div>
           )}
@@ -203,7 +197,7 @@ export default function AgentCompanyEmployeeNewPage() {
             소득유형 <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {INCOME_TYPE_OPTIONS.map((opt) => (
+            {EMPLOYEE_INCOME_TYPE_OPTIONS.map((opt) => (
               <label
                 key={opt.value}
                 className={`flex cursor-pointer items-center justify-center rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-all ${
