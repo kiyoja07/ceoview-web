@@ -1,6 +1,16 @@
 import { PrismaClient } from "@/app/generated/prisma-client/client";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
+export type PrismaTransactionClient = Omit<
+  PrismaClient,
+  "$connect" | "$disconnect" | "$on" | "$use" | "$extends"
+>;
+
+// Alias for the interactive transaction client type provided by Prisma
+export type PrismaTx = Parameters<
+  Parameters<PrismaClient["$transaction"]>[0]
+>[0];
+
 const adapter = new PrismaMariaDb({
   host: "127.0.0.1",
   port: 3306,

@@ -1,4 +1,4 @@
-import prisma from "@/app/lib/prisma";
+import prisma, { type PrismaTx } from "@/app/lib/prisma";
 import {
   EARNED_ITEM_CODE_STUDENT_LOAN_REPAYMENT,
   EARNED_ITEM_NAME_STUDENT_LOAN_REPAYMENT,
@@ -100,10 +100,7 @@ function filterEarnedRows(rows: Record<string, unknown>[]) {
   });
 }
 
-async function loadEmployeeIdByCode(
-  companyId: bigint,
-  tx: typeof prisma,
-) {
+async function loadEmployeeIdByCode(companyId: bigint, tx: PrismaTx) {
   const employees = await tx.employee.findMany({
     where: {
       companyId,
@@ -118,9 +115,8 @@ async function loadEmployeeIdByCode(
 
   return new Map(
     employees
-      .filter(
-        (employee): employee is { id: bigint; employeeCode: string } =>
-          Boolean(employee.employeeCode),
+      .filter((employee): employee is { id: bigint; employeeCode: string } =>
+        Boolean(employee.employeeCode),
       )
       .map((employee) => [employee.employeeCode.trim(), employee.id] as const),
   );
