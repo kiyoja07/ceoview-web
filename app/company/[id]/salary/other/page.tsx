@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   useParams,
@@ -28,7 +28,7 @@ import { buildPageNumbers, shiftYm } from "../lib/navigation";
 import { buildOtherSummary } from "../lib/summary";
 import type { OtherIncomeRow } from "../types";
 
-export default function SalaryOtherPage() {
+function SalaryOtherPageInner() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -325,5 +325,13 @@ export default function SalaryOtherPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function SalaryOtherPage() {
+  return (
+    <Suspense>
+      <SalaryOtherPageInner />
+    </Suspense>
   );
 }

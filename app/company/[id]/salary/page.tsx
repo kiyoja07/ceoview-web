@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   useParams,
@@ -33,7 +33,7 @@ import {
 } from "./lib/summary";
 import type { IncomeTab } from "./types";
 
-export default function SalaryPage() {
+function SalaryPageInner() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -317,5 +317,13 @@ export default function SalaryPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SalaryPage() {
+  return (
+    <Suspense>
+      <SalaryPageInner />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   useParams,
@@ -28,7 +28,7 @@ import { buildPageNumbers, shiftYm } from "../lib/navigation";
 import { buildBusinessSummary } from "../lib/summary";
 import type { BusinessIncomeRow } from "../types";
 
-export default function SalaryBusinessPage() {
+function SalaryBusinessPageInner() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -328,5 +328,13 @@ export default function SalaryBusinessPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function SalaryBusinessPage() {
+  return (
+    <Suspense>
+      <SalaryBusinessPageInner />
+    </Suspense>
   );
 }

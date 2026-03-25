@@ -646,10 +646,6 @@ export type EnumLoginProviderFieldUpdateOperationsInput = {
   set?: $Enums.LoginProvider
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type AgentUserCreateNestedOneWithoutMagicLinkTokensInput = {
   create?: Prisma.XOR<Prisma.AgentUserCreateWithoutMagicLinkTokensInput, Prisma.AgentUserUncheckedCreateWithoutMagicLinkTokensInput>
   connectOrCreate?: Prisma.AgentUserCreateOrConnectWithoutMagicLinkTokensInput

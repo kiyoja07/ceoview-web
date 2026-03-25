@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent, useEffect } from "react";
+import { Suspense, useMemo, useState, type FormEvent, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { ApiErrorResponse } from "@/types/agent/auth";
 import type {
@@ -35,7 +35,7 @@ function formatExpireAt(value: string) {
   });
 }
 
-export default function AgentInviteAcceptPage() {
+function AgentInviteAcceptPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -291,5 +291,13 @@ export default function AgentInviteAcceptPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AgentInviteAcceptPage() {
+  return (
+    <Suspense>
+      <AgentInviteAcceptPageInner />
+    </Suspense>
   );
 }

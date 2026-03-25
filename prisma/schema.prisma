@@ -119,6 +119,10 @@ model Company {
   address            String?   @map("address") @db.VarChar(255)
   addressDetail      String?   @map("address_detail") @db.VarChar(255)
 
+  isDemo           Boolean @default(false) @map("is_demo")
+  isPublicShowcase Boolean @default(false) @map("is_public_showcase")
+  publicSlug       String? @unique @map("public_slug") @db.VarChar(100)
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

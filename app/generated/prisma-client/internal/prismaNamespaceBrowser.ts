@@ -127,6 +127,9 @@ export const CompanyScalarFieldEnum = {
   zipcode: 'zipcode',
   address: 'address',
   addressDetail: 'addressDetail',
+  isDemo: 'isDemo',
+  isPublicShowcase: 'isPublicShowcase',
+  publicSlug: 'publicSlug',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -728,7 +731,8 @@ export const CompanyOrderByRelevanceFieldEnum = {
   representativeName: 'representativeName',
   zipcode: 'zipcode',
   address: 'address',
-  addressDetail: 'addressDetail'
+  addressDetail: 'addressDetail',
+  publicSlug: 'publicSlug'
 } as const
 
 export type CompanyOrderByRelevanceFieldEnum = (typeof CompanyOrderByRelevanceFieldEnum)[keyof typeof CompanyOrderByRelevanceFieldEnum]

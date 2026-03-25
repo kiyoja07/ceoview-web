@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { Suspense, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type {
   CompanyAuthMeResponse,
@@ -21,7 +21,7 @@ function normalizePhoneInput(value: string) {
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
 }
 
-export default function CompanyAuthLoginPage() {
+function CompanyAuthLoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -235,5 +235,13 @@ export default function CompanyAuthLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CompanyAuthLoginPage() {
+  return (
+    <Suspense>
+      <CompanyAuthLoginPageInner />
+    </Suspense>
   );
 }

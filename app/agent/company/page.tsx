@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type {
   AgentCompanyListItem,
@@ -20,7 +20,7 @@ import OnboardingGuide from "./_components/OnboardingGuide";
 
 const PAGE_SIZE = 50;
 
-export default function CompanyListPage() {
+function CompanyListPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const created = searchParams.get("created") === "1";
@@ -103,5 +103,13 @@ export default function CompanyListPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CompanyListPage() {
+  return (
+    <Suspense>
+      <CompanyListPageInner />
+    </Suspense>
   );
 }

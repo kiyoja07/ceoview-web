@@ -44,6 +44,9 @@ export type CompanyMinAggregateOutputType = {
   zipcode: string | null
   address: string | null
   addressDetail: string | null
+  isDemo: boolean | null
+  isPublicShowcase: boolean | null
+  publicSlug: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +61,9 @@ export type CompanyMaxAggregateOutputType = {
   zipcode: string | null
   address: string | null
   addressDetail: string | null
+  isDemo: boolean | null
+  isPublicShowcase: boolean | null
+  publicSlug: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +78,9 @@ export type CompanyCountAggregateOutputType = {
   zipcode: number
   address: number
   addressDetail: number
+  isDemo: number
+  isPublicShowcase: number
+  publicSlug: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -96,6 +105,9 @@ export type CompanyMinAggregateInputType = {
   zipcode?: true
   address?: true
   addressDetail?: true
+  isDemo?: true
+  isPublicShowcase?: true
+  publicSlug?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +122,9 @@ export type CompanyMaxAggregateInputType = {
   zipcode?: true
   address?: true
   addressDetail?: true
+  isDemo?: true
+  isPublicShowcase?: true
+  publicSlug?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +139,9 @@ export type CompanyCountAggregateInputType = {
   zipcode?: true
   address?: true
   addressDetail?: true
+  isDemo?: true
+  isPublicShowcase?: true
+  publicSlug?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -225,6 +243,9 @@ export type CompanyGroupByOutputType = {
   zipcode: string | null
   address: string | null
   addressDetail: string | null
+  isDemo: boolean
+  isPublicShowcase: boolean
+  publicSlug: string | null
   createdAt: Date
   updatedAt: Date
   _count: CompanyCountAggregateOutputType | null
@@ -262,6 +283,9 @@ export type CompanyWhereInput = {
   zipcode?: Prisma.StringNullableFilter<"Company"> | string | null
   address?: Prisma.StringNullableFilter<"Company"> | string | null
   addressDetail?: Prisma.StringNullableFilter<"Company"> | string | null
+  isDemo?: Prisma.BoolFilter<"Company"> | boolean
+  isPublicShowcase?: Prisma.BoolFilter<"Company"> | boolean
+  publicSlug?: Prisma.StringNullableFilter<"Company"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   uploads?: Prisma.UploadListRelationFilter
@@ -289,6 +313,9 @@ export type CompanyOrderByWithRelationInput = {
   zipcode?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   addressDetail?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  isPublicShowcase?: Prisma.SortOrder
+  publicSlug?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   uploads?: Prisma.UploadOrderByRelationAggregateInput
@@ -310,6 +337,7 @@ export type CompanyOrderByWithRelationInput = {
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   id?: bigint | number
   businessNumber?: string
+  publicSlug?: string
   AND?: Prisma.CompanyWhereInput | Prisma.CompanyWhereInput[]
   OR?: Prisma.CompanyWhereInput[]
   NOT?: Prisma.CompanyWhereInput | Prisma.CompanyWhereInput[]
@@ -320,6 +348,8 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   zipcode?: Prisma.StringNullableFilter<"Company"> | string | null
   address?: Prisma.StringNullableFilter<"Company"> | string | null
   addressDetail?: Prisma.StringNullableFilter<"Company"> | string | null
+  isDemo?: Prisma.BoolFilter<"Company"> | boolean
+  isPublicShowcase?: Prisma.BoolFilter<"Company"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   uploads?: Prisma.UploadListRelationFilter
@@ -335,7 +365,7 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   organizationLink?: Prisma.XOR<Prisma.AgentOrganizationCompanyNullableScalarRelationFilter, Prisma.AgentOrganizationCompanyWhereInput> | null
   transferRequest?: Prisma.XOR<Prisma.AgentOrganizationCompanyTransferRequestNullableScalarRelationFilter, Prisma.AgentOrganizationCompanyTransferRequestWhereInput> | null
   changeRequests?: Prisma.CompanyChangeRequestListRelationFilter
-}, "id" | "businessNumber">
+}, "id" | "businessNumber" | "publicSlug">
 
 export type CompanyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -347,6 +377,9 @@ export type CompanyOrderByWithAggregationInput = {
   zipcode?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   addressDetail?: Prisma.SortOrderInput | Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  isPublicShowcase?: Prisma.SortOrder
+  publicSlug?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CompanyCountOrderByAggregateInput
@@ -369,6 +402,9 @@ export type CompanyScalarWhereWithAggregatesInput = {
   zipcode?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   address?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   addressDetail?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
+  isDemo?: Prisma.BoolWithAggregatesFilter<"Company"> | boolean
+  isPublicShowcase?: Prisma.BoolWithAggregatesFilter<"Company"> | boolean
+  publicSlug?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Company"> | Date | string
 }
@@ -383,6 +419,9 @@ export type CompanyCreateInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -410,6 +449,9 @@ export type CompanyUncheckedCreateInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -437,6 +479,9 @@ export type CompanyUpdateInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -464,6 +509,9 @@ export type CompanyUncheckedUpdateInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -491,6 +539,9 @@ export type CompanyCreateManyInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -505,6 +556,9 @@ export type CompanyUpdateManyMutationInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -519,6 +573,9 @@ export type CompanyUncheckedUpdateManyInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -539,6 +596,9 @@ export type CompanyCountOrderByAggregateInput = {
   zipcode?: Prisma.SortOrder
   address?: Prisma.SortOrder
   addressDetail?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  isPublicShowcase?: Prisma.SortOrder
+  publicSlug?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -557,6 +617,9 @@ export type CompanyMaxOrderByAggregateInput = {
   zipcode?: Prisma.SortOrder
   address?: Prisma.SortOrder
   addressDetail?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  isPublicShowcase?: Prisma.SortOrder
+  publicSlug?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -571,6 +634,9 @@ export type CompanyMinOrderByAggregateInput = {
   zipcode?: Prisma.SortOrder
   address?: Prisma.SortOrder
   addressDetail?: Prisma.SortOrder
+  isDemo?: Prisma.SortOrder
+  isPublicShowcase?: Prisma.SortOrder
+  publicSlug?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -582,6 +648,10 @@ export type CompanySumOrderByAggregateInput = {
 export type CompanyScalarRelationFilter = {
   is?: Prisma.CompanyWhereInput
   isNot?: Prisma.CompanyWhereInput
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type CompanyCreateNestedOneWithoutOrganizationLinkInput = {
@@ -776,6 +846,9 @@ export type CompanyCreateWithoutOrganizationLinkInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -802,6 +875,9 @@ export type CompanyUncheckedCreateWithoutOrganizationLinkInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -844,6 +920,9 @@ export type CompanyUpdateWithoutOrganizationLinkInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -870,6 +949,9 @@ export type CompanyUncheckedUpdateWithoutOrganizationLinkInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -896,6 +978,9 @@ export type CompanyCreateWithoutTransferRequestInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -922,6 +1007,9 @@ export type CompanyUncheckedCreateWithoutTransferRequestInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -964,6 +1052,9 @@ export type CompanyUpdateWithoutTransferRequestInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -990,6 +1081,9 @@ export type CompanyUncheckedUpdateWithoutTransferRequestInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1016,6 +1110,9 @@ export type CompanyCreateWithoutCompanyUsersInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -1042,6 +1139,9 @@ export type CompanyUncheckedCreateWithoutCompanyUsersInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -1084,6 +1184,9 @@ export type CompanyUpdateWithoutCompanyUsersInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -1110,6 +1213,9 @@ export type CompanyUncheckedUpdateWithoutCompanyUsersInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1136,6 +1242,9 @@ export type CompanyCreateWithoutCompanyMembershipsInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -1162,6 +1271,9 @@ export type CompanyUncheckedCreateWithoutCompanyMembershipsInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -1204,6 +1316,9 @@ export type CompanyUpdateWithoutCompanyMembershipsInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -1230,6 +1345,9 @@ export type CompanyUncheckedUpdateWithoutCompanyMembershipsInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1256,6 +1374,9 @@ export type CompanyCreateWithoutCompanyUserInviteHistoriesInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -1282,6 +1403,9 @@ export type CompanyUncheckedCreateWithoutCompanyUserInviteHistoriesInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -1324,6 +1448,9 @@ export type CompanyUpdateWithoutCompanyUserInviteHistoriesInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -1350,6 +1477,9 @@ export type CompanyUncheckedUpdateWithoutCompanyUserInviteHistoriesInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1376,6 +1506,9 @@ export type CompanyCreateWithoutUploadsInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   activeUploads?: Prisma.CompanyActiveUploadCreateNestedManyWithoutCompanyInput
@@ -1402,6 +1535,9 @@ export type CompanyUncheckedCreateWithoutUploadsInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   activeUploads?: Prisma.CompanyActiveUploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -1444,6 +1580,9 @@ export type CompanyUpdateWithoutUploadsInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activeUploads?: Prisma.CompanyActiveUploadUpdateManyWithoutCompanyNestedInput
@@ -1470,6 +1609,9 @@ export type CompanyUncheckedUpdateWithoutUploadsInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activeUploads?: Prisma.CompanyActiveUploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1496,6 +1638,9 @@ export type CompanyCreateWithoutActiveUploadsInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -1522,6 +1667,9 @@ export type CompanyUncheckedCreateWithoutActiveUploadsInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -1564,6 +1712,9 @@ export type CompanyUpdateWithoutActiveUploadsInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -1590,6 +1741,9 @@ export type CompanyUncheckedUpdateWithoutActiveUploadsInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1616,6 +1770,9 @@ export type CompanyCreateWithoutEarnedIncomeItemDefinitionsInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -1642,6 +1799,9 @@ export type CompanyUncheckedCreateWithoutEarnedIncomeItemDefinitionsInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -1684,6 +1844,9 @@ export type CompanyUpdateWithoutEarnedIncomeItemDefinitionsInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -1710,6 +1873,9 @@ export type CompanyUncheckedUpdateWithoutEarnedIncomeItemDefinitionsInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1736,6 +1902,9 @@ export type CompanyCreateWithoutEmployeesInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -1762,6 +1931,9 @@ export type CompanyUncheckedCreateWithoutEmployeesInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -1804,6 +1976,9 @@ export type CompanyUpdateWithoutEmployeesInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -1830,6 +2005,9 @@ export type CompanyUncheckedUpdateWithoutEmployeesInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1856,6 +2034,9 @@ export type CompanyCreateWithoutBusinessIncomeEmployeesInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -1882,6 +2063,9 @@ export type CompanyUncheckedCreateWithoutBusinessIncomeEmployeesInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -1924,6 +2108,9 @@ export type CompanyUpdateWithoutBusinessIncomeEmployeesInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -1950,6 +2137,9 @@ export type CompanyUncheckedUpdateWithoutBusinessIncomeEmployeesInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1976,6 +2166,9 @@ export type CompanyCreateWithoutOtherIncomeEmployeesInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -2002,6 +2195,9 @@ export type CompanyUncheckedCreateWithoutOtherIncomeEmployeesInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -2044,6 +2240,9 @@ export type CompanyUpdateWithoutOtherIncomeEmployeesInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -2070,6 +2269,9 @@ export type CompanyUncheckedUpdateWithoutOtherIncomeEmployeesInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -2096,6 +2298,9 @@ export type CompanyCreateWithoutOtherIncomeLaborEmployeesInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -2122,6 +2327,9 @@ export type CompanyUncheckedCreateWithoutOtherIncomeLaborEmployeesInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -2164,6 +2372,9 @@ export type CompanyUpdateWithoutOtherIncomeLaborEmployeesInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -2190,6 +2401,9 @@ export type CompanyUncheckedUpdateWithoutOtherIncomeLaborEmployeesInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -2216,6 +2430,9 @@ export type CompanyCreateWithoutChangeRequestsInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
@@ -2242,6 +2459,9 @@ export type CompanyUncheckedCreateWithoutChangeRequestsInput = {
   zipcode?: string | null
   address?: string | null
   addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
@@ -2284,6 +2504,9 @@ export type CompanyUpdateWithoutChangeRequestsInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
@@ -2310,6 +2533,9 @@ export type CompanyUncheckedUpdateWithoutChangeRequestsInput = {
   zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
@@ -2457,6 +2683,9 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   zipcode?: boolean
   address?: boolean
   addressDetail?: boolean
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   uploads?: boolean | Prisma.Company$uploadsArgs<ExtArgs>
@@ -2487,11 +2716,14 @@ export type CompanySelectScalar = {
   zipcode?: boolean
   address?: boolean
   addressDetail?: boolean
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessNumber" | "businessType" | "businessName" | "representativeName" | "openingDate" | "zipcode" | "address" | "addressDetail" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
+export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessNumber" | "businessType" | "businessName" | "representativeName" | "openingDate" | "zipcode" | "address" | "addressDetail" | "isDemo" | "isPublicShowcase" | "publicSlug" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
 export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uploads?: boolean | Prisma.Company$uploadsArgs<ExtArgs>
   activeUploads?: boolean | Prisma.Company$activeUploadsArgs<ExtArgs>
@@ -2536,6 +2768,9 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     zipcode: string | null
     address: string | null
     addressDetail: string | null
+    isDemo: boolean
+    isPublicShowcase: boolean
+    publicSlug: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["company"]>
@@ -2929,6 +3164,9 @@ export interface CompanyFieldRefs {
   readonly zipcode: Prisma.FieldRef<"Company", 'String'>
   readonly address: Prisma.FieldRef<"Company", 'String'>
   readonly addressDetail: Prisma.FieldRef<"Company", 'String'>
+  readonly isDemo: Prisma.FieldRef<"Company", 'Boolean'>
+  readonly isPublicShowcase: Prisma.FieldRef<"Company", 'Boolean'>
+  readonly publicSlug: Prisma.FieldRef<"Company", 'String'>
   readonly createdAt: Prisma.FieldRef<"Company", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Company", 'DateTime'>
 }

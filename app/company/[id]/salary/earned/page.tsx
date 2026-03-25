@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   useParams,
@@ -29,7 +29,7 @@ import { buildPageNumbers, shiftYm } from "../lib/navigation";
 import { buildEarnedSummary } from "../lib/summary";
 import type { EarnedIncomeRow } from "../types";
 
-export default function SalaryEarnedPage() {
+function SalaryEarnedPageInner() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -341,5 +341,13 @@ export default function SalaryEarnedPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function SalaryEarnedPage() {
+  return (
+    <Suspense>
+      <SalaryEarnedPageInner />
+    </Suspense>
   );
 }

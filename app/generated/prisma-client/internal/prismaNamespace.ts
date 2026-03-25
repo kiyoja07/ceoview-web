@@ -2612,6 +2612,9 @@ export const CompanyScalarFieldEnum = {
   zipcode: 'zipcode',
   address: 'address',
   addressDetail: 'addressDetail',
+  isDemo: 'isDemo',
+  isPublicShowcase: 'isPublicShowcase',
+  publicSlug: 'publicSlug',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3213,7 +3216,8 @@ export const CompanyOrderByRelevanceFieldEnum = {
   representativeName: 'representativeName',
   zipcode: 'zipcode',
   address: 'address',
-  addressDetail: 'addressDetail'
+  addressDetail: 'addressDetail',
+  publicSlug: 'publicSlug'
 } as const
 
 export type CompanyOrderByRelevanceFieldEnum = (typeof CompanyOrderByRelevanceFieldEnum)[keyof typeof CompanyOrderByRelevanceFieldEnum]
@@ -3554,16 +3558,16 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
 
 
 /**
- * Reference to a field of type 'LoginProvider'
+ * Reference to a field of type 'Boolean'
  */
-export type EnumLoginProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LoginProvider'>
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
 /**
- * Reference to a field of type 'Boolean'
+ * Reference to a field of type 'LoginProvider'
  */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+export type EnumLoginProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LoginProvider'>
     
 
 

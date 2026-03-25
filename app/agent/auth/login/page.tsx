@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { Suspense, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type {
   AgentAuthMeResponse,
@@ -11,7 +11,7 @@ import type {
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow";
 
-export default function AgentAuthLoginPage() {
+function AgentAuthLoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -179,5 +179,13 @@ export default function AgentAuthLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AgentAuthLoginPage() {
+  return (
+    <Suspense>
+      <AgentAuthLoginPageInner />
+    </Suspense>
   );
 }

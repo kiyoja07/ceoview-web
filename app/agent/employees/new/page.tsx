@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { Suspense, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   EMPLOYEE_INCOME_TYPE_OPTIONS,
@@ -21,7 +21,7 @@ import { ProgramTypeSelector } from "./_components/ProgramTypeSelector";
 import { ResultPreview } from "./_components/ResultPreview";
 import { StatusMessage } from "./_components/StatusMessage";
 
-export default function EmployeeNewPage() {
+function EmployeeNewPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fixedCompanyId = searchParams.get("companyId")?.trim() ?? "";
@@ -361,5 +361,13 @@ export default function EmployeeNewPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function EmployeeNewPage() {
+  return (
+    <Suspense>
+      <EmployeeNewPageInner />
+    </Suspense>
   );
 }

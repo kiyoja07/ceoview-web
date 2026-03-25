@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   useParams,
@@ -28,7 +28,7 @@ import { buildPageNumbers, shiftYm } from "../lib/navigation";
 import { buildDailySummary } from "../lib/summary";
 import type { DailyIncomeLaborRow } from "../types";
 
-export default function SalaryDailyPage() {
+function SalaryDailyPageInner() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -326,5 +326,13 @@ export default function SalaryDailyPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function SalaryDailyPage() {
+  return (
+    <Suspense>
+      <SalaryDailyPageInner />
+    </Suspense>
   );
 }

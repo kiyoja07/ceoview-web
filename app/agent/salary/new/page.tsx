@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { Suspense, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   PROGRAM_TYPE_OPTIONS,
@@ -20,7 +20,7 @@ import { useSalaryUpload } from "./hooks/useSalaryUpload";
 import type { Company, IncomeType, ProgramType } from "./types";
 import { buildYearOptions } from "./utils";
 
-export default function SalaryNewPage() {
+function SalaryNewPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fixedCompanyId = searchParams.get("companyId")?.trim() ?? "";
@@ -289,5 +289,13 @@ export default function SalaryNewPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SalaryNewPage() {
+  return (
+    <Suspense>
+      <SalaryNewPageInner />
+    </Suspense>
   );
 }

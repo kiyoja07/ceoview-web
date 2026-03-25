@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { Suspense, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type {
   EmployeeAuthMeResponse,
@@ -21,7 +21,7 @@ function normalizePhoneInput(value: string) {
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
 }
 
-export default function EmployeeAuthLoginPage() {
+function EmployeeAuthLoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -233,5 +233,13 @@ export default function EmployeeAuthLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function EmployeeAuthLoginPage() {
+  return (
+    <Suspense>
+      <EmployeeAuthLoginPageInner />
+    </Suspense>
   );
 }
