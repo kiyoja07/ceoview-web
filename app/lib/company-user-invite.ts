@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import type { NextRequest } from "next/server";
-import { getAppBaseUrl } from "@/app/lib/agent-magic-link";
+import { buildUrlForAudience } from "@/app/lib/audience-routing";
 
 const INVITE_TTL_HOURS = 72;
 const INVITE_TTL_MS = INVITE_TTL_HOURS * 60 * 60 * 1000;
@@ -74,8 +74,9 @@ export function verifyCompanyUserInviteToken(
 }
 
 export function buildCompanyUserInviteUrl(request: NextRequest, token: string) {
-  const baseUrl = getAppBaseUrl(request);
-  return `${baseUrl}/company/auth/signup?invite=${encodeURIComponent(token)}`;
+  return buildUrlForAudience("company", "/company/auth/signup", request, {
+    invite: token,
+  });
 }
 
 export function getCompanyUserInviteTtlHours() {

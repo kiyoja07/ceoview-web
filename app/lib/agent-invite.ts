@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "crypto";
 import type { NextRequest } from "next/server";
-import { getAppBaseUrl, isValidEmail } from "@/app/lib/agent-magic-link";
+import { buildUrlForAudience } from "@/app/lib/audience-routing";
+import { isValidEmail } from "@/app/lib/agent-magic-link";
 
 const AGENT_INVITE_TTL_HOURS = 72;
 const AGENT_INVITE_TTL_MS = AGENT_INVITE_TTL_HOURS * 60 * 60 * 1000;
@@ -23,6 +24,7 @@ export function getAgentInviteTtlHours() {
 }
 
 export function buildAgentInviteUrl(request: NextRequest, token: string) {
-  const baseUrl = getAppBaseUrl(request);
-  return `${baseUrl}/agent/auth/invite?token=${encodeURIComponent(token)}`;
+  return buildUrlForAudience("agent", "/agent/auth/invite", request, {
+    token,
+  });
 }

@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "crypto";
 import type { NextRequest } from "next/server";
-import { getAppBaseUrl, isValidEmail } from "@/app/lib/agent-magic-link";
+import { buildUrlForAudience } from "@/app/lib/audience-routing";
+import { isValidEmail } from "@/app/lib/agent-magic-link";
 
 const EMPLOYEE_MAGIC_LINK_TTL_MINUTES = 15;
 const EMPLOYEE_MAGIC_LINK_TTL_MS = EMPLOYEE_MAGIC_LINK_TTL_MINUTES * 60 * 1000;
@@ -23,6 +24,10 @@ export function getEmployeeMagicLinkTtlMinutes() {
 }
 
 export function buildEmployeeMagicLinkUrl(request: NextRequest, token: string) {
-  const baseUrl = getAppBaseUrl(request);
-  return `${baseUrl}/api/employee/auth/magic-link?token=${encodeURIComponent(token)}`;
+  return buildUrlForAudience(
+    "employee",
+    "/api/employee/auth/magic-link",
+    request,
+    { token },
+  );
 }

@@ -168,25 +168,27 @@ export default function CompanyOrganizationUsersPage() {
   return (
     <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-6xl p-6 lg:p-8">
-        <div className="mb-7 flex items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-              사용자 관리
-            </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              급여 정보에 접근할 수 있는 사용자를 관리할 수 있습니다.
-            </p>
-          </div>
+        <div className="mb-8 rounded-3xl bg-linear-to-br from-emerald-950 via-emerald-900 to-teal-800 px-6 py-7 text-white shadow-lg shadow-emerald-200/60">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h1 className="mt-3 text-3xl font-bold tracking-tight">
+                사용자 관리
+              </h1>
+              <p className="mt-2 text-sm text-emerald-100/90">
+                급여 정보에 접근할 수 있는 사용자를 관리할 수 있습니다.
+              </p>
+            </div>
 
-          {data?.canManageUsers && (
-            <button
-              type="button"
-              onClick={() => setInviteOpen(true)}
-              className="shrink-0 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-700"
-            >
-              사용자 초대
-            </button>
-          )}
+            {data?.canManageUsers && (
+              <button
+                type="button"
+                onClick={() => setInviteOpen(true)}
+                className="shrink-0 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
+              >
+                사용자 초대
+              </button>
+            )}
+          </div>
         </div>
 
         {data && !data.canManageUsers && (

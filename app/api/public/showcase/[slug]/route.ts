@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
-import prisma from "@/app/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+import { getShowcaseBySlug } from "@/catalogs/showcase";
+import { buildShowcaseUrl, buildUrlForAudience } from "@/app/lib/audience-routing";
 
 export async function GET(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
@@ -14,35 +15,8 @@ export async function GET(
       );
     }
 
-    const company = await prisma.company.findFirst({
-      where: {
-        publicSlug: slug,
-        isDemo: true,
-        isPublicShowcase: true,
-      },
-      select: {
-        id: true,
-        businessNumber: true,
-        businessType: true,
-        businessName: true,
-        representativeName: true,
-        openingDate: true,
-        address: true,
-        organizationLink: {
-          select: {
-            agentOrganization: {
-              select: {
-                id: true,
-                organizationName: true,
-                organizationNumber: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!company) {
+    const scenario = getShowcaseBySlug(slug);
+    if (!scenario) {
       return NextResponse.json(
         { error: "공개 쇼케이스를 찾을 수 없습니다." },
         { status: 404 },
@@ -50,28 +24,12 @@ export async function GET(
     }
 
     return NextResponse.json({
-      company: {
-        id: company.id.toString(),
-        businessNumber: company.businessNumber,
-        businessType: company.businessType,
-        businessName: company.businessName,
-        representativeName: company.representativeName,
-        openingDate: company.openingDate
-          ? company.openingDate.toISOString().slice(0, 10)
-          : null,
-        address: company.address,
-      },
-      organization: company.organizationLink?.agentOrganization
-        ? {
-            id: company.organizationLink.agentOrganization.id.toString(),
-            organizationName:
-              company.organizationLink.agentOrganization.organizationName,
-            organizationNumber:
-              company.organizationLink.agentOrganization.organizationNumber,
-          }
-        : null,
+      ...scenario,
       links: {
-        salaryDashboard: `/company/${company.id.toString()}/salary`,
+        self: buildShowcaseUrl(slug, request),
+        companyApp: buildUrlForAudience("company", "/company", request),
+        agentApp: buildUrlForAudience("agent", "/agent/company", request),
+        employeeApp: buildUrlForAudience("employee", "/employee", request),
       },
     });
   } catch (error) {

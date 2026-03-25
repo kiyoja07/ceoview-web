@@ -1,5 +1,9 @@
 import { createHash, randomBytes } from "crypto";
 import type { NextRequest } from "next/server";
+import {
+  buildUrlForAudience,
+  getBaseUrlForAudience,
+} from "@/app/lib/audience-routing";
 
 const MAGIC_LINK_TTL_MINUTES = 15;
 const MAGIC_LINK_TTL_MS = MAGIC_LINK_TTL_MINUTES * 60 * 1000;
@@ -40,13 +44,14 @@ function getOriginFromRequest(request: NextRequest) {
 }
 
 export function getAppBaseUrl(request: NextRequest) {
-  const envBaseUrl =
-    process.env.APP_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || null;
-  if (envBaseUrl) return envBaseUrl.replace(/\/+$/, "");
-  return getOriginFromRequest(request) || "http://localhost:3000";
+  return getBaseUrlForAudience("public", request);
 }
 
 export function buildMagicLinkUrl(request: NextRequest, token: string) {
-  const baseUrl = getAppBaseUrl(request);
-  return `${baseUrl}/api/agent/auth/magic-link?token=${encodeURIComponent(token)}`;
+  return buildUrlForAudience(
+    "agent",
+    "/api/agent/auth/magic-link",
+    request,
+    { token },
+  );
 }

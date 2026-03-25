@@ -1,8 +1,8 @@
 import { createHash, randomBytes } from "crypto";
 import type { NextRequest } from "next/server";
+import { buildUrlForAudience } from "@/app/lib/audience-routing";
 import {
   createDefaultNameFromEmail,
-  getAppBaseUrl,
   isValidEmail,
 } from "@/app/lib/agent-magic-link";
 
@@ -28,6 +28,10 @@ export function getCompanyMagicLinkTtlMinutes() {
 }
 
 export function buildCompanyMagicLinkUrl(request: NextRequest, token: string) {
-  const baseUrl = getAppBaseUrl(request);
-  return `${baseUrl}/company/auth/magic-link?token=${encodeURIComponent(token)}`;
+  return buildUrlForAudience(
+    "company",
+    "/company/auth/magic-link",
+    request,
+    { token },
+  );
 }

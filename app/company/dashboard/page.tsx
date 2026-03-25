@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import type { CompanyAuthMeResponse } from "@/types/company/auth";
 import type { CompanyDashboardResponse } from "@/types/company/dashboard";
 import { DashboardMetricCard } from "./_components/DashboardMetricCard";
-import { DashboardSparkline } from "./_components/DashboardSparkline";
 import { QuickActionCard } from "./_components/QuickActionCard";
 
 function formatBusinessNumber(value: string) {
@@ -38,27 +37,8 @@ type PendingTransferRequest = {
   };
 };
 
-const PUBLICATION_LABELS = {
-  earned: "근로",
-  business: "사업",
-  daily: "일용",
-  other: "기타",
-} as const;
-
 function formatCurrency(value: number) {
   return `₩ ${value.toLocaleString()}`;
-}
-
-function getPublicationBadgeStyle(status: "NONE" | "SAVED" | "PUBLISHED") {
-  if (status === "PUBLISHED") return "bg-emerald-100 text-emerald-700";
-  if (status === "SAVED") return "bg-amber-100 text-amber-700";
-  return "bg-gray-100 text-gray-500";
-}
-
-function getPublicationLabel(status: "NONE" | "SAVED" | "PUBLISHED") {
-  if (status === "PUBLISHED") return "공개";
-  if (status === "SAVED") return "비공개";
-  return "없음";
 }
 
 export default function CompanyDashboardPage() {
@@ -507,28 +487,6 @@ export default function CompanyDashboardPage() {
                     </svg>
                   }
                 />
-
-                {/* <DashboardMetricCard
-                  label="연락처 등록 직원"
-                  value={`${employees.withContact.toLocaleString()}명`}
-                  description={`이메일 ${employees.withEmail.toLocaleString()}명 · 계좌 ${employees.withBankAccount.toLocaleString()}명`}
-                  tone="amber"
-                  icon={
-                    <svg
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={1.8}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M2.25 6.75A2.25 2.25 0 0 1 4.5 4.5h15a2.25 2.25 0 0 1 2.25 2.25v10.5A2.25 2.25 0 0 1 19.5 19.5h-15a2.25 2.25 0 0 1-2.25-2.25V6.75Zm1.856.53 7.114 4.743a1.5 1.5 0 0 0 1.56 0l7.114-4.743"
-                      />
-                    </svg>
-                  }
-                /> */}
                 <DashboardMetricCard
                   label="사업소득자"
                   value={`${employees.businessCount.toLocaleString()}명`}
