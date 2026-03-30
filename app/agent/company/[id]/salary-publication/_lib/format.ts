@@ -1,3 +1,4 @@
+import { formatBusinessNumber as formatBusinessNumberValue, formatDateTimeDisplay } from "@/app/lib/formatters";
 import type { ActionType } from "./types";
 
 export const YM_COLUMN_KEYS = new Set(["accrualYm", "paymentYm"]);
@@ -14,23 +15,10 @@ export const NON_SUM_COLUMN_KEYS = new Set([
   "paymentYm",
 ]);
 
-export function formatBusinessNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 10);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
-}
+export const formatBusinessNumber = formatBusinessNumberValue;
 
 export function formatDateTime(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "-";
-  return date.toLocaleString("ko-KR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatDateTimeDisplay(value);
 }
 
 export function getPublishStatusLabel(status: ActionType) {

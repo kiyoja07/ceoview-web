@@ -6,15 +6,14 @@ import type {
   IncomeSummary,
   MonthlyStat,
 } from "@/app/company/[id]/salary/types";
+import { formatCurrencyKRW } from "@/app/lib/formatters";
 import type { getShowcaseBySlug } from "@/catalogs/showcase";
 
 export type ShowcaseScenario = NonNullable<
   ReturnType<typeof getShowcaseBySlug>
 >;
 
-export function formatCurrency(value: number) {
-  return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
-}
+export const formatCurrency = formatCurrencyKRW;
 
 export function extractNumber(value: string) {
   const digits = value.replace(/[^\d]/g, "");

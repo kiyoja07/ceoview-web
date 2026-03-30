@@ -8,7 +8,7 @@ import { SectionLabel, ArrowTileIcon } from "./ShowcaseUI";
 
 export default function CompanySection({
   scenario,
-  firstRequest,
+  firstRequest: _firstRequest,
 }: {
   scenario: ShowcaseScenario;
   firstRequest: ShowcaseScenario["company"]["pendingRequests"][number] | null;

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { CompanySelectProps } from "../types";
 import { formatBusinessNumber } from "../utils";
 
@@ -47,12 +48,12 @@ export function CompanySelect({
             />
           </svg>
           등록된 사업자가 없습니다.{" "}
-          <a
+          <Link
             href="/agent/company/new"
             className="font-medium text-amber-900 underline underline-offset-2"
           >
             먼저 사업자를 등록
-          </a>
+          </Link>
           해주세요.
         </div>
       ) : (

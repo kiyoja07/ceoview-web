@@ -33,16 +33,6 @@ export function createDefaultNameFromEmail(email: string) {
   return (sanitized || "user").slice(0, 100);
 }
 
-function getOriginFromRequest(request: NextRequest) {
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  const host = forwardedHost || request.headers.get("host");
-  if (!host) return null;
-
-  const forwardedProto = request.headers.get("x-forwarded-proto");
-  const protocol = forwardedProto || (host.includes("localhost") ? "http" : "https");
-  return `${protocol}://${host}`;
-}
-
 export function getAppBaseUrl(request: NextRequest) {
   return getBaseUrlForAudience("public", request);
 }

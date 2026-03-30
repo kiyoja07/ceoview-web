@@ -1,10 +1,4 @@
 import {
-  IconCompanyBurden,
-  IconMinusCircle,
-  IconMoney,
-  IconNetPay,
-} from "@/app/company/[id]/salary/components/icons";
-import {
   formatBusinessNumber,
   formatNumber,
 } from "@/app/company/[id]/salary/lib/format";
@@ -16,7 +10,7 @@ import type {
 import ShowcaseMonthlyStatsChart from "./ShowcaseMonthlyStatsChart";
 import { formatCurrency } from "./showcase-utils";
 import type { ShowcaseScenario } from "./showcase-utils";
-import { SectionLabel, SummaryStatCard } from "./ShowcaseUI";
+import { SectionLabel } from "./ShowcaseUI";
 
 export default function SalarySection({
   scenario,

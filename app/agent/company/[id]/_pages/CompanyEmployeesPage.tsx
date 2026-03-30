@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { formatBusinessNumber } from "@/app/lib/formatters";
 import EmployeeTable from "@/app/_components/EmployeeTable";
 import type { EmployeeRow } from "@/app/_components/EmployeeTable";
 import { EMPLOYEE_INCOME_TYPE_OPTIONS } from "@/catalogs/ko/employee";
@@ -47,17 +48,6 @@ type PendingAction =
 // ────────────────────────────────────────────────────────────
 
 type IncomeType = (typeof EMPLOYEE_INCOME_TYPE_OPTIONS)[number]["value"];
-
-// ────────────────────────────────────────────────────────────
-// Helpers
-// ────────────────────────────────────────────────────────────
-
-function formatBusinessNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 10);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
-}
 
 // ────────────────────────────────────────────────────────────
 // Component

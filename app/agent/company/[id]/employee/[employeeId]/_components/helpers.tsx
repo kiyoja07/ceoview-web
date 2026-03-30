@@ -1,56 +1,17 @@
+import {
+  display,
+  displayInsurance,
+  displayYesNo,
+  getStatusColor,
+} from "@/app/lib/employee-display";
 import type { EmployeeFullDetail } from "@/app/_components/EmployeeDetailModal";
+import {
+  formatResidentNumber,
+  maskResidentNumber,
+} from "@/app/lib/formatters";
 
-export function display(value: string | null | undefined): string {
-  return value?.trim() || "-";
-}
-
-export function displayYesNo(value: string | null | undefined): string {
-  const v = value?.trim();
-  if (!v) return "-";
-  if (v === "0") return "해당안됨";
-  if (v === "1") return "해당함";
-  return v;
-}
-
-export function displayInsurance(value: string | null | undefined): string {
-  const v = value?.trim();
-  if (!v) return "-";
-  if (v === "0" || v === "부") return "해당안됨";
-  if (v === "1" || v === "여") return "가입";
-  return v;
-}
-
-export function maskResidentNumber(value: string | null): string {
-  if (!value) return "-";
-  const cleaned = value.replace(/[^0-9*]/g, "");
-  if (cleaned.length >= 7) {
-    return `${cleaned.slice(0, 6)}-${cleaned.slice(6, 7)}******`;
-  }
-  return value;
-}
-
-export function formatResidentNumber(value: string): string {
-  const cleaned = value.replace(/[^0-9]/g, "");
-  if (cleaned.length > 6) {
-    return `${cleaned.slice(0, 6)}-${cleaned.slice(6)}`;
-  }
-  return cleaned;
-}
-
-export function getStatusColor(status: string | null): string {
-  switch (status) {
-    case "재직중":
-      return "text-emerald-600 bg-emerald-50";
-    case "입사예정":
-      return "text-blue-600 bg-blue-50";
-    case "퇴사완료":
-      return "text-gray-500 bg-gray-100";
-    case "퇴사예정":
-      return "text-orange-600 bg-orange-50";
-    default:
-      return "text-gray-400 bg-gray-50";
-  }
-}
+export { display, displayInsurance, displayYesNo, getStatusColor };
+export { formatResidentNumber, maskResidentNumber };
 
 export function Field({ label, value }: { label: string; value: string }) {
   const isEmpty = value === "-";

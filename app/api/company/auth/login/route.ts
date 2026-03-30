@@ -13,6 +13,7 @@ import {
 } from "@/app/lib/company-onboarding";
 import { sendEmail } from "@/app/lib/messages/email";
 import { sendSms } from "@/app/lib/messages/sms";
+import { formatPhoneDisplay } from "@/app/lib/formatters";
 import type { CompanyLoginBody } from "@/types/company/auth";
 
 type ContactType = "email" | "phone";
@@ -32,17 +33,6 @@ function normalizePhone(value: string) {
 
 function isValidPhone(value: string) {
   return /^01[016789]\d{7,8}$/.test(normalizePhone(value));
-}
-
-function formatPhone(value: string) {
-  const digits = normalizePhone(value);
-  if (digits.length === 10) {
-    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
-  }
-  if (digits.length === 11) {
-    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
-  }
-  return value;
 }
 
 function createDefaultNameFromPhone(phone: string) {
@@ -139,7 +129,7 @@ async function createPendingCompanyUser(params: {
         if (existing) return existing;
       } else {
         const normalized = normalizePhone(params.phone as string);
-        const formatted = formatPhone(normalized);
+        const formatted = formatPhoneDisplay(normalized);
         const existing = await prisma.companyUser.findFirst({
           where: {
             OR: [
@@ -165,7 +155,7 @@ async function createPendingCompanyUser(params: {
 
 async function findUserByPhone(phoneInput: string) {
   const normalized = normalizePhone(phoneInput);
-  const formatted = formatPhone(normalized);
+  const formatted = formatPhoneDisplay(normalized);
 
   return prisma.companyUser.findFirst({
     where: {
@@ -402,7 +392,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
-      message: `입력한 전화번호(${formatPhone(phoneToSend)})로 로그인 링크를 전송했습니다.`,
+      message: `입력한 전화번호(${formatPhoneDisplay(phoneToSend)})로 로그인 링크를 전송했습니다.`,
     });
   } catch (error) {
     console.error("Company login error:", error);

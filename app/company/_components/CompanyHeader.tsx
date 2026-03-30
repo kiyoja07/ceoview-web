@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { formatBusinessNumber } from "@/app/lib/formatters";
 import { COMMON_ACTION_LABELS } from "@/catalogs/ko/common";
 import { COMPANY_HEADER_NAV_ITEMS } from "@/catalogs/ko/navigation";
 import type { CompanyHeaderProfile } from "@/types/company/header";
@@ -10,13 +11,6 @@ import type { CompanyHeaderProfile } from "@/types/company/header";
 function isActivePath(pathname: string, href: string) {
   if (pathname === href) return true;
   return pathname.startsWith(`${href}/`);
-}
-
-function formatBusinessNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 10);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
 }
 
 export function CompanyHeader() {

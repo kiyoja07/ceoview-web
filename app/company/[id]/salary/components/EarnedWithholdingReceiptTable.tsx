@@ -59,7 +59,6 @@ export function EarnedWithholdingReceiptTable({
   row,
   company,
 }: EarnedWithholdingReceiptTableProps) {
-  const taxYear = String(row.accrualYm).slice(0, 4);
   const businessNo = company
     ? formatBusinessNumber(company.businessNumber)
     : "";

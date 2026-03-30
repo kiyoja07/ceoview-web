@@ -58,7 +58,13 @@ function parseIncomeType(request: NextRequest): EmployeeIncomeType {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function snapshotNonEarnedIncomeRecord(record: Record<string, any>) {
-  const { id, companyId, company, publishStatus, ...rest } = record;
+  const {
+    id: _id,
+    companyId: _companyId,
+    company: _company,
+    publishStatus: _publishStatus,
+    ...rest
+  } = record;
   const snapshot: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(rest)) {
     if (value instanceof Date) {

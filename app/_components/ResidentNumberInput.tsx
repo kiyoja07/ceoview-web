@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatResidentNumber as formatResidentNumberDisplay } from "@/app/lib/formatters";
 
 const themeRing = {
   emerald: "focus:border-emerald-500 focus:ring-emerald-500",
@@ -16,9 +17,7 @@ type ResidentNumberInputProps = {
 };
 
 export function formatResidentNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 13);
-  if (digits.length <= 6) return digits;
-  return `${digits.slice(0, 6)}-${digits.slice(6)}`;
+  return formatResidentNumberDisplay(value, { maxDigits: 13 });
 }
 
 export function validateResidentNumber(value: string): string | null {

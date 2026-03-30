@@ -275,8 +275,6 @@ export function renderPayslipHtml(p: PayslipData): string {
     </tr>`;
   }
 
-  const deptPos = [p.department, p.position].filter(Boolean).join(" / ") || "—";
-
   const incomeTypeCell = p.incomeSubType
     ? `${p.incomeTypeLabel} / ${p.incomeSubType}`
     : p.incomeTypeLabel;

@@ -115,6 +115,7 @@ export type CompanyEmployeeDashboardSummaryByIncomeType = {
   incomeType: EmployeeIncomeType;
   label: string;
   total: number;
+  recentPaidCount: number;
   active: number;
   upcoming: number;
   leaving: number;
@@ -126,6 +127,7 @@ export type CompanyEmployeeDashboardSummaryByIncomeType = {
 
 export type CompanyEmployeeDashboardSummary = {
   total: number;
+  recentPaidTotal: number;
   active: number;
   upcoming: number;
   leaving: number;

@@ -10,6 +10,7 @@ const tabs = [
   { href: "#salary-earned", label: "근로소득 상세" },
   { href: "#employee", label: "직원 포털" },
   { href: "#payslip", label: "명세서 상세" },
+  { href: "#payslip-delivery", label: "명세서 전송" },
 ];
 
 export default function ShowcaseNav() {

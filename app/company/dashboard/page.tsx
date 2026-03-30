@@ -3,23 +3,17 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  formatBusinessNumber,
+  formatCurrencyKRW,
+} from "@/app/lib/formatters";
 import type { CompanyAuthMeResponse } from "@/types/company/auth";
 import type { CompanyDashboardResponse } from "@/types/company/dashboard";
 import { DashboardMetricCard } from "./_components/DashboardMetricCard";
 import { QuickActionCard } from "./_components/QuickActionCard";
 
-function formatBusinessNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 10);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
-}
-
 function formatOrganizationNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 10);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
+  return formatBusinessNumber(value);
 }
 
 type PendingTransferRequest = {
@@ -38,7 +32,7 @@ type PendingTransferRequest = {
 };
 
 function formatCurrency(value: number) {
-  return `₩ ${value.toLocaleString()}`;
+  return formatCurrencyKRW(value, { style: "prefix" });
 }
 
 export default function CompanyDashboardPage() {
@@ -200,6 +194,11 @@ export default function CompanyDashboardPage() {
   }
 
   const { company, salary, employees } = dashboard;
+  const employeeMasterTotal =
+    employees.earnedMasterCount +
+    employees.businessMasterCount +
+    employees.otherMasterCount +
+    employees.dailyMasterCount;
   const companyLabel =
     company.businessName || formatBusinessNumber(company.businessNumber);
   const agentLabel = dashboard.agentOrganization
@@ -464,12 +463,13 @@ export default function CompanyDashboardPage() {
             </div>
           </div>
 
-          {employees.total > 0 ? (
+          {employeeMasterTotal > 0 ? (
             <>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                 <DashboardMetricCard
                   label="재직 중 상시 직원"
-                  value={`${employees.active.toLocaleString()}명`}
+                  value={`${employees.earnedRecentPaidCount.toLocaleString()}명`}
+                  description={`전체: ${employees.earnedMasterCount.toLocaleString()}명, 최근 지급: ${employees.earnedRecentPaidCount.toLocaleString()}명`}
                   tone="emerald"
                   icon={
                     <svg
@@ -489,7 +489,8 @@ export default function CompanyDashboardPage() {
                 />
                 <DashboardMetricCard
                   label="사업소득자"
-                  value={`${employees.businessCount.toLocaleString()}명`}
+                  value={`${employees.businessRecentPaidCount.toLocaleString()}명`}
+                  description={`전체: ${employees.businessMasterCount.toLocaleString()}명, 최근 지급: ${employees.businessRecentPaidCount.toLocaleString()}명`}
                   tone="blue"
                   icon={
                     <svg
@@ -509,7 +510,8 @@ export default function CompanyDashboardPage() {
                 />
                 <DashboardMetricCard
                   label="기타소득자"
-                  value={`${employees.otherCount.toLocaleString()}명`}
+                  value={`${employees.otherRecentPaidCount.toLocaleString()}명`}
+                  description={`전체: ${employees.otherMasterCount.toLocaleString()}명, 최근 지급: ${employees.otherRecentPaidCount.toLocaleString()}명`}
                   tone="blue"
                   icon={
                     <svg
@@ -529,7 +531,8 @@ export default function CompanyDashboardPage() {
                 />
                 <DashboardMetricCard
                   label="일용직소득자"
-                  value={`${employees.dailyCount.toLocaleString()}명`}
+                  value={`${employees.dailyRecentPaidCount.toLocaleString()}명`}
+                  description={`전체: ${employees.dailyMasterCount.toLocaleString()}명, 최근 지급: ${employees.dailyRecentPaidCount.toLocaleString()}명`}
                   tone="blue"
                   icon={
                     <svg

@@ -77,7 +77,23 @@ export async function GET(request: NextRequest) {
     const startYm = recentYms[0];
     const endYm = recentYms[recentYms.length - 1];
 
-    const [company, employees, earnedView, businessView, otherView, dailyView] =
+    const publishedWhere = {
+      companyId,
+      deletedAt: null,
+      publishStatus: "PUBLISHED" as const,
+    };
+
+    const [
+      company,
+      employees,
+      businessEmployeeCount,
+      otherEmployeeCount,
+      dailyEmployeeCount,
+      earnedView,
+      businessView,
+      otherView,
+      dailyView,
+    ] =
       await Promise.all([
         prisma.company.findUnique({
           where: { id: companyId },
@@ -101,11 +117,7 @@ export async function GET(request: NextRequest) {
           },
         }),
         prisma.employee.findMany({
-          where: {
-            companyId,
-            deletedAt: null,
-            publishStatus: "PUBLISHED",
-          },
+          where: publishedWhere,
           select: {
             phone: true,
             email: true,
@@ -118,6 +130,15 @@ export async function GET(request: NextRequest) {
               take: 1,
             },
           },
+        }),
+        prisma.businessIncomeEmployee.count({
+          where: publishedWhere,
+        }),
+        prisma.otherIncomeEmployee.count({
+          where: publishedWhere,
+        }),
+        prisma.otherIncomeLaborEmployee.count({
+          where: publishedWhere,
         }),
         resolveUploadForCompanyView(request, companyId, "EARNED_INCOME"),
         resolveUploadForCompanyView(request, companyId, "BUSINESS_INCOME"),
@@ -374,6 +395,14 @@ export async function GET(request: NextRequest) {
         withEmail,
         withBankAccount,
         recentJoined,
+        earnedMasterCount: employees.length,
+        businessMasterCount: businessEmployeeCount,
+        otherMasterCount: otherEmployeeCount,
+        dailyMasterCount: dailyEmployeeCount,
+        earnedRecentPaidCount: latestBucket.earnedCount,
+        businessRecentPaidCount: latestBucket.businessCount,
+        otherRecentPaidCount: latestBucket.otherCount,
+        dailyRecentPaidCount: latestBucket.dailyCount,
         earnedCount: latestBucket.earnedCount,
         businessCount: latestBucket.businessCount,
         otherCount: latestBucket.otherCount,

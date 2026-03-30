@@ -1,8 +1,5 @@
+import { formatDateDisplay } from "@/app/lib/formatters";
 import type { AgentUserItem } from "@/types/agent/users";
-
-function formatDate(value: string) {
-  return new Date(value).toLocaleDateString("ko-KR");
-}
 
 type UserTableProps = {
   users: AgentUserItem[];
@@ -93,7 +90,7 @@ export function UserTable({
                     </span>
                   </td>
                   <td className="px-4 py-3 text-gray-600">
-                    {formatDate(user.createdAt)}
+                    {formatDateDisplay(user.createdAt)}
                   </td>
                   {canManageUsers && (
                     <td className="px-4 py-3 text-right">

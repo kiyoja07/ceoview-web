@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { PAYSLIP_INCOME_TAB_LABELS } from "@/catalogs/ko/salary";
-import { EarnedWithholdingReceiptTable } from "./EarnedWithholdingReceiptTable";
-import type { EarnedIncomeRow, Company, IncomeTab } from "../types";
+import type { Company, EarnedIncomeRow, IncomeTab } from "../types";
 import { renderPayslipHtml } from "../lib/payslip-template";
 import {
   toPayslipData,
@@ -22,8 +21,6 @@ interface PayslipModalProps {
   onSent?: () => void;
 }
 
-type EarnedDocumentView = "payslip" | "withholding";
-
 /* ───────── Component ───────── */
 
 export function PayslipModal({
@@ -36,8 +33,6 @@ export function PayslipModal({
 }: PayslipModalProps) {
   const backdropRef = useRef<HTMLDivElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
-  const [earnedDocumentView, setEarnedDocumentView] =
-    useState<EarnedDocumentView>("payslip");
 
   const handleEsc = useCallback(
     (e: KeyboardEvent) => {
@@ -56,11 +51,7 @@ export function PayslipModal({
   }, [handleEsc]);
 
   const payslipData = toPayslipData(row, incomeType, company);
-  const isEarnedWithholdingView =
-    incomeType === "earned" && earnedDocumentView === "withholding";
-  const documentTitle = isEarnedWithholdingView
-    ? "근로소득원천징수영수증"
-    : "급여명세서";
+  const documentTitle = "급여명세서";
 
   const payslipHtml = renderPayslipHtml(payslipData);
 
@@ -191,19 +182,10 @@ export function PayslipModal({
         {/* Payslip Card */}
         <div className="rounded-2xl bg-white shadow-xl ring-1 ring-gray-950/5">
           <div ref={printRef}>
-            {isEarnedWithholdingView ? (
-              <div className="p-8">
-                {/* <EarnedWithholdingReceiptTable
-                  row={row as EarnedIncomeRow}
-                  company={company}
-                /> */}
-              </div>
-            ) : (
-              <div
-                className="payslip p-8"
-                dangerouslySetInnerHTML={{ __html: payslipHtml }}
-              />
-            )}
+            <div
+              className="payslip p-8"
+              dangerouslySetInnerHTML={{ __html: payslipHtml }}
+            />
           </div>
         </div>
       </div>

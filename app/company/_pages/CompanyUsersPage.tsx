@@ -1,24 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { formatDateDisplay } from "@/app/lib/formatters";
 import type { CompanyUsersResponse } from "@/types/company/users";
 import type {
   CompanyInviteHistoryItem,
   CompanyInviteHistoryResponse,
 } from "@/types/company/users";
 import { InviteCompanyUserModal } from "@/app/company/_components/InviteCompanyUserModal";
-
-function formatBusinessNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 10);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
-}
-
-function formatDate(value: string) {
-  return new Date(value).toLocaleDateString("ko-KR");
-}
 
 type MessageState = {
   type: "success" | "error";
@@ -119,14 +109,6 @@ export default function CompanyOrganizationUsersPage() {
       void loadInviteHistory();
     }
   };
-
-  const companyLabel = useMemo(() => {
-    if (!data) return "";
-    return (
-      data.company.businessName ||
-      formatBusinessNumber(data.company.businessNumber)
-    );
-  }, [data]);
 
   const handleToggleActive = async (userId: string, isActive: boolean) => {
     if (!data?.canManageUsers) return;
@@ -316,7 +298,7 @@ export default function CompanyOrganizationUsersPage() {
                             {user.phone || "-"}
                           </td>
                           <td className="px-4 py-3 text-gray-600">
-                            {formatDate(user.createdAt)}
+                            {formatDateDisplay(user.createdAt)}
                           </td>
                           {data.canManageUsers && (
                             <td className="px-4 py-3 text-right">
@@ -447,7 +429,7 @@ export default function CompanyOrganizationUsersPage() {
                               </span>
                             </td>
                             <td className="px-4 py-3 text-gray-600">
-                              {formatDate(inv.createdAt)}
+                              {formatDateDisplay(inv.createdAt)}
                             </td>
                           </tr>
                         ))}

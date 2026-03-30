@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { formatBusinessNumber } from "@/app/lib/formatters";
 import { INCOME_META } from "../constants";
 import { ErrorPanel } from "../components/common/ErrorPanel";
 import { LoadingPanel } from "../components/common/LoadingPanel";
-import { IconBuilding } from "../components/icons";
 import { formatNumber } from "../lib/format";
 import type { MonthlyStat, IncomeTab, SalaryStatsResponse } from "../types";
 
@@ -728,38 +728,4 @@ function SummaryStatCard({
   );
 }
 
-/* ── 빈 상태 ── */
-
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-32">
-      <svg
-        className="mb-4 h-16 w-16 text-gray-200"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={1}
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
-        />
-      </svg>
-      <h3 className="mb-1 text-base font-semibold text-gray-600">
-        급여 지급 내역이 없습니다
-      </h3>
-      <p className="text-sm text-gray-400">
-        급여가 지급되면 여기에 월별 요약이 표시됩니다.
-      </p>
-    </div>
-  );
-}
-
 /* ── 유틸 ── */
-
-function formatBusinessNumber(v: string): string {
-  const digits = v.replace(/\D/g, "");
-  if (digits.length !== 10) return v;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
-}

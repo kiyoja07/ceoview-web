@@ -1,14 +1,11 @@
 import Link from "next/link";
+import { formatCurrencyKRW } from "@/app/lib/formatters";
 import EmployeeProfileEditor from "./_components/EmployeeProfileEditor";
 import EmployeeBankAccountEditor from "./_components/EmployeeBankAccountEditor";
 import { getEmployeePortalSession } from "@/app/lib/employee-portal";
 import { getEmployeePayslipCollection } from "@/app/lib/employee-payslips";
 
 export const dynamic = "force-dynamic";
-
-function formatCurrency(value: number) {
-  return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
-}
 
 export default async function EmployeeHomePage() {
   const user = await getEmployeePortalSession();
@@ -96,13 +93,13 @@ export default async function EmployeeHomePage() {
                   <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur">
                     <p className="text-xs font-medium text-blue-200">지급액</p>
                     <p className="mt-1 text-lg font-bold">
-                      {formatCurrency(latestEntry.totalPayment)}
+                      {formatCurrencyKRW(latestEntry.totalPayment)}
                     </p>
                   </div>
                   <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur">
                     <p className="text-xs font-medium text-blue-200">공제액</p>
                     <p className="mt-1 text-lg font-bold">
-                      {formatCurrency(latestEntry.totalDeduction)}
+                      {formatCurrencyKRW(latestEntry.totalDeduction)}
                     </p>
                   </div>
                   <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur">
@@ -110,7 +107,7 @@ export default async function EmployeeHomePage() {
                       실수령액
                     </p>
                     <p className="mt-1 text-lg font-bold">
-                      {formatCurrency(latestEntry.netPayment)}
+                      {formatCurrencyKRW(latestEntry.netPayment)}
                     </p>
                   </div>
                 </div>
@@ -159,7 +156,7 @@ export default async function EmployeeHomePage() {
                             </p>
                           </div>
                           <p className="mt-3 text-base font-bold text-blue-700">
-                            {formatCurrency(entry.netPayment)}
+                            {formatCurrencyKRW(entry.netPayment)}
                           </p>
                         </Link>
                       ))}
@@ -195,7 +192,7 @@ export default async function EmployeeHomePage() {
                             </p>
                           </div>
                           <p className="mt-3 text-base font-bold text-blue-700">
-                            {formatCurrency(entry.netPayment)}
+                            {formatCurrencyKRW(entry.netPayment)}
                           </p>
                         </Link>
                       ))}

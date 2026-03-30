@@ -92,7 +92,7 @@ export default function ForCeoSection({ companyUrl }: { companyUrl: string }) {
           {/* Right — screenshot */}
           <div className="relative">
             <Image
-              src="https://ceoview.edge.naverncp.com/example-screen/salary-table.png"
+              src="https://ceoview.edge.naverncp.com/screenshot/screenshot-salary-table.png"
               alt="경영한눈 급여 대장 화면"
               width={1920}
               height={1080}
@@ -100,7 +100,7 @@ export default function ForCeoSection({ companyUrl }: { companyUrl: string }) {
               priority
             />
             <p className="mt-3 text-center text-xs text-slate-400">
-              실제 경영한눈 급여 대장 화면
+              경영한눈 급여 대장 화면
             </p>
           </div>
         </div>

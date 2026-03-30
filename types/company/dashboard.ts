@@ -56,6 +56,14 @@ export type CompanyDashboardResponse = {
     withEmail: number;
     withBankAccount: number;
     recentJoined: number;
+    earnedMasterCount: number;
+    businessMasterCount: number;
+    otherMasterCount: number;
+    dailyMasterCount: number;
+    earnedRecentPaidCount: number;
+    businessRecentPaidCount: number;
+    otherRecentPaidCount: number;
+    dailyRecentPaidCount: number;
     earnedCount: number;
     businessCount: number;
     otherCount: number;

@@ -1,13 +1,10 @@
 import Link from "next/link";
+import { formatCurrencyKRW } from "@/app/lib/formatters";
 import EmployeePayslipViewer from "@/app/employee/payslips/_components/EmployeePayslipViewer";
 import { getEmployeePayslipCollection } from "@/app/lib/employee-payslips";
 import { getEmployeePortalSession } from "@/app/lib/employee-portal";
 
 export const dynamic = "force-dynamic";
-
-function formatCurrency(value: number) {
-  return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
-}
 
 function getSearchValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -139,7 +136,7 @@ export default async function EmployeePayslipsPage({
                                 {entry.metaLabel}
                               </p>
                               <p className="mt-2 text-sm font-medium text-blue-700">
-                                실수령액 {formatCurrency(entry.netPayment)}
+                                실수령액 {formatCurrencyKRW(entry.netPayment)}
                               </p>
                             </Link>
                           );
@@ -184,7 +181,7 @@ export default async function EmployeePayslipsPage({
                             {entry.metaLabel}
                           </p>
                           <p className="mt-2 text-sm font-medium text-blue-700">
-                            실수령액 {formatCurrency(entry.netPayment)}
+                            실수령액 {formatCurrencyKRW(entry.netPayment)}
                           </p>
                         </Link>
                       );
@@ -201,19 +198,19 @@ export default async function EmployeePayslipsPage({
                     <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-gray-950/5">
                       <p className="text-sm text-gray-500">지급액</p>
                       <p className="mt-2 text-xl font-semibold text-gray-900">
-                        {formatCurrency(selectedEntry.totalPayment)}
+                        {formatCurrencyKRW(selectedEntry.totalPayment)}
                       </p>
                     </div>
                     <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-gray-950/5">
                       <p className="text-sm text-gray-500">공제액</p>
                       <p className="mt-2 text-xl font-semibold text-gray-900">
-                        {formatCurrency(selectedEntry.totalDeduction)}
+                        {formatCurrencyKRW(selectedEntry.totalDeduction)}
                       </p>
                     </div>
                     <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-gray-950/5">
                       <p className="text-sm text-gray-500">실수령액</p>
                       <p className="mt-2 text-xl font-semibold text-blue-700">
-                        {formatCurrency(selectedEntry.netPayment)}
+                        {formatCurrencyKRW(selectedEntry.netPayment)}
                       </p>
                     </div>
                   </section>

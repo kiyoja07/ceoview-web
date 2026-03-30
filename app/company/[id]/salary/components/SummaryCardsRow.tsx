@@ -21,7 +21,7 @@ export function SummaryCardsRow({ summary, toCurrency }: SummaryCardsRowProps) {
 
   return (
     <div
-      className={`mb-6 grid grid-cols-1 gap-4 ${
+      className={`mb-6 grid grid-cols-1 gap-2 ${
         hasCompanyBurden ? "sm:grid-cols-5" : "sm:grid-cols-3"
       }`}
     >

@@ -11,7 +11,11 @@ import {
   IconChevronRight,
   IconSearch,
 } from "@/app/company/[id]/salary/components/icons";
-import { formatBusinessNumber, formatNumber, formatYm } from "@/app/company/[id]/salary/lib/format";
+import {
+  formatBusinessNumber,
+  formatNumber,
+  formatYm,
+} from "@/app/company/[id]/salary/lib/format";
 import { shiftYm } from "@/app/company/[id]/salary/lib/navigation";
 import { buildEarnedSummary } from "@/app/company/[id]/salary/lib/summary";
 import { SectionLabel } from "./ShowcaseUI";
@@ -46,7 +50,7 @@ export default function SalaryEarnedSection({
       <div>
         <SectionLabel>Actual Screen Based</SectionLabel>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">
-          회사 근로소득 급여명세
+          근로 소득 급여 대장
         </h2>
       </div>
 
@@ -60,7 +64,7 @@ export default function SalaryEarnedSection({
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-                    급여 명세
+                    급여 대장
                   </h1>
                   <p className="text-sm text-gray-500">
                     {scenario.company.businessName}
@@ -140,7 +144,7 @@ export default function SalaryEarnedSection({
                   type="button"
                   className="inline-flex h-9 items-center rounded-lg bg-emerald-600 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-700"
                 >
-                  전체 명세 발송
+                  급여명세서 전체 발송
                 </button>
                 <button
                   type="button"

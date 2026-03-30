@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { formatPhoneInput } from "@/app/lib/formatters";
 import type {
   CompanyAuthMeResponse,
   CompanyAuthMessageState,
@@ -16,13 +17,6 @@ const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-shadow";
 const readOnlyInputBase =
   "cursor-not-allowed border-gray-200 bg-gray-50 text-gray-500 focus:border-gray-200 focus:ring-0";
-
-function formatPhoneNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 11);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
-}
 
 export default function CompanyOrganizationProfilePage() {
   const router = useRouter();
@@ -87,7 +81,7 @@ export default function CompanyOrganizationProfilePage() {
 
   // 휴대폰 번호가 변경되면 인증 상태 초기화
   const handlePhoneChange = (value: string) => {
-    const formatted = formatPhoneNumber(value);
+    const formatted = formatPhoneInput(value);
     setPhone(formatted);
     resetVerification();
   };

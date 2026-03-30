@@ -1,3 +1,5 @@
+import { formatBusinessNumber as formatBusinessNumberValue } from "@/app/lib/formatters";
+
 /** 202601 -> 2026-01 */
 export function formatYm(ym: number): string {
   const s = String(ym);
@@ -15,5 +17,5 @@ export function formatNumber(v: string | number): string {
 export function formatBusinessNumber(v: string): string {
   const digits = v.replace(/\D/g, "");
   if (digits.length !== 10) return v;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
+  return formatBusinessNumberValue(v);
 }

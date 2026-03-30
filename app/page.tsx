@@ -14,6 +14,7 @@ import AudienceCardsSection from "@/app/_components/landing/AudienceCardsSection
 import FaqSection from "@/app/_components/landing/FaqSection";
 import PricingSection from "@/app/_components/landing/PricingSection";
 import FooterSection from "@/app/_components/landing/FooterSection";
+import PayslipDeliverySection from "./_components/PayslipDeliverySection";
 
 export default async function Home() {
   const headerList = await headers();
@@ -40,6 +41,7 @@ export default async function Home() {
       <WhyCeoviewSection agentUrl={agentUrl} />
       <WehagoUploadSection />
       <ForCeoSection companyUrl={companyUrl} />
+      <PayslipDeliverySection />
       <TestimonialsSection />
       <AudienceCardsSection audienceHref={audienceHref} />
       <PricingSection />

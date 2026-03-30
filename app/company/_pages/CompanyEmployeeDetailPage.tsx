@@ -2,6 +2,16 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  display,
+  displayInsurance,
+  displayYesNo,
+  getStatusColor,
+} from "@/app/lib/employee-display";
+import {
+  formatResidentNumber,
+  maskResidentNumber,
+} from "@/app/lib/formatters";
 import AddressInput, {
   type AddressValue,
 } from "@/app/_components/AddressInput";
@@ -17,62 +27,6 @@ import type {
   CompanyMutationRequestResponse,
   PendingRequestSummary,
 } from "@/types/company/change-request";
-
-// ────────────────────────────────────────────────────────────
-// Helpers
-// ────────────────────────────────────────────────────────────
-
-function display(value: string | null | undefined): string {
-  return value?.trim() || "-";
-}
-
-function maskResidentNumber(value: string | null): string {
-  if (!value) return "-";
-  const cleaned = value.replace(/[^0-9*]/g, "");
-  if (cleaned.length >= 7) {
-    return `${cleaned.slice(0, 6)}-${cleaned.slice(6, 7)}******`;
-  }
-  return value;
-}
-
-function formatResidentNumber(value: string): string {
-  const cleaned = value.replace(/[^0-9]/g, "");
-  if (cleaned.length > 6) {
-    return `${cleaned.slice(0, 6)}-${cleaned.slice(6)}`;
-  }
-  return cleaned;
-}
-
-function getStatusColor(status: string | null): string {
-  switch (status) {
-    case "재직중":
-      return "text-emerald-600 bg-emerald-50";
-    case "입사예정":
-      return "text-blue-600 bg-blue-50";
-    case "퇴사완료":
-      return "text-gray-500 bg-gray-100";
-    case "퇴사예정":
-      return "text-orange-600 bg-orange-50";
-    default:
-      return "text-gray-400 bg-gray-50";
-  }
-}
-
-function displayYesNo(value: string | null | undefined): string {
-  const v = value?.trim();
-  if (!v) return "-";
-  if (v === "0") return "해당안됨";
-  if (v === "1") return "해당함";
-  return v;
-}
-
-function displayInsurance(value: string | null | undefined): string {
-  const v = value?.trim();
-  if (!v) return "-";
-  if (v === "0" || v === "부") return "해당안됨";
-  if (v === "1" || v === "여") return "가입";
-  return v;
-}
 
 function Field({ label, value }: { label: string; value: string }) {
   const isEmpty = value === "-";

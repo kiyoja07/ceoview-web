@@ -45,7 +45,7 @@ export function DashboardMetricCard({
   value,
   description,
   tone = "slate",
-  icon,
+  icon: _icon,
 }: DashboardMetricCardProps) {
   const style = TONE_STYLES[tone];
 

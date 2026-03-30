@@ -8,6 +8,7 @@ import {
   serializePendingRequestSummary,
 } from "@/app/lib/company-change-request";
 import { resolveCompanyAccessContext } from "@/app/lib/company-access";
+import { resolveUploadForCompanyView } from "@/app/lib/salary-upload-view";
 import type {
   CompanyEmployeeDashboardSummary,
   EmployeeCreateBody,
@@ -23,6 +24,8 @@ import {
   EMPLOYEE_INCOME_TYPE_LABELS,
   EMPLOYEE_INCOME_TYPE_OPTIONS,
 } from "@/catalogs/ko/employee";
+
+const RECENT_PAID_MONTHS = 6;
 
 async function requireCompanyMember(request: NextRequest) {
   const context = await resolveCompanyAccessContext(request);
@@ -126,12 +129,171 @@ function matchesSearch(
     .some((value) => value.toLowerCase().includes(search));
 }
 
+type RecentPaidCounts = {
+  total: number;
+  byIncomeType: Record<EmployeeIncomeType, number>;
+};
+
+type RecentPaidMonthBucket = {
+  earnedCount: number;
+  businessCount: number;
+  otherCount: number;
+  dailyCount: number;
+};
+
+function createEmptyRecentPaidBucket(): RecentPaidMonthBucket {
+  return {
+    earnedCount: 0,
+    businessCount: 0,
+    otherCount: 0,
+    dailyCount: 0,
+  };
+}
+
+function getRecentYms(count: number) {
+  const now = new Date();
+  return Array.from({ length: count }, (_, index) => {
+    const date = new Date(
+      now.getFullYear(),
+      now.getMonth() - count + index + 1,
+      1,
+    );
+    return date.getFullYear() * 100 + (date.getMonth() + 1);
+  });
+}
+
+async function getRecentPaidCounts(
+  request: NextRequest,
+  companyId: bigint,
+): Promise<RecentPaidCounts> {
+  const recentYms = getRecentYms(RECENT_PAID_MONTHS);
+  const startYm = recentYms[0];
+  const endYm = recentYms[recentYms.length - 1];
+
+  const [earnedView, businessView, otherView, dailyView] = await Promise.all([
+    resolveUploadForCompanyView(request, companyId, "EARNED_INCOME"),
+    resolveUploadForCompanyView(request, companyId, "BUSINESS_INCOME"),
+    resolveUploadForCompanyView(request, companyId, "OTHER_INCOME"),
+    resolveUploadForCompanyView(request, companyId, "OTHER_INCOME_LABOR"),
+  ]);
+
+  const [earnedStats, businessStats, otherStats, dailyStats] =
+    await Promise.all([
+      earnedView.uploadId
+        ? prisma.earnedIncome.groupBy({
+            by: ["paymentYm"],
+            where: {
+              uploadId: earnedView.uploadId,
+              paymentYm: { gte: startYm, lte: endYm },
+            },
+            _count: true,
+          })
+        : Promise.resolve([]),
+      businessView.uploadId
+        ? prisma.businessIncome.groupBy({
+            by: ["paymentYm"],
+            where: {
+              uploadId: businessView.uploadId,
+              paymentYm: { gte: startYm, lte: endYm },
+            },
+            _count: true,
+          })
+        : Promise.resolve([]),
+      otherView.uploadId
+        ? prisma.otherIncome.groupBy({
+            by: ["paymentYm"],
+            where: {
+              uploadId: otherView.uploadId,
+              paymentYm: { gte: startYm, lte: endYm },
+            },
+            _count: true,
+          })
+        : Promise.resolve([]),
+      dailyView.uploadId && dailyView.uploadedAt
+        ? prisma.dailyIncomeLabor.groupBy({
+            by: ["uploadId"],
+            where: { uploadId: dailyView.uploadId },
+            _count: true,
+          })
+        : Promise.resolve([]),
+    ]);
+
+  const monthlyMap = new Map<number, RecentPaidMonthBucket>();
+  for (const ym of recentYms) {
+    monthlyMap.set(ym, createEmptyRecentPaidBucket());
+  }
+
+  for (const row of earnedStats) {
+    const entry = monthlyMap.get(row.paymentYm) ?? createEmptyRecentPaidBucket();
+    entry.earnedCount += row._count;
+    monthlyMap.set(row.paymentYm, entry);
+  }
+
+  for (const row of businessStats) {
+    const entry = monthlyMap.get(row.paymentYm) ?? createEmptyRecentPaidBucket();
+    entry.businessCount += row._count;
+    monthlyMap.set(row.paymentYm, entry);
+  }
+
+  for (const row of otherStats) {
+    const entry = monthlyMap.get(row.paymentYm) ?? createEmptyRecentPaidBucket();
+    entry.otherCount += row._count;
+    monthlyMap.set(row.paymentYm, entry);
+  }
+
+  if (dailyView.uploadedAt) {
+    const ym =
+      dailyView.uploadedAt.getFullYear() * 100 +
+      (dailyView.uploadedAt.getMonth() + 1);
+
+    if (ym >= startYm && ym <= endYm) {
+      const entry = monthlyMap.get(ym) ?? createEmptyRecentPaidBucket();
+      for (const row of dailyStats) {
+        entry.dailyCount += row._count;
+      }
+      monthlyMap.set(ym, entry);
+    }
+  }
+
+  const latestYm =
+    [...recentYms].reverse().find((ym) => {
+      const bucket = monthlyMap.get(ym) ?? createEmptyRecentPaidBucket();
+      return (
+        bucket.earnedCount +
+          bucket.businessCount +
+          bucket.otherCount +
+          bucket.dailyCount >
+        0
+      );
+    }) ?? null;
+
+  const latestBucket =
+    latestYm != null
+      ? (monthlyMap.get(latestYm) ?? createEmptyRecentPaidBucket())
+      : createEmptyRecentPaidBucket();
+
+  return {
+    total:
+      latestBucket.earnedCount +
+      latestBucket.businessCount +
+      latestBucket.otherCount +
+      latestBucket.dailyCount,
+    byIncomeType: {
+      EARNED_INCOME: latestBucket.earnedCount,
+      BUSINESS_INCOME: latestBucket.businessCount,
+      OTHER_INCOME: latestBucket.otherCount,
+      OTHER_INCOME_LABOR: latestBucket.dailyCount,
+    },
+  };
+}
+
 function buildSummary(
   rows: DashboardEmployeeRow[],
   pendingRequests: Array<{
     action: string;
     requestedPayload: unknown;
   }>,
+  recentPaidCounts: RecentPaidCounts,
 ): CompanyEmployeeDashboardSummary {
   const pendingRequestCountByType = new Map<EmployeeIncomeType, number>(
     EMPLOYEE_INCOME_TYPE_OPTIONS.map((option) => [option.value, 0]),
@@ -154,6 +316,7 @@ function buildSummary(
 
   const summary: CompanyEmployeeDashboardSummary = {
     total: rows.length,
+    recentPaidTotal: recentPaidCounts.total,
     active: 0,
     upcoming: 0,
     leaving: 0,
@@ -165,6 +328,7 @@ function buildSummary(
       incomeType: option.value,
       label: option.label,
       total: 0,
+      recentPaidCount: recentPaidCounts.byIncomeType[option.value] ?? 0,
       active: 0,
       upcoming: 0,
       leaving: 0,
@@ -269,6 +433,7 @@ export async function GET(request: NextRequest) {
       otherIncomeEmployees,
       laborEmployees,
       pendingRequests,
+      recentPaidCounts,
     ] = await Promise.all([
       prisma.employee.findMany({
         where: baseWhere,
@@ -341,6 +506,7 @@ export async function GET(request: NextRequest) {
         orderBy: { createdAt: "desc" },
         select: pendingRequestSelect,
       }),
+      getRecentPaidCounts(request, auth.currentCompanyId),
     ]);
 
     const pendingRequestByEmployeeId = new Map<
@@ -458,7 +624,7 @@ export async function GET(request: NextRequest) {
       return left.name.localeCompare(right.name, "ko");
     });
 
-    const summary = buildSummary(mergedRows, pendingRequests);
+    const summary = buildSummary(mergedRows, pendingRequests, recentPaidCounts);
 
     const filteredRows = mergedRows.filter((row) => {
       if (incomeTypeFilter !== "ALL" && row.incomeType !== incomeTypeFilter) {

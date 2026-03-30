@@ -41,6 +41,9 @@ export default function EmployeeSummaryCards({
         <p className="mt-2 text-2xl font-bold text-gray-900">
           {`${summary.total.toLocaleString()}명`}
         </p>
+        <p className="mt-1 text-xs text-gray-500">
+          {`전체: ${summary.total.toLocaleString()}명, 최근 지급: ${summary.recentPaidTotal.toLocaleString()}명`}
+        </p>
       </button>
 
       {EMPLOYEE_INCOME_TYPE_OPTIONS.map((option) => {
@@ -67,6 +70,9 @@ export default function EmployeeSummaryCards({
             </div>
             <p className="mt-3 text-2xl font-bold text-gray-900">
               {`${item?.total.toLocaleString() ?? 0}명`}
+            </p>
+            <p className="mt-1 text-xs text-gray-500">
+              {`전체: ${item?.total.toLocaleString() ?? 0}명, 최근 지급: ${item?.recentPaidCount.toLocaleString() ?? 0}명`}
             </p>
           </button>
         );

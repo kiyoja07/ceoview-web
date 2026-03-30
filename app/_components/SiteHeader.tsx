@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 type NavItem = {
@@ -19,9 +20,11 @@ export default function SiteHeader({
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         <Link href="/" className="flex items-center gap-2.5">
-          <img
+          <Image
             src="https://ceoview.edge.naverncp.com/public/app-icon-ceoview.png"
             alt="경영한눈"
+            width={32}
+            height={32}
             className="h-8 w-8 rounded-lg"
           />
           <span className="text-base font-bold tracking-wide text-slate-950">

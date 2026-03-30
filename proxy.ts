@@ -21,7 +21,7 @@ function getMatchedLegacyAudience(pathname: string) {
   });
 }
 
-function redirectTo(request: NextRequest, url: string) {
+function redirectTo(url: string) {
   return NextResponse.redirect(new URL(url), 308);
 }
 
@@ -45,7 +45,6 @@ export function proxy(request: NextRequest) {
     const matchedAudience = getMatchedLegacyAudience(pathname);
     if (matchedAudience) {
       return redirectTo(
-        request,
         buildUrlForAudience(matchedAudience, pathname, request),
       );
     }
@@ -54,7 +53,6 @@ export function proxy(request: NextRequest) {
 
   if (isPublicSurfacePath(pathname)) {
     return redirectTo(
-      request,
       buildUrlForAudience("public", pathname, request),
     );
   }
@@ -62,7 +60,6 @@ export function proxy(request: NextRequest) {
   const currentPrefix = INTERNAL_PREFIX_BY_AUDIENCE[audience];
   if (pathname === currentPrefix || pathname.startsWith(`${currentPrefix}/`)) {
     return redirectTo(
-      request,
       buildUrlForAudience(audience, pathname, request),
     );
   }

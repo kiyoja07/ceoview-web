@@ -9,17 +9,11 @@ import {
 } from "@/app/lib/company-user-invite";
 import { sendEmail } from "@/app/lib/messages/email";
 import { sendSms } from "@/app/lib/messages/sms";
+import { formatBusinessNumber } from "@/app/lib/formatters";
 import type { SendCompanyUserInviteBody } from "@/types/agent/company";
 
 function isValidPhone(phone: string) {
   return /^01[016789]\d{7,8}$/.test(phone.replace(/\D/g, ""));
-}
-
-function formatBusinessNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 10);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
 }
 
 async function requireAgentOrganizationId(request: NextRequest) {

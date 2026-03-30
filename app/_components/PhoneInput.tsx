@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatPhoneInput } from "@/app/lib/formatters";
 
 const themeRing = {
   emerald: "focus:border-emerald-500 focus:ring-emerald-500",
@@ -15,13 +16,7 @@ type PhoneInputProps = {
   theme?: "emerald" | "blue";
 };
 
-export function formatPhone(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 11);
-  if (!digits) return "";
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
-}
+export const formatPhone = formatPhoneInput;
 
 export function validatePhone(value: string): string | null {
   if (!value.trim()) return null;

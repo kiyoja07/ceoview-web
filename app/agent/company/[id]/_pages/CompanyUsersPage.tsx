@@ -2,6 +2,10 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  formatBusinessNumber,
+  formatDateDisplay,
+} from "@/app/lib/formatters";
 import type { ApiErrorResponse } from "@/types/agent/auth";
 import type {
   AgentCompanyUsersResponse,
@@ -9,17 +13,6 @@ import type {
   CompanyUserInviteHistoryResponse,
 } from "@/types/agent/company";
 import { InviteCompanyUserModal } from "../users/InviteCompanyUserModal";
-
-function formatBusinessNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 10);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
-}
-
-function formatDate(value: string) {
-  return new Date(value).toLocaleDateString("ko-KR");
-}
 
 export default function AgentCompanyUsersPage() {
   const params = useParams<{ id: string }>();
@@ -237,7 +230,7 @@ export default function AgentCompanyUsersPage() {
                           {user.phone || "-"}
                         </td>
                         <td className="px-4 py-3 text-gray-600">
-                          {formatDate(user.createdAt)}
+                            {formatDateDisplay(user.createdAt)}
                         </td>
                       </tr>
                     ))}
@@ -347,7 +340,7 @@ export default function AgentCompanyUsersPage() {
                               </span>
                             </td>
                             <td className="px-4 py-3 text-gray-600">
-                              {formatDate(inv.createdAt)}
+                              {formatDateDisplay(inv.createdAt)}
                             </td>
                           </tr>
                         ))}
