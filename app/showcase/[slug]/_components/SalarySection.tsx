@@ -71,42 +71,6 @@ export default function SalarySection({
               </div>
             </div>
 
-            <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <SummaryStatCard
-                label="총 지급 월수"
-                value={`${salaryStats.length}개월`}
-                colorClassName="from-indigo-500 to-indigo-600 shadow-indigo-200"
-                icon={<IconCompanyBurden />}
-              />
-              <SummaryStatCard
-                label="총 지급액"
-                value={`₩ ${formatNumber(
-                  salaryStats.reduce((sum, item) => sum + item.totalPayment, 0),
-                )}`}
-                colorClassName="from-blue-500 to-blue-600 shadow-blue-200"
-                icon={<IconMoney />}
-              />
-              <SummaryStatCard
-                label="총 공제액"
-                value={`₩ ${formatNumber(
-                  salaryStats.reduce(
-                    (sum, item) => sum + item.totalDeduction,
-                    0,
-                  ),
-                )}`}
-                colorClassName="from-rose-500 to-rose-600 shadow-rose-200"
-                icon={<IconMinusCircle />}
-              />
-              <SummaryStatCard
-                label="차인지급액"
-                value={`₩ ${formatNumber(
-                  salaryStats.reduce((sum, item) => sum + item.netPayment, 0),
-                )}`}
-                colorClassName="from-emerald-500 to-emerald-600 shadow-emerald-200"
-                icon={<IconNetPay />}
-              />
-            </div>
-
             <SummaryCardsRow
               summary={salarySummary}
               toCurrency={(value) => formatNumber(value)}

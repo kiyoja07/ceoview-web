@@ -32,6 +32,7 @@ type EmployeeFormProps = {
   onSubmit: (data: EmployeeFormData) => Promise<void>;
   onCancel: () => void;
   submitLabel: string;
+  showEmployeeCode?: boolean;
 };
 
 export function EmployeeForm({
@@ -39,6 +40,7 @@ export function EmployeeForm({
   onSubmit,
   onCancel,
   submitLabel,
+  showEmployeeCode,
 }: EmployeeFormProps) {
   const [employeeCode, setEmployeeCode] = useState(
     initialData?.employeeCode ?? "",
@@ -153,23 +155,6 @@ export function EmployeeForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label
-              htmlFor="emp-code"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              사원코드
-            </label>
-            <input
-              id="emp-code"
-              type="text"
-              value={employeeCode}
-              onChange={(e) => setEmployeeCode(e.target.value)}
-              placeholder="EMP001"
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              disabled={submitting}
-            />
-          </div>
-          <div>
-            <label
               htmlFor="emp-name"
               className="mb-1.5 block text-xs font-medium text-gray-600"
             >
@@ -185,6 +170,25 @@ export function EmployeeForm({
               disabled={submitting}
             />
           </div>
+          {showEmployeeCode && (
+            <div>
+              <label
+                htmlFor="emp-code"
+                className="mb-1.5 block text-xs font-medium text-gray-600"
+              >
+                사원코드
+              </label>
+              <input
+                id="emp-code"
+                type="text"
+                value={employeeCode}
+                onChange={(e) => setEmployeeCode(e.target.value)}
+                placeholder="EMP001"
+                className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                disabled={submitting}
+              />
+            </div>
+          )}
           <div>
             <label
               htmlFor="emp-resident"

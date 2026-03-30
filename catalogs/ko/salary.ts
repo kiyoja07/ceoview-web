@@ -1,6 +1,14 @@
-import type { LabeledOption } from "@/catalogs/types";
+import type { KeyLabel, LabeledOption } from "@/catalogs/types";
 import type { SalaryIncomeType } from "@/app/api/agent/salary/upload/types";
 import type { IncomeTab } from "@/app/company/[id]/salary/types";
+import type { FilterMode } from "@/app/agent/salary/_components/types";
+
+export const SALARY_DASHBOARD_FILTER_OPTIONS: KeyLabel<FilterMode>[] = [
+  { key: "all", label: "전체" },
+  { key: "published", label: "발행완료" },
+  { key: "unpublished", label: "미발행" },
+  { key: "no-upload", label: "미등록" },
+];
 
 export const SALARY_INCOME_TYPE_OPTIONS: LabeledOption<SalaryIncomeType>[] = [
   { value: "EARNED_INCOME", label: "근로소득" },

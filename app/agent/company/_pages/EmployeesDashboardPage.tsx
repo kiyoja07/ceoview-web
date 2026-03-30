@@ -19,6 +19,7 @@ import {
 } from "../../employees/_components/icons";
 import { SummaryCard } from "../../employees/_components/SummaryCard";
 import { CompanyCard } from "../../employees/_components/CompanyCard";
+import { EMPLOYEE_DASHBOARD_FILTER_OPTIONS } from "@/catalogs/ko/employee-dashboard";
 
 /* ────────────── Main Page ────────────── */
 
@@ -204,15 +205,7 @@ export default function EmployeeDashboardPage() {
                 />
               </div>
               <div className="flex gap-1.5">
-                {(
-                  [
-                    { key: "all", label: "전체" },
-                    { key: "published", label: "발행완료" },
-                    { key: "unpublished", label: "미발행" },
-                    { key: "has-employees", label: "등록완료" },
-                    { key: "no-employees", label: "미등록" },
-                  ] as { key: FilterMode; label: string }[]
-                ).map(({ key, label }) => (
+                {EMPLOYEE_DASHBOARD_FILTER_OPTIONS.map(({ key, label }) => (
                   <button
                     key={key}
                     type="button"

@@ -6,6 +6,7 @@ import {
   parseEmployeeRegistration,
   parseBusinessIncomeEmployeeRegistration,
   parseOtherIncomeEmployeeRegistration,
+  parseDailyLaborEmployeeRegistration,
 } from "./parser";
 import type { IncomeType } from "@/types/agent/employee";
 
@@ -155,6 +156,17 @@ export async function POST(request: NextRequest) {
 
     if (incomeType === "OTHER_INCOME") {
       return handleOtherIncome(
+        worksheet,
+        fileName,
+        sheetName,
+        companyId,
+        parsedCompanyId,
+        save,
+      );
+    }
+
+    if (incomeType === "OTHER_INCOME_LABOR") {
+      return handleDailyLaborIncome(
         worksheet,
         fileName,
         sheetName,
@@ -775,6 +787,216 @@ async function handleOtherIncome(
     sheetName,
     companyId,
     incomeType: "OTHER_INCOME",
+    totalRows: rows.length,
+    matchedCount,
+    unmatchedCount,
+    alreadyRegisteredCount,
+    columns,
+    rows: mappedRows,
+  });
+}
+
+function toDecimal(v: unknown): number | null {
+  if (v == null) return null;
+  if (typeof v === "number") return isNaN(v) ? null : v;
+  const s = String(v).trim().replace(/,/g, "");
+  if (!s) return null;
+  const n = Number(s);
+  return isNaN(n) ? null : n;
+}
+
+async function handleDailyLaborIncome(
+  worksheet: XLSX.WorkSheet,
+  fileName: string,
+  sheetName: string,
+  companyId: string,
+  parsedCompanyId: bigint,
+  save: boolean,
+) {
+  const { columns, rows } = parseDailyLaborEmployeeRegistration(worksheet);
+
+  if (rows.length === 0) {
+    return NextResponse.json(
+      { error: "엑셀 파일에 직원 데이터가 없습니다." },
+      { status: 400 },
+    );
+  }
+
+  // 코드 컬럼 확인 (일용직사원명부는 "코드" 헤더에 공백 포함 가능)
+  const codeCol = columns.find((c) => c.replace(/\s/g, "") === "코드");
+  if (!codeCol) {
+    return NextResponse.json(
+      {
+        error: `코드 컬럼을 찾을 수 없습니다.\n(감지된 컬럼: ${columns.join(", ")})`,
+      },
+      { status: 400 },
+    );
+  }
+
+  // 성명 컬럼 (공백 포함 가능)
+  const nameCol = columns.find((c) => c.replace(/\s/g, "") === "성명");
+
+  // 급여(일용직소득) 데이터에서 사원코드 목록 조회
+  const salaryEmployeeCodes = await prisma.dailyIncomeLabor.findMany({
+    where: {
+      upload: { companyId: parsedCompanyId },
+    },
+    select: { employeeCode: true, employeeName: true },
+    distinct: ["employeeCode"],
+  });
+
+  const salaryCodeSet = new Set(salaryEmployeeCodes.map((r) => r.employeeCode));
+  const salaryCodeNameMap = new Map(
+    salaryEmployeeCodes.map((r) => [r.employeeCode, r.employeeName]),
+  );
+
+  // 기존 일용직 직원 테이블에서 사원코드 목록 조회
+  const existingEmployees = await prisma.otherIncomeLaborEmployee.findMany({
+    where: {
+      companyId: parsedCompanyId,
+      deletedAt: null,
+      employeeCode: { not: null },
+    },
+    select: { employeeCode: true },
+  });
+  const existingCodeSet = new Set(existingEmployees.map((e) => e.employeeCode));
+
+  // 매핑 결과 생성
+  const mappedRows: Record<string, unknown>[] = rows.map((row) => {
+    const code = String(row[codeCol] ?? "").trim();
+    const hasSalary = salaryCodeSet.has(code);
+    const salaryName = salaryCodeNameMap.get(code) ?? null;
+    const alreadyRegistered = existingCodeSet.has(code);
+
+    return {
+      ...row,
+      _employeeCode: code,
+      _hasSalaryMatch: hasSalary,
+      _salaryEmployeeName: salaryName,
+      _alreadyRegistered: alreadyRegistered,
+    };
+  });
+
+  const matchedCount = mappedRows.filter((r) => r._hasSalaryMatch).length;
+  const unmatchedCount = mappedRows.filter((r) => !r._hasSalaryMatch).length;
+  const alreadyRegisteredCount = mappedRows.filter(
+    (r) => r._alreadyRegistered,
+  ).length;
+
+  if (save) {
+    let savedCount = 0;
+    let skippedCount = 0;
+
+    // 컬럼명 헬퍼 (공백 포함 가능한 헤더 대응)
+    const findCol = (keyword: string) =>
+      columns.find((c) => c.replace(/\s/g, "") === keyword) ?? keyword;
+
+    for (const row of mappedRows) {
+      const code = String(row._employeeCode ?? "").trim();
+      if (!code) continue;
+
+      const name = toStr(row[nameCol ?? "성명"]) ?? "";
+      if (!name) continue;
+
+      const residentNumber = toStr(row[findCol("주민등록번호")]);
+      const department = toStr(row[findCol("부서")]);
+      const positionTitle = toStr(row[findCol("직급")]);
+      const hireDate = toDateStr(row[findCol("입사일")]);
+      const resignDate = toDateStr(row[findCol("퇴사일")]);
+      const jobCategory = toStr(row[findCol("직종")]);
+      const payType = toStr(row[findCol("급여형태")]);
+      const paymentMethod = toStr(row[findCol("지급방법")]);
+      const overtimeType = toStr(row[findCol("연장형태")]);
+      const normalPay = toDecimal(row[findCol("정상급여")]);
+      const overtimePay = toDecimal(row[findCol("연장급여")]);
+      const address = toStr(row[findCol("주소")]);
+      const bankName = toStr(row[findCol("은행")]);
+      const accountNumber = toStr(row[findCol("계좌번호")]);
+      const siteName = toStr(row[findCol("현장")]);
+
+      await prisma.otherIncomeLaborEmployee.upsert({
+        where: {
+          companyId_employeeCode: {
+            companyId: parsedCompanyId,
+            employeeCode: code,
+          },
+        },
+        update: {
+          name,
+          residentNumber,
+          department,
+          positionTitle,
+          hireDate,
+          resignDate,
+          jobCategory,
+          payType,
+          paymentMethod,
+          overtimeType,
+          normalPay,
+          overtimePay,
+          address,
+          bankName,
+          accountNumber,
+          siteName,
+          publishStatus: "SAVED",
+          deletedAt: null,
+        },
+        create: {
+          companyId: parsedCompanyId,
+          employeeCode: code,
+          name,
+          residentNumber,
+          department,
+          positionTitle,
+          hireDate,
+          resignDate,
+          jobCategory,
+          payType,
+          paymentMethod,
+          overtimeType,
+          normalPay,
+          overtimePay,
+          address,
+          bankName,
+          accountNumber,
+          siteName,
+          publishStatus: "SAVED",
+        },
+      });
+
+      savedCount++;
+    }
+
+    skippedCount = mappedRows.length - savedCount;
+
+    return NextResponse.json({
+      success: true,
+      saved: true,
+      published: false,
+      publishStatus: "SAVED",
+      savedCount,
+      skippedCount,
+      fileName,
+      sheetName,
+      companyId,
+      incomeType: "OTHER_INCOME_LABOR",
+      totalRows: rows.length,
+      matchedCount,
+      unmatchedCount,
+      alreadyRegisteredCount,
+      columns,
+      rows: mappedRows.slice(0, 100),
+    });
+  }
+
+  // 미리보기만 반환
+  return NextResponse.json({
+    success: true,
+    saved: false,
+    fileName,
+    sheetName,
+    companyId,
+    incomeType: "OTHER_INCOME_LABOR",
     totalRows: rows.length,
     matchedCount,
     unmatchedCount,

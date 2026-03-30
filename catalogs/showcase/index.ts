@@ -222,20 +222,20 @@ const SHOWCASE_SCENARIOS: ShowcaseScenario[] = [
       ],
       salaryMetrics: [
         {
-          label: "업로드 유형",
+          label: "소득 유형",
           value: "4개",
           description: "근로·사업·기타·일용직",
           tone: "blue",
         },
         {
-          label: "공개 직원 수",
+          label: "직원 수",
           value: "42명",
           description: "직원 포털 열람 가능",
           tone: "emerald",
         },
         {
-          label: "평균 실수령액",
-          value: "₩ 3,530,000",
+          label: "총 지급액",
+          value: "₩ 157,530,000",
           description: "근로소득 기준",
           tone: "slate",
         },

@@ -8,6 +8,10 @@ import type {
   AuthMessageState,
 } from "@/types/agent/auth";
 import PhoneInput, { validatePhone } from "@/app/_components/PhoneInput";
+import {
+  formatCountdown,
+  usePhoneVerification,
+} from "@/app/_hooks/usePhoneVerification";
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow";
@@ -21,9 +25,28 @@ export default function AgentProfilePage() {
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [originalPhone, setOriginalPhone] = useState("");
   const [email, setEmail] = useState("");
   const [isMaster, setIsMaster] = useState(false);
   const [message, setMessage] = useState<AuthMessageState>(null);
+  const {
+    verifyState,
+    verificationId,
+    verifyCode,
+    verifyMessage,
+    countdown,
+    needsVerification,
+    isPhoneVerified,
+    setVerifyCode,
+    resetVerification,
+    sendCode,
+    confirmCode,
+  } = usePhoneVerification({
+    phone,
+    originalPhone,
+    sendEndpoint: "/api/agent/auth/phone-verify/send",
+    confirmEndpoint: "/api/agent/auth/phone-verify/confirm",
+  });
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -45,8 +68,10 @@ export default function AgentProfilePage() {
 
         setName(data.name ?? "");
         setPhone(data.phone ?? "");
+        setOriginalPhone(data.phone ?? "");
         setEmail(data.email ?? "");
         setIsMaster(data.isMaster ?? false);
+        resetVerification();
       } catch {
         setMessage({
           type: "error",
@@ -58,12 +83,17 @@ export default function AgentProfilePage() {
     };
 
     void loadProfile();
-  }, [router]);
+  }, [resetVerification, router]);
 
   const submitLabel = useMemo(
     () => (saving ? "저장 중..." : "내 정보 저장"),
     [saving],
   );
+
+  const handlePhoneChange = (value: string) => {
+    setPhone(value);
+    resetVerification();
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -74,18 +104,31 @@ export default function AgentProfilePage() {
       return;
     }
 
+    if (needsVerification && !isPhoneVerified) {
+      setMessage({
+        type: "error",
+        text: "변경된 휴대폰 번호의 인증을 완료해주세요.",
+      });
+      return;
+    }
+
     setSaving(true);
     setMessage(null);
 
     try {
+      const body = {
+        name,
+        phone: phone || null,
+        isMaster,
+        ...(needsVerification && isPhoneVerified && verificationId
+          ? { phoneVerificationId: verificationId }
+          : {}),
+      };
+
       const res = await fetch("/api/agent/auth/me", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone: phone || null,
-          isMaster,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (res.status === 401) {
@@ -109,6 +152,9 @@ export default function AgentProfilePage() {
       if (typeof data.isMaster === "boolean") {
         setIsMaster(data.isMaster);
       }
+
+      setOriginalPhone(phone);
+      resetVerification();
 
       setMessage({
         type: "success",
@@ -176,7 +222,92 @@ export default function AgentProfilePage() {
             <label className="mb-1.5 block text-sm font-medium text-gray-700">
               휴대폰 번호
             </label>
-            <PhoneInput value={phone} onChange={setPhone} theme="blue" />
+            <div className="flex items-start gap-2">
+              <div className="flex-1">
+                <PhoneInput
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  theme="blue"
+                  disabled={
+                    saving ||
+                    verifyState === "sending" ||
+                    verifyState === "verifying"
+                  }
+                />
+              </div>
+              {needsVerification && !isPhoneVerified && (
+                <button
+                  type="button"
+                  onClick={sendCode}
+                  disabled={
+                    saving ||
+                    verifyState === "sending" ||
+                    (verifyState === "sent" && countdown > 150)
+                  }
+                  className="shrink-0 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+                >
+                  {verifyState === "sending"
+                    ? "발송 중..."
+                    : verifyState === "sent"
+                      ? "재발송"
+                      : "인증요청"}
+                </button>
+              )}
+              {isPhoneVerified && needsVerification && (
+                <div className="flex shrink-0 items-center rounded-lg bg-blue-50 px-3 py-2.5 text-sm font-medium text-blue-700 ring-1 ring-blue-200">
+                  인증완료
+                </div>
+              )}
+            </div>
+
+            {(verifyState === "sent" || verifyState === "verifying") && (
+              <div className="mt-2 flex gap-2">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    value={verifyCode}
+                    onChange={(event) =>
+                      setVerifyCode(
+                        event.target.value.replace(/\D/g, "").slice(0, 6),
+                      )
+                    }
+                    className={inputBase}
+                    placeholder="인증번호 6자리"
+                    maxLength={6}
+                  />
+                  {countdown > 0 && (
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-red-500">
+                      {formatCountdown(countdown)}
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={confirmCode}
+                  disabled={
+                    saving ||
+                    verifyState === "verifying" ||
+                    verifyCode.length < 6 ||
+                    countdown === 0
+                  }
+                  className="shrink-0 rounded-lg bg-gray-800 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-900 disabled:cursor-not-allowed disabled:bg-gray-300"
+                >
+                  {verifyState === "verifying" ? "확인 중..." : "인증확인"}
+                </button>
+              </div>
+            )}
+
+            {verifyMessage && (
+              <p
+                className={`mt-1.5 text-xs ${
+                  verifyMessage.type === "error"
+                    ? "text-red-600"
+                    : "text-blue-600"
+                }`}
+              >
+                {verifyMessage.text}
+              </p>
+            )}
           </div>
 
           <div>
@@ -222,7 +353,7 @@ export default function AgentProfilePage() {
 
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || (needsVerification && !isPhoneVerified)}
             className="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
           >
             {submitLabel}

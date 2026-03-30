@@ -49,3 +49,9 @@ export const AGENT_COMPANY_SETTINGS_TABS: NavDefinition[] = [
   { slug: "info", label: "기본 정보" },
   { slug: "users", label: "거래처 사용자" },
 ];
+
+export const EMPLOYEE_HEADER_NAV_ITEMS: NavDefinition[] = [
+  { href: "/employee", label: "홈" },
+  { href: "/employee/payslips", label: "급여 명세서" },
+  { href: "/employee/settings", label: "내 정보" },
+];

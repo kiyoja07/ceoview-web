@@ -18,6 +18,9 @@ type OtherIncomeLaborEmployeeFormData = {
   phone: string;
   hireDate: string;
   resignDate: string;
+  address: string;
+  bankName: string;
+  accountNumber: string;
 };
 
 type OtherIncomeLaborEmployeeFormProps = {
@@ -48,6 +51,11 @@ export function OtherIncomeLaborEmployeeForm({
   const [phone, setPhone] = useState(initialData?.phone ?? "");
   const [hireDate, setHireDate] = useState(initialData?.hireDate ?? "");
   const [resignDate, setResignDate] = useState(initialData?.resignDate ?? "");
+  const [address, setAddress] = useState(initialData?.address ?? "");
+  const [bankName, setBankName] = useState(initialData?.bankName ?? "");
+  const [accountNumber, setAccountNumber] = useState(
+    initialData?.accountNumber ?? "",
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -108,6 +116,9 @@ export function OtherIncomeLaborEmployeeForm({
         phone: phone.trim(),
         hireDate: hireDate.trim(),
         resignDate: resignDate.trim(),
+        address: address.trim(),
+        bankName: bankName.trim(),
+        accountNumber: accountNumber.trim(),
       });
     } catch (err) {
       setError(
@@ -281,6 +292,62 @@ export function OtherIncomeLaborEmployeeForm({
               onChange={setResignDate}
               disabled={submitting}
               theme="emerald"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
+        <h2 className="mb-4 text-base font-semibold text-gray-900">
+          주소·계좌
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <label
+              htmlFor="oil-emp-address"
+              className="mb-1.5 block text-xs font-medium text-gray-600"
+            >
+              주소
+            </label>
+            <input
+              id="oil-emp-address"
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className={inputClass}
+              disabled={submitting}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="oil-emp-bank"
+              className="mb-1.5 block text-xs font-medium text-gray-600"
+            >
+              은행명
+            </label>
+            <input
+              id="oil-emp-bank"
+              type="text"
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
+              className={inputClass}
+              disabled={submitting}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="oil-emp-account"
+              className="mb-1.5 block text-xs font-medium text-gray-600"
+            >
+              계좌번호
+            </label>
+            <input
+              id="oil-emp-account"
+              type="text"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+              className={inputClass}
+              disabled={submitting}
             />
           </div>
         </div>

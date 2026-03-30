@@ -62,6 +62,7 @@ export const ModelName = {
   CompanyUserCompany: 'CompanyUserCompany',
   CompanyMagicLinkToken: 'CompanyMagicLinkToken',
   PhoneVerificationCode: 'PhoneVerificationCode',
+  AgentPhoneVerificationCode: 'AgentPhoneVerificationCode',
   CompanyUserInviteHistory: 'CompanyUserInviteHistory',
   AgentCompanyCustomer: 'AgentCompanyCustomer',
   AgentOrganizationBilling: 'AgentOrganizationBilling',
@@ -260,6 +261,19 @@ export const PhoneVerificationCodeScalarFieldEnum = {
 } as const
 
 export type PhoneVerificationCodeScalarFieldEnum = (typeof PhoneVerificationCodeScalarFieldEnum)[keyof typeof PhoneVerificationCodeScalarFieldEnum]
+
+
+export const AgentPhoneVerificationCodeScalarFieldEnum = {
+  id: 'id',
+  agentUserId: 'agentUserId',
+  phone: 'phone',
+  code: 'code',
+  expiresAt: 'expiresAt',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type AgentPhoneVerificationCodeScalarFieldEnum = (typeof AgentPhoneVerificationCodeScalarFieldEnum)[keyof typeof AgentPhoneVerificationCodeScalarFieldEnum]
 
 
 export const CompanyUserInviteHistoryScalarFieldEnum = {
@@ -640,6 +654,16 @@ export const OtherIncomeLaborEmployeeScalarFieldEnum = {
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  jobCategory: 'jobCategory',
+  payType: 'payType',
+  paymentMethod: 'paymentMethod',
+  overtimeType: 'overtimeType',
+  normalPay: 'normalPay',
+  overtimePay: 'overtimePay',
+  address: 'address',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  siteName: 'siteName',
   publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -789,6 +813,14 @@ export const PhoneVerificationCodeOrderByRelevanceFieldEnum = {
 } as const
 
 export type PhoneVerificationCodeOrderByRelevanceFieldEnum = (typeof PhoneVerificationCodeOrderByRelevanceFieldEnum)[keyof typeof PhoneVerificationCodeOrderByRelevanceFieldEnum]
+
+
+export const AgentPhoneVerificationCodeOrderByRelevanceFieldEnum = {
+  phone: 'phone',
+  code: 'code'
+} as const
+
+export type AgentPhoneVerificationCodeOrderByRelevanceFieldEnum = (typeof AgentPhoneVerificationCodeOrderByRelevanceFieldEnum)[keyof typeof AgentPhoneVerificationCodeOrderByRelevanceFieldEnum]
 
 
 export const CompanyUserInviteHistoryOrderByRelevanceFieldEnum = {
@@ -999,7 +1031,15 @@ export const OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum = {
   email: 'email',
   phone: 'phone',
   hireDate: 'hireDate',
-  resignDate: 'resignDate'
+  resignDate: 'resignDate',
+  jobCategory: 'jobCategory',
+  payType: 'payType',
+  paymentMethod: 'paymentMethod',
+  overtimeType: 'overtimeType',
+  address: 'address',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  siteName: 'siteName'
 } as const
 
 export type OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum = (typeof OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum)[keyof typeof OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum]

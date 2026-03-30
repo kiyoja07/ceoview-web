@@ -134,104 +134,177 @@ function CompanyAuthLoginPageInner() {
 
   return (
     <div className="min-h-screen bg-app-bg">
-      <div className="mx-auto flex min-h-screen max-w-md items-center p-6">
-        <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
-          <div className="mb-6 text-center">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-              Company 계정 시작
-            </h1>
-            <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+      <div className="mx-auto flex min-h-screen max-w-5xl items-center p-6">
+        <div className="grid w-full gap-8 lg:grid-cols-2 lg:items-center">
+          {/* 마케팅 영역 */}
+          <div className="hidden lg:block">
+            <p className="text-sm font-semibold tracking-wide text-emerald-600">
+              우리 회사 급여 관리 시스템
+            </p>
+            <h2 className="mt-3 text-3xl font-bold leading-snug tracking-tight text-gray-900">
+              급여 명세서부터 직원 관리까지
+              <br />
+              <span className="text-emerald-600">한 곳에서 간편하게</span>
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-gray-500">
+              엑셀로 돌려보던 급여 관리, 이제 끝.
+              <br />
+              사장님 전용 대시보드에서 직원 현황과 급여를 한눈에 확인하세요.
+            </p>
+
+            <ul className="mt-8 space-y-4">
+              {[
+                {
+                  title: "급여 명세서 자동 발급",
+                  desc: "세무대리인이 업로드하면 직원에게 자동 전달",
+                },
+                {
+                  title: "직원 현황 한눈에",
+                  desc: "입·퇴사, 급여 이력을 대시보드에서 바로 확인",
+                },
+                {
+                  title: "직원 셀프서비스 포털",
+                  desc: "직원이 직접 명세서를 조회하고 정보를 수정",
+                },
+              ].map((item) => (
+                <li key={item.title} className="flex items-start gap-3">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs text-emerald-600">
+                    ✓
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      {item.title}
+                    </p>
+                    <p className="text-xs text-gray-500">{item.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8 rounded-xl bg-emerald-50 px-4 py-3">
+              <p className="text-sm font-semibold text-emerald-700">
+                세무대리인이 제공하는 무료 시스템
+              </p>
+              <p className="mt-0.5 text-xs text-emerald-600/70">
+                별도 비용 없이 세무대리인을 통해 바로 사용할 수 있습니다
+              </p>
+            </div>
           </div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                로그인 방식
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setContactType("email");
-                    setContact("");
-                    setMessage(null);
-                  }}
-                  className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                    contactType === "email"
-                      ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                      : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  이메일
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setContactType("phone");
-                    setContact("");
-                    setMessage(null);
-                  }}
-                  className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                    contactType === "phone"
-                      ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                      : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  전화번호
-                </button>
+          {/* 로그인 폼 영역 */}
+          <div className="w-full max-w-lg justify-self-center lg:justify-self-end">
+            <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
+              <div className="mb-6 text-center">
+                <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+                  사업장 계정으로 시작
+                </h1>
+                <p className="mt-2 text-sm text-gray-500">{helperText}</p>
               </div>
-            </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                {contactType === "email" ? "이메일" : "전화번호"}
-              </label>
-              <input
-                type={contactType === "email" ? "email" : "tel"}
-                required
-                value={contact}
-                onChange={(e) =>
-                  setContact(
-                    contactType === "email"
-                      ? e.target.value
-                      : normalizePhoneInput(e.target.value),
-                  )
-                }
-                className={inputBase}
-                placeholder={
-                  contactType === "email" ? "name@company.com" : "010-0000-0000"
-                }
-              />
-            </div>
-
-            {message && (
-              <div
-                className={`rounded-lg px-3 py-2 text-sm ${
-                  message.type === "error"
-                    ? "border border-red-200 bg-red-50 text-red-700"
-                    : "border border-green-200 bg-green-50 text-green-700"
-                }`}
-              >
-                {message.text}
+              {/* 모바일 전용 마케팅 배너 */}
+              <div className="mb-5 rounded-lg bg-linear-to-r from-emerald-50 to-teal-50 px-4 py-3 lg:hidden">
+                <p className="text-center text-sm font-medium text-emerald-700">
+                  급여 명세서부터 직원 관리까지 한 곳에서
+                </p>
+                <p className="mt-0.5 text-center text-xs text-emerald-600/70">
+                  세무대리인이 제공하는 무료 시스템 · 가입 즉시 사용 가능
+                </p>
               </div>
-            )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex w-full items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300"
-            >
-              {submitLabel}
-            </button>
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                    로그인 방식
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setContactType("email");
+                        setContact("");
+                        setMessage(null);
+                      }}
+                      className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                        contactType === "email"
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                          : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      이메일
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setContactType("phone");
+                        setContact("");
+                        setMessage(null);
+                      }}
+                      className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                        contactType === "phone"
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                          : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      전화번호
+                    </button>
+                  </div>
+                </div>
 
-            <p className="text-center text-xs text-gray-500">
-              링크는 15분간 유효하며 1회만 사용할 수 있습니다.
-            </p>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                    {contactType === "email" ? "이메일" : "전화번호"}
+                  </label>
+                  <input
+                    type={contactType === "email" ? "email" : "tel"}
+                    required
+                    value={contact}
+                    onChange={(e) =>
+                      setContact(
+                        contactType === "email"
+                          ? e.target.value
+                          : normalizePhoneInput(e.target.value),
+                      )
+                    }
+                    className={inputBase}
+                    placeholder={
+                      contactType === "email"
+                        ? "name@company.com"
+                        : "010-0000-0000"
+                    }
+                  />
+                </div>
 
-            <p className="text-center text-xs text-gray-500">
-              첫 로그인 후 온보딩에서 회사 정보를 입력하면 바로 사용 가능합니다.
-            </p>
-          </form>
+                {message && (
+                  <div
+                    className={`rounded-lg px-3 py-2 text-sm ${
+                      message.type === "error"
+                        ? "border border-red-200 bg-red-50 text-red-700"
+                        : "border border-green-200 bg-green-50 text-green-700"
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="inline-flex w-full items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300"
+                >
+                  {submitLabel}
+                </button>
+
+                <p className="text-center text-xs text-gray-500">
+                  링크는 15분간 유효하며 1회만 사용할 수 있습니다.
+                </p>
+
+                <p className="text-center text-xs text-gray-500">
+                  첫 로그인 후 온보딩에서 회사 정보를 입력하면 바로 사용
+                  가능합니다.
+                </p>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>

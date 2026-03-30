@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ceoview.edge.naverncp.com",
+      },
+    ],
+  },
   transpilePackages: [
     "recharts",
     "victory-vendor",

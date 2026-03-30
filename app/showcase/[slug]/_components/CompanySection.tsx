@@ -36,7 +36,7 @@ export default function CompanySection({
                     )}
                   </p>
                 </div>
-                <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+                <div className="rounded-2xl bg-white/10 p-4 backdrop-blur w-xs ">
                   <label className="mb-1.5 block text-xs font-medium text-emerald-100/80">
                     회사 선택
                   </label>
@@ -52,10 +52,6 @@ export default function CompanySection({
                       브릭웨이브 서브법인
                     </option>
                   </select>
-                  <p className="mt-2 text-xs text-emerald-100/75">
-                    접근 가능한 회사 사이에서 현재 작업 회사를 전환할 수
-                    있습니다.
-                  </p>
                 </div>
               </div>
             </div>
@@ -76,27 +72,6 @@ export default function CompanySection({
                 </div>
               </div>
             </div>
-
-            {firstRequest && (
-              <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
-                <p className="text-sm font-semibold text-amber-900">
-                  담당 세무대리인 변경 요청
-                </p>
-                <p className="mt-2 text-sm text-amber-800">
-                  현재 담당: 한결세무회계
-                </p>
-                <p className="mt-1 text-sm text-amber-800">
-                  요청 상태: {firstRequest.statusLabel}
-                </p>
-                <button
-                  type="button"
-                  disabled
-                  className="mt-4 inline-flex items-center rounded-xl bg-amber-600 px-4 py-2.5 text-sm font-medium text-white opacity-70"
-                >
-                  데모에서는 비활성화됨
-                </button>
-              </div>
-            )}
 
             <section className="mb-8">
               <div className="mb-4 flex items-end justify-between gap-3">

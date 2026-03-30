@@ -17,6 +17,7 @@ import DateInput, { validateDate } from "./DateInput";
 
 export type EmployeeFullDetail = {
   id: string;
+  incomeType?: string;
   employeeCode: string | null;
   name: string;
   residentNumber: string | null;
@@ -56,6 +57,24 @@ export type EmployeeFullDetail = {
   createdAt: string;
   updatedAt: string;
   pendingRequest?: PendingRequestSummary | null;
+  // 사업소득 고유 필드
+  incomeCategory?: string | null;
+  businessName?: string | null;
+  businessRegistrationNumber?: string | null;
+  businessAddress?: string | null;
+  // 기타소득 고유 필드
+  personType?: string | null;
+  // 일용소득 고유 필드
+  laborJobCategory?: string | null;
+  payType?: string | null;
+  paymentMethod?: string | null;
+  overtimeType?: string | null;
+  normalPay?: string | null;
+  overtimePay?: string | null;
+  siteName?: string | null;
+  // 일용소득 인라인 계좌
+  bankName?: string | null;
+  accountNumber?: string | null;
 };
 
 type EmployeeDetailModalProps = {

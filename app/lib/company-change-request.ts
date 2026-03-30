@@ -164,6 +164,9 @@ export function sanitizeOtherIncomeLaborEmployeePayload(
     phone: normalizeString(body.phone),
     hireDate: normalizeString(body.hireDate),
     resignDate: normalizeString(body.resignDate),
+    address: normalizeString(body.address),
+    bankName: normalizeString(body.bankName),
+    accountNumber: normalizeString(body.accountNumber),
   };
 }
 

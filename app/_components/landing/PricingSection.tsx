@@ -15,43 +15,48 @@ export default function PricingSection() {
         </p>
 
         <div className="mx-auto mt-14 grid max-w-2xl gap-5 sm:grid-cols-2">
-          <div className="rounded-2xl bg-white/5 p-8 ring-1 ring-white/10">
+          <div className="flex flex-col rounded-2xl bg-white/5 p-8 ring-1 ring-white/10">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-400">
               세무대리인
             </p>
-            <p className="mt-6 text-5xl font-bold tracking-tight text-white">
-              ₩ 0원
-            </p>
-            <p className="mt-2 text-sm text-slate-400">월 이용료</p>
-            <ul className="mt-8 space-y-3 text-left text-sm leading-6 text-slate-300">
+            <div className="mt-6 h-72">
+              <p className="text-sm text-slate-500">
+                <s>₩ 1,100원 / 거래처·월</s>
+              </p>
+              <p className="mt-2 text-5xl font-bold tracking-tight text-white">
+                ₩ 0원
+              </p>
+              <p className="mt-2 inline-block rounded-full bg-blue-500/15 px-3 py-1 text-xs font-semibold text-blue-400">
+                프로모션 무료
+              </p>
+            </div>
+
+            <ul className="mt-auto space-y-3 pt-8 text-left text-sm leading-6 text-slate-300">
               <li className="flex items-start gap-2">
                 <span className="mt-0.5 text-blue-400">✓</span>
                 거래처 등록 및 관리
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-0.5 text-blue-400">✓</span>
-                급여 업로드 · 명세서 발급
+                급여 · 명세서 발급
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-0.5 text-blue-400">✓</span>
-                운영 요청 · 이관 관리
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-blue-400">✓</span>
-                거래처 수 제한 없음
+                기장 프로그램 연동
               </li>
             </ul>
           </div>
-
-          <div className="rounded-2xl bg-white/5 p-8 ring-1 ring-white/10">
+          <div className="flex flex-col rounded-2xl bg-white/5 p-8 ring-1 ring-white/10">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">
               거래처 사장님
             </p>
-            <p className="mt-6 text-5xl font-bold tracking-tight text-white">
-              ₩ 0원
-            </p>
-            <p className="mt-2 text-sm text-slate-400">월 이용료</p>
-            <ul className="mt-8 space-y-3 text-left text-sm leading-6 text-slate-300">
+            <div className="mt-6 h-72">
+              <p className="mt-6 text-5xl font-bold tracking-tight text-white">
+                ₩ 0원
+              </p>
+              <p className="mt-2 text-sm text-slate-400">월 이용료</p>
+            </div>
+            <ul className="mt-auto space-y-3 pt-8 text-left text-sm leading-6 text-slate-300">
               <li className="flex items-start gap-2">
                 <span className="mt-0.5 text-emerald-400">✓</span>
                 급여 대시보드
@@ -63,10 +68,6 @@ export default function PricingSection() {
               <li className="flex items-start gap-2">
                 <span className="mt-0.5 text-emerald-400">✓</span>
                 직원 수 제한 없음
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-emerald-400">✓</span>
-                별도 설치 · 구축 불필요
               </li>
             </ul>
           </div>

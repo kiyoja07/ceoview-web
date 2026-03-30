@@ -84,14 +84,15 @@ export function CompanyHeader() {
 
   const navItems = COMPANY_HEADER_NAV_ITEMS.map((item) =>
     item.slug === "salary" ? { ...item, href: salaryHref } : item,
-  ).filter((item): item is typeof item & { href: string } =>
-    typeof item.href === "string",
+  ).filter(
+    (item): item is typeof item & { href: string } =>
+      typeof item.href === "string",
   );
 
   const companyLabel = profile?.company
     ? profile.company.businessName ||
       formatBusinessNumber(profile.company.businessNumber)
-    : "Company Console";
+    : "급여 관리 시스템";
 
   return (
     <header className="sticky top-0 z-30 border-b border-emerald-900/40 bg-emerald-900 backdrop-blur">

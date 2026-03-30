@@ -102,7 +102,7 @@ export default function EmployeeTable({
                   const pendingLabel = getPendingRequestLabel(
                     employee.pendingRequest,
                   );
-                  const employeeDetailPath = `/company/employees/${employee.id}`;
+                  const employeeDetailPath = `/company/employees/${employee.id}?incomeType=${employee.incomeType}`;
                   const isRowClickable = employee.canViewDetail;
 
                   return (

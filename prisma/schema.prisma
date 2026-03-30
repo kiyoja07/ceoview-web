@@ -201,6 +201,7 @@ model AgentUser {
 
   customerLinks          AgentCompanyCustomer[]
   magicLinkTokens        AgentMagicLinkToken[]
+  phoneVerificationCodes AgentPhoneVerificationCode[]
   sentInviteTokens       AgentUserInviteToken[]                    @relation("InviterUserInviteTokens")
   sentCompanyUserInvites CompanyUserInviteHistory[]
   transferRequests       AgentOrganizationCompanyTransferRequest[]
@@ -342,6 +343,25 @@ model PhoneVerificationCode {
   @@index([companyUserId, phone, expiresAt])
   @@index([expiresAt])
   @@map("phone_verification_code")
+}
+
+// 에이전트 사용자 휴대폰 인증 코드
+model AgentPhoneVerificationCode {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+
+  agentUserId BigInt    @map("agent_user_id") @db.UnsignedBigInt
+  agentUser   AgentUser @relation(fields: [agentUserId], references: [id], onDelete: Cascade)
+
+  phone      String    @db.VarChar(30)
+  code       String    @db.VarChar(6)
+  expiresAt  DateTime  @map("expires_at")
+  verifiedAt DateTime? @map("verified_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([agentUserId, phone, expiresAt])
+  @@index([expiresAt])
+  @@map("agent_phone_verification_code")
 }
 
 // 거래처 사용자 초대 이력
@@ -923,7 +943,7 @@ model OtherIncomeEmployee {
 
 /**
  * ---------------------------
- * 일용소득자 (더미)
+ * 일용소득자
  * ---------------------------
  */
 
@@ -942,6 +962,17 @@ model OtherIncomeLaborEmployee {
   phone          String? @db.VarChar(30)
   hireDate       String? @map("hire_date") @db.VarChar(10)
   resignDate     String? @map("resign_date") @db.VarChar(10)
+
+  jobCategory   String?  @map("job_category") @db.VarChar(50)
+  payType       String?  @map("pay_type") @db.VarChar(50)
+  paymentMethod String?  @map("payment_method") @db.VarChar(50)
+  overtimeType  String?  @map("overtime_type") @db.VarChar(50)
+  normalPay     Decimal? @map("normal_pay") @db.Decimal(15, 2)
+  overtimePay   Decimal? @map("overtime_pay") @db.Decimal(15, 2)
+  address       String?  @map("address") @db.VarChar(255)
+  bankName      String?  @map("bank_name") @db.VarChar(50)
+  accountNumber String?  @map("account_number") @db.VarChar(50)
+  siteName      String?  @map("site_name") @db.VarChar(100)
 
   publishStatus EmployeePublishStatus @default(SAVED) @map("publish_status")
 

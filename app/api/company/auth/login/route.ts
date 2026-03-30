@@ -318,8 +318,14 @@ export async function POST(request: NextRequest) {
 
     const ttlMinutes = getCompanyMagicLinkTtlMinutes();
 
+    const companyRecord = await prisma.companyUser.findUnique({
+      where: { id: user.id },
+      select: { company: { select: { businessName: true } } },
+    });
+    const companyDisplayName = companyRecord?.company.businessName || "회사 급여 시스템";
+
     if (resolved.contactType === "email") {
-      const title = "[관리자 시스템] Company 로그인 링크 안내";
+      const title = `[${companyDisplayName}] 로그인 링크 안내`;
       const bodyHtml = `
 <!DOCTYPE html>
 <html lang="ko">
@@ -331,7 +337,7 @@ export async function POST(request: NextRequest) {
         <table width="480" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
           <tr>
             <td style="background-color:#059669;padding:28px 32px;text-align:center;">
-              <h1 style="margin:0;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.3px;">Company Console</h1>
+              <h1 style="margin:0;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.3px;">${companyDisplayName}</h1>
             </td>
           </tr>
           <tr>
@@ -360,7 +366,7 @@ export async function POST(request: NextRequest) {
           </tr>
           <tr>
             <td style="background-color:#f9fafb;padding:20px 32px;text-align:center;border-top:1px solid #f3f4f6;">
-              <p style="margin:0;color:#d1d5db;font-size:11px;">© ${new Date().getFullYear()} 관리자 시스템</p>
+              <p style="margin:0;color:#d1d5db;font-size:11px;">© ${new Date().getFullYear()} ${companyDisplayName}</p>
             </td>
           </tr>
         </table>
@@ -383,7 +389,7 @@ export async function POST(request: NextRequest) {
 
     const phoneToSend = user.phone ? normalizePhone(user.phone) : normalizePhone(resolved.value);
     const smsContent = [
-      "[관리자 시스템] Company 로그인 링크 안내",
+      `[${companyDisplayName}] 로그인 링크 안내`,
       "아래 링크를 눌러 로그인해주세요.",
       magicLinkUrl,
       `유효시간: ${ttlMinutes}분`,
@@ -391,7 +397,7 @@ export async function POST(request: NextRequest) {
 
     await sendSms({
       to: phoneToSend,
-      subject: "Company 로그인 링크",
+      subject: `${companyDisplayName} 로그인 링크`,
       content: smsContent,
     });
 

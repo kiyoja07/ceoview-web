@@ -24,3 +24,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 - [ ] 급여 일괄 입금 for 거래처 사장님
 - [ ] 동일 월/직원 급여 명세서 발송 최대 3회 for 거래처 사장님
+
+# 런칭 기능/화면에서 제외
+
+- 인건비 지급 대상자 개별 등록 : /agent/company/${companyId}/employees/new

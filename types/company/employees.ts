@@ -185,6 +185,9 @@ export type OtherIncomeLaborEmployeeCreateBody = {
   phone?: string | null;
   hireDate?: string | null;
   resignDate?: string | null;
+  address?: string | null;
+  bankName?: string | null;
+  accountNumber?: string | null;
 };
 
 export type AnyEmployeeCreateBody =

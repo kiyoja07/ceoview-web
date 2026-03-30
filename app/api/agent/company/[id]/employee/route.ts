@@ -314,13 +314,23 @@ export async function DELETE(
         companyId: parsed.companyId,
         deletedAt: null,
       },
-      select: { id: true },
+      select: { id: true, publishStatus: true },
     });
 
     if (!employee) {
       return NextResponse.json(
         { error: "해당 직원을 찾을 수 없습니다." },
         { status: 404 },
+      );
+    }
+
+    if (employee.publishStatus === "PUBLISHED") {
+      return NextResponse.json(
+        {
+          error:
+            "공개 상태인 직원은 삭제할 수 없습니다. 비공개로 변경 후 삭제해주세요.",
+        },
+        { status: 400 },
       );
     }
 

@@ -185,6 +185,13 @@ export default function AgentCompanyEmployeePage() {
   // ── Delete employee ──
   const handleDelete = async (employeeId: string, name: string) => {
     if (!companyId) return;
+    const emp = employees.find((e) => e.id === employeeId);
+    if (emp?.publishStatus === "PUBLISHED") {
+      alert(
+        "공개 상태인 직원은 삭제할 수 없습니다. 비공개로 변경 후 삭제해주세요.",
+      );
+      return;
+    }
     if (!confirm(`"${name}" 직원을 삭제하시겠습니까?`)) return;
 
     setDeleteLoadingId(employeeId);
@@ -300,7 +307,7 @@ export default function AgentCompanyEmployeePage() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            거래처 직원 관리
+            거래처 지급 대상자 관리
           </h1>
           {titleCompany && (
             <p className="mt-1 text-sm text-gray-500">{titleCompany}</p>
@@ -308,7 +315,7 @@ export default function AgentCompanyEmployeePage() {
         </div>
 
         {/* Income type tabs */}
-        <div className="mb-5 flex gap-4 rounded-xl bg-gray-100 p-1">
+        <div className="mb-3 flex gap-4 rounded-xl bg-gray-100 p-1">
           {EMPLOYEE_INCOME_TYPE_OPTIONS.map((type) => (
             <button
               key={type.value}
@@ -326,27 +333,23 @@ export default function AgentCompanyEmployeePage() {
         </div>
 
         {/* Action bar */}
-        <div className="mb-5 flex flex-wrap items-center gap-2">
-          <Link
-            href={`/agent/company/${companyId}/employees/new`}
-            className="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700"
-          >
-            직원 개별 등록
-          </Link>
+        <div className="mb-5 flex flex-wrap items-center gap-4">
           <Link
             href={`/agent/company/${companyId}/employees/upload`}
+            className="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700"
+          >
+            지급 대상자 엑셀 파일 등록
+          </Link>
+          {/* <Link
+            href={`/agent/company/${companyId}/employees/new`}
             className="inline-flex items-center rounded-lg border border-emerald-600 px-3 py-2 text-xs font-semibold text-emerald-600 transition hover:bg-emerald-50"
           >
-            직원 엑셀 파일 등록
-          </Link>
-
+            지급 대상자 개별 등록
+          </Link> */}
           {/* Bulk publish actions */}
           <div className="ml-auto flex items-center gap-2">
             {!listLoading && employees.length > 0 && (
               <>
-                <span className="text-xs text-gray-500">
-                  공개 {publishedCount}명 · 비공개 {savedCount}명
-                </span>
                 {publishedCount > 0 && (
                   <button
                     type="button"
@@ -402,6 +405,8 @@ export default function AgentCompanyEmployeePage() {
           detailBaseUrl={`/agent/company/${companyId}/employees`}
           onPublishToggle={handlePublishToggle}
           publishLoading={publishLoading}
+          publishedCount={publishedCount}
+          savedCount={savedCount}
         />
       </div>
 

@@ -29,11 +29,15 @@ export type AggregateOtherIncomeLaborEmployee = {
 export type OtherIncomeLaborEmployeeAvgAggregateOutputType = {
   id: number | null
   companyId: number | null
+  normalPay: runtime.Decimal | null
+  overtimePay: runtime.Decimal | null
 }
 
 export type OtherIncomeLaborEmployeeSumAggregateOutputType = {
   id: bigint | null
   companyId: bigint | null
+  normalPay: runtime.Decimal | null
+  overtimePay: runtime.Decimal | null
 }
 
 export type OtherIncomeLaborEmployeeMinAggregateOutputType = {
@@ -48,6 +52,16 @@ export type OtherIncomeLaborEmployeeMinAggregateOutputType = {
   phone: string | null
   hireDate: string | null
   resignDate: string | null
+  jobCategory: string | null
+  payType: string | null
+  paymentMethod: string | null
+  overtimeType: string | null
+  normalPay: runtime.Decimal | null
+  overtimePay: runtime.Decimal | null
+  address: string | null
+  bankName: string | null
+  accountNumber: string | null
+  siteName: string | null
   publishStatus: $Enums.EmployeePublishStatus | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -66,6 +80,16 @@ export type OtherIncomeLaborEmployeeMaxAggregateOutputType = {
   phone: string | null
   hireDate: string | null
   resignDate: string | null
+  jobCategory: string | null
+  payType: string | null
+  paymentMethod: string | null
+  overtimeType: string | null
+  normalPay: runtime.Decimal | null
+  overtimePay: runtime.Decimal | null
+  address: string | null
+  bankName: string | null
+  accountNumber: string | null
+  siteName: string | null
   publishStatus: $Enums.EmployeePublishStatus | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -84,6 +108,16 @@ export type OtherIncomeLaborEmployeeCountAggregateOutputType = {
   phone: number
   hireDate: number
   resignDate: number
+  jobCategory: number
+  payType: number
+  paymentMethod: number
+  overtimeType: number
+  normalPay: number
+  overtimePay: number
+  address: number
+  bankName: number
+  accountNumber: number
+  siteName: number
   publishStatus: number
   createdAt: number
   updatedAt: number
@@ -95,11 +129,15 @@ export type OtherIncomeLaborEmployeeCountAggregateOutputType = {
 export type OtherIncomeLaborEmployeeAvgAggregateInputType = {
   id?: true
   companyId?: true
+  normalPay?: true
+  overtimePay?: true
 }
 
 export type OtherIncomeLaborEmployeeSumAggregateInputType = {
   id?: true
   companyId?: true
+  normalPay?: true
+  overtimePay?: true
 }
 
 export type OtherIncomeLaborEmployeeMinAggregateInputType = {
@@ -114,6 +152,16 @@ export type OtherIncomeLaborEmployeeMinAggregateInputType = {
   phone?: true
   hireDate?: true
   resignDate?: true
+  jobCategory?: true
+  payType?: true
+  paymentMethod?: true
+  overtimeType?: true
+  normalPay?: true
+  overtimePay?: true
+  address?: true
+  bankName?: true
+  accountNumber?: true
+  siteName?: true
   publishStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -132,6 +180,16 @@ export type OtherIncomeLaborEmployeeMaxAggregateInputType = {
   phone?: true
   hireDate?: true
   resignDate?: true
+  jobCategory?: true
+  payType?: true
+  paymentMethod?: true
+  overtimeType?: true
+  normalPay?: true
+  overtimePay?: true
+  address?: true
+  bankName?: true
+  accountNumber?: true
+  siteName?: true
   publishStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -150,6 +208,16 @@ export type OtherIncomeLaborEmployeeCountAggregateInputType = {
   phone?: true
   hireDate?: true
   resignDate?: true
+  jobCategory?: true
+  payType?: true
+  paymentMethod?: true
+  overtimeType?: true
+  normalPay?: true
+  overtimePay?: true
+  address?: true
+  bankName?: true
+  accountNumber?: true
+  siteName?: true
   publishStatus?: true
   createdAt?: true
   updatedAt?: true
@@ -255,6 +323,16 @@ export type OtherIncomeLaborEmployeeGroupByOutputType = {
   phone: string | null
   hireDate: string | null
   resignDate: string | null
+  jobCategory: string | null
+  payType: string | null
+  paymentMethod: string | null
+  overtimeType: string | null
+  normalPay: runtime.Decimal | null
+  overtimePay: runtime.Decimal | null
+  address: string | null
+  bankName: string | null
+  accountNumber: string | null
+  siteName: string | null
   publishStatus: $Enums.EmployeePublishStatus
   createdAt: Date
   updatedAt: Date
@@ -296,6 +374,16 @@ export type OtherIncomeLaborEmployeeWhereInput = {
   phone?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   hireDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   resignDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  jobCategory?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  payType?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  paymentMethod?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  overtimeType?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  normalPay?: Prisma.DecimalNullableFilter<"OtherIncomeLaborEmployee"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: Prisma.DecimalNullableFilter<"OtherIncomeLaborEmployee"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  bankName?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  accountNumber?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  siteName?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   publishStatus?: Prisma.EnumEmployeePublishStatusFilter<"OtherIncomeLaborEmployee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
@@ -315,6 +403,16 @@ export type OtherIncomeLaborEmployeeOrderByWithRelationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   hireDate?: Prisma.SortOrderInput | Prisma.SortOrder
   resignDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  jobCategory?: Prisma.SortOrderInput | Prisma.SortOrder
+  payType?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
+  overtimeType?: Prisma.SortOrderInput | Prisma.SortOrder
+  normalPay?: Prisma.SortOrderInput | Prisma.SortOrder
+  overtimePay?: Prisma.SortOrderInput | Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
+  bankName?: Prisma.SortOrderInput | Prisma.SortOrder
+  accountNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  siteName?: Prisma.SortOrderInput | Prisma.SortOrder
   publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -339,6 +437,16 @@ export type OtherIncomeLaborEmployeeWhereUniqueInput = Prisma.AtLeast<{
   phone?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   hireDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   resignDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  jobCategory?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  payType?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  paymentMethod?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  overtimeType?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  normalPay?: Prisma.DecimalNullableFilter<"OtherIncomeLaborEmployee"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: Prisma.DecimalNullableFilter<"OtherIncomeLaborEmployee"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  bankName?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  accountNumber?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  siteName?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   publishStatus?: Prisma.EnumEmployeePublishStatusFilter<"OtherIncomeLaborEmployee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
@@ -358,6 +466,16 @@ export type OtherIncomeLaborEmployeeOrderByWithAggregationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   hireDate?: Prisma.SortOrderInput | Prisma.SortOrder
   resignDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  jobCategory?: Prisma.SortOrderInput | Prisma.SortOrder
+  payType?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
+  overtimeType?: Prisma.SortOrderInput | Prisma.SortOrder
+  normalPay?: Prisma.SortOrderInput | Prisma.SortOrder
+  overtimePay?: Prisma.SortOrderInput | Prisma.SortOrder
+  address?: Prisma.SortOrderInput | Prisma.SortOrder
+  bankName?: Prisma.SortOrderInput | Prisma.SortOrder
+  accountNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  siteName?: Prisma.SortOrderInput | Prisma.SortOrder
   publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -384,6 +502,16 @@ export type OtherIncomeLaborEmployeeScalarWhereWithAggregatesInput = {
   phone?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
   hireDate?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
   resignDate?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
+  jobCategory?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
+  payType?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
+  paymentMethod?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
+  overtimeType?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
+  normalPay?: Prisma.DecimalNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: Prisma.DecimalNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
+  bankName?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
+  accountNumber?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
+  siteName?: Prisma.StringNullableWithAggregatesFilter<"OtherIncomeLaborEmployee"> | string | null
   publishStatus?: Prisma.EnumEmployeePublishStatusWithAggregatesFilter<"OtherIncomeLaborEmployee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"OtherIncomeLaborEmployee"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"OtherIncomeLaborEmployee"> | Date | string
@@ -401,6 +529,16 @@ export type OtherIncomeLaborEmployeeCreateInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  jobCategory?: string | null
+  payType?: string | null
+  paymentMethod?: string | null
+  overtimeType?: string | null
+  normalPay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: string | null
+  bankName?: string | null
+  accountNumber?: string | null
+  siteName?: string | null
   publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -420,6 +558,16 @@ export type OtherIncomeLaborEmployeeUncheckedCreateInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  jobCategory?: string | null
+  payType?: string | null
+  paymentMethod?: string | null
+  overtimeType?: string | null
+  normalPay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: string | null
+  bankName?: string | null
+  accountNumber?: string | null
+  siteName?: string | null
   publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -437,6 +585,16 @@ export type OtherIncomeLaborEmployeeUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overtimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalPay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -456,6 +614,16 @@ export type OtherIncomeLaborEmployeeUncheckedUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overtimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalPay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -474,6 +642,16 @@ export type OtherIncomeLaborEmployeeCreateManyInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  jobCategory?: string | null
+  payType?: string | null
+  paymentMethod?: string | null
+  overtimeType?: string | null
+  normalPay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: string | null
+  bankName?: string | null
+  accountNumber?: string | null
+  siteName?: string | null
   publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -491,6 +669,16 @@ export type OtherIncomeLaborEmployeeUpdateManyMutationInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overtimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalPay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -509,6 +697,16 @@ export type OtherIncomeLaborEmployeeUncheckedUpdateManyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overtimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalPay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -548,6 +746,16 @@ export type OtherIncomeLaborEmployeeCountOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   hireDate?: Prisma.SortOrder
   resignDate?: Prisma.SortOrder
+  jobCategory?: Prisma.SortOrder
+  payType?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  overtimeType?: Prisma.SortOrder
+  normalPay?: Prisma.SortOrder
+  overtimePay?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  bankName?: Prisma.SortOrder
+  accountNumber?: Prisma.SortOrder
+  siteName?: Prisma.SortOrder
   publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -557,6 +765,8 @@ export type OtherIncomeLaborEmployeeCountOrderByAggregateInput = {
 export type OtherIncomeLaborEmployeeAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
+  normalPay?: Prisma.SortOrder
+  overtimePay?: Prisma.SortOrder
 }
 
 export type OtherIncomeLaborEmployeeMaxOrderByAggregateInput = {
@@ -571,6 +781,16 @@ export type OtherIncomeLaborEmployeeMaxOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   hireDate?: Prisma.SortOrder
   resignDate?: Prisma.SortOrder
+  jobCategory?: Prisma.SortOrder
+  payType?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  overtimeType?: Prisma.SortOrder
+  normalPay?: Prisma.SortOrder
+  overtimePay?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  bankName?: Prisma.SortOrder
+  accountNumber?: Prisma.SortOrder
+  siteName?: Prisma.SortOrder
   publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -589,6 +809,16 @@ export type OtherIncomeLaborEmployeeMinOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   hireDate?: Prisma.SortOrder
   resignDate?: Prisma.SortOrder
+  jobCategory?: Prisma.SortOrder
+  payType?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  overtimeType?: Prisma.SortOrder
+  normalPay?: Prisma.SortOrder
+  overtimePay?: Prisma.SortOrder
+  address?: Prisma.SortOrder
+  bankName?: Prisma.SortOrder
+  accountNumber?: Prisma.SortOrder
+  siteName?: Prisma.SortOrder
   publishStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -598,6 +828,8 @@ export type OtherIncomeLaborEmployeeMinOrderByAggregateInput = {
 export type OtherIncomeLaborEmployeeSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   companyId?: Prisma.SortOrder
+  normalPay?: Prisma.SortOrder
+  overtimePay?: Prisma.SortOrder
 }
 
 export type OtherIncomeLaborEmployeeCreateNestedManyWithoutCompanyInput = {
@@ -653,6 +885,16 @@ export type OtherIncomeLaborEmployeeCreateWithoutCompanyInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  jobCategory?: string | null
+  payType?: string | null
+  paymentMethod?: string | null
+  overtimeType?: string | null
+  normalPay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: string | null
+  bankName?: string | null
+  accountNumber?: string | null
+  siteName?: string | null
   publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -670,6 +912,16 @@ export type OtherIncomeLaborEmployeeUncheckedCreateWithoutCompanyInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  jobCategory?: string | null
+  payType?: string | null
+  paymentMethod?: string | null
+  overtimeType?: string | null
+  normalPay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: string | null
+  bankName?: string | null
+  accountNumber?: string | null
+  siteName?: string | null
   publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -717,6 +969,16 @@ export type OtherIncomeLaborEmployeeScalarWhereInput = {
   phone?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   hireDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   resignDate?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  jobCategory?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  payType?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  paymentMethod?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  overtimeType?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  normalPay?: Prisma.DecimalNullableFilter<"OtherIncomeLaborEmployee"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: Prisma.DecimalNullableFilter<"OtherIncomeLaborEmployee"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  bankName?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  accountNumber?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
+  siteName?: Prisma.StringNullableFilter<"OtherIncomeLaborEmployee"> | string | null
   publishStatus?: Prisma.EnumEmployeePublishStatusFilter<"OtherIncomeLaborEmployee"> | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"OtherIncomeLaborEmployee"> | Date | string
@@ -734,6 +996,16 @@ export type OtherIncomeLaborEmployeeCreateManyCompanyInput = {
   phone?: string | null
   hireDate?: string | null
   resignDate?: string | null
+  jobCategory?: string | null
+  payType?: string | null
+  paymentMethod?: string | null
+  overtimeType?: string | null
+  normalPay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: string | null
+  bankName?: string | null
+  accountNumber?: string | null
+  siteName?: string | null
   publishStatus?: $Enums.EmployeePublishStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -751,6 +1023,16 @@ export type OtherIncomeLaborEmployeeUpdateWithoutCompanyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overtimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalPay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -768,6 +1050,16 @@ export type OtherIncomeLaborEmployeeUncheckedUpdateWithoutCompanyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overtimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalPay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -785,6 +1077,16 @@ export type OtherIncomeLaborEmployeeUncheckedUpdateManyWithoutCompanyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hireDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resignDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobCategory?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  payType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  overtimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  normalPay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  overtimePay?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bankName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accountNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  siteName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishStatus?: Prisma.EnumEmployeePublishStatusFieldUpdateOperationsInput | $Enums.EmployeePublishStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -805,6 +1107,16 @@ export type OtherIncomeLaborEmployeeSelect<ExtArgs extends runtime.Types.Extensi
   phone?: boolean
   hireDate?: boolean
   resignDate?: boolean
+  jobCategory?: boolean
+  payType?: boolean
+  paymentMethod?: boolean
+  overtimeType?: boolean
+  normalPay?: boolean
+  overtimePay?: boolean
+  address?: boolean
+  bankName?: boolean
+  accountNumber?: boolean
+  siteName?: boolean
   publishStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -826,13 +1138,23 @@ export type OtherIncomeLaborEmployeeSelectScalar = {
   phone?: boolean
   hireDate?: boolean
   resignDate?: boolean
+  jobCategory?: boolean
+  payType?: boolean
+  paymentMethod?: boolean
+  overtimeType?: boolean
+  normalPay?: boolean
+  overtimePay?: boolean
+  address?: boolean
+  bankName?: boolean
+  accountNumber?: boolean
+  siteName?: boolean
   publishStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type OtherIncomeLaborEmployeeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "employeeCode" | "name" | "residentNumber" | "department" | "positionTitle" | "email" | "phone" | "hireDate" | "resignDate" | "publishStatus" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["otherIncomeLaborEmployee"]>
+export type OtherIncomeLaborEmployeeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "employeeCode" | "name" | "residentNumber" | "department" | "positionTitle" | "email" | "phone" | "hireDate" | "resignDate" | "jobCategory" | "payType" | "paymentMethod" | "overtimeType" | "normalPay" | "overtimePay" | "address" | "bankName" | "accountNumber" | "siteName" | "publishStatus" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["otherIncomeLaborEmployee"]>
 export type OtherIncomeLaborEmployeeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }
@@ -854,6 +1176,16 @@ export type $OtherIncomeLaborEmployeePayload<ExtArgs extends runtime.Types.Exten
     phone: string | null
     hireDate: string | null
     resignDate: string | null
+    jobCategory: string | null
+    payType: string | null
+    paymentMethod: string | null
+    overtimeType: string | null
+    normalPay: runtime.Decimal | null
+    overtimePay: runtime.Decimal | null
+    address: string | null
+    bankName: string | null
+    accountNumber: string | null
+    siteName: string | null
     publishStatus: $Enums.EmployeePublishStatus
     createdAt: Date
     updatedAt: Date
@@ -1239,6 +1571,16 @@ export interface OtherIncomeLaborEmployeeFieldRefs {
   readonly phone: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
   readonly hireDate: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
   readonly resignDate: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
+  readonly jobCategory: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
+  readonly payType: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
+  readonly paymentMethod: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
+  readonly overtimeType: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
+  readonly normalPay: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'Decimal'>
+  readonly overtimePay: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'Decimal'>
+  readonly address: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
+  readonly bankName: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
+  readonly accountNumber: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
+  readonly siteName: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'String'>
   readonly publishStatus: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'EmployeePublishStatus'>
   readonly createdAt: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"OtherIncomeLaborEmployee", 'DateTime'>

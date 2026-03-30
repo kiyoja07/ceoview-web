@@ -395,6 +395,7 @@ export const ModelName = {
   CompanyUserCompany: 'CompanyUserCompany',
   CompanyMagicLinkToken: 'CompanyMagicLinkToken',
   PhoneVerificationCode: 'PhoneVerificationCode',
+  AgentPhoneVerificationCode: 'AgentPhoneVerificationCode',
   CompanyUserInviteHistory: 'CompanyUserInviteHistory',
   AgentCompanyCustomer: 'AgentCompanyCustomer',
   AgentOrganizationBilling: 'AgentOrganizationBilling',
@@ -431,7 +432,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyUserCompany" | "companyMagicLinkToken" | "phoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "payslipNotification" | "payslipAccessToken" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "employeeUser" | "employeeMagicLinkToken" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount" | "companyChangeRequest"
+    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyUserCompany" | "companyMagicLinkToken" | "phoneVerificationCode" | "agentPhoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "payslipNotification" | "payslipAccessToken" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "employeeUser" | "employeeMagicLinkToken" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount" | "companyChangeRequest"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1158,6 +1159,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PhoneVerificationCodeCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PhoneVerificationCodeCountAggregateOutputType> | number
+        }
+      }
+    }
+    AgentPhoneVerificationCode: {
+      payload: Prisma.$AgentPhoneVerificationCodePayload<ExtArgs>
+      fields: Prisma.AgentPhoneVerificationCodeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AgentPhoneVerificationCodeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentPhoneVerificationCodePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AgentPhoneVerificationCodeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentPhoneVerificationCodePayload>
+        }
+        findFirst: {
+          args: Prisma.AgentPhoneVerificationCodeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentPhoneVerificationCodePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AgentPhoneVerificationCodeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentPhoneVerificationCodePayload>
+        }
+        findMany: {
+          args: Prisma.AgentPhoneVerificationCodeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentPhoneVerificationCodePayload>[]
+        }
+        create: {
+          args: Prisma.AgentPhoneVerificationCodeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentPhoneVerificationCodePayload>
+        }
+        createMany: {
+          args: Prisma.AgentPhoneVerificationCodeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.AgentPhoneVerificationCodeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentPhoneVerificationCodePayload>
+        }
+        update: {
+          args: Prisma.AgentPhoneVerificationCodeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentPhoneVerificationCodePayload>
+        }
+        deleteMany: {
+          args: Prisma.AgentPhoneVerificationCodeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AgentPhoneVerificationCodeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.AgentPhoneVerificationCodeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AgentPhoneVerificationCodePayload>
+        }
+        aggregate: {
+          args: Prisma.AgentPhoneVerificationCodeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAgentPhoneVerificationCode>
+        }
+        groupBy: {
+          args: Prisma.AgentPhoneVerificationCodeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AgentPhoneVerificationCodeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AgentPhoneVerificationCodeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AgentPhoneVerificationCodeCountAggregateOutputType> | number
         }
       }
     }
@@ -2747,6 +2814,19 @@ export const PhoneVerificationCodeScalarFieldEnum = {
 export type PhoneVerificationCodeScalarFieldEnum = (typeof PhoneVerificationCodeScalarFieldEnum)[keyof typeof PhoneVerificationCodeScalarFieldEnum]
 
 
+export const AgentPhoneVerificationCodeScalarFieldEnum = {
+  id: 'id',
+  agentUserId: 'agentUserId',
+  phone: 'phone',
+  code: 'code',
+  expiresAt: 'expiresAt',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type AgentPhoneVerificationCodeScalarFieldEnum = (typeof AgentPhoneVerificationCodeScalarFieldEnum)[keyof typeof AgentPhoneVerificationCodeScalarFieldEnum]
+
+
 export const CompanyUserInviteHistoryScalarFieldEnum = {
   id: 'id',
   companyId: 'companyId',
@@ -3125,6 +3205,16 @@ export const OtherIncomeLaborEmployeeScalarFieldEnum = {
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  jobCategory: 'jobCategory',
+  payType: 'payType',
+  paymentMethod: 'paymentMethod',
+  overtimeType: 'overtimeType',
+  normalPay: 'normalPay',
+  overtimePay: 'overtimePay',
+  address: 'address',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  siteName: 'siteName',
   publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -3274,6 +3364,14 @@ export const PhoneVerificationCodeOrderByRelevanceFieldEnum = {
 } as const
 
 export type PhoneVerificationCodeOrderByRelevanceFieldEnum = (typeof PhoneVerificationCodeOrderByRelevanceFieldEnum)[keyof typeof PhoneVerificationCodeOrderByRelevanceFieldEnum]
+
+
+export const AgentPhoneVerificationCodeOrderByRelevanceFieldEnum = {
+  phone: 'phone',
+  code: 'code'
+} as const
+
+export type AgentPhoneVerificationCodeOrderByRelevanceFieldEnum = (typeof AgentPhoneVerificationCodeOrderByRelevanceFieldEnum)[keyof typeof AgentPhoneVerificationCodeOrderByRelevanceFieldEnum]
 
 
 export const CompanyUserInviteHistoryOrderByRelevanceFieldEnum = {
@@ -3484,7 +3582,15 @@ export const OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum = {
   email: 'email',
   phone: 'phone',
   hireDate: 'hireDate',
-  resignDate: 'resignDate'
+  resignDate: 'resignDate',
+  jobCategory: 'jobCategory',
+  payType: 'payType',
+  paymentMethod: 'paymentMethod',
+  overtimeType: 'overtimeType',
+  address: 'address',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  siteName: 'siteName'
 } as const
 
 export type OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum = (typeof OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum)[keyof typeof OtherIncomeLaborEmployeeOrderByRelevanceFieldEnum]
@@ -3781,6 +3887,7 @@ export type GlobalOmitConfig = {
   companyUserCompany?: Prisma.CompanyUserCompanyOmit
   companyMagicLinkToken?: Prisma.CompanyMagicLinkTokenOmit
   phoneVerificationCode?: Prisma.PhoneVerificationCodeOmit
+  agentPhoneVerificationCode?: Prisma.AgentPhoneVerificationCodeOmit
   companyUserInviteHistory?: Prisma.CompanyUserInviteHistoryOmit
   agentCompanyCustomer?: Prisma.AgentCompanyCustomerOmit
   agentOrganizationBilling?: Prisma.AgentOrganizationBillingOmit

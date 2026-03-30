@@ -12,9 +12,11 @@ import { SectionLabel } from "./_components/ShowcaseUI";
 import AgentSection from "./_components/AgentSection";
 import CompanySection from "./_components/CompanySection";
 import SalarySection from "./_components/SalarySection";
+import SalaryEarnedSection from "./_components/SalaryEarnedSection";
 import EmployeeSection from "./_components/EmployeeSection";
 import PayslipSection from "./_components/PayslipSection";
 import SalaryUploadSection from "./_components/SalaryUploadSection";
+import ShowcaseNav from "./_components/ShowcaseNav";
 
 export const dynamicParams = false;
 
@@ -98,44 +100,7 @@ export default async function ShowcasePage({
         </section>
 
         {/* 탭 네비게이션 */}
-        <nav className="sticky top-3 z-10 flex flex-wrap gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-3 shadow-sm backdrop-blur">
-          <a
-            href="#agent"
-            className="rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white"
-          >
-            세무대리인
-          </a>
-          <a
-            href="#salary-upload"
-            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700"
-          >
-            급여 등록
-          </a>
-          <a
-            href="#company"
-            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700"
-          >
-            회사 관리자
-          </a>
-          <a
-            href="#salary"
-            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700"
-          >
-            급여 지급 현황
-          </a>
-          <a
-            href="#employee"
-            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700"
-          >
-            직원 포털
-          </a>
-          <a
-            href="#payslip"
-            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700"
-          >
-            명세서 상세
-          </a>
-        </nav>
+        <ShowcaseNav />
 
         <AgentSection scenario={scenario} agentCompanies={agentCompanies} />
         <SalaryUploadSection scenario={scenario} />
@@ -145,6 +110,7 @@ export default async function ShowcasePage({
           salaryStats={salaryStats}
           salarySummary={salarySummary}
         />
+        <SalaryEarnedSection scenario={scenario} />
         <EmployeeSection scenario={scenario} />
         <PayslipSection scenario={scenario} />
       </div>

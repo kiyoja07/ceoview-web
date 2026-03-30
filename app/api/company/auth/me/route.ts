@@ -5,6 +5,11 @@ import {
   resolveCompanyAccessContext,
 } from "@/app/lib/company-access";
 import { isCompanyProfileComplete } from "@/app/lib/company-onboarding";
+import {
+  assertVerifiedPhoneChange,
+  normalizePhoneVerificationPhone,
+  PhoneVerificationError,
+} from "@/app/lib/phone-verification";
 import type { CompanyProfileUpdateBody } from "@/types/company/auth";
 
 async function requireActiveCompanyUser(request: NextRequest) {
@@ -115,47 +120,21 @@ export async function PATCH(request: NextRequest) {
       select: { phone: true },
     });
     const currentPhone = currentUser?.phone ?? null;
-    const normalizedNewPhone = phone ? phone.replace(/\D/g, "") : null;
+    const normalizedNewPhone = phone
+      ? normalizePhoneVerificationPhone(phone)
+      : null;
     const normalizedCurrentPhone = currentPhone
-      ? currentPhone.replace(/\D/g, "")
+      ? normalizePhoneVerificationPhone(currentPhone)
       : null;
 
     const phoneChanged = normalizedNewPhone !== normalizedCurrentPhone;
 
     if (phoneChanged && normalizedNewPhone) {
-      const verificationId = body.phoneVerificationId;
-      if (!verificationId) {
-        return NextResponse.json(
-          { error: "휴대폰 인증이 필요합니다." },
-          { status: 400 },
-        );
-      }
-
-      let verificationIdBigInt: bigint;
-      try {
-        verificationIdBigInt = BigInt(verificationId);
-      } catch {
-        return NextResponse.json(
-          { error: "잘못된 인증 정보입니다." },
-          { status: 400 },
-        );
-      }
-
-      const verification = await prisma.phoneVerificationCode.findUnique({
-        where: { id: verificationIdBigInt },
-      });
-
-      if (
-        !verification ||
-        verification.companyUserId !== auth.context.userId ||
-        verification.phone !== normalizedNewPhone ||
-        !verification.verifiedAt
-      ) {
-        return NextResponse.json(
-          { error: "휴대폰 인증을 완료해주세요." },
-          { status: 400 },
-        );
-      }
+      await assertVerifiedPhoneChange(
+        { kind: "company", userId: auth.context.userId },
+        normalizedNewPhone,
+        body.phoneVerificationId,
+      );
     }
 
     // isMaster 변경 처리 (마스터 사용자만 가능)
@@ -224,6 +203,13 @@ export async function PATCH(request: NextRequest) {
       isMaster: updated.isMaster,
     });
   } catch (error) {
+    if (error instanceof PhoneVerificationError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
+    }
+
     console.error("Company me PATCH error:", error);
     return NextResponse.json(
       { error: "사용자 정보 수정에 실패했습니다." },

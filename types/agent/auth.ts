@@ -45,6 +45,7 @@ export type SignupBody = {
 export type AgentProfileUpdateBody = {
   name?: string;
   phone?: string | null;
+  phoneVerificationId?: string;
   isMaster?: boolean;
 };
 

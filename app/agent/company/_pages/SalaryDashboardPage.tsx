@@ -21,6 +21,7 @@ import {
 } from "../../salary/_components/icons";
 import { SummaryCard } from "../../salary/_components/SummaryCard";
 import { CompanyCard } from "../../salary/_components/CompanyCard";
+import { SALARY_DASHBOARD_FILTER_OPTIONS } from "@/catalogs/ko/salary";
 
 /* ────────────── Main Page ────────────── */
 
@@ -214,14 +215,7 @@ export default function SalaryDashboardPage() {
                 />
               </div>
               <div className="flex gap-1.5">
-                {(
-                  [
-                    { key: "all", label: "전체" },
-                    { key: "published", label: "발행완료" },
-                    { key: "unpublished", label: "미발행" },
-                    { key: "no-upload", label: "미등록" },
-                  ] as { key: FilterMode; label: string }[]
-                ).map(({ key, label }) => (
+                {SALARY_DASHBOARD_FILTER_OPTIONS.map(({ key, label }) => (
                   <button
                     key={key}
                     type="button"

@@ -73,6 +73,11 @@ export type CompanyMagicLinkToken = Prisma.CompanyMagicLinkTokenModel
  */
 export type PhoneVerificationCode = Prisma.PhoneVerificationCodeModel
 /**
+ * Model AgentPhoneVerificationCode
+ * 
+ */
+export type AgentPhoneVerificationCode = Prisma.AgentPhoneVerificationCodeModel
+/**
  * Model CompanyUserInviteHistory
  * 
  */

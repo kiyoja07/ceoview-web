@@ -147,11 +147,11 @@ export default function AgentCompanyEmployeeNewPage() {
             <p className="mb-2 text-base text-gray-700">{titleCompany}</p>
           )}
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            직원 등록
+            인건비 지급 대상자 등록
           </h1>
           {requestItem && (
             <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-              직원 신규 등록 요청이 접수 되었습니다.
+              인건비 지급 대상자 신규 등록 요청이 접수 되었습니다.
               <div className="mt-1 text-xs text-amber-700">
                 요청자 {requestItem.requestedByCompanyUser.name} · 접수일{" "}
                 {new Date(requestItem.createdAt).toLocaleString()}
@@ -186,15 +186,15 @@ export default function AgentCompanyEmployeeNewPage() {
               새 직원의 정보를 입력해주세요.
             </p>
             <p className="mt-1 text-sm text-gray-500">
-              직원들의 이메일과 연락처를 입력하면, 급여명세서를 자동으로 발송할
-              수 있습니다.
+              이메일과 휴대폰 번호까지 입력하면, 거래처에서 급여명세서를
+              자동으로 발송할 수 있습니다.
             </p>
           </div>
         </div>
 
         <div className="mb-6">
           <label className="mb-2 block text-sm font-medium text-gray-700">
-            소득유형 <span className="text-red-500">*</span>
+            소득자유형 <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {EMPLOYEE_INCOME_TYPE_OPTIONS.map((opt) => (
@@ -232,6 +232,7 @@ export default function AgentCompanyEmployeeNewPage() {
               )
             }
             submitLabel={requestId ? "요청 승인 후 등록" : "등록하기"}
+            showEmployeeCode
           />
         )}
         {incomeType === "BUSINESS_INCOME" && (

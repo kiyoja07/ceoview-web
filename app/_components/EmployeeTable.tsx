@@ -49,6 +49,8 @@ type EmployeeTableProps = {
     newStatus: "SAVED" | "PUBLISHED",
   ) => void;
   publishLoading?: boolean;
+  publishedCount?: number;
+  savedCount?: number;
 };
 
 // ────────────────────────────────────────────────────────────
@@ -110,10 +112,14 @@ export default function EmployeeTable({
   search,
   listLoading,
   listError,
+  deleteLoadingId,
+  onDelete,
   onPageChange,
   detailBaseUrl,
   onPublishToggle,
   publishLoading,
+  publishedCount,
+  savedCount,
 }: EmployeeTableProps) {
   return (
     <>
@@ -138,8 +144,15 @@ export default function EmployeeTable({
             검색
           </button>
         </div>
-        <div className="ml-auto rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-600">
-          총 {total}명
+        <div className="ml-auto flex items-center gap-3">
+          {publishedCount != null && savedCount != null && (
+            <span className="text-xs text-gray-500">
+              공개 {publishedCount}명 · 비공개 {savedCount}명
+            </span>
+          )}
+          <span className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-600">
+            총 {total}명
+          </span>
         </div>
       </div>
 
@@ -205,7 +218,7 @@ export default function EmployeeTable({
                           );
                           return (
                             <span
-                              className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${getStatusColor(status)}`}
+                              className={`inline-flex whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${getStatusColor(status)}`}
                             >
                               {status}
                             </span>
@@ -268,6 +281,18 @@ export default function EmployeeTable({
                             >
                               상세
                             </Link>
+                          )}
+                          {onDelete && emp.publishStatus !== "PUBLISHED" && (
+                            <button
+                              type="button"
+                              disabled={deleteLoadingId === emp.id}
+                              onClick={() => onDelete(emp.id, emp.name)}
+                              className="inline-flex rounded-lg px-2 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {deleteLoadingId === emp.id
+                                ? "삭제중..."
+                                : "삭제"}
+                            </button>
                           )}
                         </div>
                       </td>

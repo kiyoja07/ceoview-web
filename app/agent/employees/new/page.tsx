@@ -2,9 +2,7 @@
 
 import { Suspense, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  EMPLOYEE_INCOME_TYPE_OPTIONS,
-} from "@/catalogs/ko/employee";
+import { EMPLOYEE_INCOME_TYPE_OPTIONS } from "@/catalogs/ko/employee";
 import { PROGRAM_TYPE_OPTIONS } from "@/catalogs/ko/salary";
 import type {
   Company,
@@ -255,10 +253,10 @@ function EmployeeNewPageInner() {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-                직원 엑셀 등록
+                지급 대상자 엑셀 등록
               </h1>
               <p className="text-sm text-gray-500">
-                사원등록 엑셀 파일을 업로드하여 급여 데이터와 매핑합니다.
+                소득 유형별로 지급 대상자 엑셀 파일을 등록해주세요
               </p>
             </div>
           </div>

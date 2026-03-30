@@ -20,11 +20,11 @@ interface SummaryCardProps {
 export function SummaryCard({ label, value, color, icon }: SummaryCardProps) {
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl bg-linear-to-br ${COLOR_MAP[color]} p-5 text-white shadow-lg`}
+      className={`relative overflow-hidden rounded-2xl bg-linear-to-br ${COLOR_MAP[color]} py-5 px-2 text-white shadow-lg`}
     >
       <div className="absolute -right-3 -top-3 opacity-10">
-        <svg className="h-24 w-24" fill="currentColor" viewBox="0 0 24 24">
-          <circle cx={12} cy={12} r={12} />
+        <svg className="h-14 w-14" fill="currentColor" viewBox="0 0 14 14">
+          <circle cx={10} cy={10} r={10} />
         </svg>
       </div>
       <div className="flex items-center gap-3">

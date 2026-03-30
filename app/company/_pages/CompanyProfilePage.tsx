@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type {
   CompanyAuthMeResponse,
   CompanyAuthMessageState,
   CompanyProfileUpdateBody,
 } from "@/types/company/auth";
+import {
+  formatCountdown,
+  usePhoneVerification,
+} from "@/app/_hooks/usePhoneVerification";
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-shadow";
@@ -20,12 +24,6 @@ function formatPhoneNumber(value: string) {
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
 }
 
-function stripPhone(value: string) {
-  return value.replace(/\D/g, "");
-}
-
-type PhoneVerifyState = "idle" | "sending" | "sent" | "verifying" | "verified";
-
 export default function CompanyOrganizationProfilePage() {
   const router = useRouter();
 
@@ -37,40 +35,24 @@ export default function CompanyOrganizationProfilePage() {
   const [email, setEmail] = useState("");
   const [isMaster, setIsMaster] = useState(false);
   const [message, setMessage] = useState<CompanyAuthMessageState>(null);
-
-  // 휴대폰 인증 관련 상태
-  const [verifyState, setVerifyState] = useState<PhoneVerifyState>("idle");
-  const [verificationId, setVerificationId] = useState<string | null>(null);
-  const [verifyCode, setVerifyCode] = useState("");
-  const [verifyMessage, setVerifyMessage] =
-    useState<CompanyAuthMessageState>(null);
-  const [countdown, setCountdown] = useState(0);
-  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const phoneChanged = stripPhone(phone) !== stripPhone(originalPhone);
-  const phoneEmpty = stripPhone(phone).length === 0;
-  const needsVerification = phoneChanged && !phoneEmpty;
-  const isPhoneVerified = verifyState === "verified";
-
-  // 카운트다운 타이머
-  useEffect(() => {
-    if (countdown <= 0) {
-      if (countdownRef.current) clearInterval(countdownRef.current);
-      return;
-    }
-    countdownRef.current = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          if (countdownRef.current) clearInterval(countdownRef.current);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => {
-      if (countdownRef.current) clearInterval(countdownRef.current);
-    };
-  }, [countdown]);
+  const {
+    verifyState,
+    verificationId,
+    verifyCode,
+    verifyMessage,
+    countdown,
+    needsVerification,
+    isPhoneVerified,
+    setVerifyCode,
+    resetVerification,
+    sendCode,
+    confirmCode,
+  } = usePhoneVerification({
+    phone,
+    originalPhone,
+    sendEndpoint: "/api/company/auth/phone-verify/send",
+    confirmEndpoint: "/api/company/auth/phone-verify/confirm",
+  });
 
   useEffect(() => {
     const load = async () => {
@@ -92,6 +74,7 @@ export default function CompanyOrganizationProfilePage() {
         setOriginalPhone(data.phone ?? "");
         setEmail(data.email ?? "");
         setIsMaster(data.isMaster);
+        resetVerification();
       } catch {
         router.replace("/company/auth/login");
       } finally {
@@ -100,120 +83,13 @@ export default function CompanyOrganizationProfilePage() {
     };
 
     void load();
-  }, [router]);
+  }, [resetVerification, router]);
 
   // 휴대폰 번호가 변경되면 인증 상태 초기화
   const handlePhoneChange = (value: string) => {
     const formatted = formatPhoneNumber(value);
     setPhone(formatted);
-    // 번호가 바뀌면 인증 초기화
-    setVerifyState("idle");
-    setVerificationId(null);
-    setVerifyCode("");
-    setVerifyMessage(null);
-  };
-
-  // 인증번호 발송
-  const handleSendCode = async () => {
-    const digits = stripPhone(phone);
-    if (digits.length < 10) {
-      setVerifyMessage({
-        type: "error",
-        text: "올바른 휴대폰 번호를 입력해주세요.",
-      });
-      return;
-    }
-
-    setVerifyState("sending");
-    setVerifyMessage(null);
-
-    try {
-      const res = await fetch("/api/company/auth/phone-verify/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: digits }),
-      });
-
-      const data = (await res.json()) as {
-        success?: boolean;
-        verificationId?: string;
-        error?: string;
-      };
-
-      if (!res.ok) {
-        setVerifyState("idle");
-        setVerifyMessage({
-          type: "error",
-          text: data.error || "인증번호 발송에 실패했습니다.",
-        });
-        return;
-      }
-
-      setVerificationId(data.verificationId ?? null);
-      setVerifyState("sent");
-      setVerifyCode("");
-      setCountdown(180); // 3분
-      setVerifyMessage({
-        type: "success",
-        text: "인증번호가 발송되었습니다.",
-      });
-    } catch {
-      setVerifyState("idle");
-      setVerifyMessage({
-        type: "error",
-        text: "서버 연결에 실패했습니다.",
-      });
-    }
-  };
-
-  // 인증번호 확인
-  const handleConfirmCode = async () => {
-    if (!verificationId || !verifyCode.trim()) {
-      setVerifyMessage({ type: "error", text: "인증번호를 입력해주세요." });
-      return;
-    }
-
-    setVerifyState("verifying");
-    setVerifyMessage(null);
-
-    try {
-      const res = await fetch("/api/company/auth/phone-verify/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          verificationId,
-          code: verifyCode.trim(),
-        }),
-      });
-
-      const data = (await res.json()) as {
-        success?: boolean;
-        verified?: boolean;
-        error?: string;
-      };
-
-      if (!res.ok) {
-        setVerifyState("sent");
-        setVerifyMessage({
-          type: "error",
-          text: data.error || "인증 확인에 실패했습니다.",
-        });
-        return;
-      }
-
-      setVerifyState("verified");
-      setCountdown(0);
-      setVerifyMessage({
-        type: "success",
-        text: "휴대폰 인증이 완료되었습니다.",
-      });
-    } catch {
-      setVerifyState("sent");
-      setVerifyMessage({
-        type: "error",
-        text: "서버 연결에 실패했습니다.",
-      });
-    }
+    resetVerification();
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -275,10 +151,7 @@ export default function CompanyOrganizationProfilePage() {
 
       // 저장 성공 시 원래 번호 업데이트, 인증 상태 초기화
       setOriginalPhone(phone);
-      setVerifyState("idle");
-      setVerificationId(null);
-      setVerifyCode("");
-      setVerifyMessage(null);
+      resetVerification();
 
       setMessage({
         type: "success",
@@ -292,12 +165,6 @@ export default function CompanyOrganizationProfilePage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatCountdown = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
   if (checking) {
@@ -357,7 +224,7 @@ export default function CompanyOrganizationProfilePage() {
               {needsVerification && !isPhoneVerified && (
                 <button
                   type="button"
-                  onClick={handleSendCode}
+                  onClick={sendCode}
                   disabled={
                     verifyState === "sending" ||
                     (verifyState === "sent" && countdown > 150)
@@ -402,7 +269,7 @@ export default function CompanyOrganizationProfilePage() {
                 </div>
                 <button
                   type="button"
-                  onClick={handleConfirmCode}
+                  onClick={confirmCode}
                   disabled={
                     verifyState === "verifying" ||
                     verifyCode.length < 6 ||

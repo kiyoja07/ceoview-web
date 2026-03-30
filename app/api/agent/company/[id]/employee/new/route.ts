@@ -227,6 +227,9 @@ export async function POST(
             phone: body.phone?.trim() || null,
             hireDate: body.hireDate?.trim() || null,
             resignDate: body.resignDate?.trim() || null,
+            address: body.address?.trim() || null,
+            bankName: body.bankName?.trim() || null,
+            accountNumber: body.accountNumber?.trim() || null,
             publishStatus: "PUBLISHED",
           },
         });

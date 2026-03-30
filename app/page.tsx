@@ -8,6 +8,7 @@ import SiteHeader from "@/app/_components/SiteHeader";
 import HeroSection from "@/app/_components/landing/HeroSection";
 import WhyCeoviewSection from "@/app/_components/landing/WhyCeoviewSection";
 import ForCeoSection from "@/app/_components/landing/ForCeoSection";
+import WehagoUploadSection from "@/app/_components/landing/WehagoUploadSection";
 import TestimonialsSection from "@/app/_components/landing/TestimonialsSection";
 import AudienceCardsSection from "@/app/_components/landing/AudienceCardsSection";
 import FaqSection from "@/app/_components/landing/FaqSection";
@@ -16,7 +17,7 @@ import FooterSection from "@/app/_components/landing/FooterSection";
 
 export default async function Home() {
   const headerList = await headers();
-  const agentUrl = buildUrlForAudience("agent", "/agent", headerList);
+  const agentUrl = buildUrlForAudience("agent", "/agent/auth", headerList);
   const companyUrl = buildUrlForAudience("company", "/company", headerList);
   const employeeUrl = buildUrlForAudience("employee", "/employee", headerList);
   const showcaseUrl = buildShowcaseUrl(DEFAULT_SHOWCASE_SLUG, headerList);
@@ -32,11 +33,12 @@ export default async function Home() {
       <SiteHeader
         navItems={[
           { href: agentUrl, label: "세무대리인으로 시작하기" },
-          { href: companyUrl, label: "회사 관리자로 시작하기" },
+          { href: companyUrl, label: "사업장으로 시작하기" },
         ]}
       />
       <HeroSection showcaseUrl={showcaseUrl} />
       <WhyCeoviewSection agentUrl={agentUrl} />
+      <WehagoUploadSection />
       <ForCeoSection companyUrl={companyUrl} />
       <TestimonialsSection />
       <AudienceCardsSection audienceHref={audienceHref} />

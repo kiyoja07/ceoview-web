@@ -44,13 +44,6 @@ export function CompanyCard({ company }: { company: CompanyRow }) {
       ? "border-l-amber-400"
       : "border-l-gray-200";
 
-  const progressPercent =
-    company.uploadedTypeCount > 0
-      ? Math.round(
-          (company.publishedTypeCount / company.uploadedTypeCount) * 100,
-        )
-      : 0;
-
   return (
     <div
       className={`overflow-hidden rounded-xl border-l-4 bg-white shadow-sm ring-1 ring-gray-950/5 transition-all ${statusColor}`}
@@ -92,21 +85,6 @@ export function CompanyCard({ company }: { company: CompanyRow }) {
           {company.incomeTypes.map((it) => (
             <IncomeTypePill key={it.type} item={it} />
           ))}
-        </div>
-
-        {/* Progress bar */}
-        <div className="hidden w-20 flex-col items-end gap-1 lg:flex">
-          <span className="text-xs font-medium text-gray-600">
-            {company.publishedTypeCount}/{company.uploadedTypeCount}
-          </span>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-            <div
-              className={`h-full rounded-full transition-all ${
-                progressPercent === 100 ? "bg-emerald-500" : "bg-amber-400"
-              }`}
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
         </div>
 
         {/* Expand arrow */}

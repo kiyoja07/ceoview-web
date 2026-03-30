@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
+import {
+  assertVerifiedPhoneChange,
+  normalizePhoneVerificationPhone,
+  PhoneVerificationError,
+} from "@/app/lib/phone-verification";
 import type { AgentProfileUpdateBody } from "@/types/agent/auth";
 
 async function requireActiveAgentUser(request: NextRequest) {
@@ -108,6 +113,27 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    const currentUser = await prisma.agentUser.findUnique({
+      where: { id: auth.user.id },
+      select: { phone: true },
+    });
+    const currentPhone = currentUser?.phone ?? null;
+    const normalizedNewPhone = phone
+      ? normalizePhoneVerificationPhone(phone)
+      : null;
+    const normalizedCurrentPhone = currentPhone
+      ? normalizePhoneVerificationPhone(currentPhone)
+      : null;
+    const phoneChanged = normalizedNewPhone !== normalizedCurrentPhone;
+
+    if (phoneChanged && normalizedNewPhone) {
+      await assertVerifiedPhoneChange(
+        { kind: "agent", userId: auth.user.id },
+        normalizedNewPhone,
+        body.phoneVerificationId,
+      );
+    }
+
     // isMaster 변경 처리 (마스터 사용자만 가능)
     const updateData: {
       name: string;
@@ -173,6 +199,13 @@ export async function PATCH(request: NextRequest) {
       isMaster: updated.isMaster,
     });
   } catch (error) {
+    if (error instanceof PhoneVerificationError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
+    }
+
     console.error("Agent me PATCH error:", error);
     return NextResponse.json(
       { error: "사용자 정보 수정에 실패했습니다." },

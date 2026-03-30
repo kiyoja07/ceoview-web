@@ -18,9 +18,7 @@ import type {
   EmployeeIncomeType,
   EmployeeStatusFilter,
 } from "@/types/company/employees";
-import {
-  getEmployeeStatus,
-} from "@/types/company/employees";
+import { getEmployeeStatus } from "@/types/company/employees";
 import {
   EMPLOYEE_INCOME_TYPE_LABELS,
   EMPLOYEE_INCOME_TYPE_OPTIONS,
@@ -81,13 +79,7 @@ function isEmployeeIncomeType(value: string): value is EmployeeIncomeType {
 }
 
 function isEmployeeStatusFilter(value: string): value is EmployeeStatusFilter {
-  return [
-    "ALL",
-    "ACTIVE",
-    "UPCOMING",
-    "LEAVING",
-    "INACTIVE",
-  ].includes(value);
+  return ["ALL", "ACTIVE", "UPCOMING", "LEAVING", "INACTIVE"].includes(value);
 }
 
 function matchesStatusFilter(
@@ -151,8 +143,8 @@ function buildSummary(
     const incomeType: EmployeeIncomeType =
       typeof requestIncomeType === "string" &&
       isEmployeeIncomeType(requestIncomeType)
-      ? requestIncomeType
-      : "EARNED_INCOME";
+        ? requestIncomeType
+        : "EARNED_INCOME";
 
     pendingRequestCountByType.set(
       incomeType,
@@ -245,14 +237,10 @@ export async function GET(request: NextRequest) {
       Math.max(1, Number(url.searchParams.get("limit")) || 50),
     );
     const search = url.searchParams.get("search")?.trim() || "";
-    const incomeTypeParam =
-      url.searchParams.get("incomeType")?.trim() || "ALL";
+    const incomeTypeParam = url.searchParams.get("incomeType")?.trim() || "ALL";
     const statusParam = url.searchParams.get("status")?.trim() || "ALL";
 
-    if (
-      incomeTypeParam !== "ALL" &&
-      !isEmployeeIncomeType(incomeTypeParam)
-    ) {
+    if (incomeTypeParam !== "ALL" && !isEmployeeIncomeType(incomeTypeParam)) {
       return NextResponse.json(
         { error: "유효하지 않은 소득자 유형입니다." },
         { status: 400 },
@@ -275,7 +263,13 @@ export async function GET(request: NextRequest) {
       publishStatus: "PUBLISHED" as const,
     };
 
-    const [employees, businessIncomeEmployees, otherIncomeEmployees, laborEmployees, pendingRequests] = await Promise.all([
+    const [
+      employees,
+      businessIncomeEmployees,
+      otherIncomeEmployees,
+      laborEmployees,
+      pendingRequests,
+    ] = await Promise.all([
       prisma.employee.findMany({
         where: baseWhere,
         orderBy: { createdAt: "desc" },
@@ -399,7 +393,8 @@ export async function GET(request: NextRequest) {
                 accountHolder: ba.accountHolder,
               }
             : null,
-          pendingRequest: pendingRequestByEmployeeId.get(emp.id.toString()) ?? null,
+          pendingRequest:
+            pendingRequestByEmployeeId.get(emp.id.toString()) ?? null,
         };
       }),
       ...businessIncomeEmployees.map<DashboardEmployeeRow>((emp) => ({
@@ -416,7 +411,7 @@ export async function GET(request: NextRequest) {
         createdAt: emp.createdAt.toISOString(),
         incomeType: "BUSINESS_INCOME" as const,
         incomeTypeLabel: EMPLOYEE_INCOME_TYPE_LABELS.BUSINESS_INCOME,
-        canViewDetail: false,
+        canViewDetail: true,
         bankAccount: null,
         pendingRequest: null,
       })),
@@ -434,7 +429,7 @@ export async function GET(request: NextRequest) {
         createdAt: emp.createdAt.toISOString(),
         incomeType: "OTHER_INCOME" as const,
         incomeTypeLabel: EMPLOYEE_INCOME_TYPE_LABELS.OTHER_INCOME,
-        canViewDetail: false,
+        canViewDetail: true,
         bankAccount: null,
         pendingRequest: null,
       })),
@@ -452,7 +447,7 @@ export async function GET(request: NextRequest) {
         createdAt: emp.createdAt.toISOString(),
         incomeType: "OTHER_INCOME_LABOR" as const,
         incomeTypeLabel: EMPLOYEE_INCOME_TYPE_LABELS.OTHER_INCOME_LABOR,
-        canViewDetail: false,
+        canViewDetail: true,
         bankAccount: null,
         pendingRequest: null,
       })),
@@ -466,10 +461,7 @@ export async function GET(request: NextRequest) {
     const summary = buildSummary(mergedRows, pendingRequests);
 
     const filteredRows = mergedRows.filter((row) => {
-      if (
-        incomeTypeFilter !== "ALL" &&
-        row.incomeType !== incomeTypeFilter
-      ) {
+      if (incomeTypeFilter !== "ALL" && row.incomeType !== incomeTypeFilter) {
         return false;
       }
 

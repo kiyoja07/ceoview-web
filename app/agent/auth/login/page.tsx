@@ -110,72 +110,143 @@ function AgentAuthLoginPageInner() {
 
   return (
     <div className="min-h-screen bg-app-bg">
-      <div className="mx-auto flex min-h-screen max-w-lg items-center p-6">
-        <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
-          <div className="mb-6 text-center">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-              세무대리인 계정 접속
-            </h1>
-            <p className="mt-2 text-sm text-gray-500">
-              이메일로 로그인/회원가입 링크를 받으세요. <br />
-              처음이면 계정이 자동으로 생성됩니다.
+      <div className="mx-auto flex min-h-screen max-w-5xl items-center p-6">
+        <div className="grid w-full gap-8 lg:grid-cols-2 lg:items-center">
+          {/* 마케팅 영역 */}
+          <div className="hidden lg:block">
+            <p className="text-sm font-semibold tracking-wide text-blue-600">
+              세무대리인 전용 플랫폼
             </p>
+            <h2 className="mt-3 text-3xl font-bold leading-snug tracking-tight text-gray-900">
+              거래처에 시스템까지
+              <br />
+              <span className="text-blue-600">제공하는 세무대리인</span>
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-gray-500">
+              급여 결과만 전달하던 시대는 끝났습니다.
+              <br />
+              거래처 사장님과 직원 모두가 직접 사용하는 고객용 시스템을 지금
+              바로 시작하세요.
+            </p>
+
+            <ul className="mt-8 space-y-4">
+              {[
+                {
+                  title: "거래처 등록 · 관리",
+                  desc: "거래처 목록과 운영 요청을 한 화면에서",
+                },
+                {
+                  title: "급여 업로드 · 명세서 발급",
+                  desc: "대장 업로드부터 직원 명세서 발송까지",
+                },
+                {
+                  title: "사장님 대시보드 · 직원 포털",
+                  desc: "거래처에 제공되는 전용 화면까지 자동 세팅",
+                },
+              ].map((item) => (
+                <li key={item.title} className="flex items-start gap-3">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs text-blue-600">
+                    ✓
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      {item.title}
+                    </p>
+                    <p className="text-xs text-gray-500">{item.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8 rounded-xl bg-blue-50 px-4 py-3">
+              <p className="text-sm font-semibold text-blue-700">
+                현재 모든 기능 무료
+              </p>
+              <p className="mt-0.5 text-xs text-blue-600/70">
+                가입비·월 이용료 없이 바로 시작할 수 있습니다
+              </p>
+            </div>
           </div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                이메일
-              </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={inputBase}
-                placeholder="name@company.com"
-              />
-            </div>
-
-            <p className="text-center text-xs leading-relaxed text-gray-400">
-              로그인 링크로 접속하면{" "}
-              <a href="#" className="underline hover:text-gray-600">
-                이용약관
-              </a>{" "}
-              및{" "}
-              <a href="#" className="underline hover:text-gray-600">
-                개인정보처리방침
-              </a>
-              에 동의한 것으로 봅니다.
-            </p>
-
-            {message && (
-              <div
-                className={`rounded-lg px-3 py-2 text-sm ${
-                  message.type === "error"
-                    ? "border border-red-200 bg-red-50 text-red-700"
-                    : "border border-green-200 bg-green-50 text-green-700"
-                }`}
-              >
-                {message.text}
+          {/* 로그인 폼 영역 */}
+          <div className="w-full max-w-lg justify-self-center lg:justify-self-end">
+            <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
+              <div className="mb-6 text-center">
+                <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+                  세무대리인 계정으로 시작
+                </h1>
+                <p className="mt-2 text-sm text-gray-500">
+                  이메일로 로그인/회원가입 링크를 받으세요. <br />
+                  처음이면 계정이 자동으로 생성됩니다.
+                </p>
               </div>
-            )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
-            >
-              {submitLabel}
-            </button>
+              {/* 모바일 전용 마케팅 배너 */}
+              <div className="mb-5 rounded-lg bg-linear-to-r from-blue-50 to-indigo-50 px-4 py-3 lg:hidden">
+                <p className="text-center text-sm font-medium text-blue-700">
+                  거래처에 시스템까지 제공하는 세무대리인
+                </p>
+                <p className="mt-0.5 text-center text-xs text-blue-600/70">
+                  모든 기능 무료 · 가입 즉시 사용 가능
+                </p>
+              </div>
 
-            <p className="text-center text-xs text-gray-500">
-              링크는 15분간 유효하며 1회만 사용할 수 있습니다.
-            </p>
-            <p className="text-center text-xs text-gray-500">
-              첫 로그인 후 소속 조직 정보를 입력하면 바로 사용 가능합니다.
-            </p>
-          </form>
+              <form className="space-y-4" onSubmit={handleSubmit}>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                    이메일
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={inputBase}
+                    placeholder="name@company.com"
+                  />
+                </div>
+
+                <p className="text-center text-xs leading-relaxed text-gray-400">
+                  로그인 링크로 접속하면{" "}
+                  <a href="#" className="underline hover:text-gray-600">
+                    이용약관
+                  </a>{" "}
+                  및{" "}
+                  <a href="#" className="underline hover:text-gray-600">
+                    개인정보처리방침
+                  </a>
+                  에 동의한 것으로 봅니다.
+                </p>
+
+                {message && (
+                  <div
+                    className={`rounded-lg px-3 py-2 text-sm ${
+                      message.type === "error"
+                        ? "border border-red-200 bg-red-50 text-red-700"
+                        : "border border-green-200 bg-green-50 text-green-700"
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+                >
+                  {submitLabel}
+                </button>
+
+                <p className="text-center text-xs text-gray-500">
+                  링크는 15분간 유효하며 1회만 사용할 수 있습니다.
+                </p>
+                <p className="text-center text-xs text-gray-500">
+                  첫 로그인 후 소속 조직 정보를 입력하면 바로 사용 가능합니다.
+                </p>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>
