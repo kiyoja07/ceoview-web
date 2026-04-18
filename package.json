@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "doppler run -- next dev",
-    "build": "doppler run -- next build",
-    "start": "doppler run -- next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "prestart": "npm run build",
+    "prebuild": "prisma generate",
+    "build": "next build",
+    "prestart": "rm -rf .next && doppler run -- npm run build",
+    "start": "doppler run -- next start",
     "clean": "npm cache clean --force && rm -rf node_modules package-lock.json .next "
   },
   "dependencies": {
