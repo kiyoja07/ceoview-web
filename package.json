@@ -8,12 +8,8 @@
     "start": "doppler run -- next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "vercel-build": "doppler run -- prisma generate && doppler run -- next build",
     "prestart": "npm run build",
-    "clean": "npm cache clean --force && rm -rf node_modules && rm -rf package-lock.json && rm -rf .next ",
-    "reinstall": "npm run clean && npm i",
-    "redev": "npm run reinstall && doppler run -- next dev",
-    "restart": "npm run reinstall && doppler run -- next start"
+    "clean": "npm cache clean --force && rm -rf node_modules package-lock.json .next "
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.0",
