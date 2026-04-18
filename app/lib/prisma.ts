@@ -1,5 +1,5 @@
-import { PrismaClient } from "@/app/generated/prisma-client/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaClient } from "@/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 export type PrismaTransactionClient = Omit<
   PrismaClient,
@@ -11,12 +11,14 @@ export type PrismaTx = Parameters<
   Parameters<PrismaClient["$transaction"]>[0]
 >[0];
 
-const adapter = new PrismaMariaDb({
-  host: "127.0.0.1",
-  port: 3306,
-  user: "root",
-  password: "",
-  database: "admin-system-saas",
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error("DATABASE_URL is not set");
+}
+
+const adapter = new PrismaPg({
+  connectionString,
 });
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };

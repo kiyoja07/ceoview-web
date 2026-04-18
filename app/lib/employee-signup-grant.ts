@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from "crypto";
-import type { PayslipChannel } from "@/app/generated/prisma-client/enums";
+import type { PayslipChannel } from "@/generated/prisma/enums";
 
 const EMPLOYEE_SIGNUP_GRANT_TTL_SECONDS = 60 * 30;
 

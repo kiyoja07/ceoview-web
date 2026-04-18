@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma } from "@/app/generated/prisma-client/client";
+import { Prisma } from "@/generated/prisma/client";
 import { attachEmployeeSession } from "@/app/lib/employee-auth";
 import { normalizeEmployeePhone } from "@/app/lib/employee-contact";
 import { isValidEmail } from "@/app/lib/employee-magic-link";

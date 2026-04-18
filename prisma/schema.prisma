@@ -6,11 +6,11 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../app/generated/prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
 }
 
 enum BusinessType {
@@ -79,7 +79,7 @@ enum CompanyChangeRequestStatus {
 
 //  세무사무소 등 에이전트 회사 : 서비스 제공자
 model AgentOrganization {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
   organizationNumber String @unique @map("organization_number") @db.Char(10) // 숫자만 10자리 저장
 
@@ -106,7 +106,7 @@ model AgentOrganization {
 
 // 에이전트의 고객 회사 : 서비스 수혜자
 model Company {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
   businessNumber String @unique @map("business_number") @db.Char(10) // 숫자만 10자리 저장
 
@@ -144,12 +144,12 @@ model Company {
 }
 
 model AgentOrganizationCompany {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  agentOrganizationId BigInt            @map("agent_organization_id") @db.UnsignedBigInt
+  agentOrganizationId BigInt            @map("agent_organization_id")
   agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
 
-  companyId BigInt  @unique @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @unique @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -160,18 +160,18 @@ model AgentOrganizationCompany {
 }
 
 model AgentOrganizationCompanyTransferRequest {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyId BigInt  @unique @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @unique @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  fromAgentOrganizationId BigInt?            @map("from_agent_organization_id") @db.UnsignedBigInt
+  fromAgentOrganizationId BigInt?            @map("from_agent_organization_id")
   fromAgentOrganization   AgentOrganization? @relation("TransferFromOrganization", fields: [fromAgentOrganizationId], references: [id], onDelete: SetNull)
 
-  toAgentOrganizationId BigInt            @map("to_agent_organization_id") @db.UnsignedBigInt
+  toAgentOrganizationId BigInt            @map("to_agent_organization_id")
   toAgentOrganization   AgentOrganization @relation("TransferToOrganization", fields: [toAgentOrganizationId], references: [id], onDelete: Cascade)
 
-  requestedByAgentUserId BigInt    @map("requested_by_agent_user_id") @db.UnsignedBigInt
+  requestedByAgentUserId BigInt    @map("requested_by_agent_user_id")
   requestedByAgentUser   AgentUser @relation(fields: [requestedByAgentUserId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -185,9 +185,9 @@ model AgentOrganizationCompanyTransferRequest {
 
 // 에이전트 회사 소속 사용자
 model AgentUser {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  agentOrganizationId BigInt?            @map("agent_organization_id") @db.UnsignedBigInt
+  agentOrganizationId BigInt?            @map("agent_organization_id")
   agentOrganization   AgentOrganization? @relation(fields: [agentOrganizationId], references: [id])
 
   email          String        @unique @db.VarChar(255)
@@ -217,9 +217,9 @@ model AgentUser {
 
 // 에이전트 사용자용 매직링크 토큰
 model AgentMagicLinkToken {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  agentUserId BigInt    @map("agent_user_id") @db.UnsignedBigInt
+  agentUserId BigInt    @map("agent_user_id")
   agentUser   AgentUser @relation(fields: [agentUserId], references: [id], onDelete: Cascade)
 
   tokenHash String    @unique @map("token_hash") @db.Char(64)
@@ -235,12 +235,12 @@ model AgentMagicLinkToken {
 
 // 에이전트 사용자 초대 토큰 (이메일 기반)
 model AgentUserInviteToken {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  agentOrganizationId BigInt            @map("agent_organization_id") @db.UnsignedBigInt
+  agentOrganizationId BigInt            @map("agent_organization_id")
   agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
 
-  inviterUserId BigInt    @map("inviter_user_id") @db.UnsignedBigInt
+  inviterUserId BigInt    @map("inviter_user_id")
   inviterUser   AgentUser @relation("InviterUserInviteTokens", fields: [inviterUserId], references: [id], onDelete: Cascade)
 
   invitedEmail String @map("invited_email") @db.VarChar(255)
@@ -249,7 +249,7 @@ model AgentUserInviteToken {
   expiresAt DateTime  @map("expires_at")
   usedAt    DateTime? @map("used_at")
 
-  acceptedAgentUserId BigInt? @map("accepted_agent_user_id") @db.UnsignedBigInt
+  acceptedAgentUserId BigInt? @map("accepted_agent_user_id")
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -261,9 +261,9 @@ model AgentUserInviteToken {
 
 // 고객 회사 소속 사용자
 model CompanyUser {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id])
 
   email          String        @unique @db.VarChar(255)
@@ -292,12 +292,12 @@ model CompanyUser {
 }
 
 model CompanyUserCompany {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyUserId BigInt      @map("company_user_id") @db.UnsignedBigInt
+  companyUserId BigInt      @map("company_user_id")
   companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
 
-  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -310,9 +310,9 @@ model CompanyUserCompany {
 
 // 고객 회사 사용자용 매직링크 토큰
 model CompanyMagicLinkToken {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyUserId BigInt      @map("company_user_id") @db.UnsignedBigInt
+  companyUserId BigInt      @map("company_user_id")
   companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
 
   tokenHash String    @unique @map("token_hash") @db.Char(64)
@@ -328,9 +328,9 @@ model CompanyMagicLinkToken {
 
 // 휴대폰 인증 코드
 model PhoneVerificationCode {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyUserId BigInt      @map("company_user_id") @db.UnsignedBigInt
+  companyUserId BigInt      @map("company_user_id")
   companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
 
   phone      String    @db.VarChar(30)
@@ -347,9 +347,9 @@ model PhoneVerificationCode {
 
 // 에이전트 사용자 휴대폰 인증 코드
 model AgentPhoneVerificationCode {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  agentUserId BigInt    @map("agent_user_id") @db.UnsignedBigInt
+  agentUserId BigInt    @map("agent_user_id")
   agentUser   AgentUser @relation(fields: [agentUserId], references: [id], onDelete: Cascade)
 
   phone      String    @db.VarChar(30)
@@ -366,12 +366,12 @@ model AgentPhoneVerificationCode {
 
 // 거래처 사용자 초대 이력
 model CompanyUserInviteHistory {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  inviterAgentUserId BigInt    @map("inviter_agent_user_id") @db.UnsignedBigInt
+  inviterAgentUserId BigInt    @map("inviter_agent_user_id")
   inviterAgentUser   AgentUser @relation(fields: [inviterAgentUserId], references: [id], onDelete: Cascade)
 
   contactType String @map("contact_type") @db.VarChar(10) // "email" | "phone"
@@ -388,12 +388,12 @@ model CompanyUserInviteHistory {
 }
 
 model AgentCompanyCustomer {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  agentUserId BigInt    @map("agent_user_id") @db.UnsignedBigInt
+  agentUserId BigInt    @map("agent_user_id")
   agentUser   AgentUser @relation(fields: [agentUserId], references: [id])
 
-  companyUserId BigInt      @map("company_user_id") @db.UnsignedBigInt
+  companyUserId BigInt      @map("company_user_id")
   companyUser   CompanyUser @relation(fields: [companyUserId], references: [id])
 
   status          CustomerLinkStatus @default(ACTIVE)
@@ -410,17 +410,17 @@ model AgentCompanyCustomer {
 }
 
 model AgentOrganizationBilling {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  agentOrganizationId BigInt            @unique @map("agent_organization_id") @db.UnsignedBigInt
+  agentOrganizationId BigInt            @unique @map("agent_organization_id")
   agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id])
 
   plan AgentBillingPlan @default(STARTER) @map("plan")
 
   cardBrand        String?   @map("card_brand") @db.VarChar(30)
   cardLast4        String?   @map("card_last4") @db.Char(4)
-  cardExpMonth     Int?      @map("card_exp_month") @db.UnsignedTinyInt
-  cardExpYear      Int?      @map("card_exp_year") @db.UnsignedSmallInt
+  cardExpMonth     Int?      @map("card_exp_month")
+  cardExpYear      Int?      @map("card_exp_year")
   cardHolderName   String?   @map("card_holder_name") @db.VarChar(100)
   billingKey       String?   @map("billing_key") @db.VarChar(191)
   cardRegisteredAt DateTime? @map("card_registered_at")
@@ -438,9 +438,9 @@ model AgentOrganizationBilling {
  */
 
 model Upload {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id])
 
   type UploadType @map("type")
@@ -468,14 +468,14 @@ model Upload {
 // "현재 적용 배치"를 강제하는 포인터 테이블
 // 사업자+타입당 1개만 존재하도록 UNIQUE로 강제됨
 model CompanyActiveUpload {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id])
 
   type UploadType @map("type")
 
-  uploadId BigInt @unique @db.UnsignedBigInt
+  uploadId BigInt @unique
   upload   Upload @relation(fields: [uploadId], references: [id])
 
   updatedAt DateTime @updatedAt
@@ -491,16 +491,16 @@ model CompanyActiveUpload {
  */
 
 model EarnedIncome {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  uploadId BigInt @db.UnsignedBigInt
+  uploadId BigInt
   upload   Upload @relation(fields: [uploadId], references: [id])
 
   accrualYm Int      @map("귀속년월")
   paymentYm Int      @map("지급년월")
   payDate   DateTime @map("지급일") @db.Date
 
-  employeeId BigInt?   @map("employee_id") @db.UnsignedBigInt
+  employeeId BigInt?   @map("employee_id")
   employee   Employee? @relation(fields: [employeeId], references: [id])
 
   employeeCode String  @map("사원코드") @db.VarChar(50)
@@ -559,9 +559,9 @@ enum PayslipNotificationStatus {
 }
 
 model PayslipNotification {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  earnedIncomeId BigInt       @map("earned_income_id") @db.UnsignedBigInt
+  earnedIncomeId BigInt       @map("earned_income_id")
   earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id], onDelete: Cascade)
 
   channel      PayslipChannel
@@ -575,9 +575,9 @@ model PayslipNotification {
 }
 
 model PayslipAccessToken {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  earnedIncomeId BigInt       @map("earned_income_id") @db.UnsignedBigInt
+  earnedIncomeId BigInt       @map("earned_income_id")
   earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id], onDelete: Cascade)
 
   channel   PayslipChannel
@@ -594,9 +594,9 @@ model PayslipAccessToken {
 }
 
 model EarnedIncomeItemDefinition {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id])
 
   code         String          @db.VarChar(100)
@@ -616,12 +616,12 @@ model EarnedIncomeItemDefinition {
 }
 
 model EarnedIncomeItemValue {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  earnedIncomeId BigInt       @map("earned_income_id") @db.UnsignedBigInt
+  earnedIncomeId BigInt       @map("earned_income_id")
   earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id])
 
-  itemDefinitionId BigInt                     @map("item_definition_id") @db.UnsignedBigInt
+  itemDefinitionId BigInt                     @map("item_definition_id")
   itemDefinition   EarnedIncomeItemDefinition @relation(fields: [itemDefinitionId], references: [id])
 
   amount Decimal @db.Decimal(15, 2)
@@ -641,9 +641,9 @@ model EarnedIncomeItemValue {
  */
 
 model BusinessIncome {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  uploadId BigInt @db.UnsignedBigInt
+  uploadId BigInt
   upload   Upload @relation(fields: [uploadId], references: [id])
 
   excelNo      Int?   @map("NO")
@@ -679,9 +679,9 @@ model BusinessIncome {
  */
 
 model OtherIncome {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  uploadId BigInt @db.UnsignedBigInt
+  uploadId BigInt
   upload   Upload @relation(fields: [uploadId], references: [id])
 
   excelNo      Int?   @map("NO")
@@ -714,9 +714,9 @@ model OtherIncome {
  */
 
 model DailyIncomeLabor {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  uploadId BigInt @db.UnsignedBigInt
+  uploadId BigInt
   upload   Upload @relation(fields: [uploadId], references: [id])
 
   employeeCode String  @map("코드") @db.VarChar(50)
@@ -759,9 +759,9 @@ model DailyIncomeLabor {
  */
 
 model Employee {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   employeeCode    String? @map("employee_code") @db.VarChar(50)
@@ -818,9 +818,9 @@ model Employee {
 }
 
 model EmployeeUser {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  employeeId BigInt   @unique @map("employee_id") @db.UnsignedBigInt
+  employeeId BigInt   @unique @map("employee_id")
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   email         String? @unique @db.VarChar(255)
@@ -842,9 +842,9 @@ model EmployeeUser {
 }
 
 model EmployeeMagicLinkToken {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  employeeUserId BigInt       @map("employee_user_id") @db.UnsignedBigInt
+  employeeUserId BigInt       @map("employee_user_id")
   employeeUser   EmployeeUser @relation(fields: [employeeUserId], references: [id], onDelete: Cascade)
 
   tokenHash String    @unique @map("token_hash") @db.Char(64)
@@ -865,9 +865,9 @@ model EmployeeMagicLinkToken {
  */
 
 model BusinessIncomeEmployee {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   employeeCode               String? @map("employee_code") @db.VarChar(50)
@@ -907,9 +907,9 @@ model BusinessIncomeEmployee {
  */
 
 model OtherIncomeEmployee {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   employeeCode               String? @map("employee_code") @db.VarChar(50)
@@ -948,9 +948,9 @@ model OtherIncomeEmployee {
  */
 
 model OtherIncomeLaborEmployee {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   employeeCode   String? @map("employee_code") @db.VarChar(50)
@@ -987,9 +987,9 @@ model OtherIncomeLaborEmployee {
 }
 
 model EmployeeBankAccount {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
-  employeeId BigInt   @map("employee_id") @db.UnsignedBigInt
+  employeeId BigInt   @map("employee_id")
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   bankName      String @map("bank_name") @db.VarChar(50)
@@ -1006,22 +1006,22 @@ model EmployeeBankAccount {
 }
 
 model CompanyChangeRequest {
-  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  id BigInt @id @default(autoincrement())
 
   scope  CompanyChangeRequestScope
   action CompanyChangeRequestAction
   status CompanyChangeRequestStatus @default(PENDING)
 
-  companyId BigInt  @map("company_id") @db.UnsignedBigInt
+  companyId BigInt  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  requestedByCompanyUserId BigInt      @map("requested_by_company_user_id") @db.UnsignedBigInt
+  requestedByCompanyUserId BigInt      @map("requested_by_company_user_id")
   requestedByCompanyUser   CompanyUser @relation("RequestedByCompanyUser", fields: [requestedByCompanyUserId], references: [id], onDelete: Cascade)
 
-  resolvedByAgentUserId BigInt?    @map("resolved_by_agent_user_id") @db.UnsignedBigInt
+  resolvedByAgentUserId BigInt?    @map("resolved_by_agent_user_id")
   resolvedByAgentUser   AgentUser? @relation("ResolvedByAgentUser", fields: [resolvedByAgentUserId], references: [id], onDelete: SetNull)
 
-  targetEmployeeId BigInt? @map("target_employee_id") @db.UnsignedBigInt
+  targetEmployeeId BigInt? @map("target_employee_id")
 
   requestedPayload Json  @map("requested_payload")
   currentSnapshot  Json? @map("current_snapshot")

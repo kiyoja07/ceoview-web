@@ -108,27 +108,6 @@ function sortEntries(entries: EmployeePayslipEntry[]) {
   });
 }
 
-async function backfillEarnedIncomeEmployeeId(params: {
-  uploadId: bigint;
-  employeeId: bigint;
-  employeeCode: string | null;
-}) {
-  if (!params.employeeCode?.trim()) {
-    return;
-  }
-
-  await prisma.earnedIncome.updateMany({
-    where: {
-      uploadId: params.uploadId,
-      employeeId: null,
-      employeeCode: params.employeeCode.trim(),
-    },
-    data: {
-      employeeId: params.employeeId,
-    },
-  });
-}
-
 export async function getEmployeePayslipCollection(
   session: EmployeePortalSession,
 ): Promise<EmployeePayslipCollection> {
@@ -228,14 +207,6 @@ export async function getEmployeePayslipCollection(
         session.employeeId,
       )
     : null;
-
-  if (earnedUploadId) {
-    await backfillEarnedIncomeEmployeeId({
-      uploadId: earnedUploadId,
-      employeeId: session.employeeId,
-      employeeCode: session.employee.employeeCode,
-    });
-  }
 
   const [
     earnedRows,
