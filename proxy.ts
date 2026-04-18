@@ -25,6 +25,17 @@ function redirectTo(url: string) {
   return NextResponse.redirect(new URL(url), 308);
 }
 
+function buildRequestHeaders(
+  request: NextRequest,
+  pathname: string,
+  audience: Audience,
+) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-ceoview-pathname", pathname);
+  requestHeaders.set("x-ceoview-audience", audience);
+  return requestHeaders;
+}
+
 export function proxy(request: NextRequest) {
   const pathname = normalizePathname(request.nextUrl.pathname);
   const requestHost =
@@ -36,10 +47,15 @@ export function proxy(request: NextRequest) {
   }
 
   const audience = resolveAudienceFromHost(requestHost);
+  const requestHeaders = buildRequestHeaders(request, pathname, audience);
 
   if (audience === "public") {
     if (isLocalDevelopmentHost(hostname)) {
-      return NextResponse.next();
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
     }
 
     const matchedAudience = getMatchedLegacyAudience(pathname);
@@ -48,7 +64,11 @@ export function proxy(request: NextRequest) {
         buildUrlForAudience(matchedAudience, pathname, request),
       );
     }
-    return NextResponse.next();
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
   }
 
   if (isPublicSurfacePath(pathname)) {
@@ -66,12 +86,21 @@ export function proxy(request: NextRequest) {
 
   const rewrittenPath = toInternalPath(audience, pathname);
   if (rewrittenPath === pathname) {
-    return NextResponse.next();
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
   }
 
   const rewriteUrl = request.nextUrl.clone();
   rewriteUrl.pathname = rewrittenPath;
-  return NextResponse.rewrite(rewriteUrl);
+  requestHeaders.set("x-ceoview-pathname", rewrittenPath);
+  return NextResponse.rewrite(rewriteUrl, {
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 export const config = {

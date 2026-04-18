@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
+import { headers } from "next/headers";
 import { CompanyHeader } from "./_components/CompanyHeader";
 import {
   COMPANY_SELECTED_COMPANY_COOKIE,
@@ -9,8 +10,18 @@ import {
 } from "@/app/lib/company-auth";
 import { resolveCompanyAccessContextForUser } from "@/app/lib/company-access";
 
+async function shouldShowCompanyHeader() {
+  const headerStore = await headers();
+  const pathname = headerStore.get("x-ceoview-pathname") ?? "";
+  return !pathname.startsWith("/company/auth");
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   try {
+    if (!(await shouldShowCompanyHeader())) {
+      return { title: "Company Auth" };
+    }
+
     const cookieStore = await cookies();
     const token = cookieStore.get(COMPANY_SESSION_COOKIE)?.value;
     const selectedCompanyValue =
@@ -33,10 +44,16 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default function CompanyLayout({ children }: { children: ReactNode }) {
+export default async function CompanyLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const showHeader = await shouldShowCompanyHeader();
+
   return (
     <>
-      <CompanyHeader />
+      {showHeader ? <CompanyHeader /> : null}
       {children}
     </>
   );
