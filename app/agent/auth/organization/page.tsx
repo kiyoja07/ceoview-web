@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type {
@@ -123,31 +122,23 @@ export default function AgentOrganizationCreatePage() {
   return (
     <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-2xl p-6 lg:p-8">
-        <div className="mb-6 flex items-start justify-between gap-3">
+        <div className="mb-6 flex items-sta rt justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-              세무대리인 조직 등록
+              세무대리인 및 소속 회사 등록
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              가입 완료: {name} ({email})
-            </p>
-            <p className="text-sm text-gray-500">
-              서비스 사용을 위해 먼저 소속 세무대리인 조직을 등록해주세요.
+            <p className="mt-1 text-sm text-gray-500">가입 완료: ({email})</p>
+            <p className="text-sm mt-2 text-gray-500">
+              서비스 이용을 위해 세무대리인 및 소속 회사를 등록해주세요.
             </p>
           </div>
-          <Link
-            href="/agent/auth/logout"
-            className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition hover:bg-gray-50"
-          >
-            로그아웃
-          </Link>
         </div>
 
         <BusinessRegistrationForm
           showBizValidation
           onBizValidate={handleBizValidate}
           onSubmit={handleSubmit}
-          submitLabel="에이전트 조직 생성"
+          submitLabel="세무대리인 소속 회사 생성"
           loadingLabel="생성 중..."
           message={message}
           onMessageChange={setMessage}
@@ -203,7 +194,7 @@ export default function AgentOrganizationCreatePage() {
                     maxLength={30}
                   />
                   <p className="mt-1 text-xs text-gray-500">
-                    거래처 회사 대시보드에 담당 세무대리인 연락처로 표시됩니다.
+                    거래처 회사 화면에 담당 세무대리인 연락처로 표시됩니다.
                   </p>
                 </div>
               </section>

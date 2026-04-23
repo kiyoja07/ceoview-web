@@ -5,8 +5,8 @@ import {
   getBaseUrlForAudience,
 } from "@/app/lib/audience-routing";
 
-const MAGIC_LINK_TTL_MINUTES = 15;
-const MAGIC_LINK_TTL_MS = MAGIC_LINK_TTL_MINUTES * 60 * 1000;
+const MAGIC_LINK_TTL_MINUTES = process.env.MAGIC_LINK_TTL_MINUTES!;
+const MAGIC_LINK_TTL_MS = parseInt(MAGIC_LINK_TTL_MINUTES) * 60 * 1000;
 
 export function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -15,16 +15,16 @@ export function isValidEmail(email: string) {
 export function createMagicLinkToken() {
   const token = randomBytes(32).toString("base64url");
   const tokenHash = hashMagicLinkToken(token);
+  console.log("Generated magic link token:", {
+    MAGIC_LINK_TTL_MS,
+  });
   const expiresAt = new Date(Date.now() + MAGIC_LINK_TTL_MS);
+  console.log("Generated magic link token:", { token, tokenHash, expiresAt });
   return { token, tokenHash, expiresAt };
 }
 
 export function hashMagicLinkToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
-}
-
-export function getMagicLinkTtlMinutes() {
-  return MAGIC_LINK_TTL_MINUTES;
 }
 
 export function createDefaultNameFromEmail(email: string) {
@@ -38,10 +38,7 @@ export function getAppBaseUrl(request: NextRequest) {
 }
 
 export function buildMagicLinkUrl(request: NextRequest, token: string) {
-  return buildUrlForAudience(
-    "agent",
-    "/api/agent/auth/magic-link",
-    request,
-    { token },
-  );
+  return buildUrlForAudience("public", "/api/agent/auth/magic-link", request, {
+    token,
+  });
 }

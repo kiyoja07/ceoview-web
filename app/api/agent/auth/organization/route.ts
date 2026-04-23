@@ -12,7 +12,9 @@ type ParsedOrganizationInput = {
   representativeName: string | null;
   phone: string | null;
   openingDate: Date | null;
+  zipcode: string | null;
   address: string | null;
+  addressDetail: string | null;
 };
 
 type ParsedAgentProfileInput = {
@@ -28,7 +30,9 @@ function parseOrganizationBody(body: CreateOrganizationBody) {
   const representativeName = body.representativeName?.trim() || null;
   const phoneRaw = body.phone?.trim() ?? "";
   const openingDateRaw = body.openingDate?.trim() || null;
+  const zipcode = body.zipcode?.trim() || null;
   const address = body.address?.trim() || null;
+  const addressDetail = body.addressDetail?.trim() || null;
 
   if (!organizationNumber || !businessType) {
     return {
@@ -75,7 +79,9 @@ function parseOrganizationBody(body: CreateOrganizationBody) {
       representativeName,
       phone: phoneRaw ? phoneRaw.slice(0, 30) : null,
       openingDate,
+      zipcode: zipcode ? zipcode.slice(0, 10) : null,
       address,
+      addressDetail: addressDetail ? addressDetail.slice(0, 255) : null,
     } satisfies ParsedOrganizationInput,
   } as const;
 }
@@ -147,7 +153,9 @@ export async function GET(request: NextRequest) {
         representativeName: true,
         phone: true,
         openingDate: true,
+        zipcode: true,
         address: true,
+        addressDetail: true,
       },
     });
 
@@ -243,6 +251,9 @@ export async function POST(request: NextRequest) {
         organizationName: organization.organizationName,
         representativeName: organization.representativeName,
         phone: organization.phone,
+        zipcode: organization.zipcode,
+        address: organization.address,
+        addressDetail: organization.addressDetail,
       },
       { status: 201 },
     );
@@ -261,7 +272,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: "에이전트 조직 생성에 실패했습니다." },
+      { error: "세무대리인 조직 생성에 실패했습니다." },
       { status: 500 },
     );
   }
@@ -308,7 +319,9 @@ export async function PATCH(request: NextRequest) {
         representativeName: true,
         phone: true,
         openingDate: true,
+        zipcode: true,
         address: true,
+        addressDetail: true,
       },
     });
 
@@ -322,7 +335,9 @@ export async function PATCH(request: NextRequest) {
       openingDate: updated.openingDate
         ? updated.openingDate.toISOString().slice(0, 10)
         : null,
+      zipcode: updated.zipcode,
       address: updated.address,
+      addressDetail: updated.addressDetail,
     });
   } catch (error: unknown) {
     console.error("Update agent organization error:", error);

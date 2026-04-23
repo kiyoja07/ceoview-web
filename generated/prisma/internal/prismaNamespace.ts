@@ -2925,7 +2925,9 @@ export const AgentOrganizationScalarFieldEnum = {
   representativeName: 'representativeName',
   phone: 'phone',
   openingDate: 'openingDate',
+  zipcode: 'zipcode',
   address: 'address',
+  addressDetail: 'addressDetail',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

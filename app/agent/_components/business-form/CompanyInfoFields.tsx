@@ -39,7 +39,6 @@ export default function CompanyInfoFields({
               type="text"
               value={businessName}
               onChange={(e) => onBusinessNameChange(e.target.value)}
-              placeholder="상호명을 입력하세요"
               className={INPUT_BASE}
             />
           </div>
@@ -51,7 +50,6 @@ export default function CompanyInfoFields({
               type="text"
               value={representativeName}
               onChange={(e) => onRepresentativeNameChange(e.target.value)}
-              placeholder="대표자 이름을 입력하세요"
               className={INPUT_BASE}
             />
           </div>
@@ -60,13 +58,12 @@ export default function CompanyInfoFields({
         {/* 주소 */}
         <div>
           <label className="mb-1.5 block text-sm font-medium text-gray-700">
-            주소
+            사업장 주소
           </label>
           <input
             type="text"
             value={address}
             onChange={(e) => onAddressChange(e.target.value)}
-            placeholder="사업장 주소를 입력하세요"
             className={INPUT_BASE}
           />
         </div>

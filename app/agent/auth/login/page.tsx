@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useState, type FormEvent } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import type {
   AgentAuthMeResponse,
@@ -112,15 +113,12 @@ function AgentAuthLoginPageInner() {
     <div className="min-h-screen bg-app-bg">
       <div className="mx-auto flex min-h-screen max-w-5xl items-center p-6">
         <div className="grid w-full gap-8 lg:grid-cols-2 lg:items-center">
-          {/* 마케팅 영역 */}
           <div className="hidden lg:block">
-            <p className="text-sm font-semibold tracking-wide text-blue-600">
-              세무대리인 전용 플랫폼
+            <p className="text-sm font-semibold tracking-wide text-gray-900">
+              세무대리인 플랫폼
             </p>
-            <h2 className="mt-3 text-3xl font-bold leading-snug tracking-tight text-gray-900">
+            <h2 className="mt-3 text-3xl font-bold leading-snug tracking-tight text-blue-600">
               거래처에 시스템까지
-              <br />
-              <span className="text-blue-600">제공하는 세무대리인</span>
             </h2>
             <p className="mt-4 text-sm leading-7 text-gray-500">
               급여 결과만 전달하던 시대는 끝났습니다.
@@ -143,6 +141,10 @@ function AgentAuthLoginPageInner() {
                   title: "사장님 대시보드 · 직원 포털",
                   desc: "거래처에 제공되는 전용 화면까지 자동 세팅",
                 },
+                {
+                  title: "모든 기능 무료",
+                  desc: "가입비·월 이용료 없이 바로 시작할 수 있습니다",
+                },
               ].map((item) => (
                 <li key={item.title} className="flex items-start gap-3">
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs text-blue-600">
@@ -157,15 +159,6 @@ function AgentAuthLoginPageInner() {
                 </li>
               ))}
             </ul>
-
-            <div className="mt-8 rounded-xl bg-blue-50 px-4 py-3">
-              <p className="text-sm font-semibold text-blue-700">
-                현재 모든 기능 무료
-              </p>
-              <p className="mt-0.5 text-xs text-blue-600/70">
-                가입비·월 이용료 없이 바로 시작할 수 있습니다
-              </p>
-            </div>
           </div>
 
           {/* 로그인 폼 영역 */}
@@ -173,7 +166,7 @@ function AgentAuthLoginPageInner() {
             <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
               <div className="mb-6 text-center">
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-                  세무대리인 계정으로 시작
+                  세무대리인으로 무료 시작
                 </h1>
                 <p className="mt-2 text-sm text-gray-500">
                   이메일로 로그인/회원가입 링크를 받으세요. <br />
@@ -245,6 +238,15 @@ function AgentAuthLoginPageInner() {
                   첫 로그인 후 소속 조직 정보를 입력하면 바로 사용 가능합니다.
                 </p>
               </form>
+
+              <div className="mt-4 border-t border-gray-100 pt-4 text-center">
+                <Link
+                  href="/"
+                  className="text-xs text-gray-400 transition-colors hover:text-gray-600"
+                >
+                  홈으로 돌아가기
+                </Link>
+              </div>
             </div>
           </div>
         </div>

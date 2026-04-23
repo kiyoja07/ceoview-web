@@ -57,7 +57,7 @@ export default function DateInput({
   disabled = false,
   id,
   theme = "emerald",
-  placeholder = "YYYY-MM-DD",
+  placeholder = "YYYY-MM-DD (예: 2023-01-01)",
 }: DateInputProps) {
   const [touched, setTouched] = useState(false);
   const error = touched ? validateDate(value) : null;

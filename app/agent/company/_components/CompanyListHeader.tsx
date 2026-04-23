@@ -28,9 +28,7 @@ export default function CompanyListHeader({ count }: CompanyListHeaderProps) {
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">
               거래처 관리
             </h1>
-            <p className="text-sm text-gray-500">
-              {count !== null ? `${count}개 등록됨` : ""}
-            </p>
+            <p className="text-sm text-gray-500">{`${count} 개`}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

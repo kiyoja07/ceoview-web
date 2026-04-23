@@ -89,7 +89,9 @@ model AgentOrganization {
   representativeName String?   @map("representative_name") @db.VarChar(100)
   phone              String?   @map("phone") @db.VarChar(30)
   openingDate        DateTime? @map("opening_date") @db.Date
+  zipcode            String?   @map("zipcode") @db.VarChar(10)
   address            String?   @map("address") @db.VarChar(255)
+  addressDetail      String?   @map("address_detail") @db.VarChar(255)
 
   users                AgentUser[]
   billing              AgentOrganizationBilling?

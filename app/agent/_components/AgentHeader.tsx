@@ -58,7 +58,7 @@ export function AgentHeader() {
     ? profile.organization.organizationName
     : profile?.organization?.organizationNumber
       ? formatOrganizationNumber(profile.organization.organizationNumber)
-      : "조직 미연결";
+      : "소속 미등록";
   const navItems = AGENT_HEADER_NAV_ITEMS.filter(
     (item): item is typeof item & { href: string } =>
       typeof item.href === "string",

@@ -26,7 +26,7 @@ export default function BusinessTypeSelector({
           사업자구분
         </label>
         <p className="text-xs text-gray-400">
-          사업자번호에 맞춰 자동으로 선택됩니다
+          사업자번호에 맞춰 자동으로 표시됩니다
         </p>
       </div>
       <div className="inline-flex items-center gap-2 rounded-lg bg-blue-50 px-3.5 py-2 text-blue-700">

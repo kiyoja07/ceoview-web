@@ -79,7 +79,8 @@ export function getOriginFromHeaders(source?: NextRequest | HeaderSource | null)
   if (!host) return null;
 
   const forwardedProto = headers.get("x-forwarded-proto");
-  const protocol = forwardedProto || (host.includes("localhost") ? "http" : "https");
+  const protocol =
+    forwardedProto || (isLocalDevelopmentHost(normalizeHost(host)) ? "http" : "https");
   return `${protocol}://${host}`;
 }
 
@@ -87,6 +88,7 @@ export function isLocalDevelopmentHost(hostname: string) {
   return (
     hostname === "localhost" ||
     hostname === "127.0.0.1" ||
+    hostname === "0.0.0.0" ||
     hostname.endsWith(".localhost")
   );
 }
@@ -159,21 +161,21 @@ export function getBaseUrlForAudience(
   audience: Audience,
   source?: NextRequest | HeaderSource | null,
 ) {
-  const configured = getConfiguredBaseUrl(audience);
-  if (configured) return configured;
-
   const origin =
     sanitizeBaseUrl(getOriginFromHeaders(source)) || "http://localhost:3000";
   const url = new URL(origin);
   const hostname = normalizeHost(url.hostname);
 
-  if (audience === "public" && isLocalDevelopmentHost(hostname)) {
-    return url.origin;
-  }
-
   if (isLocalDevelopmentHost(hostname)) {
+    if (audience === "public") {
+      return url.origin;
+    }
+
     return `${url.origin}${INTERNAL_PREFIX_BY_AUDIENCE[audience]}`;
   }
+
+  const configured = getConfiguredBaseUrl(audience);
+  if (configured) return configured;
 
   const apexHost = resolveApexHost(hostname);
   if (audience === "public") {

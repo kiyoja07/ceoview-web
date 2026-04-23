@@ -61,9 +61,12 @@ export async function GET(request: NextRequest) {
         summary: {
           totalCompanies: 0,
           companiesWithEmployees: 0,
+          companiesFullyPublished: 0,
           totalEmployees: 0,
           totalActiveEmployees: 0,
           totalResignedEmployees: 0,
+          totalSavedEmployees: 0,
+          totalPublishedEmployees: 0,
         },
         companies: [],
       });

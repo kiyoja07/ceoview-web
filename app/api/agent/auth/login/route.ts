@@ -4,7 +4,6 @@ import {
   buildMagicLinkUrl,
   createDefaultNameFromEmail,
   createMagicLinkToken,
-  getMagicLinkTtlMinutes,
   isValidEmail,
 } from "@/app/lib/agent-magic-link";
 import { sendEmail } from "@/app/lib/messages/email";
@@ -106,8 +105,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const ttlMinutes = getMagicLinkTtlMinutes();
-    const title = "[관리자 시스템] 로그인 링크 안내";
+    const ttlMinutes = process.env.MAGIC_LINK_TTL_MINUTES!;
+    const title = "[경영한눈] 세무대리인 로그인 링크 안내";
     const mailBody = `
 <!DOCTYPE html>
 <html lang="ko">
@@ -120,14 +119,14 @@ export async function POST(request: NextRequest) {
           <!-- Header -->
           <tr>
             <td style="background-color:#2563eb;padding:28px 32px;text-align:center;">
-              <h1 style="margin:0;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.3px;">관리자 시스템</h1>
+              <h1 style="margin:0;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.3px;">경영한눈 세무대리인 로그인</h1>
             </td>
           </tr>
           <!-- Body -->
           <tr>
             <td style="padding:36px 32px 28px;">
               <p style="margin:0 0 14px;color:#1f2937;font-size:14px;line-height:1.6;">안녕하세요. 경영한눈(ceoview.kr)입니다.</p>
-              <p style="margin:0 0 20px;color:#374151;font-size:14px;line-height:1.6;">아래 버튼을 클릭하면 로그인됩니다.</p>
+              <p style="margin:0 0 20px;color:#374151;font-size:14px;line-height:1.6;">아래 버튼을 클릭하면 세무대리인으로 로그인됩니다.</p>
               <p style="margin:0 0 28px;color:#9ca3af;font-size:11px;line-height:1.6;">
                 로그인 링크로 접속하면 <a href="#" style="color:#9ca3af;text-decoration:underline;">이용약관</a> 및 <a href="#" style="color:#9ca3af;text-decoration:underline;">개인정보처리방침</a>에 동의한 것으로 봅니다.
               </p>
@@ -155,7 +154,7 @@ export async function POST(request: NextRequest) {
           <!-- Footer -->
           <tr>
             <td style="background-color:#f9fafb;padding:20px 32px;text-align:center;border-top:1px solid #f3f4f6;">
-              <p style="margin:0;color:#d1d5db;font-size:11px;">© ${new Date().getFullYear()} 관리자 시스템</p>
+              <p style="margin:0;color:#d1d5db;font-size:11px;">© ${new Date().getFullYear()} 경영한눈</p>
             </td>
           </tr>
         </table>

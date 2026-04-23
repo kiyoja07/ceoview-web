@@ -42,7 +42,9 @@ export type AgentOrganizationMinAggregateOutputType = {
   representativeName: string | null
   phone: string | null
   openingDate: Date | null
+  zipcode: string | null
   address: string | null
+  addressDetail: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -55,7 +57,9 @@ export type AgentOrganizationMaxAggregateOutputType = {
   representativeName: string | null
   phone: string | null
   openingDate: Date | null
+  zipcode: string | null
   address: string | null
+  addressDetail: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -68,7 +72,9 @@ export type AgentOrganizationCountAggregateOutputType = {
   representativeName: number
   phone: number
   openingDate: number
+  zipcode: number
   address: number
+  addressDetail: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -91,7 +97,9 @@ export type AgentOrganizationMinAggregateInputType = {
   representativeName?: true
   phone?: true
   openingDate?: true
+  zipcode?: true
   address?: true
+  addressDetail?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -104,7 +112,9 @@ export type AgentOrganizationMaxAggregateInputType = {
   representativeName?: true
   phone?: true
   openingDate?: true
+  zipcode?: true
   address?: true
+  addressDetail?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -117,7 +127,9 @@ export type AgentOrganizationCountAggregateInputType = {
   representativeName?: true
   phone?: true
   openingDate?: true
+  zipcode?: true
   address?: true
+  addressDetail?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -217,7 +229,9 @@ export type AgentOrganizationGroupByOutputType = {
   representativeName: string | null
   phone: string | null
   openingDate: Date | null
+  zipcode: string | null
   address: string | null
+  addressDetail: string | null
   createdAt: Date
   updatedAt: Date
   _count: AgentOrganizationCountAggregateOutputType | null
@@ -253,7 +267,9 @@ export type AgentOrganizationWhereInput = {
   representativeName?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   phone?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   openingDate?: Prisma.DateTimeNullableFilter<"AgentOrganization"> | Date | string | null
+  zipcode?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   address?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
+  addressDetail?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AgentOrganization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AgentOrganization"> | Date | string
   users?: Prisma.AgentUserListRelationFilter
@@ -272,7 +288,9 @@ export type AgentOrganizationOrderByWithRelationInput = {
   representativeName?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   openingDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  zipcode?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
+  addressDetail?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   users?: Prisma.AgentUserOrderByRelationAggregateInput
@@ -294,7 +312,9 @@ export type AgentOrganizationWhereUniqueInput = Prisma.AtLeast<{
   representativeName?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   phone?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   openingDate?: Prisma.DateTimeNullableFilter<"AgentOrganization"> | Date | string | null
+  zipcode?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   address?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
+  addressDetail?: Prisma.StringNullableFilter<"AgentOrganization"> | string | null
   createdAt?: Prisma.DateTimeFilter<"AgentOrganization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AgentOrganization"> | Date | string
   users?: Prisma.AgentUserListRelationFilter
@@ -313,7 +333,9 @@ export type AgentOrganizationOrderByWithAggregationInput = {
   representativeName?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   openingDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  zipcode?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
+  addressDetail?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AgentOrganizationCountOrderByAggregateInput
@@ -334,7 +356,9 @@ export type AgentOrganizationScalarWhereWithAggregatesInput = {
   representativeName?: Prisma.StringNullableWithAggregatesFilter<"AgentOrganization"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"AgentOrganization"> | string | null
   openingDate?: Prisma.DateTimeNullableWithAggregatesFilter<"AgentOrganization"> | Date | string | null
+  zipcode?: Prisma.StringNullableWithAggregatesFilter<"AgentOrganization"> | string | null
   address?: Prisma.StringNullableWithAggregatesFilter<"AgentOrganization"> | string | null
+  addressDetail?: Prisma.StringNullableWithAggregatesFilter<"AgentOrganization"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AgentOrganization"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"AgentOrganization"> | Date | string
 }
@@ -347,7 +371,9 @@ export type AgentOrganizationCreateInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserCreateNestedManyWithoutAgentOrganizationInput
@@ -366,7 +392,9 @@ export type AgentOrganizationUncheckedCreateInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserUncheckedCreateNestedManyWithoutAgentOrganizationInput
@@ -385,7 +413,9 @@ export type AgentOrganizationUpdateInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUpdateManyWithoutAgentOrganizationNestedInput
@@ -404,7 +434,9 @@ export type AgentOrganizationUncheckedUpdateInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUncheckedUpdateManyWithoutAgentOrganizationNestedInput
@@ -423,7 +455,9 @@ export type AgentOrganizationCreateManyInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -436,7 +470,9 @@ export type AgentOrganizationUpdateManyMutationInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -449,7 +485,9 @@ export type AgentOrganizationUncheckedUpdateManyInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -462,7 +500,9 @@ export type AgentOrganizationCountOrderByAggregateInput = {
   representativeName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   openingDate?: Prisma.SortOrder
+  zipcode?: Prisma.SortOrder
   address?: Prisma.SortOrder
+  addressDetail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -479,7 +519,9 @@ export type AgentOrganizationMaxOrderByAggregateInput = {
   representativeName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   openingDate?: Prisma.SortOrder
+  zipcode?: Prisma.SortOrder
   address?: Prisma.SortOrder
+  addressDetail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -492,7 +534,9 @@ export type AgentOrganizationMinOrderByAggregateInput = {
   representativeName?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   openingDate?: Prisma.SortOrder
+  zipcode?: Prisma.SortOrder
   address?: Prisma.SortOrder
+  addressDetail?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -635,7 +679,9 @@ export type AgentOrganizationCreateWithoutCompanyLinksInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserCreateNestedManyWithoutAgentOrganizationInput
@@ -653,7 +699,9 @@ export type AgentOrganizationUncheckedCreateWithoutCompanyLinksInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserUncheckedCreateNestedManyWithoutAgentOrganizationInput
@@ -687,7 +735,9 @@ export type AgentOrganizationUpdateWithoutCompanyLinksInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUpdateManyWithoutAgentOrganizationNestedInput
@@ -705,7 +755,9 @@ export type AgentOrganizationUncheckedUpdateWithoutCompanyLinksInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUncheckedUpdateManyWithoutAgentOrganizationNestedInput
@@ -723,7 +775,9 @@ export type AgentOrganizationCreateWithoutTransferRequestsFromInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserCreateNestedManyWithoutAgentOrganizationInput
@@ -741,7 +795,9 @@ export type AgentOrganizationUncheckedCreateWithoutTransferRequestsFromInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserUncheckedCreateNestedManyWithoutAgentOrganizationInput
@@ -764,7 +820,9 @@ export type AgentOrganizationCreateWithoutTransferRequestsToInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserCreateNestedManyWithoutAgentOrganizationInput
@@ -782,7 +840,9 @@ export type AgentOrganizationUncheckedCreateWithoutTransferRequestsToInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserUncheckedCreateNestedManyWithoutAgentOrganizationInput
@@ -816,7 +876,9 @@ export type AgentOrganizationUpdateWithoutTransferRequestsFromInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUpdateManyWithoutAgentOrganizationNestedInput
@@ -834,7 +896,9 @@ export type AgentOrganizationUncheckedUpdateWithoutTransferRequestsFromInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUncheckedUpdateManyWithoutAgentOrganizationNestedInput
@@ -863,7 +927,9 @@ export type AgentOrganizationUpdateWithoutTransferRequestsToInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUpdateManyWithoutAgentOrganizationNestedInput
@@ -881,7 +947,9 @@ export type AgentOrganizationUncheckedUpdateWithoutTransferRequestsToInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUncheckedUpdateManyWithoutAgentOrganizationNestedInput
@@ -899,7 +967,9 @@ export type AgentOrganizationCreateWithoutUsersInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   billing?: Prisma.AgentOrganizationBillingCreateNestedOneWithoutAgentOrganizationInput
@@ -917,7 +987,9 @@ export type AgentOrganizationUncheckedCreateWithoutUsersInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   billing?: Prisma.AgentOrganizationBillingUncheckedCreateNestedOneWithoutAgentOrganizationInput
@@ -951,7 +1023,9 @@ export type AgentOrganizationUpdateWithoutUsersInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   billing?: Prisma.AgentOrganizationBillingUpdateOneWithoutAgentOrganizationNestedInput
@@ -969,7 +1043,9 @@ export type AgentOrganizationUncheckedUpdateWithoutUsersInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   billing?: Prisma.AgentOrganizationBillingUncheckedUpdateOneWithoutAgentOrganizationNestedInput
@@ -987,7 +1063,9 @@ export type AgentOrganizationCreateWithoutInviteTokensInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserCreateNestedManyWithoutAgentOrganizationInput
@@ -1005,7 +1083,9 @@ export type AgentOrganizationUncheckedCreateWithoutInviteTokensInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserUncheckedCreateNestedManyWithoutAgentOrganizationInput
@@ -1039,7 +1119,9 @@ export type AgentOrganizationUpdateWithoutInviteTokensInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUpdateManyWithoutAgentOrganizationNestedInput
@@ -1057,7 +1139,9 @@ export type AgentOrganizationUncheckedUpdateWithoutInviteTokensInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUncheckedUpdateManyWithoutAgentOrganizationNestedInput
@@ -1075,7 +1159,9 @@ export type AgentOrganizationCreateWithoutBillingInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserCreateNestedManyWithoutAgentOrganizationInput
@@ -1093,7 +1179,9 @@ export type AgentOrganizationUncheckedCreateWithoutBillingInput = {
   representativeName?: string | null
   phone?: string | null
   openingDate?: Date | string | null
+  zipcode?: string | null
   address?: string | null
+  addressDetail?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   users?: Prisma.AgentUserUncheckedCreateNestedManyWithoutAgentOrganizationInput
@@ -1127,7 +1215,9 @@ export type AgentOrganizationUpdateWithoutBillingInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUpdateManyWithoutAgentOrganizationNestedInput
@@ -1145,7 +1235,9 @@ export type AgentOrganizationUncheckedUpdateWithoutBillingInput = {
   representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.AgentUserUncheckedUpdateManyWithoutAgentOrganizationNestedInput
@@ -1230,7 +1322,9 @@ export type AgentOrganizationSelect<ExtArgs extends runtime.Types.Extensions.Int
   representativeName?: boolean
   phone?: boolean
   openingDate?: boolean
+  zipcode?: boolean
   address?: boolean
+  addressDetail?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   users?: boolean | Prisma.AgentOrganization$usersArgs<ExtArgs>
@@ -1250,7 +1344,9 @@ export type AgentOrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.T
   representativeName?: boolean
   phone?: boolean
   openingDate?: boolean
+  zipcode?: boolean
   address?: boolean
+  addressDetail?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["agentOrganization"]>
@@ -1263,7 +1359,9 @@ export type AgentOrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   representativeName?: boolean
   phone?: boolean
   openingDate?: boolean
+  zipcode?: boolean
   address?: boolean
+  addressDetail?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["agentOrganization"]>
@@ -1276,12 +1374,14 @@ export type AgentOrganizationSelectScalar = {
   representativeName?: boolean
   phone?: boolean
   openingDate?: boolean
+  zipcode?: boolean
   address?: boolean
+  addressDetail?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AgentOrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationNumber" | "businessType" | "organizationName" | "representativeName" | "phone" | "openingDate" | "address" | "createdAt" | "updatedAt", ExtArgs["result"]["agentOrganization"]>
+export type AgentOrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationNumber" | "businessType" | "organizationName" | "representativeName" | "phone" | "openingDate" | "zipcode" | "address" | "addressDetail" | "createdAt" | "updatedAt", ExtArgs["result"]["agentOrganization"]>
 export type AgentOrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.AgentOrganization$usersArgs<ExtArgs>
   billing?: boolean | Prisma.AgentOrganization$billingArgs<ExtArgs>
@@ -1312,7 +1412,9 @@ export type $AgentOrganizationPayload<ExtArgs extends runtime.Types.Extensions.I
     representativeName: string | null
     phone: string | null
     openingDate: Date | null
+    zipcode: string | null
     address: string | null
+    addressDetail: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["agentOrganization"]>
@@ -1751,7 +1853,9 @@ export interface AgentOrganizationFieldRefs {
   readonly representativeName: Prisma.FieldRef<"AgentOrganization", 'String'>
   readonly phone: Prisma.FieldRef<"AgentOrganization", 'String'>
   readonly openingDate: Prisma.FieldRef<"AgentOrganization", 'DateTime'>
+  readonly zipcode: Prisma.FieldRef<"AgentOrganization", 'String'>
   readonly address: Prisma.FieldRef<"AgentOrganization", 'String'>
+  readonly addressDetail: Prisma.FieldRef<"AgentOrganization", 'String'>
   readonly createdAt: Prisma.FieldRef<"AgentOrganization", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"AgentOrganization", 'DateTime'>
 }
