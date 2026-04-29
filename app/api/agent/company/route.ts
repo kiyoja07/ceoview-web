@@ -191,22 +191,60 @@ export async function POST(request: NextRequest) {
         select: { agentOrganizationId: true },
       });
 
-      // 신규 회사 또는 연결이 비어 있는 회사는 즉시 배타 연결
+      // 오너가 있는 기존 회사는 회사 승인 전까지 연결 요청 상태로 유지
       if (!activeLink) {
-        await tx.agentOrganizationCompany.upsert({
+        const userCount = await tx.companyUser.count({
           where: { companyId: company.id },
-          update: {
-            agentOrganizationId: auth.organizationId,
-          },
-          create: {
-            agentOrganizationId: auth.organizationId,
-            companyId: company.id,
-          },
         });
 
-        await tx.agentOrganizationCompanyTransferRequest.deleteMany({
-          where: { companyId: company.id },
-        });
+        if (userCount === 0) {
+          await tx.agentOrganizationCompany.upsert({
+            where: { companyId: company.id },
+            update: {
+              agentOrganizationId: auth.organizationId,
+            },
+            create: {
+              agentOrganizationId: auth.organizationId,
+              companyId: company.id,
+            },
+          });
+
+          await tx.agentOrganizationCompanyTransferRequest.deleteMany({
+            where: { companyId: company.id },
+          });
+        } else {
+          const existingRequest =
+            await tx.agentOrganizationCompanyTransferRequest.findUnique({
+              where: { companyId: company.id },
+              select: { toAgentOrganizationId: true },
+            });
+
+          if (
+            existingRequest &&
+            existingRequest.toAgentOrganizationId !== auth.organizationId
+          ) {
+            return {
+              error: "이미 다른 에이전트의 연결 요청이 대기 중입니다.",
+              status: 409,
+            } as const;
+          }
+
+          await tx.agentOrganizationCompanyTransferRequest.upsert({
+            where: { companyId: company.id },
+            update: {
+              fromAgentOrganizationId: null,
+              toAgentOrganizationId: auth.organizationId,
+              requestedByAgentUserId: auth.userId,
+            },
+            create: {
+              companyId: company.id,
+              fromAgentOrganizationId: null,
+              toAgentOrganizationId: auth.organizationId,
+              requestedByAgentUserId: auth.userId,
+            },
+          });
+          pendingApproval = true;
+        }
       } else if (activeLink.agentOrganizationId === auth.organizationId) {
         // 이미 같은 에이전트가 활성 연결된 경우
         alreadyLinked = true;

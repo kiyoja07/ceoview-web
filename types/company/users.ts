@@ -58,6 +58,9 @@ export type CompanyInfoResponse = {
     zipcode: string | null;
     address: string | null;
     addressDetail: string | null;
+    organizationLink: {
+      agentOrganizationId: string;
+    } | null;
   };
   pendingRequest: PendingRequestSummary | null;
 };

@@ -30,6 +30,7 @@ function CompanyAuthLoginPageInner() {
   const [contactType, setContactType] = useState<ContactType>("email");
   const [contact, setContact] = useState("");
   const [message, setMessage] = useState<CompanyAuthMessageState>(null);
+  const [hideUrlError, setHideUrlError] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -51,9 +52,11 @@ function CompanyAuthLoginPageInner() {
     void checkSession();
   }, [router]);
 
-  useEffect(() => {
+  const urlErrorMessage = useMemo<CompanyAuthMessageState>(() => {
+    if (hideUrlError) return null;
+
     const error = searchParams.get("error");
-    if (!error) return;
+    if (!error) return null;
 
     const errorTextMap: Record<string, string> = {
       invalid_magic_link: "로그인 링크가 올바르지 않습니다.",
@@ -62,11 +65,13 @@ function CompanyAuthLoginPageInner() {
       magic_link_error: "로그인 처리 중 오류가 발생했습니다.",
     };
 
-    setMessage({
+    return {
       type: "error",
       text: errorTextMap[error] || "로그인 링크 검증에 실패했습니다.",
-    });
-  }, [searchParams]);
+    };
+  }, [hideUrlError, searchParams]);
+
+  const visibleMessage = message ?? urlErrorMessage;
 
   const submitLabel = useMemo(
     () => (loading ? "링크 발송 중..." : "로그인 링크 보내기"),
@@ -84,6 +89,7 @@ function CompanyAuthLoginPageInner() {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
+    setHideUrlError(true);
 
     try {
       const payload: CompanyLoginBody = {
@@ -156,15 +162,19 @@ function CompanyAuthLoginPageInner() {
               {[
                 {
                   title: "급여 명세서 자동 발급",
-                  desc: "세무대리인이 업로드하면 직원에게 자동 전달",
+                  desc: "원 클릭으로 직원에게 자동 전달",
                 },
                 {
                   title: "직원 현황 한눈에",
                   desc: "입·퇴사, 급여 이력을 대시보드에서 바로 확인",
                 },
                 {
-                  title: "직원 셀프서비스 포털",
+                  title: "직원 급여 포털",
                   desc: "직원이 직접 명세서를 조회하고 정보를 수정",
+                },
+                {
+                  title: "모든 기능 무료",
+                  desc: "가입비·월 이용료 없이 바로 시작할 수 있습니다",
                 },
               ].map((item) => (
                 <li key={item.title} className="flex items-start gap-3">
@@ -180,15 +190,6 @@ function CompanyAuthLoginPageInner() {
                 </li>
               ))}
             </ul>
-
-            <div className="mt-8 rounded-xl bg-emerald-50 px-4 py-3">
-              <p className="text-sm font-semibold text-emerald-700">
-                세무대리인이 제공하는 무료 시스템
-              </p>
-              <p className="mt-0.5 text-xs text-emerald-600/70">
-                별도 비용 없이 세무대리인을 통해 바로 사용할 수 있습니다
-              </p>
-            </div>
           </div>
 
           {/* 로그인 폼 영역 */}
@@ -196,7 +197,7 @@ function CompanyAuthLoginPageInner() {
             <div className="w-full rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
               <div className="mb-6 text-center">
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-                  사업장 계정으로 시작
+                  사업장 계정으로 무료 시작
                 </h1>
                 <p className="mt-2 text-sm text-gray-500">{helperText}</p>
               </div>
@@ -223,6 +224,7 @@ function CompanyAuthLoginPageInner() {
                         setContactType("email");
                         setContact("");
                         setMessage(null);
+                        setHideUrlError(true);
                       }}
                       className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
                         contactType === "email"
@@ -238,6 +240,7 @@ function CompanyAuthLoginPageInner() {
                         setContactType("phone");
                         setContact("");
                         setMessage(null);
+                        setHideUrlError(true);
                       }}
                       className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
                         contactType === "phone"
@@ -258,13 +261,14 @@ function CompanyAuthLoginPageInner() {
                     type={contactType === "email" ? "email" : "tel"}
                     required
                     value={contact}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      setHideUrlError(true);
                       setContact(
                         contactType === "email"
                           ? e.target.value
                           : normalizePhoneInput(e.target.value),
-                      )
-                    }
+                      );
+                    }}
                     className={inputBase}
                     placeholder={
                       contactType === "email"
@@ -274,15 +278,15 @@ function CompanyAuthLoginPageInner() {
                   />
                 </div>
 
-                {message && (
+                {visibleMessage && (
                   <div
                     className={`rounded-lg px-3 py-2 text-sm ${
-                      message.type === "error"
+                      visibleMessage.type === "error"
                         ? "border border-red-200 bg-red-50 text-red-700"
                         : "border border-green-200 bg-green-50 text-green-700"
                     }`}
                   >
-                    {message.text}
+                    {visibleMessage.text}
                   </div>
                 )}
 
@@ -295,12 +299,11 @@ function CompanyAuthLoginPageInner() {
                 </button>
 
                 <p className="text-center text-xs text-gray-500">
-                  링크는 15분간 유효하며 1회만 사용할 수 있습니다.
+                  링크는 15분간 유효하며 1회만 사용할 수 있습니다
                 </p>
 
                 <p className="text-center text-xs text-gray-500">
-                  첫 로그인 후 온보딩에서 회사 정보를 입력하면 바로 사용
-                  가능합니다.
+                  첫 로그인 후 회사 정보를 입력하면 바로 사용할 수 있습니다
                 </p>
               </form>
             </div>

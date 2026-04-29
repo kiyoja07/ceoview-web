@@ -16,13 +16,11 @@ export const COMPANY_MANAGE_TABS: NavDefinition[] = [
   { href: "/company/settings/profile", label: "내 정보" },
   { href: "/company/settings/info", label: "회사 정보" },
   { href: "/company/settings/users", label: "회사 사용자" },
-  { href: "/company/settings/billing", label: "결제" },
 ];
 
 export const AGENT_HEADER_NAV_ITEMS: NavDefinition[] = [
   { href: "/agent/company", label: "거래처" },
   { href: "/agent/organization", label: "회사 설정" },
-  // { href: "/agent/billing", label: "결제" },
 ];
 
 export const AGENT_COMPANY_MODULE_TABS: NavDefinition[] = [

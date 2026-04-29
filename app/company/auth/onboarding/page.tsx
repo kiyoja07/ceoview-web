@@ -63,7 +63,7 @@ export default function CompanyAuthOnboardingPage() {
   }, [router]);
 
   const submitLabel = useMemo(
-    () => (loading ? "저장 중..." : "온보딩 완료"),
+    () => (loading ? "저장 중..." : "사업자 정보 저장하고 시작하기"),
     [loading],
   );
 

@@ -88,7 +88,10 @@ async function createPendingCompanyUser(params: {
           data: {
             companyId: company.id,
             email,
-            phone: params.contactType === "phone" ? normalizePhone(params.phone as string) : null,
+            phone:
+              params.contactType === "phone"
+                ? normalizePhone(params.phone as string)
+                : null,
             loginProvider: "LOCAL",
             name:
               params.contactType === "email"
@@ -179,14 +182,12 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as CompanyLoginBody;
     const resolved = resolveContact(body);
 
-    let user:
-      | {
-          id: bigint;
-          email: string;
-          phone: string | null;
-          isActive: boolean;
-        }
-      | null = null;
+    let user: {
+      id: bigint;
+      email: string;
+      phone: string | null;
+      isActive: boolean;
+    } | null = null;
 
     if (resolved.contactType === "email") {
       const email = resolved.value.toLowerCase();
@@ -312,10 +313,11 @@ export async function POST(request: NextRequest) {
       where: { id: user.id },
       select: { company: { select: { businessName: true } } },
     });
-    const companyDisplayName = companyRecord?.company.businessName || "회사 급여 시스템";
+    const companyDisplayName =
+      companyRecord?.company.businessName || "경영한눈";
 
     if (resolved.contactType === "email") {
-      const title = `[${companyDisplayName}] 로그인 링크 안내`;
+      const title = `[${companyDisplayName}] 사업장 로그인 링크 안내`;
       const bodyHtml = `
 <!DOCTYPE html>
 <html lang="ko">
@@ -332,8 +334,11 @@ export async function POST(request: NextRequest) {
           </tr>
           <tr>
             <td style="padding:36px 32px 28px;">
-              <p style="margin:0 0 20px;color:#1f2937;font-size:15px;line-height:1.6;">안녕하세요.</p>
-              <p style="margin:0 0 28px;color:#374151;font-size:14px;line-height:1.6;">아래 버튼을 클릭하면 로그인됩니다.</p>
+              <p style="margin:0 0 20px;color:#1f2937;font-size:15px;line-height:1.6;">안녕하세요. 경영한눈(ceoview.kr)입니다.</p>
+              <p style="margin:0 0 28px;color:#374151;font-size:14px;line-height:1.6;">아래 버튼을 클릭하면 사업장 계정으로 로그인됩니다.</p>
+              <p style="margin:0 0 28px;color:#9ca3af;font-size:11px;line-height:1.6;">
+                로그인 링크로 접속하면 <a href="#" style="color:#9ca3af;text-decoration:underline;">이용약관</a> 및 <a href="#" style="color:#9ca3af;text-decoration:underline;">개인정보처리방침</a>에 동의한 것으로 봅니다.
+              </p>
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center" style="padding:4px 0 28px;">
@@ -377,7 +382,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const phoneToSend = user.phone ? normalizePhone(user.phone) : normalizePhone(resolved.value);
+    const phoneToSend = user.phone
+      ? normalizePhone(user.phone)
+      : normalizePhone(resolved.value);
     const smsContent = [
       `[${companyDisplayName}] 로그인 링크 안내`,
       "아래 링크를 눌러 로그인해주세요.",

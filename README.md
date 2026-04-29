@@ -29,3 +29,5 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 # 런칭 기능/화면에서 제외
 
 - 인건비 지급 대상자 개별 등록 : /agent/company/${companyId}/employees/new
+
+doppler run -- npx prisma generate && doppler run -- npx prisma db push

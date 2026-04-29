@@ -93,6 +93,7 @@ export async function GET(request: NextRequest) {
       businessView,
       otherView,
       dailyView,
+      agentSignupRequestHistories,
     ] =
       await Promise.all([
         prisma.company.findUnique({
@@ -144,6 +145,17 @@ export async function GET(request: NextRequest) {
         resolveUploadForCompanyView(request, companyId, "BUSINESS_INCOME"),
         resolveUploadForCompanyView(request, companyId, "OTHER_INCOME"),
         resolveUploadForCompanyView(request, companyId, "OTHER_INCOME_LABOR"),
+        prisma.companyAgentSignupRequestHistory.findMany({
+          where: { companyId },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+          select: {
+            id: true,
+            contactType: true,
+            contact: true,
+            createdAt: true,
+          },
+        }),
       ]);
 
     if (!company) {
@@ -369,6 +381,12 @@ export async function GET(request: NextRequest) {
             phone: company.organizationLink.agentOrganization.phone,
           }
         : null,
+      agentSignupRequestHistories: agentSignupRequestHistories.map((item) => ({
+        id: item.id.toString(),
+        contactType: item.contactType === "phone" ? "phone" : "email",
+        contact: item.contact,
+        createdAt: item.createdAt.toISOString(),
+      })),
       salary: {
         hasData: latestMonth != null,
         latestYm: latestMonth?.ym ?? null,

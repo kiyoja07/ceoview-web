@@ -33,7 +33,7 @@ export default function HeroSection({ showcaseUrl }: { showcaseUrl: string }) {
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <p className="text-center text-sm font-semibold tracking-wide text-blue-600">
-          세무 플랫폼을 부러워 할 필요 없습니다
+          이제 세무 플랫폼을 부러워 할 필요 없습니다
         </p>
         <h1 className="mt-4 text-center text-[2.75rem] font-bold leading-[1.15] tracking-[-0.04em] text-slate-950 sm:text-6xl lg:text-7xl">
           이제 거래처에
@@ -41,16 +41,16 @@ export default function HeroSection({ showcaseUrl }: { showcaseUrl: string }) {
           <span className="text-blue-600">당당하게 시스템까지 제공하세요</span>
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-center text-base leading-7 text-slate-500 sm:text-lg">
-          급여 관리, 직원 포털, 운영 요청까지
+          거래처 사장님과 직원들을 위한 급여 시스템까지
           <br className="hidden sm:block" />
-          세무대리인의 전문성을 더 체계적으로 보여주는 고객용 시스템입니다
+          세무대리인의 전문성을 체계적으로 보여주는 고객용 시스템입니다
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link
             href={showcaseUrl}
             className="group inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:bg-blue-500"
           >
-            시스템 예시 화면 먼저 보기
+            급여 시스템 예시 화면 보기
             <ArrowIcon />
           </Link>
         </div>

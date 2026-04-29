@@ -149,6 +149,7 @@ export type BusinessIncomeEmployeeCreateBody = {
   businessRegistrationNumber?: string | null;
   businessAddress?: string | null;
   address?: string | null;
+  addressDetail?: string | null;
   zipcode?: string | null;
   department?: string | null;
   positionTitle?: string | null;
@@ -156,6 +157,7 @@ export type BusinessIncomeEmployeeCreateBody = {
   phone?: string | null;
   hireDate?: string | null;
   resignDate?: string | null;
+  bankAccounts?: EmployeeBankAccountBody[];
 };
 
 export type OtherIncomeEmployeeCreateBody = {
@@ -169,18 +171,24 @@ export type OtherIncomeEmployeeCreateBody = {
   businessRegistrationNumber?: string | null;
   businessAddress?: string | null;
   zipcode?: string | null;
+  address?: string | null;
+  addressDetail?: string | null;
   department?: string | null;
   positionTitle?: string | null;
   email?: string | null;
   phone?: string | null;
   hireDate?: string | null;
   resignDate?: string | null;
+  bankAccounts?: EmployeeBankAccountBody[];
 };
 
 export type OtherIncomeLaborEmployeeCreateBody = {
   employeeCode?: string | null;
   name: string;
   residentNumber?: string | null;
+  nationalityType?: string | null;
+  residenceType?: string | null;
+  zipcode?: string | null;
   department?: string | null;
   positionTitle?: string | null;
   email?: string | null;
@@ -188,8 +196,11 @@ export type OtherIncomeLaborEmployeeCreateBody = {
   hireDate?: string | null;
   resignDate?: string | null;
   address?: string | null;
+  addressDetail?: string | null;
   bankName?: string | null;
   accountNumber?: string | null;
+  accountHolder?: string | null;
+  bankAccounts?: EmployeeBankAccountBody[];
 };
 
 export type AnyEmployeeCreateBody =

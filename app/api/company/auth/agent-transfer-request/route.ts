@@ -173,3 +173,41 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const auth = await requireCompanyUser(request);
+    if ("error" in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+
+    if (!auth.user.isMaster) {
+      return NextResponse.json(
+        { error: "마스터 사용자만 연결 요청을 거절할 수 있습니다." },
+        { status: 403 },
+      );
+    }
+
+    const deleted =
+      await prisma.agentOrganizationCompanyTransferRequest.deleteMany({
+        where: { companyId: auth.user.currentCompanyId },
+      });
+
+    if (deleted.count === 0) {
+      return NextResponse.json(
+        { error: "거절할 요청이 없습니다." },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json({
+      message: "연결 요청을 거절했습니다.",
+    });
+  } catch (error) {
+    console.error("Company transfer request DELETE error:", error);
+    return NextResponse.json(
+      { error: "요청 거절에 실패했습니다." },
+      { status: 500 },
+    );
+  }
+}

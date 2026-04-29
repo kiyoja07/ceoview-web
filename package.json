@@ -6,11 +6,12 @@
     "dev": "doppler run -- next dev",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "prebuild": "prisma generate",
+    "prebuild": "doppler run -- npx prisma generate",
     "build": "next build",
     "prestart": "rm -rf .next && doppler run -- npm run build",
     "start": "doppler run -- next start",
-    "clean": "npm cache clean --force && rm -rf node_modules package-lock.json .next "
+    "clean": "npm cache clean --force && rm -rf node_modules package-lock.json .next",
+    "db:reset": "doppler run -- npx prisma generate && doppler run -- npx prisma db push"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.0",

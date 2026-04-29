@@ -33,6 +33,7 @@ export const CHANGE_REQUEST_STATUS_LABELS: Record<
   PENDING: "접수중",
   APPROVED: "승인",
   REJECTED: "보류",
+  CANCELLED: "취소",
 };
 
 export const CHANGE_REQUEST_STATUS_BADGE_CLASSES: Record<
@@ -42,6 +43,7 @@ export const CHANGE_REQUEST_STATUS_BADGE_CLASSES: Record<
   PENDING: "bg-amber-100 text-amber-700",
   APPROVED: "bg-emerald-100 text-emerald-700",
   REJECTED: "bg-rose-100 text-rose-700",
+  CANCELLED: "bg-gray-100 text-gray-600",
 };
 
 export const CHANGE_REQUEST_DETAIL_FIELD_LABELS: Array<KeyLabel<string>> = [
@@ -106,6 +108,10 @@ export const CHANGE_REQUEST_COPY = {
     description: "제출한 변경 요청의 내용과 처리 상태를 확인합니다.",
     loading: "요청 상세를 불러오는 중...",
     loadError: "요청 상세를 불러오지 못했습니다.",
+    cancel: "요청 취소",
+    cancelConfirm: "요청을 취소하시겠습니까?",
+    cancelling: "취소 중...",
+    cancelError: "요청 취소에 실패했습니다.",
   },
 } as const;
 
@@ -117,6 +123,7 @@ export function buildChangeRequestStatusFilterOptions(
     { key: "PENDING", label: `접수중 ${summary.pending}` },
     { key: "APPROVED", label: `승인 ${summary.approved}` },
     { key: "REJECTED", label: `보류 ${summary.rejected}` },
+    { key: "CANCELLED", label: `취소 ${summary.cancelled}` },
   ];
 }
 

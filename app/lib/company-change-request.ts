@@ -87,6 +87,34 @@ function sanitizeBankAccount(
   };
 }
 
+function sanitizeBankAccounts(
+  bankAccounts: EmployeeBankAccountBody[] | null | undefined,
+  fallback?: {
+    bankName?: string | null;
+    accountNumber?: string | null;
+    accountHolder?: string | null;
+  },
+): EmployeeBankAccountBody[] {
+  const sanitizedAccounts =
+    bankAccounts
+      ?.map((bankAccount) => sanitizeBankAccount(bankAccount))
+      .filter((bankAccount): bankAccount is EmployeeBankAccountBody =>
+        Boolean(bankAccount),
+      ) ?? [];
+
+  if (sanitizedAccounts.length > 0) {
+    return sanitizedAccounts;
+  }
+
+  const fallbackAccount = sanitizeBankAccount({
+    bankName: fallback?.bankName ?? "",
+    accountNumber: fallback?.accountNumber ?? "",
+    accountHolder: fallback?.accountHolder ?? "",
+  });
+
+  return fallbackAccount ? [fallbackAccount] : [];
+}
+
 export function sanitizeCompanyInfoRequestPayload(
   body: CompanyInfoUpdateBody,
 ): CompanyInfoUpdateBody {
@@ -116,6 +144,7 @@ export function sanitizeBusinessIncomeEmployeePayload(
     ),
     businessAddress: normalizeString(body.businessAddress),
     address: normalizeString(body.address),
+    addressDetail: normalizeString(body.addressDetail),
     zipcode: normalizeString(body.zipcode),
     department: normalizeString(body.department),
     positionTitle: normalizeString(body.positionTitle),
@@ -123,6 +152,7 @@ export function sanitizeBusinessIncomeEmployeePayload(
     phone: normalizeString(body.phone),
     hireDate: normalizeString(body.hireDate),
     resignDate: normalizeString(body.resignDate),
+    bankAccounts: sanitizeBankAccounts(body.bankAccounts),
   };
 }
 
@@ -142,12 +172,15 @@ export function sanitizeOtherIncomeEmployeePayload(
     ),
     businessAddress: normalizeString(body.businessAddress),
     zipcode: normalizeString(body.zipcode),
+    address: normalizeString(body.address),
+    addressDetail: normalizeString(body.addressDetail),
     department: normalizeString(body.department),
     positionTitle: normalizeString(body.positionTitle),
     email: normalizeString(body.email),
     phone: normalizeString(body.phone),
     hireDate: normalizeString(body.hireDate),
     resignDate: normalizeString(body.resignDate),
+    bankAccounts: sanitizeBankAccounts(body.bankAccounts),
   };
 }
 
@@ -158,6 +191,9 @@ export function sanitizeOtherIncomeLaborEmployeePayload(
     employeeCode: normalizeString(body.employeeCode),
     name: normalizeString(body.name) ?? "",
     residentNumber: normalizeString(body.residentNumber),
+    nationalityType: normalizeString(body.nationalityType),
+    residenceType: normalizeString(body.residenceType),
+    zipcode: normalizeString(body.zipcode),
     department: normalizeString(body.department),
     positionTitle: normalizeString(body.positionTitle),
     email: normalizeString(body.email),
@@ -165,8 +201,15 @@ export function sanitizeOtherIncomeLaborEmployeePayload(
     hireDate: normalizeString(body.hireDate),
     resignDate: normalizeString(body.resignDate),
     address: normalizeString(body.address),
+    addressDetail: normalizeString(body.addressDetail),
     bankName: normalizeString(body.bankName),
     accountNumber: normalizeString(body.accountNumber),
+    accountHolder: normalizeString(body.accountHolder),
+    bankAccounts: sanitizeBankAccounts(body.bankAccounts, {
+      bankName: normalizeString(body.bankName),
+      accountNumber: normalizeString(body.accountNumber),
+      accountHolder: normalizeString(body.accountHolder),
+    }),
   };
 }
 

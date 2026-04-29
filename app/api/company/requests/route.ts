@@ -29,7 +29,15 @@ export async function GET(request: NextRequest) {
     };
     const where = {
       ...baseWhere,
-      ...(status ? { status: status as "PENDING" | "APPROVED" | "REJECTED" } : {}),
+      ...(status
+        ? {
+            status: status as
+              | "PENDING"
+              | "APPROVED"
+              | "REJECTED"
+              | "CANCELLED",
+          }
+        : {}),
     };
 
     const [items, summary] = await Promise.all([
@@ -72,6 +80,7 @@ export async function GET(request: NextRequest) {
       pending: 0,
       approved: 0,
       rejected: 0,
+      cancelled: 0,
     };
 
     for (const item of summary) {
@@ -79,6 +88,7 @@ export async function GET(request: NextRequest) {
       if (item.status === "PENDING") counts.pending = item._count._all;
       if (item.status === "APPROVED") counts.approved = item._count._all;
       if (item.status === "REJECTED") counts.rejected = item._count._all;
+      if (item.status === "CANCELLED") counts.cancelled = item._count._all;
     }
 
     return NextResponse.json({

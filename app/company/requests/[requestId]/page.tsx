@@ -85,7 +85,9 @@ export default function CompanyRequestDetailPage() {
 
   const [item, setItem] = useState<CompanyChangeRequestItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!requestId) return;
@@ -134,6 +136,42 @@ export default function CompanyRequestDetailPage() {
     [item],
   );
 
+  const handleCancel = async () => {
+    if (!requestId || !confirm(CHANGE_REQUEST_COPY.detail.cancelConfirm)) {
+      return;
+    }
+
+    try {
+      setCancelling(true);
+      setCancelError(null);
+      const res = await fetch(`/api/company/requests/${requestId}/cancel`, {
+        method: "POST",
+      });
+      if (res.status === 401) {
+        router.replace("/company/auth/login");
+        return;
+      }
+      const body = (await res.json()) as
+        | CompanyChangeRequestDetailResponse
+        | { error?: string };
+      if (!res.ok) {
+        throw new Error(
+          ("error" in body ? body.error : undefined) ||
+            CHANGE_REQUEST_COPY.detail.cancelError,
+        );
+      }
+      setItem((body as CompanyChangeRequestDetailResponse).item);
+    } catch (err) {
+      setCancelError(
+        err instanceof Error
+          ? err.message
+          : CHANGE_REQUEST_COPY.detail.cancelError,
+      );
+    } finally {
+      setCancelling(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-4xl p-6 lg:p-8">
@@ -177,7 +215,22 @@ export default function CompanyRequestDetailPage() {
                 >
                   {CHANGE_REQUEST_STATUS_LABELS[item.status]}
                 </span>
+                {item.status === "PENDING" ? (
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    disabled={cancelling}
+                    className="ml-auto inline-flex rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-300"
+                  >
+                    {cancelling
+                      ? CHANGE_REQUEST_COPY.detail.cancelling
+                      : CHANGE_REQUEST_COPY.detail.cancel}
+                  </button>
+                ) : null}
               </div>
+              {cancelError ? (
+                <p className="mt-3 text-sm text-rose-600">{cancelError}</p>
+              ) : null}
               <dl className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div>
                   <dt className="text-xs font-medium text-gray-500">요청 ID</dt>

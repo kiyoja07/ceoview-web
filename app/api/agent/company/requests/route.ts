@@ -66,10 +66,19 @@ export async function GET(request: NextRequest) {
 
     const filteredWhere = {
       ...baseWhere,
-      ...(status ? { status: status as "PENDING" | "APPROVED" | "REJECTED" } : {}),
+      ...(status
+        ? {
+            status: status as
+              | "PENDING"
+              | "APPROVED"
+              | "REJECTED"
+              | "CANCELLED",
+          }
+        : {}),
     };
 
-    const [items, total, pending, approved, rejected] = await Promise.all([
+    const [items, total, pending, approved, rejected, cancelled] =
+      await Promise.all([
       prisma.companyChangeRequest.findMany({
         where: filteredWhere,
         include: {
@@ -109,6 +118,9 @@ export async function GET(request: NextRequest) {
       prisma.companyChangeRequest.count({
         where: { ...baseWhere, status: "REJECTED" },
       }),
+      prisma.companyChangeRequest.count({
+        where: { ...baseWhere, status: "CANCELLED" },
+      }),
     ]);
 
     return NextResponse.json({
@@ -119,6 +131,7 @@ export async function GET(request: NextRequest) {
         pending,
         approved,
         rejected,
+        cancelled,
       },
     });
   } catch (error) {

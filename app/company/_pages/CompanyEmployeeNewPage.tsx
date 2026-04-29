@@ -82,8 +82,8 @@ export default function NewEmployeePage() {
             인건비 지급 대상자 등록
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            인건비 지급 대상자들의 이메일과 연락처를 입력하시면, 급여명세서를 자동으로 발송할
-            수 있습니다.
+            인건비 대상자들의 이메일과 연락처까지 입력하면, 급여명세서를
+            자동으로 발송할수 있습니다.
           </p>
         </div>
 
@@ -93,7 +93,8 @@ export default function NewEmployeePage() {
               인건비 지급 대상자 등록 요청이 제출되었습니다.
             </p>
             <p className="mt-2">
-              세무대리인이 확인 후 최종 등록하면 인건비 지급 대상자 목록에 반영됩니다.
+              세무대리인이 확인 후 최종 등록하면 인건비 지급 대상자 목록에
+              반영됩니다.
             </p>
             <p className="mt-2 text-xs text-amber-700">
               접수일 {new Date(submittedRequest.createdAt).toLocaleString()}
@@ -150,6 +151,8 @@ export default function NewEmployeePage() {
                 onSubmit={handleSubmit}
                 onCancel={() => router.push(cancelPath)}
                 submitLabel="등록 요청"
+                showResignDate={false}
+                requireResidentNumber
               />
             )}
             {incomeType === "BUSINESS_INCOME" && (
@@ -157,6 +160,13 @@ export default function NewEmployeePage() {
                 onSubmit={handleSubmit}
                 onCancel={() => router.push(cancelPath)}
                 submitLabel="등록 요청"
+                showEmployeeCode={false}
+                showIncomeCategory={false}
+                showBusinessInfo={false}
+                showAffiliationDates={false}
+                requireResidentNumber
+                defaultNationalityType="내국인"
+                defaultResidenceType="거주자"
               />
             )}
             {incomeType === "OTHER_INCOME" && (
@@ -164,6 +174,8 @@ export default function NewEmployeePage() {
                 onSubmit={handleSubmit}
                 onCancel={() => router.push(cancelPath)}
                 submitLabel="등록 요청"
+                showEmployeeCode={false}
+                requireResidentNumber
               />
             )}
             {incomeType === "OTHER_INCOME_LABOR" && (
@@ -171,6 +183,8 @@ export default function NewEmployeePage() {
                 onSubmit={handleSubmit}
                 onCancel={() => router.push(cancelPath)}
                 submitLabel="등록 요청"
+                showEmployeeCode={false}
+                requireResidentNumber
               />
             )}
           </>

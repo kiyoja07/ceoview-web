@@ -19,6 +19,13 @@ export type CompanyDashboardSalaryMonth = {
   totalCount: number;
 };
 
+export type CompanyAgentSignupRequestHistory = {
+  id: string;
+  contactType: "email" | "phone";
+  contact: string;
+  createdAt: string;
+};
+
 export type CompanyDashboardResponse = {
   company: {
     id: string;
@@ -32,6 +39,7 @@ export type CompanyDashboardResponse = {
     representativeName: string | null;
     phone: string | null;
   } | null;
+  agentSignupRequestHistories: CompanyAgentSignupRequestHistory[];
   salary: {
     hasData: boolean;
     latestYm: number | null;

@@ -301,6 +301,7 @@ export type CompanyWhereInput = {
   organizationLink?: Prisma.XOR<Prisma.AgentOrganizationCompanyNullableScalarRelationFilter, Prisma.AgentOrganizationCompanyWhereInput> | null
   transferRequest?: Prisma.XOR<Prisma.AgentOrganizationCompanyTransferRequestNullableScalarRelationFilter, Prisma.AgentOrganizationCompanyTransferRequestWhereInput> | null
   changeRequests?: Prisma.CompanyChangeRequestListRelationFilter
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryListRelationFilter
 }
 
 export type CompanyOrderByWithRelationInput = {
@@ -331,6 +332,7 @@ export type CompanyOrderByWithRelationInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyOrderByWithRelationInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestOrderByWithRelationInput
   changeRequests?: Prisma.CompanyChangeRequestOrderByRelationAggregateInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryOrderByRelationAggregateInput
 }
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -364,6 +366,7 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   organizationLink?: Prisma.XOR<Prisma.AgentOrganizationCompanyNullableScalarRelationFilter, Prisma.AgentOrganizationCompanyWhereInput> | null
   transferRequest?: Prisma.XOR<Prisma.AgentOrganizationCompanyTransferRequestNullableScalarRelationFilter, Prisma.AgentOrganizationCompanyTransferRequestWhereInput> | null
   changeRequests?: Prisma.CompanyChangeRequestListRelationFilter
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryListRelationFilter
 }, "id" | "businessNumber" | "publicSlug">
 
 export type CompanyOrderByWithAggregationInput = {
@@ -436,6 +439,7 @@ export type CompanyCreateInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateInput = {
@@ -466,6 +470,7 @@ export type CompanyUncheckedCreateInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUpdateInput = {
@@ -496,6 +501,7 @@ export type CompanyUpdateInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateInput = {
@@ -526,6 +532,7 @@ export type CompanyUncheckedUpdateInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateManyInput = {
@@ -717,6 +724,20 @@ export type CompanyUpdateOneRequiredWithoutCompanyUserInviteHistoriesNestedInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutCompanyUserInviteHistoriesInput, Prisma.CompanyUpdateWithoutCompanyUserInviteHistoriesInput>, Prisma.CompanyUncheckedUpdateWithoutCompanyUserInviteHistoriesInput>
 }
 
+export type CompanyCreateNestedOneWithoutAgentSignupRequestHistoriesInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutAgentSignupRequestHistoriesInput, Prisma.CompanyUncheckedCreateWithoutAgentSignupRequestHistoriesInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutAgentSignupRequestHistoriesInput
+  connect?: Prisma.CompanyWhereUniqueInput
+}
+
+export type CompanyUpdateOneRequiredWithoutAgentSignupRequestHistoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyCreateWithoutAgentSignupRequestHistoriesInput, Prisma.CompanyUncheckedCreateWithoutAgentSignupRequestHistoriesInput>
+  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutAgentSignupRequestHistoriesInput
+  upsert?: Prisma.CompanyUpsertWithoutAgentSignupRequestHistoriesInput
+  connect?: Prisma.CompanyWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyUpdateToOneWithWhereWithoutAgentSignupRequestHistoriesInput, Prisma.CompanyUpdateWithoutAgentSignupRequestHistoriesInput>, Prisma.CompanyUncheckedUpdateWithoutAgentSignupRequestHistoriesInput>
+}
+
 export type CompanyCreateNestedOneWithoutUploadsInput = {
   create?: Prisma.XOR<Prisma.CompanyCreateWithoutUploadsInput, Prisma.CompanyUncheckedCreateWithoutUploadsInput>
   connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutUploadsInput
@@ -856,6 +877,7 @@ export type CompanyCreateWithoutOrganizationLinkInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeCreateNestedManyWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutOrganizationLinkInput = {
@@ -885,6 +907,7 @@ export type CompanyUncheckedCreateWithoutOrganizationLinkInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUncheckedCreateNestedManyWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutOrganizationLinkInput = {
@@ -930,6 +953,7 @@ export type CompanyUpdateWithoutOrganizationLinkInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUpdateManyWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutOrganizationLinkInput = {
@@ -959,6 +983,7 @@ export type CompanyUncheckedUpdateWithoutOrganizationLinkInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutTransferRequestInput = {
@@ -988,6 +1013,7 @@ export type CompanyCreateWithoutTransferRequestInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeCreateNestedManyWithoutCompanyInput
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutTransferRequestInput = {
@@ -1017,6 +1043,7 @@ export type CompanyUncheckedCreateWithoutTransferRequestInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUncheckedCreateNestedManyWithoutCompanyInput
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutTransferRequestInput = {
@@ -1062,6 +1089,7 @@ export type CompanyUpdateWithoutTransferRequestInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUpdateManyWithoutCompanyNestedInput
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutTransferRequestInput = {
@@ -1091,6 +1119,7 @@ export type CompanyUncheckedUpdateWithoutTransferRequestInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutCompanyUsersInput = {
@@ -1120,6 +1149,7 @@ export type CompanyCreateWithoutCompanyUsersInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutCompanyUsersInput = {
@@ -1149,6 +1179,7 @@ export type CompanyUncheckedCreateWithoutCompanyUsersInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutCompanyUsersInput = {
@@ -1194,6 +1225,7 @@ export type CompanyUpdateWithoutCompanyUsersInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutCompanyUsersInput = {
@@ -1223,6 +1255,7 @@ export type CompanyUncheckedUpdateWithoutCompanyUsersInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutCompanyMembershipsInput = {
@@ -1252,6 +1285,7 @@ export type CompanyCreateWithoutCompanyMembershipsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutCompanyMembershipsInput = {
@@ -1281,6 +1315,7 @@ export type CompanyUncheckedCreateWithoutCompanyMembershipsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutCompanyMembershipsInput = {
@@ -1326,6 +1361,7 @@ export type CompanyUpdateWithoutCompanyMembershipsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutCompanyMembershipsInput = {
@@ -1355,6 +1391,7 @@ export type CompanyUncheckedUpdateWithoutCompanyMembershipsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutCompanyUserInviteHistoriesInput = {
@@ -1384,6 +1421,7 @@ export type CompanyCreateWithoutCompanyUserInviteHistoriesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutCompanyUserInviteHistoriesInput = {
@@ -1413,6 +1451,7 @@ export type CompanyUncheckedCreateWithoutCompanyUserInviteHistoriesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutCompanyUserInviteHistoriesInput = {
@@ -1458,6 +1497,7 @@ export type CompanyUpdateWithoutCompanyUserInviteHistoriesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutCompanyUserInviteHistoriesInput = {
@@ -1480,6 +1520,143 @@ export type CompanyUncheckedUpdateWithoutCompanyUserInviteHistoriesInput = {
   earnedIncomeItemDefinitions?: Prisma.EarnedIncomeItemDefinitionUncheckedUpdateManyWithoutCompanyNestedInput
   companyUsers?: Prisma.CompanyUserUncheckedUpdateManyWithoutCompanyNestedInput
   companyMemberships?: Prisma.CompanyUserCompanyUncheckedUpdateManyWithoutCompanyNestedInput
+  employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
+  businessIncomeEmployees?: Prisma.BusinessIncomeEmployeeUncheckedUpdateManyWithoutCompanyNestedInput
+  otherIncomeEmployees?: Prisma.OtherIncomeEmployeeUncheckedUpdateManyWithoutCompanyNestedInput
+  otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUncheckedUpdateManyWithoutCompanyNestedInput
+  organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
+  transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
+  changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyCreateWithoutAgentSignupRequestHistoriesInput = {
+  id?: bigint | number
+  businessNumber: string
+  businessType: $Enums.BusinessType
+  businessName?: string | null
+  representativeName?: string | null
+  openingDate?: Date | string | null
+  zipcode?: string | null
+  address?: string | null
+  addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  uploads?: Prisma.UploadCreateNestedManyWithoutCompanyInput
+  activeUploads?: Prisma.CompanyActiveUploadCreateNestedManyWithoutCompanyInput
+  earnedIncomeItemDefinitions?: Prisma.EarnedIncomeItemDefinitionCreateNestedManyWithoutCompanyInput
+  companyUsers?: Prisma.CompanyUserCreateNestedManyWithoutCompanyInput
+  companyMemberships?: Prisma.CompanyUserCompanyCreateNestedManyWithoutCompanyInput
+  companyUserInviteHistories?: Prisma.CompanyUserInviteHistoryCreateNestedManyWithoutCompanyInput
+  employees?: Prisma.EmployeeCreateNestedManyWithoutCompanyInput
+  businessIncomeEmployees?: Prisma.BusinessIncomeEmployeeCreateNestedManyWithoutCompanyInput
+  otherIncomeEmployees?: Prisma.OtherIncomeEmployeeCreateNestedManyWithoutCompanyInput
+  otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeCreateNestedManyWithoutCompanyInput
+  organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
+  transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
+  changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyUncheckedCreateWithoutAgentSignupRequestHistoriesInput = {
+  id?: bigint | number
+  businessNumber: string
+  businessType: $Enums.BusinessType
+  businessName?: string | null
+  representativeName?: string | null
+  openingDate?: Date | string | null
+  zipcode?: string | null
+  address?: string | null
+  addressDetail?: string | null
+  isDemo?: boolean
+  isPublicShowcase?: boolean
+  publicSlug?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  uploads?: Prisma.UploadUncheckedCreateNestedManyWithoutCompanyInput
+  activeUploads?: Prisma.CompanyActiveUploadUncheckedCreateNestedManyWithoutCompanyInput
+  earnedIncomeItemDefinitions?: Prisma.EarnedIncomeItemDefinitionUncheckedCreateNestedManyWithoutCompanyInput
+  companyUsers?: Prisma.CompanyUserUncheckedCreateNestedManyWithoutCompanyInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedCreateNestedManyWithoutCompanyInput
+  companyUserInviteHistories?: Prisma.CompanyUserInviteHistoryUncheckedCreateNestedManyWithoutCompanyInput
+  employees?: Prisma.EmployeeUncheckedCreateNestedManyWithoutCompanyInput
+  businessIncomeEmployees?: Prisma.BusinessIncomeEmployeeUncheckedCreateNestedManyWithoutCompanyInput
+  otherIncomeEmployees?: Prisma.OtherIncomeEmployeeUncheckedCreateNestedManyWithoutCompanyInput
+  otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUncheckedCreateNestedManyWithoutCompanyInput
+  organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
+  transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
+  changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+}
+
+export type CompanyCreateOrConnectWithoutAgentSignupRequestHistoriesInput = {
+  where: Prisma.CompanyWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutAgentSignupRequestHistoriesInput, Prisma.CompanyUncheckedCreateWithoutAgentSignupRequestHistoriesInput>
+}
+
+export type CompanyUpsertWithoutAgentSignupRequestHistoriesInput = {
+  update: Prisma.XOR<Prisma.CompanyUpdateWithoutAgentSignupRequestHistoriesInput, Prisma.CompanyUncheckedUpdateWithoutAgentSignupRequestHistoriesInput>
+  create: Prisma.XOR<Prisma.CompanyCreateWithoutAgentSignupRequestHistoriesInput, Prisma.CompanyUncheckedCreateWithoutAgentSignupRequestHistoriesInput>
+  where?: Prisma.CompanyWhereInput
+}
+
+export type CompanyUpdateToOneWithWhereWithoutAgentSignupRequestHistoriesInput = {
+  where?: Prisma.CompanyWhereInput
+  data: Prisma.XOR<Prisma.CompanyUpdateWithoutAgentSignupRequestHistoriesInput, Prisma.CompanyUncheckedUpdateWithoutAgentSignupRequestHistoriesInput>
+}
+
+export type CompanyUpdateWithoutAgentSignupRequestHistoriesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  businessNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
+  businessName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  uploads?: Prisma.UploadUpdateManyWithoutCompanyNestedInput
+  activeUploads?: Prisma.CompanyActiveUploadUpdateManyWithoutCompanyNestedInput
+  earnedIncomeItemDefinitions?: Prisma.EarnedIncomeItemDefinitionUpdateManyWithoutCompanyNestedInput
+  companyUsers?: Prisma.CompanyUserUpdateManyWithoutCompanyNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUpdateManyWithoutCompanyNestedInput
+  companyUserInviteHistories?: Prisma.CompanyUserInviteHistoryUpdateManyWithoutCompanyNestedInput
+  employees?: Prisma.EmployeeUpdateManyWithoutCompanyNestedInput
+  businessIncomeEmployees?: Prisma.BusinessIncomeEmployeeUpdateManyWithoutCompanyNestedInput
+  otherIncomeEmployees?: Prisma.OtherIncomeEmployeeUpdateManyWithoutCompanyNestedInput
+  otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUpdateManyWithoutCompanyNestedInput
+  organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
+  transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
+  changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+}
+
+export type CompanyUncheckedUpdateWithoutAgentSignupRequestHistoriesInput = {
+  id?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  businessNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
+  businessName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  representativeName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  zipcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isDemo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPublicShowcase?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  publicSlug?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  uploads?: Prisma.UploadUncheckedUpdateManyWithoutCompanyNestedInput
+  activeUploads?: Prisma.CompanyActiveUploadUncheckedUpdateManyWithoutCompanyNestedInput
+  earnedIncomeItemDefinitions?: Prisma.EarnedIncomeItemDefinitionUncheckedUpdateManyWithoutCompanyNestedInput
+  companyUsers?: Prisma.CompanyUserUncheckedUpdateManyWithoutCompanyNestedInput
+  companyMemberships?: Prisma.CompanyUserCompanyUncheckedUpdateManyWithoutCompanyNestedInput
+  companyUserInviteHistories?: Prisma.CompanyUserInviteHistoryUncheckedUpdateManyWithoutCompanyNestedInput
   employees?: Prisma.EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   businessIncomeEmployees?: Prisma.BusinessIncomeEmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   otherIncomeEmployees?: Prisma.OtherIncomeEmployeeUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1516,6 +1693,7 @@ export type CompanyCreateWithoutUploadsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutUploadsInput = {
@@ -1545,6 +1723,7 @@ export type CompanyUncheckedCreateWithoutUploadsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutUploadsInput = {
@@ -1590,6 +1769,7 @@ export type CompanyUpdateWithoutUploadsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutUploadsInput = {
@@ -1619,6 +1799,7 @@ export type CompanyUncheckedUpdateWithoutUploadsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutActiveUploadsInput = {
@@ -1648,6 +1829,7 @@ export type CompanyCreateWithoutActiveUploadsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutActiveUploadsInput = {
@@ -1677,6 +1859,7 @@ export type CompanyUncheckedCreateWithoutActiveUploadsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutActiveUploadsInput = {
@@ -1722,6 +1905,7 @@ export type CompanyUpdateWithoutActiveUploadsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutActiveUploadsInput = {
@@ -1751,6 +1935,7 @@ export type CompanyUncheckedUpdateWithoutActiveUploadsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutEarnedIncomeItemDefinitionsInput = {
@@ -1780,6 +1965,7 @@ export type CompanyCreateWithoutEarnedIncomeItemDefinitionsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutEarnedIncomeItemDefinitionsInput = {
@@ -1809,6 +1995,7 @@ export type CompanyUncheckedCreateWithoutEarnedIncomeItemDefinitionsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutEarnedIncomeItemDefinitionsInput = {
@@ -1854,6 +2041,7 @@ export type CompanyUpdateWithoutEarnedIncomeItemDefinitionsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutEarnedIncomeItemDefinitionsInput = {
@@ -1883,6 +2071,7 @@ export type CompanyUncheckedUpdateWithoutEarnedIncomeItemDefinitionsInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutEmployeesInput = {
@@ -1912,6 +2101,7 @@ export type CompanyCreateWithoutEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutEmployeesInput = {
@@ -1941,6 +2131,7 @@ export type CompanyUncheckedCreateWithoutEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutEmployeesInput = {
@@ -1986,6 +2177,7 @@ export type CompanyUpdateWithoutEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutEmployeesInput = {
@@ -2015,6 +2207,7 @@ export type CompanyUncheckedUpdateWithoutEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutBusinessIncomeEmployeesInput = {
@@ -2044,6 +2237,7 @@ export type CompanyCreateWithoutBusinessIncomeEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutBusinessIncomeEmployeesInput = {
@@ -2073,6 +2267,7 @@ export type CompanyUncheckedCreateWithoutBusinessIncomeEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutBusinessIncomeEmployeesInput = {
@@ -2118,6 +2313,7 @@ export type CompanyUpdateWithoutBusinessIncomeEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutBusinessIncomeEmployeesInput = {
@@ -2147,6 +2343,7 @@ export type CompanyUncheckedUpdateWithoutBusinessIncomeEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutOtherIncomeEmployeesInput = {
@@ -2176,6 +2373,7 @@ export type CompanyCreateWithoutOtherIncomeEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutOtherIncomeEmployeesInput = {
@@ -2205,6 +2403,7 @@ export type CompanyUncheckedCreateWithoutOtherIncomeEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutOtherIncomeEmployeesInput = {
@@ -2250,6 +2449,7 @@ export type CompanyUpdateWithoutOtherIncomeEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutOtherIncomeEmployeesInput = {
@@ -2279,6 +2479,7 @@ export type CompanyUncheckedUpdateWithoutOtherIncomeEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutOtherIncomeLaborEmployeesInput = {
@@ -2308,6 +2509,7 @@ export type CompanyCreateWithoutOtherIncomeLaborEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutOtherIncomeLaborEmployeesInput = {
@@ -2337,6 +2539,7 @@ export type CompanyUncheckedCreateWithoutOtherIncomeLaborEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedCreateNestedManyWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutOtherIncomeLaborEmployeesInput = {
@@ -2382,6 +2585,7 @@ export type CompanyUpdateWithoutOtherIncomeLaborEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutOtherIncomeLaborEmployeesInput = {
@@ -2411,6 +2615,7 @@ export type CompanyUncheckedUpdateWithoutOtherIncomeLaborEmployeesInput = {
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
   changeRequests?: Prisma.CompanyChangeRequestUncheckedUpdateManyWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyCreateWithoutChangeRequestsInput = {
@@ -2440,6 +2645,7 @@ export type CompanyCreateWithoutChangeRequestsInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeCreateNestedManyWithoutCompanyInput
   organizationLink?: Prisma.AgentOrganizationCompanyCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestCreateNestedOneWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyUncheckedCreateWithoutChangeRequestsInput = {
@@ -2469,6 +2675,7 @@ export type CompanyUncheckedCreateWithoutChangeRequestsInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUncheckedCreateNestedManyWithoutCompanyInput
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedCreateNestedOneWithoutCompanyInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedCreateNestedOneWithoutCompanyInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedCreateNestedManyWithoutCompanyInput
 }
 
 export type CompanyCreateOrConnectWithoutChangeRequestsInput = {
@@ -2514,6 +2721,7 @@ export type CompanyUpdateWithoutChangeRequestsInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUpdateManyWithoutCompanyNestedInput
   organizationLink?: Prisma.AgentOrganizationCompanyUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUpdateOneWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUpdateManyWithoutCompanyNestedInput
 }
 
 export type CompanyUncheckedUpdateWithoutChangeRequestsInput = {
@@ -2543,6 +2751,7 @@ export type CompanyUncheckedUpdateWithoutChangeRequestsInput = {
   otherIncomeLaborEmployees?: Prisma.OtherIncomeLaborEmployeeUncheckedUpdateManyWithoutCompanyNestedInput
   organizationLink?: Prisma.AgentOrganizationCompanyUncheckedUpdateOneWithoutCompanyNestedInput
   transferRequest?: Prisma.AgentOrganizationCompanyTransferRequestUncheckedUpdateOneWithoutCompanyNestedInput
+  agentSignupRequestHistories?: Prisma.CompanyAgentSignupRequestHistoryUncheckedUpdateManyWithoutCompanyNestedInput
 }
 
 
@@ -2562,6 +2771,7 @@ export type CompanyCountOutputType = {
   otherIncomeEmployees: number
   otherIncomeLaborEmployees: number
   changeRequests: number
+  agentSignupRequestHistories: number
 }
 
 export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2576,6 +2786,7 @@ export type CompanyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   otherIncomeEmployees?: boolean | CompanyCountOutputTypeCountOtherIncomeEmployeesArgs
   otherIncomeLaborEmployees?: boolean | CompanyCountOutputTypeCountOtherIncomeLaborEmployeesArgs
   changeRequests?: boolean | CompanyCountOutputTypeCountChangeRequestsArgs
+  agentSignupRequestHistories?: boolean | CompanyCountOutputTypeCountAgentSignupRequestHistoriesArgs
 }
 
 /**
@@ -2665,6 +2876,13 @@ export type CompanyCountOutputTypeCountChangeRequestsArgs<ExtArgs extends runtim
   where?: Prisma.CompanyChangeRequestWhereInput
 }
 
+/**
+ * CompanyCountOutputType without action
+ */
+export type CompanyCountOutputTypeCountAgentSignupRequestHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CompanyAgentSignupRequestHistoryWhereInput
+}
+
 
 export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2694,6 +2912,7 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   organizationLink?: boolean | Prisma.Company$organizationLinkArgs<ExtArgs>
   transferRequest?: boolean | Prisma.Company$transferRequestArgs<ExtArgs>
   changeRequests?: boolean | Prisma.Company$changeRequestsArgs<ExtArgs>
+  agentSignupRequestHistories?: boolean | Prisma.Company$agentSignupRequestHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["company"]>
 
@@ -2763,6 +2982,7 @@ export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   organizationLink?: boolean | Prisma.Company$organizationLinkArgs<ExtArgs>
   transferRequest?: boolean | Prisma.Company$transferRequestArgs<ExtArgs>
   changeRequests?: boolean | Prisma.Company$changeRequestsArgs<ExtArgs>
+  agentSignupRequestHistories?: boolean | Prisma.Company$agentSignupRequestHistoriesArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CompanyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2784,6 +3004,7 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     organizationLink: Prisma.$AgentOrganizationCompanyPayload<ExtArgs> | null
     transferRequest: Prisma.$AgentOrganizationCompanyTransferRequestPayload<ExtArgs> | null
     changeRequests: Prisma.$CompanyChangeRequestPayload<ExtArgs>[]
+    agentSignupRequestHistories: Prisma.$CompanyAgentSignupRequestHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: bigint
@@ -3207,6 +3428,7 @@ export interface Prisma__CompanyClient<T, Null = never, ExtArgs extends runtime.
   organizationLink<T extends Prisma.Company$organizationLinkArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$organizationLinkArgs<ExtArgs>>): Prisma.Prisma__AgentOrganizationCompanyClient<runtime.Types.Result.GetResult<Prisma.$AgentOrganizationCompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   transferRequest<T extends Prisma.Company$transferRequestArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$transferRequestArgs<ExtArgs>>): Prisma.Prisma__AgentOrganizationCompanyTransferRequestClient<runtime.Types.Result.GetResult<Prisma.$AgentOrganizationCompanyTransferRequestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   changeRequests<T extends Prisma.Company$changeRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$changeRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyChangeRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  agentSignupRequestHistories<T extends Prisma.Company$agentSignupRequestHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Company$agentSignupRequestHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyAgentSignupRequestHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3942,6 +4164,30 @@ export type Company$changeRequestsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.CompanyChangeRequestScalarFieldEnum | Prisma.CompanyChangeRequestScalarFieldEnum[]
+}
+
+/**
+ * Company.agentSignupRequestHistories
+ */
+export type Company$agentSignupRequestHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CompanyAgentSignupRequestHistory
+   */
+  select?: Prisma.CompanyAgentSignupRequestHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CompanyAgentSignupRequestHistory
+   */
+  omit?: Prisma.CompanyAgentSignupRequestHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyAgentSignupRequestHistoryInclude<ExtArgs> | null
+  where?: Prisma.CompanyAgentSignupRequestHistoryWhereInput
+  orderBy?: Prisma.CompanyAgentSignupRequestHistoryOrderByWithRelationInput | Prisma.CompanyAgentSignupRequestHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.CompanyAgentSignupRequestHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CompanyAgentSignupRequestHistoryScalarFieldEnum | Prisma.CompanyAgentSignupRequestHistoryScalarFieldEnum[]
 }
 
 /**

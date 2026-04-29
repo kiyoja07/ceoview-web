@@ -91,7 +91,8 @@ export type CompanyChangeRequestAction = (typeof CompanyChangeRequestAction)[key
 export const CompanyChangeRequestStatus = {
   PENDING: 'PENDING',
   APPROVED: 'APPROVED',
-  REJECTED: 'REJECTED'
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
 } as const
 
 export type CompanyChangeRequestStatus = (typeof CompanyChangeRequestStatus)[keyof typeof CompanyChangeRequestStatus]

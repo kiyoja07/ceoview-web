@@ -1,6 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import AddressInput, {
+  type AddressValue,
+} from "@/app/_components/AddressInput";
+import BankAccountInput, {
+  type BankAccountValue,
+} from "@/app/_components/BankAccountInput";
 import ResidentNumberInput, {
   validateResidentNumber,
 } from "@/app/_components/ResidentNumberInput";
@@ -18,14 +24,16 @@ type BusinessIncomeEmployeeFormData = {
   businessName: string;
   businessRegistrationNumber: string;
   businessAddress: string;
-  address: string;
   zipcode: string;
+  address: string;
+  addressDetail: string;
   department: string;
   positionTitle: string;
   email: string;
   phone: string;
   hireDate: string;
   resignDate: string;
+  bankAccounts: BankAccountValue[];
 };
 
 type BusinessIncomeEmployeeFormProps = {
@@ -33,6 +41,13 @@ type BusinessIncomeEmployeeFormProps = {
   onSubmit: (data: BusinessIncomeEmployeeFormData) => Promise<void>;
   onCancel: () => void;
   submitLabel: string;
+  showEmployeeCode?: boolean;
+  showIncomeCategory?: boolean;
+  showBusinessInfo?: boolean;
+  showAffiliationDates?: boolean;
+  requireResidentNumber?: boolean;
+  defaultNationalityType?: string;
+  defaultResidenceType?: string;
 };
 
 export function BusinessIncomeEmployeeForm({
@@ -40,6 +55,13 @@ export function BusinessIncomeEmployeeForm({
   onSubmit,
   onCancel,
   submitLabel,
+  showEmployeeCode = true,
+  showIncomeCategory = true,
+  showBusinessInfo = true,
+  showAffiliationDates = true,
+  requireResidentNumber = false,
+  defaultNationalityType = "내국인",
+  defaultResidenceType = "거주자",
 }: BusinessIncomeEmployeeFormProps) {
   const [employeeCode, setEmployeeCode] = useState(
     initialData?.employeeCode ?? "",
@@ -49,13 +71,13 @@ export function BusinessIncomeEmployeeForm({
     initialData?.residentNumber ?? "",
   );
   const [nationalityType, setNationalityType] = useState(
-    initialData?.nationalityType ?? "",
+    initialData?.nationalityType ?? defaultNationalityType,
   );
   const [incomeCategory, setIncomeCategory] = useState(
     initialData?.incomeCategory ?? "",
   );
   const [residenceType, setResidenceType] = useState(
-    initialData?.residenceType ?? "",
+    initialData?.residenceType ?? defaultResidenceType,
   );
   const [businessName, setBusinessName] = useState(
     initialData?.businessName ?? "",
@@ -66,8 +88,11 @@ export function BusinessIncomeEmployeeForm({
   const [businessAddress, setBusinessAddress] = useState(
     initialData?.businessAddress ?? "",
   );
-  const [address, setAddress] = useState(initialData?.address ?? "");
-  const [zipcode, setZipcode] = useState(initialData?.zipcode ?? "");
+  const [addressValue, setAddressValue] = useState<AddressValue>({
+    zipcode: initialData?.zipcode ?? "",
+    address: initialData?.address ?? "",
+    addressDetail: initialData?.addressDetail ?? "",
+  });
   const [department, setDepartment] = useState(initialData?.department ?? "");
   const [positionTitle, setPositionTitle] = useState(
     initialData?.positionTitle ?? "",
@@ -76,6 +101,9 @@ export function BusinessIncomeEmployeeForm({
   const [phone, setPhone] = useState(initialData?.phone ?? "");
   const [hireDate, setHireDate] = useState(initialData?.hireDate ?? "");
   const [resignDate, setResignDate] = useState(initialData?.resignDate ?? "");
+  const [bankAccounts, setBankAccounts] = useState<BankAccountValue[]>(
+    initialData?.bankAccounts ?? [],
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -87,7 +115,9 @@ export function BusinessIncomeEmployeeForm({
       return;
     }
 
-    const residentError = validateResidentNumber(residentNumber);
+    const residentError = validateResidentNumber(residentNumber, {
+      required: requireResidentNumber,
+    });
     if (residentError) {
       setError(residentError);
       return;
@@ -122,6 +152,19 @@ export function BusinessIncomeEmployeeForm({
       return;
     }
 
+    if (
+      bankAccounts.length > 0 &&
+      bankAccounts.some(
+        (bankAccount) =>
+          !bankAccount.bankName.trim() ||
+          !bankAccount.accountNumber.trim() ||
+          !bankAccount.accountHolder.trim(),
+      )
+    ) {
+      setError("급여 계좌의 은행, 계좌번호, 예금주를 모두 입력해주세요.");
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
 
@@ -136,14 +179,16 @@ export function BusinessIncomeEmployeeForm({
         businessName: businessName.trim(),
         businessRegistrationNumber: businessRegistrationNumber.trim(),
         businessAddress: businessAddress.trim(),
-        address: address.trim(),
-        zipcode: zipcode.trim(),
+        zipcode: addressValue.zipcode.trim(),
+        address: addressValue.address.trim(),
+        addressDetail: addressValue.addressDetail.trim(),
         department: department.trim(),
         positionTitle: positionTitle.trim(),
         email: email.trim(),
         phone: phone.trim(),
         hireDate: hireDate.trim(),
         resignDate: resignDate.trim(),
+        bankAccounts,
       });
     } catch (err) {
       setError(
@@ -166,23 +211,6 @@ export function BusinessIncomeEmployeeForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label
-              htmlFor="bi-emp-code"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              사원코드
-            </label>
-            <input
-              id="bi-emp-code"
-              type="text"
-              value={employeeCode}
-              onChange={(e) => setEmployeeCode(e.target.value)}
-              placeholder="EMP001"
-              className={inputClass}
-              disabled={submitting}
-            />
-          </div>
-          <div>
-            <label
               htmlFor="bi-emp-name"
               className="mb-1.5 block text-xs font-medium text-gray-600"
             >
@@ -198,12 +226,34 @@ export function BusinessIncomeEmployeeForm({
               disabled={submitting}
             />
           </div>
+          {showEmployeeCode && (
+            <div>
+              <label
+                htmlFor="bi-emp-code"
+                className="mb-1.5 block text-xs font-medium text-gray-600"
+              >
+                사원코드
+              </label>
+              <input
+                id="bi-emp-code"
+                type="text"
+                value={employeeCode}
+                onChange={(e) => setEmployeeCode(e.target.value)}
+                placeholder="EMP001"
+                className={inputClass}
+                disabled={submitting}
+              />
+            </div>
+          )}
           <div>
             <label
               htmlFor="bi-emp-resident"
               className="mb-1.5 block text-xs font-medium text-gray-600"
             >
               주민등록번호
+              {requireResidentNumber && (
+                <span className="text-red-500"> *</span>
+              )}
             </label>
             <ResidentNumberInput
               id="bi-emp-resident"
@@ -211,6 +261,7 @@ export function BusinessIncomeEmployeeForm({
               onChange={setResidentNumber}
               disabled={submitting}
               theme="emerald"
+              required={requireResidentNumber}
             />
           </div>
           <div>
@@ -227,26 +278,9 @@ export function BusinessIncomeEmployeeForm({
               className={inputClass}
               disabled={submitting}
             >
-              <option value="">선택</option>
               <option value="내국인">내국인</option>
               <option value="외국인">외국인</option>
             </select>
-          </div>
-          <div>
-            <label
-              htmlFor="bi-emp-income-category"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              소득구분
-            </label>
-            <input
-              id="bi-emp-income-category"
-              type="text"
-              value={incomeCategory}
-              onChange={(e) => setIncomeCategory(e.target.value)}
-              className={inputClass}
-              disabled={submitting}
-            />
           </div>
           <div>
             <label
@@ -262,74 +296,174 @@ export function BusinessIncomeEmployeeForm({
               className={inputClass}
               disabled={submitting}
             >
-              <option value="">선택</option>
               <option value="거주자">거주자</option>
               <option value="비거주자">비거주자</option>
             </select>
           </div>
+          {showIncomeCategory && (
+            <div>
+              <label
+                htmlFor="bi-emp-income-category"
+                className="mb-1.5 block text-xs font-medium text-gray-600"
+              >
+                소득구분
+              </label>
+              <input
+                id="bi-emp-income-category"
+                type="text"
+                value={incomeCategory}
+                onChange={(e) => setIncomeCategory(e.target.value)}
+                className={inputClass}
+                disabled={submitting}
+              />
+            </div>
+          )}
+        </div>
+        <div className="mt-4">
+          <AddressInput
+            value={addressValue}
+            onChange={setAddressValue}
+            disabled={submitting}
+            theme="emerald"
+          />
         </div>
       </section>
 
-      <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
-        <h2 className="mb-4 text-base font-semibold text-gray-900">
-          사업자 정보
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label
-              htmlFor="bi-emp-biz-name"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              상호
-            </label>
-            <input
-              id="bi-emp-biz-name"
-              type="text"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              className={inputClass}
-              disabled={submitting}
-            />
+      {showBusinessInfo && (
+        <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
+          <h2 className="mb-4 text-base font-semibold text-gray-900">
+            사업자 정보
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label
+                htmlFor="bi-emp-biz-name"
+                className="mb-1.5 block text-xs font-medium text-gray-600"
+              >
+                상호
+              </label>
+              <input
+                id="bi-emp-biz-name"
+                type="text"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                className={inputClass}
+                disabled={submitting}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="bi-emp-biz-reg"
+                className="mb-1.5 block text-xs font-medium text-gray-600"
+              >
+                사업자등록번호
+              </label>
+              <input
+                id="bi-emp-biz-reg"
+                type="text"
+                value={businessRegistrationNumber}
+                onChange={(e) => setBusinessRegistrationNumber(e.target.value)}
+                className={inputClass}
+                disabled={submitting}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label
+                htmlFor="bi-emp-biz-addr"
+                className="mb-1.5 block text-xs font-medium text-gray-600"
+              >
+                사업장주소
+              </label>
+              <input
+                id="bi-emp-biz-addr"
+                type="text"
+                value={businessAddress}
+                onChange={(e) => setBusinessAddress(e.target.value)}
+                className={inputClass}
+                disabled={submitting}
+              />
+            </div>
           </div>
-          <div>
-            <label
-              htmlFor="bi-emp-biz-reg"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              사업자등록번호
-            </label>
-            <input
-              id="bi-emp-biz-reg"
-              type="text"
-              value={businessRegistrationNumber}
-              onChange={(e) => setBusinessRegistrationNumber(e.target.value)}
-              className={inputClass}
-              disabled={submitting}
-            />
+        </section>
+      )}
+
+      {showAffiliationDates && (
+        <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
+          <h2 className="mb-4 text-base font-semibold text-gray-900">
+            소속·입퇴사
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label
+                htmlFor="bi-emp-dept"
+                className="mb-1.5 block text-xs font-medium text-gray-600"
+              >
+                부서
+              </label>
+              <input
+                id="bi-emp-dept"
+                type="text"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                className={inputClass}
+                disabled={submitting}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="bi-emp-position"
+                className="mb-1.5 block text-xs font-medium text-gray-600"
+              >
+                직책
+              </label>
+              <input
+                id="bi-emp-position"
+                type="text"
+                value={positionTitle}
+                onChange={(e) => setPositionTitle(e.target.value)}
+                className={inputClass}
+                disabled={submitting}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="bi-emp-hire"
+                className="mb-1.5 block text-xs font-medium text-gray-600"
+              >
+                입사일
+              </label>
+              <DateInput
+                id="bi-emp-hire"
+                value={hireDate}
+                onChange={setHireDate}
+                disabled={submitting}
+                theme="emerald"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="bi-emp-resign"
+                className="mb-1.5 block text-xs font-medium text-gray-600"
+              >
+                퇴사일
+              </label>
+              <DateInput
+                id="bi-emp-resign"
+                value={resignDate}
+                onChange={setResignDate}
+                disabled={submitting}
+                theme="emerald"
+              />
+            </div>
           </div>
-          <div className="sm:col-span-2">
-            <label
-              htmlFor="bi-emp-biz-addr"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              사업장주소
-            </label>
-            <input
-              id="bi-emp-biz-addr"
-              type="text"
-              value={businessAddress}
-              onChange={(e) => setBusinessAddress(e.target.value)}
-              className={inputClass}
-              disabled={submitting}
-            />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
-        <h2 className="mb-4 text-base font-semibold text-gray-900">
-          연락처·주소
-        </h2>
+        <h2 className="mb-1 text-base font-semibold text-gray-900">연락처</h2>
+        <p className="mb-4 text-xs text-gray-500">
+          연락처로 급여명세서를 자동으로 발송할 수 있습니다.
+        </p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label
@@ -361,109 +495,17 @@ export function BusinessIncomeEmployeeForm({
               theme="emerald"
             />
           </div>
-          <div>
-            <label
-              htmlFor="bi-emp-zipcode"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              우편번호
-            </label>
-            <input
-              id="bi-emp-zipcode"
-              type="text"
-              value={zipcode}
-              onChange={(e) => setZipcode(e.target.value)}
-              className={inputClass}
-              disabled={submitting}
-            />
-          </div>
-          <div className="sm:col-span-2">
-            <label
-              htmlFor="bi-emp-address"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              소득자주소
-            </label>
-            <input
-              id="bi-emp-address"
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className={inputClass}
-              disabled={submitting}
-            />
-          </div>
         </div>
       </section>
 
       <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
-        <h2 className="mb-4 text-base font-semibold text-gray-900">
-          소속·입퇴사
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label
-              htmlFor="bi-emp-dept"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              부서
-            </label>
-            <input
-              id="bi-emp-dept"
-              type="text"
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              className={inputClass}
-              disabled={submitting}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="bi-emp-position"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              직책
-            </label>
-            <input
-              id="bi-emp-position"
-              type="text"
-              value={positionTitle}
-              onChange={(e) => setPositionTitle(e.target.value)}
-              className={inputClass}
-              disabled={submitting}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="bi-emp-hire"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              입사일
-            </label>
-            <DateInput
-              id="bi-emp-hire"
-              value={hireDate}
-              onChange={setHireDate}
-              disabled={submitting}
-              theme="emerald"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="bi-emp-resign"
-              className="mb-1.5 block text-xs font-medium text-gray-600"
-            >
-              퇴사일
-            </label>
-            <DateInput
-              id="bi-emp-resign"
-              value={resignDate}
-              onChange={setResignDate}
-              disabled={submitting}
-              theme="emerald"
-            />
-          </div>
-        </div>
+        <BankAccountInput
+          value={bankAccounts}
+          onChange={setBankAccounts}
+          disabled={submitting}
+          theme="emerald"
+          maxCount={1}
+        />
       </section>
 
       {error && (

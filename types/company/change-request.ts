@@ -8,7 +8,11 @@ import type {
 
 export type CompanyChangeRequestScope = "EMPLOYEE" | "COMPANY_INFO";
 export type CompanyChangeRequestAction = "CREATE" | "UPDATE" | "DELETE";
-export type CompanyChangeRequestStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type CompanyChangeRequestStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED"
+  | "CANCELLED";
 
 export type EmployeeRequestPayload = EmployeeCreateBody;
 export type CompanyInfoRequestPayload = CompanyInfoUpdateBody;
@@ -51,6 +55,7 @@ export type CompanyChangeRequestListResponse = {
     pending: number;
     approved: number;
     rejected: number;
+    cancelled: number;
   };
 };
 

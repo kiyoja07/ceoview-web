@@ -64,6 +64,7 @@ export const ModelName = {
   PhoneVerificationCode: 'PhoneVerificationCode',
   AgentPhoneVerificationCode: 'AgentPhoneVerificationCode',
   CompanyUserInviteHistory: 'CompanyUserInviteHistory',
+  CompanyAgentSignupRequestHistory: 'CompanyAgentSignupRequestHistory',
   AgentCompanyCustomer: 'AgentCompanyCustomer',
   AgentOrganizationBilling: 'AgentOrganizationBilling',
   Upload: 'Upload',
@@ -290,6 +291,17 @@ export const CompanyUserInviteHistoryScalarFieldEnum = {
 } as const
 
 export type CompanyUserInviteHistoryScalarFieldEnum = (typeof CompanyUserInviteHistoryScalarFieldEnum)[keyof typeof CompanyUserInviteHistoryScalarFieldEnum]
+
+
+export const CompanyAgentSignupRequestHistoryScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  contactType: 'contactType',
+  contact: 'contact',
+  createdAt: 'createdAt'
+} as const
+
+export type CompanyAgentSignupRequestHistoryScalarFieldEnum = (typeof CompanyAgentSignupRequestHistoryScalarFieldEnum)[keyof typeof CompanyAgentSignupRequestHistoryScalarFieldEnum]
 
 
 export const AgentCompanyCustomerScalarFieldEnum = {
@@ -600,6 +612,7 @@ export const BusinessIncomeEmployeeScalarFieldEnum = {
   businessRegistrationNumber: 'businessRegistrationNumber',
   businessAddress: 'businessAddress',
   address: 'address',
+  addressDetail: 'addressDetail',
   zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
@@ -607,6 +620,9 @@ export const BusinessIncomeEmployeeScalarFieldEnum = {
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  accountHolder: 'accountHolder',
   publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -629,12 +645,17 @@ export const OtherIncomeEmployeeScalarFieldEnum = {
   businessRegistrationNumber: 'businessRegistrationNumber',
   businessAddress: 'businessAddress',
   zipcode: 'zipcode',
+  address: 'address',
+  addressDetail: 'addressDetail',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  accountHolder: 'accountHolder',
   publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -650,6 +671,9 @@ export const OtherIncomeLaborEmployeeScalarFieldEnum = {
   employeeCode: 'employeeCode',
   name: 'name',
   residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  residenceType: 'residenceType',
+  zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',
@@ -663,8 +687,10 @@ export const OtherIncomeLaborEmployeeScalarFieldEnum = {
   normalPay: 'normalPay',
   overtimePay: 'overtimePay',
   address: 'address',
+  addressDetail: 'addressDetail',
   bankName: 'bankName',
   accountNumber: 'accountNumber',
+  accountHolder: 'accountHolder',
   siteName: 'siteName',
   publishStatus: 'publishStatus',
   createdAt: 'createdAt',

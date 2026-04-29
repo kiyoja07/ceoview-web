@@ -35,11 +35,12 @@ export default function AgentCompanyRequestsPage() {
     pending: 0,
     approved: 0,
     rejected: 0,
+    cancelled: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<
-    "ALL" | "PENDING" | "APPROVED" | "REJECTED"
+    "ALL" | "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED"
   >("PENDING");
 
   useEffect(() => {

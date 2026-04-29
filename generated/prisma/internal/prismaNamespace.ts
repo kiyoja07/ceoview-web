@@ -397,6 +397,7 @@ export const ModelName = {
   PhoneVerificationCode: 'PhoneVerificationCode',
   AgentPhoneVerificationCode: 'AgentPhoneVerificationCode',
   CompanyUserInviteHistory: 'CompanyUserInviteHistory',
+  CompanyAgentSignupRequestHistory: 'CompanyAgentSignupRequestHistory',
   AgentCompanyCustomer: 'AgentCompanyCustomer',
   AgentOrganizationBilling: 'AgentOrganizationBilling',
   Upload: 'Upload',
@@ -432,7 +433,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyUserCompany" | "companyMagicLinkToken" | "phoneVerificationCode" | "agentPhoneVerificationCode" | "companyUserInviteHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "payslipNotification" | "payslipAccessToken" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "employeeUser" | "employeeMagicLinkToken" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount" | "companyChangeRequest"
+    modelProps: "agentOrganization" | "company" | "agentOrganizationCompany" | "agentOrganizationCompanyTransferRequest" | "agentUser" | "agentMagicLinkToken" | "agentUserInviteToken" | "companyUser" | "companyUserCompany" | "companyMagicLinkToken" | "phoneVerificationCode" | "agentPhoneVerificationCode" | "companyUserInviteHistory" | "companyAgentSignupRequestHistory" | "agentCompanyCustomer" | "agentOrganizationBilling" | "upload" | "companyActiveUpload" | "earnedIncome" | "payslipNotification" | "payslipAccessToken" | "earnedIncomeItemDefinition" | "earnedIncomeItemValue" | "businessIncome" | "otherIncome" | "dailyIncomeLabor" | "employee" | "employeeUser" | "employeeMagicLinkToken" | "businessIncomeEmployee" | "otherIncomeEmployee" | "otherIncomeLaborEmployee" | "employeeBankAccount" | "companyChangeRequest"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1395,6 +1396,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.CompanyUserInviteHistoryCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CompanyUserInviteHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
+    CompanyAgentSignupRequestHistory: {
+      payload: Prisma.$CompanyAgentSignupRequestHistoryPayload<ExtArgs>
+      fields: Prisma.CompanyAgentSignupRequestHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CompanyAgentSignupRequestHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyAgentSignupRequestHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CompanyAgentSignupRequestHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyAgentSignupRequestHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.CompanyAgentSignupRequestHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyAgentSignupRequestHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CompanyAgentSignupRequestHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyAgentSignupRequestHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.CompanyAgentSignupRequestHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyAgentSignupRequestHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.CompanyAgentSignupRequestHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyAgentSignupRequestHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.CompanyAgentSignupRequestHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CompanyAgentSignupRequestHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyAgentSignupRequestHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.CompanyAgentSignupRequestHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyAgentSignupRequestHistoryPayload>
+        }
+        update: {
+          args: Prisma.CompanyAgentSignupRequestHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyAgentSignupRequestHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.CompanyAgentSignupRequestHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CompanyAgentSignupRequestHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CompanyAgentSignupRequestHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyAgentSignupRequestHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.CompanyAgentSignupRequestHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CompanyAgentSignupRequestHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.CompanyAgentSignupRequestHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCompanyAgentSignupRequestHistory>
+        }
+        groupBy: {
+          args: Prisma.CompanyAgentSignupRequestHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CompanyAgentSignupRequestHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CompanyAgentSignupRequestHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CompanyAgentSignupRequestHistoryCountAggregateOutputType> | number
         }
       }
     }
@@ -3107,6 +3182,17 @@ export const CompanyUserInviteHistoryScalarFieldEnum = {
 export type CompanyUserInviteHistoryScalarFieldEnum = (typeof CompanyUserInviteHistoryScalarFieldEnum)[keyof typeof CompanyUserInviteHistoryScalarFieldEnum]
 
 
+export const CompanyAgentSignupRequestHistoryScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  contactType: 'contactType',
+  contact: 'contact',
+  createdAt: 'createdAt'
+} as const
+
+export type CompanyAgentSignupRequestHistoryScalarFieldEnum = (typeof CompanyAgentSignupRequestHistoryScalarFieldEnum)[keyof typeof CompanyAgentSignupRequestHistoryScalarFieldEnum]
+
+
 export const AgentCompanyCustomerScalarFieldEnum = {
   id: 'id',
   agentUserId: 'agentUserId',
@@ -3415,6 +3501,7 @@ export const BusinessIncomeEmployeeScalarFieldEnum = {
   businessRegistrationNumber: 'businessRegistrationNumber',
   businessAddress: 'businessAddress',
   address: 'address',
+  addressDetail: 'addressDetail',
   zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
@@ -3422,6 +3509,9 @@ export const BusinessIncomeEmployeeScalarFieldEnum = {
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  accountHolder: 'accountHolder',
   publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -3444,12 +3534,17 @@ export const OtherIncomeEmployeeScalarFieldEnum = {
   businessRegistrationNumber: 'businessRegistrationNumber',
   businessAddress: 'businessAddress',
   zipcode: 'zipcode',
+  address: 'address',
+  addressDetail: 'addressDetail',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',
   phone: 'phone',
   hireDate: 'hireDate',
   resignDate: 'resignDate',
+  bankName: 'bankName',
+  accountNumber: 'accountNumber',
+  accountHolder: 'accountHolder',
   publishStatus: 'publishStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -3465,6 +3560,9 @@ export const OtherIncomeLaborEmployeeScalarFieldEnum = {
   employeeCode: 'employeeCode',
   name: 'name',
   residentNumber: 'residentNumber',
+  nationalityType: 'nationalityType',
+  residenceType: 'residenceType',
+  zipcode: 'zipcode',
   department: 'department',
   positionTitle: 'positionTitle',
   email: 'email',
@@ -3478,8 +3576,10 @@ export const OtherIncomeLaborEmployeeScalarFieldEnum = {
   normalPay: 'normalPay',
   overtimePay: 'overtimePay',
   address: 'address',
+  addressDetail: 'addressDetail',
   bankName: 'bankName',
   accountNumber: 'accountNumber',
+  accountHolder: 'accountHolder',
   siteName: 'siteName',
   publishStatus: 'publishStatus',
   createdAt: 'createdAt',
@@ -3958,6 +4058,7 @@ export type GlobalOmitConfig = {
   phoneVerificationCode?: Prisma.PhoneVerificationCodeOmit
   agentPhoneVerificationCode?: Prisma.AgentPhoneVerificationCodeOmit
   companyUserInviteHistory?: Prisma.CompanyUserInviteHistoryOmit
+  companyAgentSignupRequestHistory?: Prisma.CompanyAgentSignupRequestHistoryOmit
   agentCompanyCustomer?: Prisma.AgentCompanyCustomerOmit
   agentOrganizationBilling?: Prisma.AgentOrganizationBillingOmit
   upload?: Prisma.UploadOmit

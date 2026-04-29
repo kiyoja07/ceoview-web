@@ -8,12 +8,38 @@ import {
 } from "@/app/lib/company-change-request";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
 import type {
+  EmployeeBankAccountBody,
   EmployeeCreateBody,
   BusinessIncomeEmployeeCreateBody,
   OtherIncomeEmployeeCreateBody,
   OtherIncomeLaborEmployeeCreateBody,
   EmployeeIncomeType,
 } from "@/types/company/employees";
+
+function getPrimaryBankAccount(body: {
+  bankAccounts?: EmployeeBankAccountBody[] | null;
+  bankName?: string | null;
+  accountNumber?: string | null;
+  accountHolder?: string | null;
+}) {
+  const bankAccount = body.bankAccounts?.find(
+    (item) => item.bankName || item.accountNumber || item.accountHolder,
+  );
+
+  if (bankAccount) {
+    return bankAccount;
+  }
+
+  if (body.bankName || body.accountNumber || body.accountHolder) {
+    return {
+      bankName: body.bankName ?? "",
+      accountNumber: body.accountNumber ?? "",
+      accountHolder: body.accountHolder ?? "",
+    };
+  }
+
+  return null;
+}
 
 async function requireAgentOrganizationId(request: NextRequest) {
   const userId = getAgentUserIdFromRequest(request);
@@ -160,6 +186,7 @@ export async function POST(
 
       if (incomeType === "BUSINESS_INCOME") {
         const body = sanitizedBody as BusinessIncomeEmployeeCreateBody;
+        const primaryBankAccount = getPrimaryBankAccount(body);
         const created = await tx.businessIncomeEmployee.create({
           data: {
             companyId,
@@ -174,6 +201,7 @@ export async function POST(
               body.businessRegistrationNumber?.trim() || null,
             businessAddress: body.businessAddress?.trim() || null,
             address: body.address?.trim() || null,
+            addressDetail: body.addressDetail?.trim() || null,
             zipcode: body.zipcode?.trim() || null,
             department: body.department?.trim() || null,
             positionTitle: body.positionTitle?.trim() || null,
@@ -181,6 +209,9 @@ export async function POST(
             phone: body.phone?.trim() || null,
             hireDate: body.hireDate?.trim() || null,
             resignDate: body.resignDate?.trim() || null,
+            bankName: primaryBankAccount?.bankName?.trim() || null,
+            accountNumber: primaryBankAccount?.accountNumber?.trim() || null,
+            accountHolder: primaryBankAccount?.accountHolder?.trim() || null,
             publishStatus: "PUBLISHED",
           },
         });
@@ -188,6 +219,7 @@ export async function POST(
         createdName = created.name;
       } else if (incomeType === "OTHER_INCOME") {
         const body = sanitizedBody as OtherIncomeEmployeeCreateBody;
+        const primaryBankAccount = getPrimaryBankAccount(body);
         const created = await tx.otherIncomeEmployee.create({
           data: {
             companyId,
@@ -202,12 +234,17 @@ export async function POST(
               body.businessRegistrationNumber?.trim() || null,
             businessAddress: body.businessAddress?.trim() || null,
             zipcode: body.zipcode?.trim() || null,
+            address: body.address?.trim() || null,
+            addressDetail: body.addressDetail?.trim() || null,
             department: body.department?.trim() || null,
             positionTitle: body.positionTitle?.trim() || null,
             email: body.email?.trim() || null,
             phone: body.phone?.trim() || null,
             hireDate: body.hireDate?.trim() || null,
             resignDate: body.resignDate?.trim() || null,
+            bankName: primaryBankAccount?.bankName?.trim() || null,
+            accountNumber: primaryBankAccount?.accountNumber?.trim() || null,
+            accountHolder: primaryBankAccount?.accountHolder?.trim() || null,
             publishStatus: "PUBLISHED",
           },
         });
@@ -215,12 +252,16 @@ export async function POST(
         createdName = created.name;
       } else if (incomeType === "OTHER_INCOME_LABOR") {
         const body = sanitizedBody as OtherIncomeLaborEmployeeCreateBody;
+        const primaryBankAccount = getPrimaryBankAccount(body);
         const created = await tx.otherIncomeLaborEmployee.create({
           data: {
             companyId,
             employeeCode: body.employeeCode?.trim() || null,
             name,
             residentNumber: body.residentNumber?.trim() || null,
+            nationalityType: body.nationalityType?.trim() || null,
+            residenceType: body.residenceType?.trim() || null,
+            zipcode: body.zipcode?.trim() || null,
             department: body.department?.trim() || null,
             positionTitle: body.positionTitle?.trim() || null,
             email: body.email?.trim() || null,
@@ -228,8 +269,10 @@ export async function POST(
             hireDate: body.hireDate?.trim() || null,
             resignDate: body.resignDate?.trim() || null,
             address: body.address?.trim() || null,
-            bankName: body.bankName?.trim() || null,
-            accountNumber: body.accountNumber?.trim() || null,
+            addressDetail: body.addressDetail?.trim() || null,
+            bankName: primaryBankAccount?.bankName?.trim() || null,
+            accountNumber: primaryBankAccount?.accountNumber?.trim() || null,
+            accountHolder: primaryBankAccount?.accountHolder?.trim() || null,
             publishStatus: "PUBLISHED",
           },
         });

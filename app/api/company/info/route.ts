@@ -27,6 +27,9 @@ function serializeCompany(company: {
   zipcode: string | null;
   address: string | null;
   addressDetail: string | null;
+  organizationLink?: {
+    agentOrganizationId: bigint;
+  } | null;
 }) {
   return {
     id: company.id.toString(),
@@ -40,6 +43,12 @@ function serializeCompany(company: {
     zipcode: company.zipcode,
     address: company.address,
     addressDetail: company.addressDetail,
+    organizationLink: company.organizationLink
+      ? {
+          agentOrganizationId:
+            company.organizationLink.agentOrganizationId.toString(),
+        }
+      : null,
   };
 }
 
@@ -63,6 +72,7 @@ export async function GET(request: NextRequest) {
           zipcode: true,
           address: true,
           addressDetail: true,
+          organizationLink: { select: { agentOrganizationId: true } },
         },
       }),
       prisma.companyChangeRequest.findFirst({
@@ -158,6 +168,7 @@ export async function PATCH(request: NextRequest) {
         zipcode: true,
         address: true,
         addressDetail: true,
+        organizationLink: { select: { agentOrganizationId: true } },
       },
     });
 
@@ -188,41 +199,82 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const createdRequest = await prisma.companyChangeRequest.create({
-      data: {
-        scope: "COMPANY_INFO",
-        action: "UPDATE",
-        companyId: auth.currentCompanyId,
-        requestedByCompanyUserId: auth.userId,
-        requestedPayload: {
+    const requestedPayload = {
+      businessName,
+      representativeName,
+      openingDate: openingDateRaw,
+      zipcode,
+      address,
+      addressDetail,
+    };
+    const currentSnapshot = snapshotCompanyInfoRecord(company);
+
+    const requestSelect = {
+      id: true,
+      scope: true,
+      action: true,
+      status: true,
+      targetEmployeeId: true,
+      requestedPayload: true,
+      currentSnapshot: true,
+      resolutionComment: true,
+      resolvedAt: true,
+      createdAt: true,
+      updatedAt: true,
+    } as const;
+
+    if (company.organizationLink) {
+      const createdRequest = await prisma.companyChangeRequest.create({
+        data: {
+          scope: "COMPANY_INFO",
+          action: "UPDATE",
+          companyId: auth.currentCompanyId,
+          requestedByCompanyUserId: auth.userId,
+          requestedPayload,
+          currentSnapshot,
+        },
+        select: requestSelect,
+      });
+
+      return NextResponse.json({
+        success: true,
+        request: serializePendingRequestSummary(createdRequest),
+        message: "회사 정보 변경 요청이 제출되었습니다.",
+      });
+    }
+
+    const [, approvedRequest] = await prisma.$transaction([
+      prisma.company.update({
+        where: { id: auth.currentCompanyId },
+        data: {
           businessName,
           representativeName,
-          openingDate: openingDateRaw,
+          openingDate: openingDateRaw ? new Date(openingDateRaw) : null,
           zipcode,
           address,
           addressDetail,
         },
-        currentSnapshot: snapshotCompanyInfoRecord(company),
-      },
-      select: {
-        id: true,
-        scope: true,
-        action: true,
-        status: true,
-        targetEmployeeId: true,
-        requestedPayload: true,
-        currentSnapshot: true,
-        resolutionComment: true,
-        resolvedAt: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+      }),
+      prisma.companyChangeRequest.create({
+        data: {
+          scope: "COMPANY_INFO",
+          action: "UPDATE",
+          status: "APPROVED",
+          companyId: auth.currentCompanyId,
+          requestedByCompanyUserId: auth.userId,
+          resolvedByAgentUserId: null,
+          requestedPayload,
+          currentSnapshot,
+          resolvedAt: new Date(),
+        },
+        select: requestSelect,
+      }),
+    ]);
 
     return NextResponse.json({
       success: true,
-      request: serializePendingRequestSummary(createdRequest),
-      message: "회사 정보 변경 요청이 제출되었습니다.",
+      request: serializePendingRequestSummary(approvedRequest),
+      message: "회사 정보가 즉시 반영되었습니다.",
     });
   } catch (error) {
     console.error("Company info PATCH error:", error);

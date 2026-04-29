@@ -107,6 +107,11 @@ export type AgentPhoneVerificationCode = Prisma.AgentPhoneVerificationCodeModel
  */
 export type CompanyUserInviteHistory = Prisma.CompanyUserInviteHistoryModel
 /**
+ * Model CompanyAgentSignupRequestHistory
+ * 
+ */
+export type CompanyAgentSignupRequestHistory = Prisma.CompanyAgentSignupRequestHistoryModel
+/**
  * Model AgentCompanyCustomer
  * 
  */
