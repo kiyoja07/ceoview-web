@@ -15,7 +15,7 @@ async function requireCompanyMember(request: NextRequest) {
   return context;
 }
 
-function toId(value: bigint) {
+function toId(value: string) {
   return value.toString();
 }
 
@@ -115,9 +115,9 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    let targetUserId: bigint;
+    let targetUserId: string;
     try {
-      targetUserId = BigInt(body.userId);
+      targetUserId = body.userId;
     } catch {
       return NextResponse.json(
         { error: "유효한 사용자 ID를 입력해주세요." },

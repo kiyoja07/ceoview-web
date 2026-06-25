@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
     if (!payload) return { title: "직원 포털" };
 
     const user = await prisma.employeeUser.findUnique({
-      where: { id: BigInt(payload.userId) },
+      where: { id: payload.userId },
       select: {
         employee: {
           select: {

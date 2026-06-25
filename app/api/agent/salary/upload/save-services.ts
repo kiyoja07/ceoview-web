@@ -20,13 +20,13 @@ import {
 
 const UPLOAD_META_PREFIX = "__upload_meta__:";
 
-function buildUploadMemo(agentUserId: bigint) {
+function buildUploadMemo(agentUserId: string) {
   return `${UPLOAD_META_PREFIX}${JSON.stringify({
     uploadedByAgentUserId: agentUserId.toString(),
   })}`;
 }
 
-function parseUploadedByAgentUserId(memo: string | null): bigint | null {
+function parseUploadedByAgentUserId(memo: string | null): string | null {
   if (!memo || !memo.startsWith(UPLOAD_META_PREFIX)) {
     return null;
   }
@@ -35,16 +35,16 @@ function parseUploadedByAgentUserId(memo: string | null): bigint | null {
   try {
     const parsed = JSON.parse(jsonPart) as { uploadedByAgentUserId?: string };
     if (!parsed.uploadedByAgentUserId) return null;
-    return BigInt(parsed.uploadedByAgentUserId);
+    return parsed.uploadedByAgentUserId;
   } catch {
     return null;
   }
 }
 
-async function loadCompany(organizationId: bigint, companyId: string) {
-  let parsedCompanyId: bigint;
+async function loadCompany(organizationId: string, companyId: string) {
+  let parsedCompanyId: string;
   try {
-    parsedCompanyId = BigInt(companyId);
+    parsedCompanyId = companyId;
   } catch {
     throw new Error("유효한 사업자 ID가 아닙니다.");
   }
@@ -100,7 +100,7 @@ function filterEarnedRows(rows: Record<string, unknown>[]) {
   });
 }
 
-async function loadEmployeeIdByCode(companyId: bigint, tx: PrismaTx) {
+async function loadEmployeeIdByCode(companyId: string, tx: PrismaTx) {
   const employees = await tx.employee.findMany({
     where: {
       companyId,
@@ -115,7 +115,7 @@ async function loadEmployeeIdByCode(companyId: bigint, tx: PrismaTx) {
 
   return new Map(
     employees
-      .filter((employee): employee is { id: bigint; employeeCode: string } =>
+      .filter((employee): employee is { id: string; employeeCode: string } =>
         Boolean(employee.employeeCode),
       )
       .map((employee) => [employee.employeeCode.trim(), employee.id] as const),
@@ -123,13 +123,13 @@ async function loadEmployeeIdByCode(companyId: bigint, tx: PrismaTx) {
 }
 
 export async function publishUpload(
-  organizationId: bigint,
-  agentUserId: bigint,
+  organizationId: string,
+  agentUserId: string,
   uploadId: string,
 ) {
-  let parsedUploadId: bigint;
+  let parsedUploadId: string;
   try {
-    parsedUploadId = BigInt(uploadId);
+    parsedUploadId = uploadId;
   } catch {
     throw new Error("유효한 업로드 ID가 아닙니다.");
   }
@@ -188,8 +188,8 @@ export async function publishUpload(
 }
 
 export async function saveBusinessIncome(
-  organizationId: bigint,
-  agentUserId: bigint,
+  organizationId: string,
+  agentUserId: string,
   companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
@@ -229,8 +229,8 @@ export async function saveBusinessIncome(
 }
 
 export async function saveOtherIncome(
-  organizationId: bigint,
-  agentUserId: bigint,
+  organizationId: string,
+  agentUserId: string,
   companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
@@ -270,8 +270,8 @@ export async function saveOtherIncome(
 }
 
 export async function saveOtherIncomeLabor(
-  organizationId: bigint,
-  agentUserId: bigint,
+  organizationId: string,
+  agentUserId: string,
   companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
@@ -310,8 +310,8 @@ export async function saveOtherIncomeLabor(
 }
 
 export async function saveEarnedIncome(
-  organizationId: bigint,
-  agentUserId: bigint,
+  organizationId: string,
+  agentUserId: string,
   companyId: string,
   fileName: string,
   rows: Record<string, unknown>[],
@@ -353,7 +353,7 @@ export async function saveEarnedIncome(
       },
     ];
 
-    const defMap = new Map<string, bigint>();
+    const defMap = new Map<string, string>();
     for (const def of dynamicDefs) {
       const defRecord = await tx.earnedIncomeItemDefinition.upsert({
         where: {

@@ -13,27 +13,27 @@ export type SalaryUploadType =
 export type PublicationStatus = "NONE" | "SAVED" | "PUBLISHED";
 
 export type UploadViewSelection = {
-  uploadId: bigint | null;
+  uploadId: string | null;
   uploadedAt: Date | null;
   publishStatus: PublicationStatus;
   isAgentView: boolean;
   companyVisible: boolean;
 };
 
-function parseUploadedByAgentUserId(memo: string | null): bigint | null {
+function parseUploadedByAgentUserId(memo: string | null): string | null {
   if (!memo || !memo.startsWith(UPLOAD_META_PREFIX)) return null;
 
   const jsonPart = memo.slice(UPLOAD_META_PREFIX.length);
   try {
     const parsed = JSON.parse(jsonPart) as { uploadedByAgentUserId?: string };
     if (!parsed.uploadedByAgentUserId) return null;
-    return BigInt(parsed.uploadedByAgentUserId);
+    return parsed.uploadedByAgentUserId;
   } catch {
     return null;
   }
 }
 
-function canViewSavedUpload(memo: string | null, agentUserId: bigint) {
+function canViewSavedUpload(memo: string | null, agentUserId: string) {
   const uploadedBy = parseUploadedByAgentUserId(memo);
   if (!uploadedBy) return true;
   return uploadedBy === agentUserId;
@@ -49,7 +49,7 @@ export function serializeUploadViewSelection(selection: UploadViewSelection) {
 }
 
 async function getPublishedSelection(
-  companyId: bigint,
+  companyId: string,
   type: SalaryUploadType,
   isAgentView: boolean,
 ): Promise<UploadViewSelection> {
@@ -91,7 +91,7 @@ async function getPublishedSelection(
 
 export async function resolveUploadForCompanyView(
   request: NextRequest,
-  companyId: bigint,
+  companyId: string,
   type: SalaryUploadType,
 ): Promise<UploadViewSelection> {
   const agentUserId = getAgentUserIdFromRequest(request);

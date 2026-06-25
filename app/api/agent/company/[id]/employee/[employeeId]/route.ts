@@ -30,17 +30,12 @@ async function requireAgentOrganizationId(request: NextRequest) {
   return { userId, organizationId: user.agentOrganizationId } as const;
 }
 
-function toId(value: bigint) {
+function toId(value: string) {
   return value.toString();
 }
 
-function parseBigIntId(value: string | undefined) {
-  if (!value) return null;
-  try {
-    return BigInt(value);
-  } catch {
-    return null;
-  }
+function parseObjectId(value: string | undefined) {
+  return value || null;
 }
 
 type RouteContext = {
@@ -57,9 +52,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const { id, employeeId: employeeIdRaw } = await context.params;
 
-    let companyId: bigint;
+    let companyId: string;
     try {
-      companyId = BigInt(id);
+      companyId = id;
     } catch {
       return NextResponse.json(
         { error: "유효한 거래처 ID가 아닙니다." },
@@ -67,9 +62,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
       );
     }
 
-    let employeeId: bigint;
+    let employeeId: string;
     try {
-      employeeId = BigInt(employeeIdRaw);
+      employeeId = employeeIdRaw;
     } catch {
       return NextResponse.json(
         { error: "유효한 직원 ID가 아닙니다." },
@@ -175,9 +170,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
     const { id, employeeId: employeeIdRaw } = await context.params;
 
-    let companyId: bigint;
+    let companyId: string;
     try {
-      companyId = BigInt(id);
+      companyId = id;
     } catch {
       return NextResponse.json(
         { error: "유효한 거래처 ID가 아닙니다." },
@@ -185,9 +180,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       );
     }
 
-    let employeeId: bigint;
+    let employeeId: string;
     try {
-      employeeId = BigInt(employeeIdRaw);
+      employeeId = employeeIdRaw;
     } catch {
       return NextResponse.json(
         { error: "유효한 직원 ID가 아닙니다." },
@@ -226,10 +221,10 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       );
     }
 
-    let requestId: bigint | null = null;
+    let requestId: string | null = null;
     if (requestIdRaw) {
       try {
-        requestId = BigInt(requestIdRaw);
+        requestId = requestIdRaw;
       } catch {
         return NextResponse.json(
           { error: "유효한 요청 ID가 아닙니다." },
@@ -288,7 +283,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
           )
             .filter((ba) => ba.bankName?.trim() && ba.accountNumber?.trim())
             .map((ba) => ({
-              id: parseBigIntId(ba.id),
+              id: parseObjectId(ba.id),
               bankName: ba.bankName!.trim(),
               accountNumber: ba.accountNumber!.trim(),
               accountHolder: ba.accountHolder?.trim() || name,

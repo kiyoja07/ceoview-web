@@ -27,9 +27,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let nextCompanyId: bigint;
+    let nextCompanyId: string;
     try {
-      nextCompanyId = BigInt(body.companyId);
+      nextCompanyId = body.companyId;
     } catch {
       return NextResponse.json(
         { error: "유효한 회사 ID가 아닙니다." },

@@ -20,8 +20,8 @@ export type EarnedIncomeDynamicItemInput = {
 
 export type MappedEarnedIncomeRow = {
   earnedIncomeData: {
-    uploadId: bigint;
-    employeeId?: bigint;
+    uploadId: string;
+    employeeId?: string;
     accrualYm: number;
     paymentYm: number;
     payDate: Date;
@@ -58,7 +58,7 @@ export type MappedEarnedIncomeRow = {
 
 export function mapEarnedIncomeRow(
   row: Record<string, unknown>,
-  uploadId: bigint,
+  uploadId: string,
   overrides: EarnedIncomeOverrides,
 ): MappedEarnedIncomeRow {
   const studentLoanRepayment = toDecimal(row["학자금상환액"]);
@@ -118,7 +118,7 @@ export function mapEarnedIncomeRow(
 
 export function mapOtherIncomeLaborRow(
   row: Record<string, unknown>,
-  uploadId: bigint,
+  uploadId: string,
 ) {
   return {
     uploadId,
@@ -146,7 +146,7 @@ export function mapOtherIncomeLaborRow(
 
 export function mapBusinessIncomeRow(
   row: Record<string, unknown>,
-  uploadId: bigint,
+  uploadId: string,
   overrides: IncomeWithYmOverrides,
 ) {
   return {
@@ -173,7 +173,7 @@ export function mapBusinessIncomeRow(
 
 export function mapOtherIncomeRow(
   row: Record<string, unknown>,
-  uploadId: bigint,
+  uploadId: string,
   overrides: IncomeWithYmOverrides,
 ) {
   return {

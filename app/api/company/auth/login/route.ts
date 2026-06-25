@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
     const resolved = resolveContact(body);
 
     let user: {
-      id: bigint;
+      id: string;
       email: string;
       phone: string | null;
       isActive: boolean;

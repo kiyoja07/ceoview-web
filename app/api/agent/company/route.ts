@@ -38,7 +38,7 @@ function isUniqueConstraintError(error: unknown): error is { code: string } {
 }
 
 function serializeCompany(company: {
-  id: bigint;
+  id: string;
   businessNumber: string;
   businessType: "INDIVIDUAL" | "CORPORATION";
   businessName: string | null;

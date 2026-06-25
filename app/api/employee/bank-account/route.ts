@@ -128,7 +128,7 @@ export async function PUT(request: NextRequest) {
 
     // Separate into updates and creates
     const toUpdate: Array<{
-      id: bigint;
+      id: string;
       bankName: string;
       accountNumber: string;
       accountHolder: string;
@@ -138,13 +138,13 @@ export async function PUT(request: NextRequest) {
       accountNumber: string;
       accountHolder: string;
     }> = [];
-    const incomingIds = new Set<bigint>();
+    const incomingIds = new Set<string>();
 
     for (const account of accounts) {
       if (account.id) {
-        let accountId: bigint;
+        let accountId: string;
         try {
-          accountId = BigInt(account.id);
+          accountId = account.id;
         } catch {
           return NextResponse.json(
             { error: "올바르지 않은 계좌 ID입니다." },

@@ -65,9 +65,9 @@ export async function POST(
 
     const { id } = await params;
 
-    let companyId: bigint;
+    let companyId: string;
     try {
-      companyId = BigInt(id);
+      companyId = id;
     } catch {
       return NextResponse.json(
         { error: "유효한 거래처 ID가 아닙니다." },
@@ -302,7 +302,7 @@ export async function POST(
   }
 }
 
-function toId(value: bigint) {
+function toId(value: string) {
   return value.toString();
 }
 
@@ -318,9 +318,9 @@ export async function GET(
 
     const { id } = await params;
 
-    let companyId: bigint;
+    let companyId: string;
     try {
-      companyId = BigInt(id);
+      companyId = id;
     } catch {
       return NextResponse.json(
         { error: "유효한 거래처 ID가 아닙니다." },

@@ -36,7 +36,7 @@ async function requireCompanyMember(request: NextRequest) {
   return context;
 }
 
-function toId(value: bigint) {
+function toId(value: string) {
   return value.toString();
 }
 
@@ -164,7 +164,7 @@ function getRecentYms(count: number) {
 
 async function getRecentPaidCounts(
   request: NextRequest,
-  companyId: bigint,
+  companyId: string,
 ): Promise<RecentPaidCounts> {
   const recentYms = getRecentYms(RECENT_PAID_MONTHS);
   const startYm = recentYms[0];

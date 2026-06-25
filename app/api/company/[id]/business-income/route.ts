@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const companyId = BigInt(id);
+    const companyId = id;
 
     const { searchParams } = new URL(request.url);
     const accrualYm = searchParams.get("accrualYm");
@@ -95,7 +95,7 @@ export async function GET(
 function serialize<T>(obj: T): Record<string, unknown> {
   return JSON.parse(
     JSON.stringify(obj, (_key, value) =>
-      typeof value === "bigint" ? value.toString() : value,
+      typeof value === "string" ? value.toString() : value,
     ),
   );
 }

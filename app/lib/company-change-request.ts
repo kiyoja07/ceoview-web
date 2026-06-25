@@ -22,7 +22,7 @@ function normalizeString(value: unknown) {
   return trimmed.length > 0 ? trimmed : null;
 }
 
-function toId(value: bigint | null | undefined) {
+function toId(value: string | null | undefined) {
   return value ? value.toString() : null;
 }
 
@@ -244,7 +244,7 @@ export function snapshotEmployeeRecord(employee: {
   nationalPension: string | null;
   healthInsurance: string | null;
   bankAccounts?: Array<{
-    id: bigint;
+    id: string;
     bankName: string;
     accountNumber: string;
     accountHolder: string;
@@ -311,11 +311,11 @@ export function snapshotCompanyInfoRecord(company: {
 }
 
 export function serializePendingRequestSummary(request: {
-  id: bigint;
+  id: string;
   scope: string;
   action: string;
   status: string;
-  targetEmployeeId: bigint | null;
+  targetEmployeeId: string | null;
   requestedPayload: unknown;
   currentSnapshot: unknown;
   resolutionComment: string | null;
@@ -341,12 +341,12 @@ export function serializePendingRequestSummary(request: {
 }
 
 export function serializeCompanyChangeRequest(request: {
-  id: bigint;
+  id: string;
   scope: string;
   action: string;
   status: string;
-  companyId: bigint;
-  targetEmployeeId: bigint | null;
+  companyId: string;
+  targetEmployeeId: string | null;
   requestedPayload: unknown;
   currentSnapshot: unknown;
   resolutionComment: string | null;
@@ -354,17 +354,17 @@ export function serializeCompanyChangeRequest(request: {
   createdAt: Date;
   updatedAt: Date;
   company: {
-    id: bigint;
+    id: string;
     businessNumber: string;
     businessName: string | null;
   };
   requestedByCompanyUser: {
-    id: bigint;
+    id: string;
     name: string;
     email: string | null;
   };
   resolvedByAgentUser: {
-    id: bigint;
+    id: string;
     name: string;
     email: string | null;
   } | null;

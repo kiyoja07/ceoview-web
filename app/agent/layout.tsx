@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
     if (!payload) return { title: "세무대리인 로그인" };
 
     const user = await prisma.agentUser.findUnique({
-      where: { id: BigInt(payload.userId) },
+      where: { id: payload.userId },
       select: {
         agentOrganization: {
           select: { organizationName: true },

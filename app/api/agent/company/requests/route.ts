@@ -41,10 +41,10 @@ export async function GET(request: NextRequest) {
     const action = searchParams.get("action")?.trim();
     const companyId = searchParams.get("companyId")?.trim();
 
-    let parsedCompanyId: bigint | undefined;
+    let parsedCompanyId: string | undefined;
     if (companyId) {
       try {
-        parsedCompanyId = BigInt(companyId);
+        parsedCompanyId = companyId;
       } catch {
         return NextResponse.json(
           { error: "유효한 거래처 ID가 아닙니다." },

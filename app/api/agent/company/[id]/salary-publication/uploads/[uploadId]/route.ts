@@ -8,31 +8,27 @@ const UPLOAD_META_PREFIX = "__upload_meta__:";
 const DEFAULT_LIMIT = 100;
 const MAX_LIMIT = 300;
 
-function parseUploadedByAgentUserId(memo: string | null): bigint | null {
+function parseUploadedByAgentUserId(memo: string | null): string | null {
   if (!memo || !memo.startsWith(UPLOAD_META_PREFIX)) return null;
 
   const jsonPart = memo.slice(UPLOAD_META_PREFIX.length);
   try {
     const parsed = JSON.parse(jsonPart) as { uploadedByAgentUserId?: string };
     if (!parsed.uploadedByAgentUserId) return null;
-    return BigInt(parsed.uploadedByAgentUserId);
+    return parsed.uploadedByAgentUserId;
   } catch {
     return null;
   }
 }
 
-function canManageUpload(memo: string | null, agentUserId: bigint) {
+function canManageUpload(memo: string | null, agentUserId: string) {
   const uploadedByAgentUserId = parseUploadedByAgentUserId(memo);
   if (uploadedByAgentUserId == null) return true;
   return uploadedByAgentUserId === agentUserId;
 }
 
-function parseBigIntOrNull(value: string) {
-  try {
-    return BigInt(value);
-  } catch {
-    return null;
-  }
+function parseObjectIdOrNull(value: string) {
+  return value || null;
 }
 
 function parseLimit(request: NextRequest) {
@@ -47,7 +43,7 @@ function parseLimit(request: NextRequest) {
 function serialize<T>(obj: T): T {
   return JSON.parse(
     JSON.stringify(obj, (_key, value) =>
-      typeof value === "bigint" ? value.toString() : value,
+      typeof value === "string" ? value.toString() : value,
     ),
   ) as T;
 }
@@ -77,7 +73,7 @@ async function requireAgentOrganizationId(request: NextRequest) {
   return { userId, organizationId: user.agentOrganizationId } as const;
 }
 
-async function ensureCompanyAccess(companyId: bigint, organizationId: bigint) {
+async function ensureCompanyAccess(companyId: string, organizationId: string) {
   const company = await prisma.company.findFirst({
     where: {
       id: companyId,
@@ -92,9 +88,9 @@ async function ensureCompanyAccess(companyId: bigint, organizationId: bigint) {
 }
 
 async function loadUpload(
-  companyId: bigint,
-  organizationId: bigint,
-  uploadId: bigint,
+  companyId: string,
+  organizationId: string,
+  uploadId: string,
 ) {
   return prisma.upload.findFirst({
     where: {
@@ -120,9 +116,9 @@ async function loadUpload(
 }
 
 async function isPublishedUpload(
-  companyId: bigint,
+  companyId: string,
   type: SalaryIncomeType,
-  uploadId: bigint,
+  uploadId: string,
 ) {
   const pointer = await prisma.companyActiveUpload.findUnique({
     where: {
@@ -139,7 +135,7 @@ async function isPublishedUpload(
   return pointer?.uploadId === uploadId;
 }
 
-async function loadPreviewRows(uploadId: bigint, type: SalaryIncomeType, limit: number) {
+async function loadPreviewRows(uploadId: string, type: SalaryIncomeType, limit: number) {
   if (type === "EARNED_INCOME") {
     const where = { uploadId };
     const [total, rows] = await Promise.all([
@@ -328,7 +324,7 @@ export async function GET(
     }
 
     const { id, uploadId } = await params;
-    const companyId = parseBigIntOrNull(id);
+    const companyId = parseObjectIdOrNull(id);
     if (!companyId) {
       return NextResponse.json(
         { error: "유효한 거래처 ID가 아닙니다." },
@@ -336,7 +332,7 @@ export async function GET(
       );
     }
 
-    const parsedUploadId = parseBigIntOrNull(uploadId);
+    const parsedUploadId = parseObjectIdOrNull(uploadId);
     if (!parsedUploadId) {
       return NextResponse.json(
         { error: "유효한 업로드 ID가 아닙니다." },

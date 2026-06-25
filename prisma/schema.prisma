@@ -5,12 +5,13 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider   = "prisma-client-js"
+  engineType = "binary"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 enum BusinessType {
@@ -80,19 +81,19 @@ enum CompanyChangeRequestStatus {
 
 //  세무사무소 등 에이전트 회사 : 서비스 제공자
 model AgentOrganization {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  organizationNumber String @unique @map("organization_number") @db.Char(10) // 숫자만 10자리 저장
+  organizationNumber String @unique @map("organization_number") // 숫자만 10자리 저장
 
   businessType BusinessType @map("business_type") // 개인/법인 구분
 
-  organizationName   String?   @map("organization_name") @db.VarChar(200)
-  representativeName String?   @map("representative_name") @db.VarChar(100)
-  phone              String?   @map("phone") @db.VarChar(30)
-  openingDate        DateTime? @map("opening_date") @db.Date
-  zipcode            String?   @map("zipcode") @db.VarChar(10)
-  address            String?   @map("address") @db.VarChar(255)
-  addressDetail      String?   @map("address_detail") @db.VarChar(255)
+  organizationName   String?   @map("organization_name")
+  representativeName String?   @map("representative_name")
+  phone              String?   @map("phone")
+  openingDate        DateTime? @map("opening_date")
+  zipcode            String?   @map("zipcode")
+  address            String?   @map("address")
+  addressDetail      String?   @map("address_detail")
 
   users                AgentUser[]
   billing              AgentOrganizationBilling?
@@ -109,22 +110,22 @@ model AgentOrganization {
 
 // 에이전트의 고객 회사 : 서비스 수혜자
 model Company {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  businessNumber String @unique @map("business_number") @db.Char(10) // 숫자만 10자리 저장
+  businessNumber String @unique @map("business_number") // 숫자만 10자리 저장
 
   businessType BusinessType @map("business_type") // 개인/법인 구분
 
-  businessName       String?   @map("business_name") @db.VarChar(200)
-  representativeName String?   @map("representative_name") @db.VarChar(100)
-  openingDate        DateTime? @map("opening_date") @db.Date
-  zipcode            String?   @map("zipcode") @db.VarChar(10)
-  address            String?   @map("address") @db.VarChar(255)
-  addressDetail      String?   @map("address_detail") @db.VarChar(255)
+  businessName       String?   @map("business_name")
+  representativeName String?   @map("representative_name")
+  openingDate        DateTime? @map("opening_date")
+  zipcode            String?   @map("zipcode")
+  address            String?   @map("address")
+  addressDetail      String?   @map("address_detail")
 
   isDemo           Boolean @default(false) @map("is_demo")
   isPublicShowcase Boolean @default(false) @map("is_public_showcase")
-  publicSlug       String? @unique @map("public_slug") @db.VarChar(100)
+  publicSlug       String? @unique @map("public_slug")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -148,12 +149,12 @@ model Company {
 }
 
 model AgentOrganizationCompany {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentOrganizationId BigInt            @map("agent_organization_id")
+  agentOrganizationId String @db.ObjectId            @map("agent_organization_id")
   agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
 
-  companyId BigInt  @unique @map("company_id")
+  companyId String @db.ObjectId  @unique @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -164,18 +165,18 @@ model AgentOrganizationCompany {
 }
 
 model AgentOrganizationCompanyTransferRequest {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId BigInt  @unique @map("company_id")
+  companyId String @db.ObjectId  @unique @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  fromAgentOrganizationId BigInt?            @map("from_agent_organization_id")
+  fromAgentOrganizationId String? @db.ObjectId            @map("from_agent_organization_id")
   fromAgentOrganization   AgentOrganization? @relation("TransferFromOrganization", fields: [fromAgentOrganizationId], references: [id], onDelete: SetNull)
 
-  toAgentOrganizationId BigInt            @map("to_agent_organization_id")
+  toAgentOrganizationId String @db.ObjectId            @map("to_agent_organization_id")
   toAgentOrganization   AgentOrganization @relation("TransferToOrganization", fields: [toAgentOrganizationId], references: [id], onDelete: Cascade)
 
-  requestedByAgentUserId BigInt    @map("requested_by_agent_user_id")
+  requestedByAgentUserId String @db.ObjectId    @map("requested_by_agent_user_id")
   requestedByAgentUser   AgentUser @relation(fields: [requestedByAgentUserId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -189,17 +190,17 @@ model AgentOrganizationCompanyTransferRequest {
 
 // 에이전트 회사 소속 사용자
 model AgentUser {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentOrganizationId BigInt?            @map("agent_organization_id")
+  agentOrganizationId String? @db.ObjectId            @map("agent_organization_id")
   agentOrganization   AgentOrganization? @relation(fields: [agentOrganizationId], references: [id])
 
-  email          String        @unique @db.VarChar(255)
-  passwordHash   String?       @map("password_hash") @db.VarChar(255)
+  email          String        @unique
+  passwordHash   String?       @map("password_hash")
   loginProvider  LoginProvider @default(LOCAL) @map("login_provider")
-  providerUserId String?       @map("provider_user_id") @db.VarChar(191)
-  name           String        @db.VarChar(100)
-  phone          String?       @db.VarChar(30)
+  providerUserId String?       @map("provider_user_id")
+  name           String
+  phone          String?
   isMaster       Boolean       @default(false) @map("is_master")
   isActive       Boolean       @default(true) @map("is_active")
 
@@ -221,12 +222,12 @@ model AgentUser {
 
 // 에이전트 사용자용 매직링크 토큰
 model AgentMagicLinkToken {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentUserId BigInt    @map("agent_user_id")
+  agentUserId String @db.ObjectId    @map("agent_user_id")
   agentUser   AgentUser @relation(fields: [agentUserId], references: [id], onDelete: Cascade)
 
-  tokenHash String    @unique @map("token_hash") @db.Char(64)
+  tokenHash String    @unique @map("token_hash")
   expiresAt DateTime  @map("expires_at")
   usedAt    DateTime? @map("used_at")
 
@@ -239,21 +240,21 @@ model AgentMagicLinkToken {
 
 // 에이전트 사용자 초대 토큰 (이메일 기반)
 model AgentUserInviteToken {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentOrganizationId BigInt            @map("agent_organization_id")
+  agentOrganizationId String @db.ObjectId            @map("agent_organization_id")
   agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
 
-  inviterUserId BigInt    @map("inviter_user_id")
+  inviterUserId String @db.ObjectId    @map("inviter_user_id")
   inviterUser   AgentUser @relation("InviterUserInviteTokens", fields: [inviterUserId], references: [id], onDelete: Cascade)
 
-  invitedEmail String @map("invited_email") @db.VarChar(255)
+  invitedEmail String @map("invited_email")
 
-  tokenHash String    @unique @map("token_hash") @db.Char(64)
+  tokenHash String    @unique @map("token_hash")
   expiresAt DateTime  @map("expires_at")
   usedAt    DateTime? @map("used_at")
 
-  acceptedAgentUserId BigInt? @map("accepted_agent_user_id")
+  acceptedAgentUserId String? @db.ObjectId @map("accepted_agent_user_id")
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -265,19 +266,19 @@ model AgentUserInviteToken {
 
 // 고객 회사 소속 사용자
 model CompanyUser {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id])
 
-  email          String        @unique @db.VarChar(255)
-  passwordHash   String?       @map("password_hash") @db.VarChar(255)
+  email          String        @unique
+  passwordHash   String?       @map("password_hash")
   loginProvider  LoginProvider @default(LOCAL) @map("login_provider")
-  providerUserId String?       @map("provider_user_id") @db.VarChar(191)
-  name           String        @db.VarChar(100)
-  phone          String?       @db.VarChar(30)
-  birthday       DateTime?     @map("birthday") @db.Date
-  gender         String?       @map("gender") @db.VarChar(10)
+  providerUserId String?       @map("provider_user_id")
+  name           String
+  phone          String?
+  birthday       DateTime?     @map("birthday")
+  gender         String?       @map("gender")
   isMaster       Boolean       @default(false) @map("is_master")
   isActive       Boolean       @default(true) @map("is_active")
 
@@ -296,12 +297,12 @@ model CompanyUser {
 }
 
 model CompanyUserCompany {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyUserId BigInt      @map("company_user_id")
+  companyUserId String @db.ObjectId      @map("company_user_id")
   companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -314,12 +315,12 @@ model CompanyUserCompany {
 
 // 고객 회사 사용자용 매직링크 토큰
 model CompanyMagicLinkToken {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyUserId BigInt      @map("company_user_id")
+  companyUserId String @db.ObjectId      @map("company_user_id")
   companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
 
-  tokenHash String    @unique @map("token_hash") @db.Char(64)
+  tokenHash String    @unique @map("token_hash")
   expiresAt DateTime  @map("expires_at")
   usedAt    DateTime? @map("used_at")
 
@@ -332,13 +333,13 @@ model CompanyMagicLinkToken {
 
 // 휴대폰 인증 코드
 model PhoneVerificationCode {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyUserId BigInt      @map("company_user_id")
+  companyUserId String @db.ObjectId      @map("company_user_id")
   companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
 
-  phone      String    @db.VarChar(30)
-  code       String    @db.VarChar(6)
+  phone      String
+  code       String
   expiresAt  DateTime  @map("expires_at")
   verifiedAt DateTime? @map("verified_at")
 
@@ -351,13 +352,13 @@ model PhoneVerificationCode {
 
 // 에이전트 사용자 휴대폰 인증 코드
 model AgentPhoneVerificationCode {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentUserId BigInt    @map("agent_user_id")
+  agentUserId String @db.ObjectId    @map("agent_user_id")
   agentUser   AgentUser @relation(fields: [agentUserId], references: [id], onDelete: Cascade)
 
-  phone      String    @db.VarChar(30)
-  code       String    @db.VarChar(6)
+  phone      String
+  code       String
   expiresAt  DateTime  @map("expires_at")
   verifiedAt DateTime? @map("verified_at")
 
@@ -370,17 +371,17 @@ model AgentPhoneVerificationCode {
 
 // 거래처 사용자 초대 이력
 model CompanyUserInviteHistory {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  inviterAgentUserId BigInt    @map("inviter_agent_user_id")
+  inviterAgentUserId String @db.ObjectId    @map("inviter_agent_user_id")
   inviterAgentUser   AgentUser @relation(fields: [inviterAgentUserId], references: [id], onDelete: Cascade)
 
-  contactType String @map("contact_type") @db.VarChar(10) // "email" | "phone"
-  contact     String @db.VarChar(255)
-  role        String @default("master") @db.VarChar(20)
+  contactType String @map("contact_type") // "email" | "phone"
+  contact     String
+  role        String @default("master")
 
   expiresAt DateTime @map("expires_at")
 
@@ -393,13 +394,13 @@ model CompanyUserInviteHistory {
 
 // 고객사가 세무대리인에게 보낸 가입 요청 이력
 model CompanyAgentSignupRequestHistory {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  contactType String @map("contact_type") @db.VarChar(10) // "email" | "phone"
-  contact     String @db.VarChar(255)
+  contactType String @map("contact_type") // "email" | "phone"
+  contact     String
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -408,18 +409,18 @@ model CompanyAgentSignupRequestHistory {
 }
 
 model AgentCompanyCustomer {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentUserId BigInt    @map("agent_user_id")
+  agentUserId String @db.ObjectId    @map("agent_user_id")
   agentUser   AgentUser @relation(fields: [agentUserId], references: [id])
 
-  companyUserId BigInt      @map("company_user_id")
+  companyUserId String @db.ObjectId      @map("company_user_id")
   companyUser   CompanyUser @relation(fields: [companyUserId], references: [id])
 
   status          CustomerLinkStatus @default(ACTIVE)
-  contractStartAt DateTime?          @map("contract_start_at") @db.Date
-  contractEndAt   DateTime?          @map("contract_end_at") @db.Date
-  memo            String?            @db.VarChar(255)
+  contractStartAt DateTime?          @map("contract_start_at")
+  contractEndAt   DateTime?          @map("contract_end_at")
+  memo            String?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -430,19 +431,19 @@ model AgentCompanyCustomer {
 }
 
 model AgentOrganizationBilling {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentOrganizationId BigInt            @unique @map("agent_organization_id")
+  agentOrganizationId String @db.ObjectId            @unique @map("agent_organization_id")
   agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id])
 
   plan AgentBillingPlan @default(STARTER) @map("plan")
 
-  cardBrand        String?   @map("card_brand") @db.VarChar(30)
-  cardLast4        String?   @map("card_last4") @db.Char(4)
+  cardBrand        String?   @map("card_brand")
+  cardLast4        String?   @map("card_last4")
   cardExpMonth     Int?      @map("card_exp_month")
   cardExpYear      Int?      @map("card_exp_year")
-  cardHolderName   String?   @map("card_holder_name") @db.VarChar(100)
-  billingKey       String?   @map("billing_key") @db.VarChar(191)
+  cardHolderName   String?   @map("card_holder_name")
+  billingKey       String?   @map("billing_key")
   cardRegisteredAt DateTime? @map("card_registered_at")
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -458,17 +459,17 @@ model AgentOrganizationBilling {
  */
 
 model Upload {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id])
 
   type UploadType @map("type")
 
   uploadedAt DateTime @default(now()) @map("uploaded_at")
-  fileName   String?  @map("file_name") @db.VarChar(255)
-  checksum   String?  @map("checksum") @db.VarChar(64)
-  memo       String?  @map("memo") @db.VarChar(255)
+  fileName   String?  @map("file_name")
+  checksum   String?  @map("checksum")
+  memo       String?  @map("memo")
 
   // row relations (타입별 row 테이블)
   earnedRows     EarnedIncome[]
@@ -488,14 +489,14 @@ model Upload {
 // "현재 적용 배치"를 강제하는 포인터 테이블
 // 사업자+타입당 1개만 존재하도록 UNIQUE로 강제됨
 model CompanyActiveUpload {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id])
 
   type UploadType @map("type")
 
-  uploadId BigInt @unique
+  uploadId String @db.ObjectId @unique
   upload   Upload @relation(fields: [uploadId], references: [id])
 
   updatedAt DateTime @updatedAt
@@ -511,48 +512,48 @@ model CompanyActiveUpload {
  */
 
 model EarnedIncome {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  uploadId BigInt
+  uploadId String @db.ObjectId
   upload   Upload @relation(fields: [uploadId], references: [id])
 
   accrualYm Int      @map("귀속년월")
   paymentYm Int      @map("지급년월")
-  payDate   DateTime @map("지급일") @db.Date
+  payDate   DateTime @map("지급일")
 
-  employeeId BigInt?   @map("employee_id")
+  employeeId String? @db.ObjectId   @map("employee_id")
   employee   Employee? @relation(fields: [employeeId], references: [id])
 
-  employeeCode String  @map("사원코드") @db.VarChar(50)
-  employeeName String  @map("사원명") @db.VarChar(100)
-  department   String? @map("부서") @db.VarChar(50)
-  position     String? @map("직급") @db.VarChar(50)
-  jobType      String? @map("직종") @db.VarChar(50)
+  employeeCode String  @map("사원코드")
+  employeeName String  @map("사원명")
+  department   String? @map("부서")
+  position     String? @map("직급")
+  jobType      String? @map("직종")
 
-  baseSalary    Decimal @map("수당_기본급") @db.Decimal(15, 2)
-  bonus         Decimal @map("상여") @db.Decimal(15, 2)
-  mealAllowance Decimal @map("식대") @db.Decimal(15, 2)
-  allowance     Decimal @map("수당") @db.Decimal(15, 2)
-  travelExpense Decimal @map("출장비") @db.Decimal(15, 2)
-  totalPayment  Decimal @map("지급액계") @db.Decimal(15, 2)
+  baseSalary    Float @map("수당_기본급")
+  bonus         Float @map("상여")
+  mealAllowance Float @map("식대")
+  allowance     Float @map("수당")
+  travelExpense Float @map("출장비")
+  totalPayment  Float @map("지급액계")
 
-  nationalPensionDeduction Decimal @map("공제_국민연금") @db.Decimal(15, 2)
-  healthInsurance          Decimal @map("건강보험") @db.Decimal(15, 2)
-  employmentInsurance      Decimal @map("고용보험") @db.Decimal(15, 2)
-  longTermCareInsurance    Decimal @map("장기요양보험료") @db.Decimal(15, 2)
-  incomeTax                Decimal @map("소득세") @db.Decimal(15, 2)
-  localIncomeTax           Decimal @map("지방소득세") @db.Decimal(15, 2)
-  healthInsuranceAdj       Decimal @map("건강보험정산") @db.Decimal(15, 2)
-  nationalPensionAdj       Decimal @map("국민연금정산") @db.Decimal(15, 2)
-  employmentInsuranceAdj   Decimal @map("고용보험정산") @db.Decimal(15, 2)
-  longTermCareAdj          Decimal @map("장기요양정산") @db.Decimal(15, 2)
-  prepaidIncomeTax         Decimal @map("기납부소득세") @db.Decimal(15, 2)
-  prepaidLocalIncomeTax    Decimal @map("기납부지방소득세") @db.Decimal(15, 2)
-  addlIncomeTaxAdj         Decimal @map("추가정산소득세") @db.Decimal(15, 2)
-  addlLocalIncomeTaxAdj    Decimal @map("추가정산지방소득세") @db.Decimal(15, 2)
-  totalDeduction           Decimal @map("공제액계") @db.Decimal(15, 2)
+  nationalPensionDeduction Float @map("공제_국민연금")
+  healthInsurance          Float @map("건강보험")
+  employmentInsurance      Float @map("고용보험")
+  longTermCareInsurance    Float @map("장기요양보험료")
+  incomeTax                Float @map("소득세")
+  localIncomeTax           Float @map("지방소득세")
+  healthInsuranceAdj       Float @map("건강보험정산")
+  nationalPensionAdj       Float @map("국민연금정산")
+  employmentInsuranceAdj   Float @map("고용보험정산")
+  longTermCareAdj          Float @map("장기요양정산")
+  prepaidIncomeTax         Float @map("기납부소득세")
+  prepaidLocalIncomeTax    Float @map("기납부지방소득세")
+  addlIncomeTaxAdj         Float @map("추가정산소득세")
+  addlLocalIncomeTaxAdj    Float @map("추가정산지방소득세")
+  totalDeduction           Float @map("공제액계")
 
-  netPayment Decimal @map("차인지급액") @db.Decimal(15, 2)
+  netPayment Float @map("차인지급액")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -579,15 +580,15 @@ enum PayslipNotificationStatus {
 }
 
 model PayslipNotification {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  earnedIncomeId BigInt       @map("earned_income_id")
+  earnedIncomeId String @db.ObjectId       @map("earned_income_id")
   earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id], onDelete: Cascade)
 
   channel      PayslipChannel
-  recipient    String                    @db.VarChar(255)
+  recipient    String
   status       PayslipNotificationStatus @default(SENT)
-  errorMessage String?                   @map("error_message") @db.VarChar(500)
+  errorMessage String?                   @map("error_message")
   sentAt       DateTime                  @default(now()) @map("sent_at")
 
   @@index([earnedIncomeId])
@@ -595,14 +596,14 @@ model PayslipNotification {
 }
 
 model PayslipAccessToken {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  earnedIncomeId BigInt       @map("earned_income_id")
+  earnedIncomeId String @db.ObjectId       @map("earned_income_id")
   earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id], onDelete: Cascade)
 
   channel   PayslipChannel
-  recipient String         @db.VarChar(255)
-  tokenHash String         @unique @map("token_hash") @db.Char(64)
+  recipient String
+  tokenHash String         @unique @map("token_hash")
   expiresAt DateTime       @map("expires_at")
   usedAt    DateTime?      @map("used_at")
   revokedAt DateTime?      @map("revoked_at")
@@ -614,13 +615,13 @@ model PayslipAccessToken {
 }
 
 model EarnedIncomeItemDefinition {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id])
 
-  code         String          @db.VarChar(100)
-  name         String          @db.VarChar(100)
+  code         String
+  name         String
   kind         PayrollItemKind
   displayOrder Int             @default(0) @map("display_order")
   active       Boolean         @default(true)
@@ -636,15 +637,15 @@ model EarnedIncomeItemDefinition {
 }
 
 model EarnedIncomeItemValue {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  earnedIncomeId BigInt       @map("earned_income_id")
+  earnedIncomeId String @db.ObjectId       @map("earned_income_id")
   earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id])
 
-  itemDefinitionId BigInt                     @map("item_definition_id")
+  itemDefinitionId String @db.ObjectId                     @map("item_definition_id")
   itemDefinition   EarnedIncomeItemDefinition @relation(fields: [itemDefinitionId], references: [id])
 
-  amount Decimal @db.Decimal(15, 2)
+  amount Float
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -661,28 +662,28 @@ model EarnedIncomeItemValue {
  */
 
 model BusinessIncome {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  uploadId BigInt
+  uploadId String @db.ObjectId
   upload   Upload @relation(fields: [uploadId], references: [id])
 
   excelNo      Int?   @map("NO")
-  employeeCode String @map("코드") @db.VarChar(50)
-  employeeName String @map("성   명") @db.VarChar(100)
+  employeeCode String @map("코드")
+  employeeName String @map("성   명")
 
   accrualYm Int @map("귀속년월")
   paymentYm Int @map("지급년월")
 
-  grossPayment Decimal @map("지급액") @db.Decimal(15, 2)
+  grossPayment Float @map("지급액")
 
-  incomeTax      Decimal @map("소득세") @db.Decimal(15, 2)
-  localIncomeTax Decimal @map("지방소득세") @db.Decimal(15, 2)
-  expenseArtSpec Decimal @map("예술/특고인 경비") @db.Decimal(15, 2)
-  employmentIns  Decimal @map("고용보험료") @db.Decimal(15, 2)
-  studentLoan    Decimal @map("학자금상환액") @db.Decimal(15, 2)
-  industrialAcc  Decimal @map("산재보험료") @db.Decimal(15, 2)
+  incomeTax      Float @map("소득세")
+  localIncomeTax Float @map("지방소득세")
+  expenseArtSpec Float @map("예술/특고인 경비")
+  employmentIns  Float @map("고용보험료")
+  studentLoan    Float @map("학자금상환액")
+  industrialAcc  Float @map("산재보험료")
 
-  netPayment Decimal @map("차인지급액") @db.Decimal(15, 2)
+  netPayment Float @map("차인지급액")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -699,25 +700,25 @@ model BusinessIncome {
  */
 
 model OtherIncome {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  uploadId BigInt
+  uploadId String @db.ObjectId
   upload   Upload @relation(fields: [uploadId], references: [id])
 
   excelNo      Int?   @map("NO")
-  employeeCode String @map("코드") @db.VarChar(50)
-  employeeName String @map("성   명") @db.VarChar(100)
+  employeeCode String @map("코드")
+  employeeName String @map("성   명")
 
-  incomeType String @map("소득구분") @db.VarChar(50)
+  incomeType String @map("소득구분")
 
   accrualYm Int @map("귀속년월")
   paymentYm Int @map("지급년월")
 
-  grossPayment   Decimal @map("지급액") @db.Decimal(15, 2)
-  taxCorpTax     Decimal @map("소득세/법인세") @db.Decimal(15, 2)
-  localIncomeTax Decimal @map("지방소득세") @db.Decimal(15, 2)
+  grossPayment   Float @map("지급액")
+  taxCorpTax     Float @map("소득세/법인세")
+  localIncomeTax Float @map("지방소득세")
 
-  netPayment Decimal @map("차인지급액") @db.Decimal(15, 2)
+  netPayment Float @map("차인지급액")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -734,34 +735,34 @@ model OtherIncome {
  */
 
 model DailyIncomeLabor {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  uploadId BigInt
+  uploadId String @db.ObjectId
   upload   Upload @relation(fields: [uploadId], references: [id])
 
-  employeeCode String  @map("코드") @db.VarChar(50)
-  employeeName String  @map("성명") @db.VarChar(100)
-  jobType      String? @map("직종") @db.VarChar(50)
-  position     String? @map("직급") @db.VarChar(50)
+  employeeCode String  @map("코드")
+  employeeName String  @map("성명")
+  jobType      String? @map("직종")
+  position     String? @map("직급")
 
-  identificationNumber String?   @map("주민등록번호") @db.VarChar(20)
-  address              String?   @map("주 소") @db.VarChar(255)
-  phone                String?   @map("전화번호") @db.VarChar(30)
-  joinDate             DateTime? @map("입사일") @db.Date
+  identificationNumber String?   @map("주민등록번호")
+  address              String?   @map("주 소")
+  phone                String?   @map("전화번호")
+  joinDate             DateTime? @map("입사일")
 
   workDays      Int?     @map("근무일수")
-  normalHours   Decimal? @map("근무시간_정상") @db.Decimal(10, 2)
-  overtimeHours Decimal? @map("근무시간_연장") @db.Decimal(10, 2)
+  normalHours   Float? @map("근무시간_정상")
+  overtimeHours Float? @map("근무시간_연장")
 
-  grossPay        Decimal @map("급여총액") @db.Decimal(15, 2)
-  employmentIns   Decimal @map("고용보험료") @db.Decimal(15, 2)
-  nationalPension Decimal @map("국민연금") @db.Decimal(15, 2)
-  healthIns       Decimal @map("건강보험료") @db.Decimal(15, 2)
-  incomeTax       Decimal @map("소득세") @db.Decimal(15, 2)
-  localIncomeTax  Decimal @map("지방소득세") @db.Decimal(15, 2)
-  longTermCare    Decimal @map("요양보험") @db.Decimal(15, 2)
+  grossPay        Float @map("급여총액")
+  employmentIns   Float @map("고용보험료")
+  nationalPension Float @map("국민연금")
+  healthIns       Float @map("건강보험료")
+  incomeTax       Float @map("소득세")
+  localIncomeTax  Float @map("지방소득세")
+  longTermCare    Float @map("요양보험")
 
-  netPay Decimal @map("차인지급액") @db.Decimal(15, 2)
+  netPay Float @map("차인지급액")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -779,46 +780,46 @@ model DailyIncomeLabor {
  */
 
 model Employee {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  employeeCode    String? @map("employee_code") @db.VarChar(50)
-  name            String  @db.VarChar(100)
-  residentNumber  String? @map("resident_number") @db.VarChar(20)
-  nationalityType String? @map("nationality_type") @db.VarChar(20) // 내·외국인
-  jobCategory     String? @map("job_category") @db.VarChar(50) // 직종구분
-  residenceType   String? @map("residence_type") @db.VarChar(20) // 거주구분
-  department      String? @map("department") @db.VarChar(50) // 부서
-  positionTitle   String? @map("position_title") @db.VarChar(50) // 직책명
-  email           String? @db.VarChar(255)
-  phone           String? @db.VarChar(30) // 휴대폰
-  landlinePhone   String? @map("landline_phone") @db.VarChar(30) // 전화번호
-  hireDate        String? @map("hire_date") @db.VarChar(10)
-  resignDate      String? @map("resign_date") @db.VarChar(10)
-  zipcode         String? @map("zipcode") @db.VarChar(10)
-  address         String? @map("address") @db.VarChar(255)
-  addressDetail   String? @map("address_detail") @db.VarChar(255)
+  employeeCode    String? @map("employee_code")
+  name            String
+  residentNumber  String? @map("resident_number")
+  nationalityType String? @map("nationality_type") // 내·외국인
+  jobCategory     String? @map("job_category") // 직종구분
+  residenceType   String? @map("residence_type") // 거주구분
+  department      String? @map("department") // 부서
+  positionTitle   String? @map("position_title") // 직책명
+  email           String?
+  phone           String? // 휴대폰
+  landlinePhone   String? @map("landline_phone") // 전화번호
+  hireDate        String? @map("hire_date")
+  resignDate      String? @map("resign_date")
+  zipcode         String? @map("zipcode")
+  address         String? @map("address")
+  addressDetail   String? @map("address_detail")
 
   // 부양가족 공제
-  hasSpouse        String? @map("has_spouse") @db.VarChar(10) // 배우자 유무
-  dependentUnder20 String? @map("dependent_under_20") @db.VarChar(10) // 부양가족공제_20세이하
-  dependentOver60  String? @map("dependent_over_60") @db.VarChar(10) // 부양가족공제_60세이상
+  hasSpouse        String? @map("has_spouse") // 배우자 유무
+  dependentUnder20 String? @map("dependent_under_20") // 부양가족공제_20세이하
+  dependentOver60  String? @map("dependent_over_60") // 부양가족공제_60세이상
 
   // 추가 공제
-  deductionSenior        String? @map("deduction_senior") @db.VarChar(10) // 추가공제_경로우대
-  deductionDisabled      String? @map("deduction_disabled") @db.VarChar(10) // 추가공제_장애인
-  deductionWomen         String? @map("deduction_women") @db.VarChar(10) // 추가공제_부녀자
-  deductionChildren      String? @map("deduction_children") @db.VarChar(10) // 추가공제_자녀
-  deductionBirthAdoption String? @map("deduction_birth_adoption") @db.VarChar(10) // 추가공제_출산입양
-  deductionSingleParent  String? @map("deduction_single_parent") @db.VarChar(10) // 추가공제_한부모
+  deductionSenior        String? @map("deduction_senior") // 추가공제_경로우대
+  deductionDisabled      String? @map("deduction_disabled") // 추가공제_장애인
+  deductionWomen         String? @map("deduction_women") // 추가공제_부녀자
+  deductionChildren      String? @map("deduction_children") // 추가공제_자녀
+  deductionBirthAdoption String? @map("deduction_birth_adoption") // 추가공제_출산입양
+  deductionSingleParent  String? @map("deduction_single_parent") // 추가공제_한부모
 
   // 보험/호봉
-  employmentInsurance String? @map("employment_insurance") @db.VarChar(20) // 고용보험
-  payGrade            String? @map("pay_grade") @db.VarChar(20) // 호봉
-  nationalPension     String? @map("national_pension") @db.VarChar(20) // 국민연금
-  healthInsurance     String? @map("health_insurance") @db.VarChar(20) // 건강보험
+  employmentInsurance String? @map("employment_insurance") // 고용보험
+  payGrade            String? @map("pay_grade") // 호봉
+  nationalPension     String? @map("national_pension") // 국민연금
+  healthInsurance     String? @map("health_insurance") // 건강보험
 
   publishStatus EmployeePublishStatus @default(SAVED) @map("publish_status")
 
@@ -838,17 +839,17 @@ model Employee {
 }
 
 model EmployeeUser {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  employeeId BigInt   @unique @map("employee_id")
+  employeeId String @db.ObjectId   @unique @map("employee_id")
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
-  email         String? @unique @db.VarChar(255)
-  phone         String? @unique @db.VarChar(30)
-  name          String  @db.VarChar(100)
-  zipcode       String? @map("zipcode") @db.VarChar(10)
-  address       String? @map("address") @db.VarChar(255)
-  addressDetail String? @map("address_detail") @db.VarChar(255)
+  email         String? @unique
+  phone         String? @unique
+  name          String
+  zipcode       String? @map("zipcode")
+  address       String? @map("address")
+  addressDetail String? @map("address_detail")
 
   isActive Boolean @default(true) @map("is_active")
 
@@ -862,12 +863,12 @@ model EmployeeUser {
 }
 
 model EmployeeMagicLinkToken {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  employeeUserId BigInt       @map("employee_user_id")
+  employeeUserId String @db.ObjectId       @map("employee_user_id")
   employeeUser   EmployeeUser @relation(fields: [employeeUserId], references: [id], onDelete: Cascade)
 
-  tokenHash String    @unique @map("token_hash") @db.Char(64)
+  tokenHash String    @unique @map("token_hash")
   expiresAt DateTime  @map("expires_at")
   usedAt    DateTime? @map("used_at")
 
@@ -885,32 +886,32 @@ model EmployeeMagicLinkToken {
  */
 
 model BusinessIncomeEmployee {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  employeeCode               String? @map("employee_code") @db.VarChar(50)
-  name                       String  @db.VarChar(100)
-  residentNumber             String? @map("resident_number") @db.VarChar(20)
-  nationalityType            String? @map("nationality_type") @db.VarChar(20) // 내·외국인
-  incomeCategory             String? @map("income_category") @db.VarChar(50) // 소득구분
-  residenceType              String? @map("residence_type") @db.VarChar(20) // 거주구분
-  businessName               String? @map("business_name") @db.VarChar(100) // 상호
-  businessRegistrationNumber String? @map("business_registration_number") @db.VarChar(20) // 사업자등록번호
-  businessAddress            String? @map("business_address") @db.VarChar(255) // 사업장주소
-  address                    String? @map("address") @db.VarChar(255) // 소득자주소
-  addressDetail              String? @map("address_detail") @db.VarChar(255) // 소득자상세주소
-  zipcode                    String? @map("zipcode") @db.VarChar(10) // 우편번호
-  department                 String? @map("department") @db.VarChar(50)
-  positionTitle              String? @map("position_title") @db.VarChar(50)
-  email                      String? @db.VarChar(255)
-  phone                      String? @db.VarChar(30)
-  hireDate                   String? @map("hire_date") @db.VarChar(10)
-  resignDate                 String? @map("resign_date") @db.VarChar(10)
-  bankName                   String? @map("bank_name") @db.VarChar(50)
-  accountNumber              String? @map("account_number") @db.VarChar(50)
-  accountHolder              String? @map("account_holder") @db.VarChar(100)
+  employeeCode               String? @map("employee_code")
+  name                       String
+  residentNumber             String? @map("resident_number")
+  nationalityType            String? @map("nationality_type") // 내·외국인
+  incomeCategory             String? @map("income_category") // 소득구분
+  residenceType              String? @map("residence_type") // 거주구분
+  businessName               String? @map("business_name") // 상호
+  businessRegistrationNumber String? @map("business_registration_number") // 사업자등록번호
+  businessAddress            String? @map("business_address") // 사업장주소
+  address                    String? @map("address") // 소득자주소
+  addressDetail              String? @map("address_detail") // 소득자상세주소
+  zipcode                    String? @map("zipcode") // 우편번호
+  department                 String? @map("department")
+  positionTitle              String? @map("position_title")
+  email                      String?
+  phone                      String?
+  hireDate                   String? @map("hire_date")
+  resignDate                 String? @map("resign_date")
+  bankName                   String? @map("bank_name")
+  accountNumber              String? @map("account_number")
+  accountHolder              String? @map("account_holder")
 
   publishStatus EmployeePublishStatus @default(SAVED) @map("publish_status")
 
@@ -931,32 +932,32 @@ model BusinessIncomeEmployee {
  */
 
 model OtherIncomeEmployee {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  employeeCode               String? @map("employee_code") @db.VarChar(50)
-  name                       String  @db.VarChar(100)
-  residentNumber             String? @map("resident_number") @db.VarChar(20)
-  nationalityType            String? @map("nationality_type") @db.VarChar(20) // 내·외국인
-  incomeCategory             String? @map("income_category") @db.VarChar(50) // 소득구분
-  residenceType              String? @map("residence_type") @db.VarChar(20) // 거주구분
-  personType                 String? @map("person_type") @db.VarChar(20) // 법인/개인구분
-  businessRegistrationNumber String? @map("business_registration_number") @db.VarChar(20) // 사업자등록번호
-  businessAddress            String? @map("business_address") @db.VarChar(255) // 사업장주소
-  zipcode                    String? @map("zipcode") @db.VarChar(10) // 우편번호
-  address                    String? @map("address") @db.VarChar(255) // 소득자주소
-  addressDetail              String? @map("address_detail") @db.VarChar(255) // 소득자상세주소
-  department                 String? @map("department") @db.VarChar(50)
-  positionTitle              String? @map("position_title") @db.VarChar(50)
-  email                      String? @db.VarChar(255)
-  phone                      String? @db.VarChar(30)
-  hireDate                   String? @map("hire_date") @db.VarChar(10)
-  resignDate                 String? @map("resign_date") @db.VarChar(10)
-  bankName                   String? @map("bank_name") @db.VarChar(50)
-  accountNumber              String? @map("account_number") @db.VarChar(50)
-  accountHolder              String? @map("account_holder") @db.VarChar(100)
+  employeeCode               String? @map("employee_code")
+  name                       String
+  residentNumber             String? @map("resident_number")
+  nationalityType            String? @map("nationality_type") // 내·외국인
+  incomeCategory             String? @map("income_category") // 소득구분
+  residenceType              String? @map("residence_type") // 거주구분
+  personType                 String? @map("person_type") // 법인/개인구분
+  businessRegistrationNumber String? @map("business_registration_number") // 사업자등록번호
+  businessAddress            String? @map("business_address") // 사업장주소
+  zipcode                    String? @map("zipcode") // 우편번호
+  address                    String? @map("address") // 소득자주소
+  addressDetail              String? @map("address_detail") // 소득자상세주소
+  department                 String? @map("department")
+  positionTitle              String? @map("position_title")
+  email                      String?
+  phone                      String?
+  hireDate                   String? @map("hire_date")
+  resignDate                 String? @map("resign_date")
+  bankName                   String? @map("bank_name")
+  accountNumber              String? @map("account_number")
+  accountHolder              String? @map("account_holder")
 
   publishStatus EmployeePublishStatus @default(SAVED) @map("publish_status")
 
@@ -977,36 +978,36 @@ model OtherIncomeEmployee {
  */
 
 model OtherIncomeLaborEmployee {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  employeeCode    String? @map("employee_code") @db.VarChar(50)
-  name            String  @db.VarChar(100)
-  residentNumber  String? @map("resident_number") @db.VarChar(20)
-  nationalityType String? @map("nationality_type") @db.VarChar(20)
-  residenceType   String? @map("residence_type") @db.VarChar(20)
-  zipcode         String? @map("zipcode") @db.VarChar(10)
-  department      String? @map("department") @db.VarChar(50)
-  positionTitle   String? @map("position_title") @db.VarChar(50)
-  email           String? @db.VarChar(255)
-  phone           String? @db.VarChar(30)
-  hireDate        String? @map("hire_date") @db.VarChar(10)
-  resignDate      String? @map("resign_date") @db.VarChar(10)
+  employeeCode    String? @map("employee_code")
+  name            String
+  residentNumber  String? @map("resident_number")
+  nationalityType String? @map("nationality_type")
+  residenceType   String? @map("residence_type")
+  zipcode         String? @map("zipcode")
+  department      String? @map("department")
+  positionTitle   String? @map("position_title")
+  email           String?
+  phone           String?
+  hireDate        String? @map("hire_date")
+  resignDate      String? @map("resign_date")
 
-  jobCategory   String?  @map("job_category") @db.VarChar(50)
-  payType       String?  @map("pay_type") @db.VarChar(50)
-  paymentMethod String?  @map("payment_method") @db.VarChar(50)
-  overtimeType  String?  @map("overtime_type") @db.VarChar(50)
-  normalPay     Decimal? @map("normal_pay") @db.Decimal(15, 2)
-  overtimePay   Decimal? @map("overtime_pay") @db.Decimal(15, 2)
-  address       String?  @map("address") @db.VarChar(255)
-  addressDetail String?  @map("address_detail") @db.VarChar(255)
-  bankName      String?  @map("bank_name") @db.VarChar(50)
-  accountNumber String?  @map("account_number") @db.VarChar(50)
-  accountHolder String?  @map("account_holder") @db.VarChar(100)
-  siteName      String?  @map("site_name") @db.VarChar(100)
+  jobCategory   String?  @map("job_category")
+  payType       String?  @map("pay_type")
+  paymentMethod String?  @map("payment_method")
+  overtimeType  String?  @map("overtime_type")
+  normalPay     Float? @map("normal_pay")
+  overtimePay   Float? @map("overtime_pay")
+  address       String?  @map("address")
+  addressDetail String?  @map("address_detail")
+  bankName      String?  @map("bank_name")
+  accountNumber String?  @map("account_number")
+  accountHolder String?  @map("account_holder")
+  siteName      String?  @map("site_name")
 
   publishStatus EmployeePublishStatus @default(SAVED) @map("publish_status")
 
@@ -1021,14 +1022,14 @@ model OtherIncomeLaborEmployee {
 }
 
 model EmployeeBankAccount {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  employeeId BigInt   @map("employee_id")
+  employeeId String @db.ObjectId   @map("employee_id")
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
-  bankName      String @map("bank_name") @db.VarChar(50)
-  accountNumber String @map("account_number") @db.VarChar(50)
-  accountHolder String @map("account_holder") @db.VarChar(100)
+  bankName      String @map("bank_name")
+  accountNumber String @map("account_number")
+  accountHolder String @map("account_holder")
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -1040,27 +1041,27 @@ model EmployeeBankAccount {
 }
 
 model CompanyChangeRequest {
-  id BigInt @id @default(autoincrement())
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
   scope  CompanyChangeRequestScope
   action CompanyChangeRequestAction
   status CompanyChangeRequestStatus @default(PENDING)
 
-  companyId BigInt  @map("company_id")
+  companyId String @db.ObjectId  @map("company_id")
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  requestedByCompanyUserId BigInt      @map("requested_by_company_user_id")
+  requestedByCompanyUserId String @db.ObjectId      @map("requested_by_company_user_id")
   requestedByCompanyUser   CompanyUser @relation("RequestedByCompanyUser", fields: [requestedByCompanyUserId], references: [id], onDelete: Cascade)
 
-  resolvedByAgentUserId BigInt?    @map("resolved_by_agent_user_id")
+  resolvedByAgentUserId String? @db.ObjectId    @map("resolved_by_agent_user_id")
   resolvedByAgentUser   AgentUser? @relation("ResolvedByAgentUser", fields: [resolvedByAgentUserId], references: [id], onDelete: SetNull)
 
-  targetEmployeeId BigInt? @map("target_employee_id")
+  targetEmployeeId String? @db.ObjectId @map("target_employee_id")
 
   requestedPayload Json  @map("requested_payload")
   currentSnapshot  Json? @map("current_snapshot")
 
-  resolutionComment String?   @map("resolution_comment") @db.Text
+  resolutionComment String?   @map("resolution_comment")
   resolvedAt        DateTime? @map("resolved_at")
 
   createdAt DateTime @default(now()) @map("created_at")

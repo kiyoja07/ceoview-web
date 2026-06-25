@@ -19,7 +19,7 @@ async function requireCompanyMember(request: NextRequest) {
   return context;
 }
 
-function toId(value: bigint) {
+function toId(value: string) {
   return value.toString();
 }
 
@@ -69,7 +69,7 @@ function snapshotNonEarnedIncomeRecord(record: Record<string, any>) {
   for (const [key, value] of Object.entries(rest)) {
     if (value instanceof Date) {
       snapshot[key] = value.toISOString();
-    } else if (typeof value === "bigint") {
+    } else if (typeof value === "string") {
       snapshot[key] = value.toString();
     } else {
       snapshot[key] = value ?? null;
@@ -80,8 +80,8 @@ function snapshotNonEarnedIncomeRecord(record: Record<string, any>) {
 
 async function findEmployeeByIncomeType(
   incomeType: EmployeeIncomeType,
-  employeeId: bigint,
-  companyId: bigint,
+  employeeId: string,
+  companyId: string,
 ) {
   const baseWhere = {
     id: employeeId,
@@ -136,9 +136,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }
 
     const { id } = await context.params;
-    let employeeId: bigint;
+    let employeeId: string;
     try {
-      employeeId = BigInt(id);
+      employeeId = id;
     } catch {
       return NextResponse.json(
         { error: "유효한 직원 ID가 아닙니다." },
@@ -178,7 +178,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         Awaited<ReturnType<typeof prisma.employee.findFirst>>
       > & {
         bankAccounts: Array<{
-          id: bigint;
+          id: string;
           bankName: string;
           accountNumber: string;
           accountHolder: string;
@@ -368,9 +368,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     }
 
     const { id } = await context.params;
-    let employeeId: bigint;
+    let employeeId: string;
     try {
-      employeeId = BigInt(id);
+      employeeId = id;
     } catch {
       return NextResponse.json(
         { error: "유효한 직원 ID가 아닙니다." },
@@ -477,9 +477,9 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     }
 
     const { id } = await context.params;
-    let employeeId: bigint;
+    let employeeId: string;
     try {
-      employeeId = BigInt(id);
+      employeeId = id;
     } catch {
       return NextResponse.json(
         { error: "유효한 직원 ID가 아닙니다." },

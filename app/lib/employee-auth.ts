@@ -27,7 +27,7 @@ function isValidSignature(payloadBase64: string, signature: string) {
   return timingSafeEqual(expectedBuffer, signatureBuffer);
 }
 
-export function createEmployeeSessionToken(userId: bigint | string) {
+export function createEmployeeSessionToken(userId: string | string) {
   const payload: EmployeeSessionPayload = {
     userId: userId.toString(),
     exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
@@ -57,13 +57,13 @@ export function verifyEmployeeSessionToken(
   }
 }
 
-export function getEmployeeUserIdFromRequest(request: NextRequest): bigint | null {
+export function getEmployeeUserIdFromRequest(request: NextRequest): string | null {
   const token = request.cookies.get(EMPLOYEE_SESSION_COOKIE)?.value;
   const payload = verifyEmployeeSessionToken(token);
   if (!payload) return null;
 
   try {
-    return BigInt(payload.userId);
+    return payload.userId;
   } catch {
     return null;
   }
@@ -71,7 +71,7 @@ export function getEmployeeUserIdFromRequest(request: NextRequest): bigint | nul
 
 export function attachEmployeeSession(
   response: NextResponse,
-  userId: bigint | string,
+  userId: string | string,
 ) {
   response.cookies.set({
     name: EMPLOYEE_SESSION_COOKIE,

@@ -28,8 +28,8 @@ export type UploadSaveResult = {
 
 export type SaveRowsByIncomeTypeParams = {
   incomeType: SalaryIncomeType;
-  organizationId: bigint;
-  agentUserId: bigint;
+  organizationId: string;
+  agentUserId: string;
   companyId: string;
   fileName: string;
   rows: Record<string, unknown>[];

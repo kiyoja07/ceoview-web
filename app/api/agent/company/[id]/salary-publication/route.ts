@@ -10,8 +10,8 @@ const UPLOAD_META_PREFIX = "__upload_meta__:";
 type PublicationStatus = "SAVED" | "PUBLISHED";
 
 type UploadRow = {
-  id: bigint;
-  companyId: bigint;
+  id: string;
+  companyId: string;
   type: SalaryIncomeType;
   fileName: string | null;
   uploadedAt: Date;
@@ -19,13 +19,13 @@ type UploadRow = {
 };
 
 type ActivePointerRow = {
-  id: bigint;
+  id: string;
   type: SalaryIncomeType;
-  uploadId: bigint;
+  uploadId: string;
   updatedAt: Date;
 };
 
-function parseUploadedByAgentUserId(memo: string | null): bigint | null {
+function parseUploadedByAgentUserId(memo: string | null): string | null {
   if (!memo || !memo.startsWith(UPLOAD_META_PREFIX)) {
     return null;
   }
@@ -34,13 +34,13 @@ function parseUploadedByAgentUserId(memo: string | null): bigint | null {
   try {
     const parsed = JSON.parse(jsonPart) as { uploadedByAgentUserId?: string };
     if (!parsed.uploadedByAgentUserId) return null;
-    return BigInt(parsed.uploadedByAgentUserId);
+    return parsed.uploadedByAgentUserId;
   } catch {
     return null;
   }
 }
 
-function canManageUpload(memo: string | null, agentUserId: bigint) {
+function canManageUpload(memo: string | null, agentUserId: string) {
   const uploadedByAgentUserId = parseUploadedByAgentUserId(memo);
   if (uploadedByAgentUserId == null) return true;
   return uploadedByAgentUserId === agentUserId;
@@ -48,7 +48,7 @@ function canManageUpload(memo: string | null, agentUserId: bigint) {
 
 function parseCompanyId(id: string) {
   try {
-    return { companyId: BigInt(id) } as const;
+    return { companyId: id } as const;
   } catch {
     return { error: "유효한 거래처 ID가 아닙니다." } as const;
   }
@@ -56,7 +56,7 @@ function parseCompanyId(id: string) {
 
 function parseUploadId(uploadId: string) {
   try {
-    return { uploadId: BigInt(uploadId) } as const;
+    return { uploadId: uploadId } as const;
   } catch {
     return { error: "유효한 업로드 ID가 아닙니다." } as const;
   }
@@ -87,7 +87,7 @@ async function requireAgentOrganizationId(request: NextRequest) {
   return { userId, organizationId: user.agentOrganizationId } as const;
 }
 
-async function ensureCompanyAccess(companyId: bigint, organizationId: bigint) {
+async function ensureCompanyAccess(companyId: string, organizationId: string) {
   const company = await prisma.company.findFirst({
     where: {
       id: companyId,
@@ -102,9 +102,9 @@ async function ensureCompanyAccess(companyId: bigint, organizationId: bigint) {
 }
 
 async function findUploadInCompany(
-  companyId: bigint,
-  organizationId: bigint,
-  uploadId: bigint,
+  companyId: string,
+  organizationId: string,
+  uploadId: string,
 ) {
   return prisma.upload.findFirst({
     where: {
@@ -199,9 +199,9 @@ function serializeUpload(
 }
 
 async function buildStatusSnapshot(
-  companyId: bigint,
-  organizationId: bigint,
-  agentUserId: bigint,
+  companyId: string,
+  organizationId: string,
+  agentUserId: string,
 ) {
   const [uploads, pointers] = await Promise.all([
     prisma.upload.findMany({

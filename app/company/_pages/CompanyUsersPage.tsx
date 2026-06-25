@@ -154,10 +154,11 @@ export default function CompanyOrganizationUsersPage() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h1 className="mt-3 text-3xl font-bold tracking-tight">
-                사용자 관리
+                급여 관리자 관리
               </h1>
               <p className="mt-2 text-sm text-emerald-100/90">
-                급여 정보에 접근할 수 있는 사용자를 관리할 수 있습니다.
+                전체 급여 정보를 조회할 수 있는 회사 급여 담당자를 관리할 수
+                있습니다.
               </p>
             </div>
 
@@ -167,7 +168,7 @@ export default function CompanyOrganizationUsersPage() {
                 onClick={() => setInviteOpen(true)}
                 className="shrink-0 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
               >
-                사용자 초대
+                신규 급여 관리자 초대
               </button>
             )}
           </div>
@@ -175,7 +176,7 @@ export default function CompanyOrganizationUsersPage() {
 
         {data && !data.canManageUsers && (
           <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            마스터 사용자만 사용자 상태 변경 및 초대를 할 수 있습니다.
+            마스터 사용자만 급여 관리자 상태 변경 및 초대를 할 수 있습니다.
           </div>
         )}
 

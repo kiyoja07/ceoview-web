@@ -18,7 +18,7 @@ const companyAccessSelect = {
 } as const;
 
 export type CompanyAccessCompany = {
-  id: bigint;
+  id: string;
   businessNumber: string;
   businessType: "INDIVIDUAL" | "CORPORATION";
   businessName: string | null;
@@ -30,10 +30,10 @@ export type CompanyAccessCompany = {
 };
 
 export type CompanyAccessContext = {
-  userId: bigint;
+  userId: string;
   isMaster: boolean;
-  primaryCompanyId: bigint;
-  currentCompanyId: bigint;
+  primaryCompanyId: string;
+  currentCompanyId: string;
   company: CompanyAccessCompany;
   companies: CompanyAccessCompany[];
 };
@@ -48,8 +48,8 @@ function mergeCompanies(companies: CompanyAccessCompany[]) {
 
 function resolveCurrentCompanyId(
   companies: CompanyAccessCompany[],
-  primaryCompanyId: bigint,
-  selectedCompanyId?: bigint | null,
+  primaryCompanyId: string,
+  selectedCompanyId?: string | null,
 ) {
   if (
     selectedCompanyId &&
@@ -66,8 +66,8 @@ function resolveCurrentCompanyId(
 }
 
 export async function resolveCompanyAccessContextForUser(params: {
-  userId: bigint;
-  selectedCompanyId?: bigint | null;
+  userId: string;
+  selectedCompanyId?: string | null;
 }): Promise<CompanyAccessContext | null> {
   const user = await prisma.companyUser.findUnique({
     where: { id: params.userId },
@@ -135,7 +135,7 @@ export async function resolveCompanyAccessContext(request: NextRequest) {
   });
 }
 
-export function buildCompanyUserScope(companyId: bigint) {
+export function buildCompanyUserScope(companyId: string) {
   return {
     OR: [
       { companyId },

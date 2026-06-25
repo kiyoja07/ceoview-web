@@ -90,7 +90,7 @@ export const CHANGE_REQUEST_EMPLOYEE_COMPARISON_FIELD_LABELS: Array<
 export const CHANGE_REQUEST_COPY = {
   companyList: {
     title: "요청 현황",
-    description: "세무대리인에게 제출한 요청의 처리 상태를 확인합니다.",
+    description: "세무대리인에게 보낸 요청의 처리 상태를 확인합니다.",
     loading: "요청 현황을 불러오는 중...",
     empty: "등록된 요청이 없습니다.",
     loadError: "요청 현황을 불러오지 못했습니다.",

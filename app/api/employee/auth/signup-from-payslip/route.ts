@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@prisma/client";
 import { attachEmployeeSession } from "@/app/lib/employee-auth";
 import { normalizeEmployeePhone } from "@/app/lib/employee-contact";
 import { isValidEmail } from "@/app/lib/employee-magic-link";
@@ -28,11 +28,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let employeeId: bigint;
-    let companyId: bigint;
+    let employeeId: string;
+    let companyId: string;
     try {
-      employeeId = BigInt(signupGrant.employeeId);
-      companyId = BigInt(signupGrant.companyId);
+      employeeId = signupGrant.employeeId;
+      companyId = signupGrant.companyId;
     } catch {
       return NextResponse.json(
         { error: "직원 가입 확인 정보가 올바르지 않습니다." },
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 
     let user:
       | {
-          id: bigint;
+          id: string;
           isActive: boolean;
         }
       | null = null;

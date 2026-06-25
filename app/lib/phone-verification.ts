@@ -8,22 +8,22 @@ export const PHONE_VERIFICATION_MAX_ATTEMPTS = 5;
 type PhoneVerificationOwner =
   | {
       kind: "company";
-      userId: bigint;
+      userId: string;
     }
   | {
       kind: "agent";
-      userId: bigint;
+      userId: string;
     };
 
 type PhoneVerificationRecord = {
-  id: bigint;
+  id: string;
   phone: string;
   code: string;
   expiresAt: Date;
   verifiedAt: Date | null;
   createdAt: Date;
-  companyUserId?: bigint;
-  agentUserId?: bigint;
+  companyUserId?: string;
+  agentUserId?: string;
 };
 
 export class PhoneVerificationError extends Error {
@@ -56,7 +56,7 @@ function getOwnerWhere(owner: PhoneVerificationOwner) {
 
 async function findVerificationRecord(
   owner: PhoneVerificationOwner,
-  verificationId: bigint,
+  verificationId: string,
 ): Promise<PhoneVerificationRecord | null> {
   if (owner.kind === "company") {
     return prisma.phoneVerificationCode.findUnique({
@@ -80,7 +80,7 @@ function hasOwnerAccess(
 
 function parseVerificationId(verificationId: string) {
   try {
-    return BigInt(verificationId);
+    return verificationId;
   } catch {
     throw new PhoneVerificationError("잘못된 인증 정보입니다.", 400);
   }

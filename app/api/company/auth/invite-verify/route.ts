@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let companyId: bigint;
+    let companyId: string;
     try {
-      companyId = BigInt(payload.companyId);
+      companyId = payload.companyId;
     } catch {
       return NextResponse.json(
         { error: "유효하지 않은 초대 정보입니다." },

@@ -30,10 +30,10 @@ export async function generateMetadata(): Promise<Metadata> {
     if (!payload) return { title: "Company Dashboard" };
 
     const selectedCompanyId = selectedCompanyValue
-      ? BigInt(selectedCompanyValue)
+      ? selectedCompanyValue
       : null;
     const access = await resolveCompanyAccessContextForUser({
-      userId: BigInt(payload.userId),
+      userId: payload.userId,
       selectedCompanyId,
     });
 

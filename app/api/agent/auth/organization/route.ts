@@ -220,7 +220,7 @@ export async function POST(request: NextRequest) {
       });
 
       const userUpdateData: {
-        agentOrganizationId: bigint;
+        agentOrganizationId: string;
         isMaster: boolean;
         name?: string;
         phone?: string | null;

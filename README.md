@@ -5,9 +5,12 @@
 ## Setup
 
 ```bash
-npx prisma migrate dev --name init
+npx prisma db push
 npx prisma generate
 ```
+
+MongoDB를 사용하므로 `DATABASE_URL`은 `mongodb+srv://...` 형식이어야 합니다.
+기존 RDB 마이그레이션은 사용하지 않고 Prisma schema를 `db push`로 반영합니다.
 
 ## Auth (Magic Link)
 
@@ -31,3 +34,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 - 인건비 지급 대상자 개별 등록 : /agent/company/${companyId}/employees/new
 
 doppler run -- npx prisma generate && doppler run -- npx prisma db push
+
+# 테스트
+
+- company : barkirihouse@gmail.com

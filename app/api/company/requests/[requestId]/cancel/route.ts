@@ -23,9 +23,9 @@ export async function POST(
     }
 
     const { requestId } = await params;
-    let parsedRequestId: bigint;
+    let parsedRequestId: string;
     try {
-      parsedRequestId = BigInt(requestId);
+      parsedRequestId = requestId;
     } catch {
       return NextResponse.json(
         { error: "유효한 요청 ID가 아닙니다." },

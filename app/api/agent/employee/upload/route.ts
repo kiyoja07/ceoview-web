@@ -89,9 +89,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let parsedCompanyId: bigint;
+    let parsedCompanyId: string;
     try {
-      parsedCompanyId = BigInt(companyId);
+      parsedCompanyId = companyId;
     } catch {
       return NextResponse.json(
         { error: "유효한 사업자 ID가 아닙니다." },
@@ -451,7 +451,7 @@ async function handleBusinessIncome(
   fileName: string,
   sheetName: string,
   companyId: string,
-  parsedCompanyId: bigint,
+  parsedCompanyId: string,
   save: boolean,
 ) {
   const { columns, rows } = parseBusinessIncomeEmployeeRegistration(worksheet);
@@ -626,7 +626,7 @@ async function handleOtherIncome(
   fileName: string,
   sheetName: string,
   companyId: string,
-  parsedCompanyId: bigint,
+  parsedCompanyId: string,
   save: boolean,
 ) {
   const { columns, rows } = parseOtherIncomeEmployeeRegistration(worksheet);
@@ -810,7 +810,7 @@ async function handleDailyLaborIncome(
   fileName: string,
   sheetName: string,
   companyId: string,
-  parsedCompanyId: bigint,
+  parsedCompanyId: string,
   save: boolean,
 ) {
   const { columns, rows } = parseDailyLaborEmployeeRegistration(worksheet);

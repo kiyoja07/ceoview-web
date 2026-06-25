@@ -23,7 +23,7 @@ function isValidSignature(payloadBase64: string, signature: string) {
   return timingSafeEqual(expectedBuffer, signatureBuffer);
 }
 
-export function createAgentSessionToken(userId: bigint | string) {
+export function createAgentSessionToken(userId: string | string) {
   const payload: AgentSessionPayload = {
     userId: userId.toString(),
     exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
@@ -54,13 +54,13 @@ export function verifyAgentSessionToken(
   }
 }
 
-export function getAgentUserIdFromRequest(request: NextRequest): bigint | null {
+export function getAgentUserIdFromRequest(request: NextRequest): string | null {
   const token = request.cookies.get(AGENT_SESSION_COOKIE)?.value;
   const payload = verifyAgentSessionToken(token);
   if (!payload) return null;
 
   try {
-    return BigInt(payload.userId);
+    return payload.userId;
   } catch {
     return null;
   }
@@ -68,7 +68,7 @@ export function getAgentUserIdFromRequest(request: NextRequest): bigint | null {
 
 export function attachAgentSession(
   response: NextResponse,
-  userId: bigint | string,
+  userId: string | string,
 ) {
   response.cookies.set({
     name: AGENT_SESSION_COOKIE,

@@ -64,7 +64,7 @@ function getSingleEmployeeCode(
   rows: Array<{ employeeCode: string | null; residentNumber: string | null }>,
   residentNumber: string,
   logLabel: string,
-  employeeId: bigint,
+  employeeId: string,
 ) {
   const employeeCodes = [
     ...new Set(

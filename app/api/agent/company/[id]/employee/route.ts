@@ -29,13 +29,13 @@ async function requireAgentOrganizationId(request: NextRequest) {
 
 function parseCompanyId(id: string) {
   try {
-    return { companyId: BigInt(id) } as const;
+    return { companyId: id } as const;
   } catch {
     return { error: "유효한 거래처 ID가 아닙니다." } as const;
   }
 }
 
-async function ensureCompanyAccess(companyId: bigint, organizationId: bigint) {
+async function ensureCompanyAccess(companyId: string, organizationId: string) {
   const company = await prisma.company.findFirst({
     where: {
       id: companyId,
@@ -286,9 +286,9 @@ export async function DELETE(
       );
     }
 
-    let employeeId: bigint;
+    let employeeId: string;
     try {
-      employeeId = BigInt(employeeIdRaw);
+      employeeId = employeeIdRaw;
     } catch {
       return NextResponse.json(
         { error: "유효한 직원 ID가 아닙니다." },
@@ -296,10 +296,10 @@ export async function DELETE(
       );
     }
 
-    let requestId: bigint | null = null;
+    let requestId: string | null = null;
     if (requestIdRaw) {
       try {
-        requestId = BigInt(requestIdRaw);
+        requestId = requestIdRaw;
       } catch {
         return NextResponse.json(
           { error: "유효한 요청 ID가 아닙니다." },

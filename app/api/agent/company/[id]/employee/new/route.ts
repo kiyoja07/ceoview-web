@@ -77,9 +77,9 @@ export async function POST(
     }
 
     const { id } = await params;
-    let companyId: bigint;
+    let companyId: string;
     try {
-      companyId = BigInt(id);
+      companyId = id;
     } catch {
       return NextResponse.json(
         { error: "유효한 거래처 ID가 아닙니다." },
@@ -146,10 +146,10 @@ export async function POST(
       );
     }
 
-    let requestId: bigint | null = null;
+    let requestId: string | null = null;
     if (requestIdRaw) {
       try {
-        requestId = BigInt(requestIdRaw);
+        requestId = requestIdRaw;
       } catch {
         return NextResponse.json(
           { error: "유효한 요청 ID가 아닙니다." },
@@ -181,7 +181,7 @@ export async function POST(
         }
       }
 
-      let createdId: bigint;
+      let createdId: string;
       let createdName: string;
 
       if (incomeType === "BUSINESS_INCOME") {

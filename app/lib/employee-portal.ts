@@ -7,8 +7,8 @@ import {
 import prisma from "@/app/lib/prisma";
 
 export type EmployeePortalSession = {
-  id: bigint;
-  employeeId: bigint;
+  id: string;
+  employeeId: string;
   name: string;
   email: string | null;
   phone: string | null;
@@ -17,14 +17,14 @@ export type EmployeePortalSession = {
   addressDetail: string | null;
   isActive: boolean;
   employee: {
-    id: bigint;
+    id: string;
     employeeCode: string | null;
     residentNumber: string | null;
     department: string | null;
     positionTitle: string | null;
     deletedAt: Date | null;
     company: {
-      id: bigint;
+      id: string;
       businessName: string | null;
       businessNumber: string;
     };
@@ -42,9 +42,9 @@ export async function getEmployeePortalSession() {
     redirect(EMPLOYEE_LOGIN_PATH);
   }
 
-  let userId: bigint;
+  let userId: string;
   try {
-    userId = BigInt(payload.userId);
+    userId = payload.userId;
   } catch {
     redirect(EMPLOYEE_LOGIN_PATH);
   }

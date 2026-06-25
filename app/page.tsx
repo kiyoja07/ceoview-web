@@ -34,7 +34,8 @@ export default async function Home() {
       <SiteHeader
         navItems={[
           { href: agentUrl, label: "세무대리인으로 시작하기" },
-          { href: companyUrl, label: "사업장으로 시작하기" },
+          { href: companyUrl, label: "급여 담당자로 시작하기" },
+          { href: employeeUrl, label: "급여 수령자로 시작하기" },
         ]}
       />
       <HeroSection showcaseUrl={showcaseUrl} />

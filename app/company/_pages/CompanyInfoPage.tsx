@@ -219,7 +219,7 @@ export default function CompanyOrganizationInfoPage() {
               회사 정보 관리
             </h1>
             <p className="text-sm text-gray-500">
-              우리 회사 정보를 조회하고 변경 요청할 수 있습니다.
+              회사 정보를 조회하고 세무대리인에게 변경을 요청할 수 있습니다.
             </p>
             {!canManage && (
               <p className="mt-1 text-xs text-amber-700">
@@ -230,7 +230,10 @@ export default function CompanyOrganizationInfoPage() {
           {!isEditing && canStartEdit && (
             <button
               type="button"
-              onClick={() => { setMessage(null); setIsEditing(true); }}
+              onClick={() => {
+                setMessage(null);
+                setIsEditing(true);
+              }}
               className="shrink-0 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
             >
               수정 요청
@@ -269,7 +272,7 @@ export default function CompanyOrganizationInfoPage() {
               <div
                 className={`${readOnlyInputBase} rounded-lg border border-gray-200 px-3.5 py-2.5 text-sm font-mono tracking-wide`}
               >
-                {businessNumber || "-"}
+                {businessNumber || "미등록"}
               </div>
               <p className="mt-1 text-xs text-gray-400">
                 사업자번호는 변경할 수 없습니다.
@@ -360,40 +363,68 @@ export default function CompanyOrganizationInfoPage() {
           <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
             <dl className="space-y-5">
               <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-5">
-                <dt className="min-w-28 text-sm font-medium text-gray-500">사업자번호</dt>
+                <dt className="min-w-28 text-sm font-medium text-gray-500">
+                  사업자번호
+                </dt>
                 <dd className="text-right font-mono text-sm tracking-wide text-gray-900">
                   {businessNumber || "-"}
                 </dd>
               </div>
               <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-5">
-                <dt className="min-w-28 text-sm font-medium text-gray-500">사업자구분</dt>
+                <dt className="min-w-28 text-sm font-medium text-gray-500">
+                  사업자구분
+                </dt>
                 <dd className="text-right text-sm text-gray-900">
                   {businessType === "INDIVIDUAL" ? "개인" : "법인"}
                 </dd>
               </div>
               <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-5">
-                <dt className="min-w-28 text-sm font-medium text-gray-500">상호명</dt>
-                <dd className="text-right text-sm text-gray-900">{businessName || "-"}</dd>
+                <dt className="min-w-28 text-sm font-medium text-gray-500">
+                  상호명
+                </dt>
+                <dd className="text-right text-sm text-gray-900">
+                  {businessName || "미등록"}
+                </dd>
               </div>
               <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-5">
-                <dt className="min-w-28 text-sm font-medium text-gray-500">대표자명</dt>
-                <dd className="text-right text-sm text-gray-900">{representativeName || "-"}</dd>
+                <dt className="min-w-28 text-sm font-medium text-gray-500">
+                  대표자명
+                </dt>
+                <dd className="text-right text-sm text-gray-900">
+                  {representativeName || "미등록"}
+                </dd>
               </div>
               <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-5">
-                <dt className="min-w-28 text-sm font-medium text-gray-500">개업일</dt>
-                <dd className="text-right text-sm text-gray-900">{openingDate || "-"}</dd>
+                <dt className="min-w-28 text-sm font-medium text-gray-500">
+                  개업일
+                </dt>
+                <dd className="text-right text-sm text-gray-900">
+                  {openingDate || "미등록"}
+                </dd>
               </div>
               <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-5">
-                <dt className="min-w-28 text-sm font-medium text-gray-500">우편번호</dt>
-                <dd className="text-right text-sm text-gray-900">{addressValue.zipcode || "-"}</dd>
+                <dt className="min-w-28 text-sm font-medium text-gray-500">
+                  우편번호
+                </dt>
+                <dd className="text-right text-sm text-gray-900">
+                  {addressValue.zipcode || "미등록"}
+                </dd>
               </div>
               <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-5">
-                <dt className="min-w-28 text-sm font-medium text-gray-500">주소</dt>
-                <dd className="text-right text-sm text-gray-900">{addressValue.address || "-"}</dd>
+                <dt className="min-w-28 text-sm font-medium text-gray-500">
+                  주소
+                </dt>
+                <dd className="text-right text-sm text-gray-900">
+                  {addressValue.address || "미등록"}
+                </dd>
               </div>
               <div className="flex items-start justify-between gap-4">
-                <dt className="min-w-28 text-sm font-medium text-gray-500">상세주소</dt>
-                <dd className="text-right text-sm text-gray-900">{addressValue.addressDetail || "-"}</dd>
+                <dt className="min-w-28 text-sm font-medium text-gray-500">
+                  상세주소
+                </dt>
+                <dd className="text-right text-sm text-gray-900">
+                  {addressValue.addressDetail || "미등록"}
+                </dd>
               </div>
             </dl>
 

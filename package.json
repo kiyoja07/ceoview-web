@@ -14,14 +14,12 @@
     "db:reset": "doppler run -- npx prisma generate && doppler run -- npx prisma db push"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "^7.4.0",
-    "@prisma/client": "^7.4.0",
+    "@prisma/client": "^6.19.3",
     "dotenv": "^17.3.1",
     "html2canvas-pro": "^1.6.7",
     "jspdf": "^4.2.0",
     "jszip": "^3.10.1",
     "next": "16.1.6",
-    "pg": "^8.16.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "recharts": "^3.7.0",
@@ -29,14 +27,13 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/pg": "^8.15.5",
     "@types/jszip": "^3.4.0",
     "@types/node": "^20.19.33",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "prisma": "^7.4.0",
+    "prisma": "^6.19.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -3,7 +3,7 @@ import prisma from "@/app/lib/prisma";
 import { sanitizeCompanyInfoRequestPayload } from "@/app/lib/company-change-request";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
 
-function toId(value: bigint) {
+function toId(value: string) {
   return value.toString();
 }
 
@@ -34,7 +34,7 @@ async function requireAgentOrganizationId(request: NextRequest) {
 
 function parseCompanyId(id: string) {
   try {
-    return { companyId: BigInt(id) };
+    return { companyId: id };
   } catch {
     return { error: "유효한 거래처 ID가 아닙니다." };
   }
@@ -174,10 +174,10 @@ export async function PATCH(
       );
     }
 
-    let parsedRequestId: bigint | null = null;
+    let parsedRequestId: string | null = null;
     if (requestIdRaw) {
       try {
-        parsedRequestId = BigInt(requestIdRaw);
+        parsedRequestId = requestIdRaw;
       } catch {
         return NextResponse.json(
           { error: "유효한 요청 ID가 아닙니다." },

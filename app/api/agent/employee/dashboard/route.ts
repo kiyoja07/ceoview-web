@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
 
     const countMap = new Map<string, EmpCounts>();
 
-    function ensureEntry(companyId: bigint): EmpCounts {
+    function ensureEntry(companyId: string): EmpCounts {
       const key = companyId.toString();
       if (!countMap.has(key)) {
         countMap.set(key, {

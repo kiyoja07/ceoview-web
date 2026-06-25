@@ -128,7 +128,7 @@ function buildPayslipEmailHtml(params: {
 }
 
 async function logPayslipNotification(params: {
-  earnedIncomeId: bigint;
+  earnedIncomeId: string;
   channel: PayslipSendChannel;
   recipient: string;
   status: "SENT" | "FAILED";
@@ -147,7 +147,7 @@ async function logPayslipNotification(params: {
 
 async function issuePayslipAccessLink(params: {
   request: NextRequest;
-  earnedIncomeId: bigint;
+  earnedIncomeId: string;
   channel: PayslipSendChannel;
   recipient: string;
 }) {
@@ -183,7 +183,7 @@ async function issuePayslipAccessLink(params: {
   };
 }
 
-async function revokePayslipAccessToken(tokenId: bigint) {
+async function revokePayslipAccessToken(tokenId: string) {
   await prisma.payslipAccessToken.updateMany({
     where: {
       id: tokenId,
@@ -202,7 +202,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const companyId = BigInt(id);
+    const companyId = id;
 
     const body = await request.json();
     const { earnedIncomeIds, channels } = body as {
@@ -263,7 +263,7 @@ export async function POST(
 
     const rows = await prisma.earnedIncome.findMany({
       where: {
-        id: { in: earnedIncomeIds.map((value) => BigInt(value)) },
+        id: { in: earnedIncomeIds.map((value) => value) },
         uploadId: uploadView.uploadId,
       },
       include: {
@@ -366,7 +366,7 @@ export async function POST(
       const errors: string[] = [];
 
       if (email && recipientChannels.includes("EMAIL")) {
-        let issuedTokenId: bigint | null = null;
+        let issuedTokenId: string | null = null;
         try {
           const { tokenId, viewUrl } = await issuePayslipAccessLink({
             request,
@@ -413,7 +413,7 @@ export async function POST(
       }
 
       if (phone && recipientChannels.includes("SMS")) {
-        let issuedTokenId: bigint | null = null;
+        let issuedTokenId: string | null = null;
         try {
           const { tokenId, viewUrl } = await issuePayslipAccessLink({
             request,
@@ -459,7 +459,7 @@ export async function POST(
       }
 
       if (phone && recipientChannels.includes("KAKAO")) {
-        let issuedTokenId: bigint | null = null;
+        let issuedTokenId: string | null = null;
         try {
           const { tokenId, viewUrl } = await issuePayslipAccessLink({
             request,

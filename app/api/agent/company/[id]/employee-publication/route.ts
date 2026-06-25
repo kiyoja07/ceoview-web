@@ -18,7 +18,7 @@ const ALL_INCOME_TYPES: IncomeType[] = SALARY_INCOME_TYPES;
 
 function parseCompanyId(id: string) {
   try {
-    return { companyId: BigInt(id) } as const;
+    return { companyId: id } as const;
   } catch {
     return { error: "유효한 거래처 ID가 아닙니다." } as const;
   }
@@ -49,7 +49,7 @@ async function requireAgentOrganizationId(request: NextRequest) {
   return { userId, organizationId: user.agentOrganizationId } as const;
 }
 
-async function ensureCompanyAccess(companyId: bigint, organizationId: bigint) {
+async function ensureCompanyAccess(companyId: string, organizationId: string) {
   const company = await prisma.company.findFirst({
     where: {
       id: companyId,
@@ -81,7 +81,7 @@ type IncomeTypeGroup = {
   publishedCount: number;
 };
 
-async function buildSnapshot(companyId: bigint) {
+async function buildSnapshot(companyId: string) {
   // Fetch all 4 employee models in parallel
   const [earned, business, other, labor] = await Promise.all([
     prisma.employee.findMany({
@@ -296,9 +296,9 @@ export async function POST(
         );
       }
 
-      let employeeId: bigint;
+      let employeeId: string;
       try {
-        employeeId = BigInt(employeeIdRaw);
+        employeeId = employeeIdRaw;
       } catch {
         return NextResponse.json(
           { error: "유효한 직원 ID가 아닙니다." },

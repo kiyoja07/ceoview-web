@@ -18,7 +18,7 @@ async function requireCompanyMember(request: NextRequest) {
 }
 
 function serializeCompany(company: {
-  id: bigint;
+  id: string;
   businessNumber: string;
   businessType: "INDIVIDUAL" | "CORPORATION";
   businessName: string | null;
@@ -28,7 +28,7 @@ function serializeCompany(company: {
   address: string | null;
   addressDetail: string | null;
   organizationLink?: {
-    agentOrganizationId: bigint;
+    agentOrganizationId: string;
   } | null;
 }) {
   return {

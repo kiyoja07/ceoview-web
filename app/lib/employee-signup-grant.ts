@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from "crypto";
-import type { PayslipChannel } from "@/generated/prisma/enums";
+import type { PayslipChannel } from "@prisma/client";
 
 const EMPLOYEE_SIGNUP_GRANT_TTL_SECONDS = 60 * 30;
 
@@ -34,8 +34,8 @@ function isValidSignature(payloadBase64: string, signature: string) {
 }
 
 export function createEmployeeSignupGrant(input: {
-  employeeId: bigint | string;
-  companyId: bigint | string;
+  employeeId: string | string;
+  companyId: string | string;
   recipient: string;
   channel: PayslipChannel;
 }) {

@@ -2,16 +2,16 @@ import prisma from "@/app/lib/prisma";
 
 const MAX_UNIQUE_RETRY = 50;
 
-function buildDemoBusinessNumber(organizationId: bigint, attempt: number) {
-  const space = BigInt(900_000_000); // 9자리 숫자 공간
-  const base = organizationId % space;
-  const candidate = (base + BigInt(attempt)) % space;
+function buildDemoBusinessNumber(organizationId: string, attempt: number) {
+  const space = 900_000_000; // 9자리 숫자 공간
+  const base = Number.parseInt(organizationId.slice(-12), 16) % space;
+  const candidate = (base + attempt) % space;
   return `9${candidate.toString().padStart(9, "0")}`; // 총 10자리
 }
 
 async function allocateBusinessNumber(
   tx: TransactionClient,
-  organizationId: bigint,
+  organizationId: string,
 ) {
   for (let attempt = 0; attempt < MAX_UNIQUE_RETRY; attempt++) {
     const candidate = buildDemoBusinessNumber(organizationId, attempt);
@@ -25,11 +25,11 @@ async function allocateBusinessNumber(
   throw new Error("데모 거래처 사업자번호를 생성하지 못했습니다.");
 }
 
-function slugBaseForOrganization(organizationId: bigint) {
+function slugBaseForOrganization(organizationId: string) {
   return `sample-${organizationId.toString()}`;
 }
 
-async function allocatePublicSlug(tx: TransactionClient, organizationId: bigint) {
+async function allocatePublicSlug(tx: TransactionClient, organizationId: string) {
   const base = slugBaseForOrganization(organizationId);
   for (let attempt = 0; attempt < MAX_UNIQUE_RETRY; attempt++) {
     const candidate = attempt === 0 ? base : `${base}-${attempt + 1}`;
@@ -47,15 +47,15 @@ type TransactionClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0
 
 async function cloneCompanyDefinitions(
   tx: TransactionClient,
-  sourceCompanyId: bigint,
-  targetCompanyId: bigint,
+  sourceCompanyId: string,
+  targetCompanyId: string,
 ) {
   const sourceDefinitions = await tx.earnedIncomeItemDefinition.findMany({
     where: { companyId: sourceCompanyId },
     orderBy: [{ displayOrder: "asc" }, { id: "asc" }],
   });
 
-  const definitionIdMap = new Map<string, bigint>();
+  const definitionIdMap = new Map<string, string>();
 
   for (const source of sourceDefinitions) {
     const {
@@ -81,10 +81,10 @@ async function cloneCompanyDefinitions(
 
 async function cloneUploadRows(
   tx: TransactionClient,
-  sourceUploadId: bigint,
-  targetUploadId: bigint,
+  sourceUploadId: string,
+  targetUploadId: string,
   uploadType: "EARNED_INCOME" | "BUSINESS_INCOME" | "OTHER_INCOME" | "OTHER_INCOME_LABOR",
-  definitionIdMap: Map<string, bigint>,
+  definitionIdMap: Map<string, string>,
 ) {
   if (uploadType === "EARNED_INCOME") {
     const sourceRows = await tx.earnedIncome.findMany({
@@ -111,7 +111,7 @@ async function cloneUploadRows(
         amount: typeof sourceRow.itemValues[number]["amount"];
         createdAt: Date;
         updatedAt: Date;
-        itemDefinitionId: bigint;
+        itemDefinitionId: string;
       }> = [];
 
       for (const sourceValue of itemValues) {
@@ -218,16 +218,16 @@ async function cloneUploadRows(
 
 async function cloneCompanyUploads(
   tx: TransactionClient,
-  sourceCompanyId: bigint,
-  targetCompanyId: bigint,
-  definitionIdMap: Map<string, bigint>,
+  sourceCompanyId: string,
+  targetCompanyId: string,
+  definitionIdMap: Map<string, string>,
 ) {
   const sourceUploads = await tx.upload.findMany({
     where: { companyId: sourceCompanyId },
     orderBy: [{ uploadedAt: "asc" }, { id: "asc" }],
   });
 
-  const uploadIdMap = new Map<string, bigint>();
+  const uploadIdMap = new Map<string, string>();
 
   for (const sourceUpload of sourceUploads) {
     const {
@@ -278,8 +278,8 @@ async function cloneCompanyUploads(
 
 async function promoteDemoToPublicShowcase(
   tx: TransactionClient,
-  companyId: bigint,
-  organizationId: bigint,
+  companyId: string,
+  organizationId: string,
 ) {
   const existing = await tx.company.findUnique({
     where: { id: companyId },
@@ -312,13 +312,13 @@ function buildDemoBusinessName(sourceName: string | null) {
 }
 
 export type EnsureDemoCompanyResult = {
-  companyId: bigint;
+  companyId: string;
   created: boolean;
   publicSlug: string | null;
 };
 
 export async function ensureDemoCompanyForOrganization(
-  organizationId: bigint,
+  organizationId: string,
 ): Promise<EnsureDemoCompanyResult | null> {
   return prisma.$transaction(async (tx) => {
     const existingDemo = await tx.company.findFirst({

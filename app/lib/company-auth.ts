@@ -24,7 +24,7 @@ function isValidSignature(payloadBase64: string, signature: string) {
   return timingSafeEqual(expectedBuffer, signatureBuffer);
 }
 
-export function createCompanySessionToken(userId: bigint | string) {
+export function createCompanySessionToken(userId: string | string) {
   const payload: CompanySessionPayload = {
     userId: userId.toString(),
     exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
@@ -55,13 +55,13 @@ export function verifyCompanySessionToken(
   }
 }
 
-export function getCompanyUserIdFromRequest(request: NextRequest): bigint | null {
+export function getCompanyUserIdFromRequest(request: NextRequest): string | null {
   const token = request.cookies.get(COMPANY_SESSION_COOKIE)?.value;
   const payload = verifyCompanySessionToken(token);
   if (!payload) return null;
 
   try {
-    return BigInt(payload.userId);
+    return payload.userId;
   } catch {
     return null;
   }
@@ -69,12 +69,12 @@ export function getCompanyUserIdFromRequest(request: NextRequest): bigint | null
 
 export function getSelectedCompanyIdFromRequest(
   request: NextRequest,
-): bigint | null {
+): string | null {
   const value = request.cookies.get(COMPANY_SELECTED_COMPANY_COOKIE)?.value;
   if (!value) return null;
 
   try {
-    return BigInt(value);
+    return value;
   } catch {
     return null;
   }
@@ -82,8 +82,8 @@ export function getSelectedCompanyIdFromRequest(
 
 export function attachCompanySession(
   response: NextResponse,
-  userId: bigint | string,
-  selectedCompanyId?: bigint | string | null,
+  userId: string | string,
+  selectedCompanyId?: string | string | null,
 ) {
   response.cookies.set({
     name: COMPANY_SESSION_COOKIE,
@@ -110,7 +110,7 @@ export function attachCompanySession(
 
 export function attachCompanySelection(
   response: NextResponse,
-  companyId: bigint | string,
+  companyId: string | string,
 ) {
   response.cookies.set({
     name: COMPANY_SELECTED_COMPANY_COOKIE,
