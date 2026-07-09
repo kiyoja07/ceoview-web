@@ -11,7 +11,8 @@
     "prestart": "rm -rf .next && doppler run -- npm run build",
     "start": "doppler run -- next start",
     "clean": "npm cache clean --force && rm -rf node_modules package-lock.json .next",
-    "db:reset": "doppler run -- npx prisma generate && doppler run -- npx prisma db push"
+    "db:reset": "doppler run -- npx prisma generate && doppler run -- npx prisma db push",
+    "smoke": "doppler run -- node scripts/smoke/run.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
