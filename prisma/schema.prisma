@@ -101,6 +101,8 @@ model AgentOrganization {
   companyLinks         AgentOrganizationCompany[]
   transferRequestsFrom AgentOrganizationCompanyTransferRequest[] @relation("TransferFromOrganization")
   transferRequestsTo   AgentOrganizationCompanyTransferRequest[] @relation("TransferToOrganization")
+  accountCatalogs      AccountCatalog[]
+  financialReports     FinancialReport[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -144,6 +146,8 @@ model Company {
   transferRequest             AgentOrganizationCompanyTransferRequest?
   changeRequests              CompanyChangeRequest[]
   agentSignupRequestHistories CompanyAgentSignupRequestHistory[]
+  financialReports            FinancialReport[]
+  activeFinancialReport       CompanyActiveFinancialReport?
 
   @@map("company")
 }
@@ -1072,4 +1076,145 @@ model CompanyChangeRequest {
   @@index([resolvedByAgentUserId, status, createdAt])
   @@index([targetEmployeeId, status, createdAt])
   @@map("company_change_request")
+}
+
+/**
+ * ---------------------------
+ * 프리미엄 재무 리포트 (분개장)
+ * ---------------------------
+ */
+
+enum FinancialReportPublishStatus {
+  SAVED
+  PUBLISHED
+}
+
+// 위하고 계정과목 매핑 : 에이전트 조직 단위로 저장되어 여러 거래처에 재사용 가능
+model AccountCatalog {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  agentOrganizationId String            @db.ObjectId @map("agent_organization_id")
+  agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
+
+  name                  String // 라벨 (파일명 등)
+  sourceFileName        String? @map("source_file_name")
+  checksum              String? @map("checksum")
+  uploadedByAgentUserId String? @db.ObjectId @map("uploaded_by_agent_user_id")
+
+  entries AccountCatalogEntry[]
+  reports FinancialReport[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([agentOrganizationId, createdAt])
+  @@map("account_catalog")
+}
+
+model AccountCatalogEntry {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  catalogId String         @db.ObjectId @map("catalog_id")
+  catalog   AccountCatalog @relation(fields: [catalogId], references: [id], onDelete: Cascade)
+
+  code             String  @map("code") // 코드
+  wehagoName       String? @map("wehago_name") // 계정과목_위하고
+  category         String? @map("category") // 구분
+  isCompanyDefined Boolean @default(false) @map("is_company_defined") // 회사설정과목여부
+  standardName     String? @map("standard_name") // 계정과목_표준 (노트북 R계정과목)
+  usage            String? @map("usage") // 계정용도 (사업/개인/투자)
+  isRevenue        Boolean @default(false) @map("is_revenue") // 수익여부
+  isExpense        Boolean @default(false) @map("is_expense") // 비용여부
+  hasVat           Boolean @default(false) @map("has_vat") // 부가세여부
+
+  @@index([catalogId, code])
+  @@map("account_catalog_entry")
+}
+
+// 분개장 정제 결과(차변/대변 짝지은 거래) = 프리미엄 재무 리포트
+model FinancialReport {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  companyId String  @db.ObjectId @map("company_id")
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  agentOrganizationId String            @db.ObjectId @map("agent_organization_id")
+  agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
+
+  accountCatalogId String?         @db.ObjectId @map("account_catalog_id")
+  accountCatalog   AccountCatalog? @relation(fields: [accountCatalogId], references: [id], onDelete: SetNull)
+
+  uploadedByAgentUserId String? @db.ObjectId @map("uploaded_by_agent_user_id")
+
+  fiscalYear Int?    @map("fiscal_year")
+  fileName   String? @map("file_name")
+  checksum   String? @map("checksum")
+  memo       String? @map("memo")
+
+  // 파싱 시점에 원본 분개장 라인으로부터 집계한 요약(차트/대시보드용)
+  summary     Json?  @map("summary")
+  entryCount  Int    @default(0) @map("entry_count")
+  debitTotal  Float  @default(0) @map("debit_total")
+  creditTotal Float  @default(0) @map("credit_total")
+
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+
+  entries       FinancialReportEntry[]
+  activePointer CompanyActiveFinancialReport?
+
+  @@unique([companyId, checksum])
+  @@index([companyId, uploadedAt])
+  @@map("financial_report")
+}
+
+model FinancialReportEntry {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  reportId String          @db.ObjectId @map("report_id")
+  report   FinancialReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  rowIndex  Int     @default(0) @map("row_index") // 정렬용 순번
+  gubunja   String  @map("gubunja") // 구분자 (YY-MM-DD-NNNNN)
+  yearMonth String? @map("year_month") // 년월
+  entryDate String? @map("entry_date") // 일자
+  voucherNo String? @map("voucher_no") // 전표번호
+
+  // 차변(debit)
+  debitCode         String? @map("debit_code")
+  debitAccount      String? @map("debit_account")
+  debitAmount       Float   @default(0) @map("debit_amount")
+  debitStandardName String? @map("debit_standard_name") // 계정과목_표준
+  debitUsage        String? @map("debit_usage") // 계정용도
+  debitIsRevenue    Boolean @default(false) @map("debit_is_revenue")
+  debitIsExpense    Boolean @default(false) @map("debit_is_expense")
+  debitPartnerCode  String? @map("debit_partner_code")
+  debitPartnerName  String? @map("debit_partner_name")
+
+  // 대변(credit)
+  creditCode         String? @map("credit_code")
+  creditAccount      String? @map("credit_account")
+  creditAmount       Float   @default(0) @map("credit_amount")
+  creditStandardName String? @map("credit_standard_name")
+  creditIsRevenue    Boolean @default(false) @map("credit_is_revenue")
+  creditPartnerCode  String? @map("credit_partner_code")
+  creditPartnerName  String? @map("credit_partner_name")
+
+  @@index([reportId, rowIndex])
+  @@index([reportId, yearMonth])
+  @@map("financial_report_entry")
+}
+
+// "현재 게시된 리포트"를 강제하는 포인터 테이블 (거래처당 1개)
+model CompanyActiveFinancialReport {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  companyId String  @db.ObjectId @unique @map("company_id")
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  reportId String          @db.ObjectId @unique @map("report_id")
+  report   FinancialReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  updatedAt DateTime @updatedAt
+
+  @@map("company_active_financial_report")
 }

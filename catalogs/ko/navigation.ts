@@ -3,6 +3,7 @@ import type { NavDefinition } from "@/catalogs/types";
 export const COMPANY_HEADER_NAV_ITEMS: NavDefinition[] = [
   { href: "/company/dashboard", label: "대시보드" },
   { slug: "salary", label: "인건비" },
+  { slug: "financial-report", label: "재무리포트" },
   { href: "/company/employees", label: "지급 대상자" },
   { href: "/company/requests", label: "요청 현황" },
   {
@@ -40,6 +41,7 @@ export const AGENT_COMPANY_MANAGE_TABS: NavDefinition[] = [
   { slug: "overview", label: "개요" },
   { slug: "employees", label: "직원" },
   { slug: "salary", label: "급여" },
+  { slug: "financial-report", label: "재무리포트" },
   { slug: "settings", label: "설정" },
 ];
 

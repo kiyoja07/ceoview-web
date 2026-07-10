@@ -72,13 +72,20 @@ export function CompanyHeader() {
     return null;
   }
 
-  const salaryHref = profile?.company?.id
-    ? `/company/${profile.company.id}/salary/dashboard`
+  const companyId = profile?.company?.id;
+  const salaryHref = companyId
+    ? `/company/${companyId}/salary/dashboard`
+    : "/company/dashboard";
+  const financialReportHref = companyId
+    ? `/company/${companyId}/financial-report`
     : "/company/dashboard";
 
-  const navItems = COMPANY_HEADER_NAV_ITEMS.map((item) =>
-    item.slug === "salary" ? { ...item, href: salaryHref } : item,
-  ).filter(
+  const navItems = COMPANY_HEADER_NAV_ITEMS.map((item) => {
+    if (item.slug === "salary") return { ...item, href: salaryHref };
+    if (item.slug === "financial-report")
+      return { ...item, href: financialReportHref };
+    return item;
+  }).filter(
     (item): item is typeof item & { href: string } =>
       typeof item.href === "string",
   );
