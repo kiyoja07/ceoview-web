@@ -15,8 +15,7 @@ import { DashboardCard } from "./DashboardCard";
 import { MonthlyStatsChart } from "./MonthlyStatsChart";
 import { PayslipModal } from "./PayslipModal";
 import { SummaryCardsRow } from "./SummaryCardsRow";
-import { ErrorPanel } from "./common/ErrorPanel";
-import { LoadingPanel } from "./common/LoadingPanel";
+import { ErrorPanel, LoadingPanel } from "@/app/_components/ui/Panel";
 import {
   IconBuilding,
   IconChevronLeft,

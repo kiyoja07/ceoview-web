@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
         where: {
           agentOrganizationId: organizationId,
           invitedEmail,
-          usedAt: null,
+          OR: [{ usedAt: null }, { usedAt: { isSet: false } }],
         },
       });
 

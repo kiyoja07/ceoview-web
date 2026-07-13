@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { formatBusinessNumber } from "@/app/agent/_components/business-form/shared";
+import { ErrorPanel, LoadingPanel } from "@/app/_components/ui/Panel";
 import type { AgentCompanyUsersResponse } from "@/types/agent/company";
 import type { PublicationStatusResponse } from "./salary-publication/_lib/types";
 
@@ -56,6 +57,7 @@ export default function AgentCompanyOverviewPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<OverviewData | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     if (!companyId) return;
@@ -124,7 +126,7 @@ export default function AgentCompanyOverviewPage() {
     };
 
     void load();
-  }, [companyId, router]);
+  }, [companyId, router, retryKey]);
 
   const title = useMemo(() => {
     if (!data) return "";
@@ -142,13 +144,13 @@ export default function AgentCompanyOverviewPage() {
     <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-6xl p-6 lg:p-8">
         {loading ? (
-          <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
-            <p className="text-sm text-gray-500">거래처 개요를 불러오는 중...</p>
-          </div>
+          <LoadingPanel message="거래처 개요를 불러오는 중..." card />
         ) : error ? (
-          <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
+          <ErrorPanel
+            message={error}
+            card
+            onRetry={() => setRetryKey((k) => k + 1)}
+          />
         ) : data ? (
           <>
             <div className="mb-6 rounded-3xl bg-slate-950 px-6 py-7 text-white shadow-sm">

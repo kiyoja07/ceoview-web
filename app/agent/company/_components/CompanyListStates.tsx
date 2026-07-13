@@ -1,53 +1,17 @@
+import { ErrorPanel, LoadingPanel } from "@/app/_components/ui/Panel";
+
 export function CompanyListLoading() {
-  return (
-    <div className="rounded-2xl bg-white p-12 shadow-sm ring-1 ring-gray-950/5">
-      <div className="flex flex-col items-center justify-center gap-3">
-        <svg
-          className="h-8 w-8 animate-spin text-blue-500"
-          viewBox="0 0 24 24"
-          fill="none"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          />
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-          />
-        </svg>
-        <p className="text-sm text-gray-500">불러오는 중…</p>
-      </div>
-    </div>
-  );
+  return <LoadingPanel message="불러오는 중…" card />;
 }
 
-export function CompanyListError({ message }: { message: string }) {
-  return (
-    <div className="rounded-2xl bg-white p-12 shadow-sm ring-1 ring-gray-950/5">
-      <div className="flex flex-col items-center justify-center gap-2">
-        <svg
-          className="h-8 w-8 text-red-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-          />
-        </svg>
-        <p className="text-sm text-red-600">{message}</p>
-      </div>
-    </div>
-  );
+export function CompanyListError({
+  message,
+  onRetry,
+}: {
+  message: string;
+  onRetry?: () => void;
+}) {
+  return <ErrorPanel message={message} card onRetry={onRetry} />;
 }
 
 export function CompanyListEmpty() {

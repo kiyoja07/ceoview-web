@@ -4,6 +4,7 @@ import {
   ensureCompanyAccess,
   requireAgentOrganizationId,
 } from "../_lib/agent-access";
+import { extractPeriod } from "../_lib/period";
 
 // GET /api/agent/financial-report/reports?companyId=...
 // 거래처의 재무 리포트 목록(게시 상태 포함)
@@ -42,6 +43,7 @@ export async function GET(request: NextRequest) {
         debitTotal: true,
         creditTotal: true,
         uploadedAt: true,
+        summary: true,
       },
     }),
     prisma.companyActiveFinancialReport.findUnique({
@@ -58,6 +60,7 @@ export async function GET(request: NextRequest) {
       id: r.id,
       fileName: r.fileName,
       fiscalYear: r.fiscalYear,
+      period: extractPeriod(r.summary),
       entryCount: r.entryCount,
       debitTotal: r.debitTotal,
       creditTotal: r.creditTotal,

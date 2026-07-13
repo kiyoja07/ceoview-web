@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { PageLoading } from "@/app/_components/ui/PageState";
 import type {
   AgentAuthMeResponse,
   ApiErrorResponse,
@@ -179,11 +180,7 @@ export default function AgentProfilePage() {
   };
 
   if (checking) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-app-bg">
-        <div className="text-sm text-gray-500">정보 확인 중...</div>
-      </div>
-    );
+    return <PageLoading message="정보 확인 중..." />;
   }
 
   return (

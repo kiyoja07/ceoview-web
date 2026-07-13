@@ -52,8 +52,8 @@ export async function GET(request: NextRequest) {
     const markUsedResult = await prisma.employeeMagicLinkToken.updateMany({
       where: {
         id: magicLink.id,
-        usedAt: null,
         expiresAt: { gt: now },
+        OR: [{ usedAt: null }, { usedAt: { isSet: false } }],
       },
       data: { usedAt: now },
     });

@@ -14,8 +14,7 @@ import { BulkPayslipDownload } from "../components/BulkPayslipDownload";
 import { BulkPayslipSend } from "../components/BulkPayslipSend";
 import { PayslipModal } from "../components/PayslipModal";
 import { SummaryCardsRow } from "../components/SummaryCardsRow";
-import { ErrorPanel } from "../components/common/ErrorPanel";
-import { LoadingPanel } from "../components/common/LoadingPanel";
+import { ErrorPanel, LoadingPanel } from "@/app/_components/ui/Panel";
 import {
   IconBuilding,
   IconChevronLeft,

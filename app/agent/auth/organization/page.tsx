@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { PageLoading } from "@/app/_components/ui/PageState";
 import type {
   AgentAuthMeResponse,
   ApiErrorResponse,
@@ -112,11 +113,7 @@ export default function AgentOrganizationCreatePage() {
   );
 
   if (checking) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-app-bg">
-        <div className="text-sm text-gray-500">세션 확인 중...</div>
-      </div>
-    );
+    return <PageLoading message="세션 확인 중..." />;
   }
 
   return (

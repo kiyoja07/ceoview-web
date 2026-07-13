@@ -54,6 +54,7 @@ export type PairedEntry = {
   creditAccount: string | null;
   creditAmount: number;
   creditStandardName: string | null;
+  creditUsage: string | null;
   creditIsRevenue: boolean;
   creditPartnerCode: string | null;
   creditPartnerName: string | null;
@@ -72,6 +73,32 @@ export type NamedAmount = {
   amount: number;
 };
 
+// BunGaeJang 노트북 "보고서 양식" 피벗 표 한 행 (계정/거래처 x 년월)
+export type PivotRow = {
+  label: string; // 계정과목_표준 또는 거래처명
+  subLabel: string | null; // 계정용도 (있는 경우)
+  monthly: Record<string, number>; // 년월 → 금액
+  total: number;
+};
+
+export type PivotTable = {
+  months: string[]; // 정렬된 년월 목록
+  rows: PivotRow[];
+  monthlyTotals: Record<string, number>; // 합계 행
+  grandTotal: number;
+};
+
+// BunGaeJang 노트북 셀 9~34 "보고서 양식으로 변환" 이식
+export type StandardReports = {
+  income: PivotTable; // 1-1. 수익 by 계정
+  incomeByPartner: PivotTable; // 1-2. 수익 by 거래처
+  expense: PivotTable; // 2-1. 비용 by 계정
+  expenseByPartner: PivotTable; // 2-2. 비용 by 거래처
+  vat: PivotTable; // 3. 부가세
+  cashIn: PivotTable; // 4-1. 현금 유입
+  cashOut: PivotTable; // 4-2. 현금 유출
+};
+
 // 파싱 시점에 원본 라인으로부터 집계한 요약(차트/대시보드용)
 export type ReportSummary = {
   fiscalYear: number | null;
@@ -81,6 +108,7 @@ export type ReportSummary = {
   topPartners: NamedAmount[]; // 거래처별 상위
   expenseTotal: number; // 비용 합계 (차변 라인 중 isExpense)
   revenueTotal: number; // 수익 합계 (대변 라인 중 isRevenue)
+  standardReports: StandardReports; // BunGaeJang 보고서 양식
 };
 
 export type ParsedFinancialReport = {

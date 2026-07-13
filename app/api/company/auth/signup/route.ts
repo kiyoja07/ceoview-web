@@ -10,6 +10,11 @@ import {
   getCompanyMagicLinkTtlMinutes,
   isValidEmail,
 } from "@/app/lib/company-magic-link";
+import { createInternalPublicSlug } from "@/app/lib/company-onboarding";
+import {
+  createPendingCompany,
+  upsertPendingCompanyJoinRequest,
+} from "@/app/lib/company-join-requests";
 import { sendEmail } from "@/app/lib/messages/email";
 import type { CompanySignupBody } from "@/types/company/auth";
 
@@ -90,6 +95,7 @@ export async function POST(request: NextRequest) {
               companyId: company.id,
               email,
               loginProvider: "LOCAL",
+              providerUserId: email,
               name: createDefaultNameFromEmail(email),
               isMaster: payload.role === "master",
               companyMemberships: {
@@ -275,13 +281,56 @@ export async function POST(request: NextRequest) {
 
     const passwordHash = await hashPassword(password);
 
-    const user = await prisma.$transaction(async (tx) => {
-      const company =
-        (await tx.company.findUnique({
-          where: { businessNumber },
-          select: { id: true },
-        })) ||
-        (await tx.company.create({
+    const result = await prisma.$transaction(async (tx) => {
+      const existingCompany = await tx.company.findUnique({
+        where: { businessNumber },
+        select: {
+          id: true,
+          businessNumber: true,
+          businessName: true,
+        },
+      });
+
+      if (existingCompany) {
+        const pendingCompany = await createPendingCompany(tx);
+        const user = await tx.companyUser.create({
+          data: {
+            companyId: pendingCompany.id,
+            email,
+            passwordHash,
+            loginProvider: "LOCAL",
+            providerUserId: email,
+            name,
+            phone,
+            isMaster: true,
+            companyMemberships: {
+              create: {
+                companyId: pendingCompany.id,
+              },
+            },
+          },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            companyId: true,
+          },
+        });
+
+        const request = await upsertPendingCompanyJoinRequest(tx, {
+          companyId: existingCompany.id,
+          companyUserId: user.id,
+          businessNumber,
+        });
+
+        return {
+          pendingJoinRequest: true,
+          user,
+          request,
+        } as const;
+      }
+
+      const company = await tx.company.create({
           data: {
             businessNumber,
             businessType,
@@ -289,9 +338,10 @@ export async function POST(request: NextRequest) {
             representativeName,
             openingDate: openingDate ? new Date(openingDate) : null,
             address,
+            publicSlug: createInternalPublicSlug(),
           },
           select: { id: true },
-        }));
+        });
 
       const existingMasterCount = await tx.companyUser.count({
         where: {
@@ -300,12 +350,13 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      return tx.companyUser.create({
+      const user = await tx.companyUser.create({
         data: {
           companyId: company.id,
           email,
           passwordHash,
           loginProvider: "LOCAL",
+          providerUserId: email,
           name,
           phone,
           isMaster: existingMasterCount === 0,
@@ -322,8 +373,33 @@ export async function POST(request: NextRequest) {
           companyId: true,
         },
       });
+
+      return {
+        pendingJoinRequest: false,
+        user,
+      } as const;
     });
 
+    if (result.pendingJoinRequest) {
+      const response = NextResponse.json(
+        {
+          status: "pending_join_request",
+          requestId: result.request.id.toString(),
+          redirectTo: "/company/auth/pending",
+          company: {
+            id: result.request.company.id.toString(),
+            businessNumber: result.request.company.businessNumber,
+            businessName: result.request.company.businessName,
+          },
+        },
+        { status: 201 },
+      );
+
+      attachCompanySession(response, result.user.id, result.user.companyId);
+      return response;
+    }
+
+    const user = result.user;
     const response = NextResponse.json(
       {
         id: user.id.toString(),

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
 import { deriveBusinessType } from "@/app/lib/business-type";
+import { createInternalPublicSlug } from "@/app/lib/company-onboarding";
 
 async function requireAgentAuth(request: NextRequest) {
   const userId = getAgentUserIdFromRequest(request);
@@ -156,7 +157,6 @@ export async function POST(request: NextRequest) {
         where: { businessNumber: cleanNumber },
       });
       let created = false;
-      let pendingApproval = false;
       let alreadyLinked = false;
 
       if (!company) {
@@ -169,6 +169,7 @@ export async function POST(request: NextRequest) {
               representativeName: representativeName || null,
               address: address || null,
               openingDate: openingDate ? new Date(openingDate) : null,
+              publicSlug: createInternalPublicSlug(),
             },
           });
           created = true;
@@ -191,108 +192,40 @@ export async function POST(request: NextRequest) {
         select: { agentOrganizationId: true },
       });
 
-      // 오너가 있는 기존 회사는 회사 승인 전까지 연결 요청 상태로 유지
       if (!activeLink) {
         const userCount = await tx.companyUser.count({
           where: { companyId: company.id },
         });
 
-        if (userCount === 0) {
-          await tx.agentOrganizationCompany.upsert({
-            where: { companyId: company.id },
-            update: {
-              agentOrganizationId: auth.organizationId,
-            },
-            create: {
-              agentOrganizationId: auth.organizationId,
-              companyId: company.id,
-            },
-          });
-
-          await tx.agentOrganizationCompanyTransferRequest.deleteMany({
-            where: { companyId: company.id },
-          });
-        } else {
-          const existingRequest =
-            await tx.agentOrganizationCompanyTransferRequest.findUnique({
-              where: { companyId: company.id },
-              select: { toAgentOrganizationId: true },
-            });
-
-          if (
-            existingRequest &&
-            existingRequest.toAgentOrganizationId !== auth.organizationId
-          ) {
-            return {
-              error: "이미 다른 에이전트의 연결 요청이 대기 중입니다.",
-              status: 409,
-            } as const;
-          }
-
-          await tx.agentOrganizationCompanyTransferRequest.upsert({
-            where: { companyId: company.id },
-            update: {
-              fromAgentOrganizationId: null,
-              toAgentOrganizationId: auth.organizationId,
-              requestedByAgentUserId: auth.userId,
-            },
-            create: {
-              companyId: company.id,
-              fromAgentOrganizationId: null,
-              toAgentOrganizationId: auth.organizationId,
-              requestedByAgentUserId: auth.userId,
-            },
-          });
-          pendingApproval = true;
-        }
-      } else if (activeLink.agentOrganizationId === auth.organizationId) {
-        // 이미 같은 에이전트가 활성 연결된 경우
-        alreadyLinked = true;
-        await tx.agentOrganizationCompanyTransferRequest.deleteMany({
-          where: {
-            companyId: company.id,
-            toAgentOrganizationId: auth.organizationId,
-          },
-        });
-      } else {
-        // 기존 회사는 회사 수락 전까지 이관 요청 상태로 유지
-        const existingRequest =
-          await tx.agentOrganizationCompanyTransferRequest.findUnique({
-            where: { companyId: company.id },
-            select: { toAgentOrganizationId: true },
-          });
-
-        if (
-          existingRequest &&
-          existingRequest.toAgentOrganizationId !== auth.organizationId
-        ) {
+        if (userCount > 0) {
           return {
-            error: "이미 다른 에이전트의 이관 요청이 대기 중입니다.",
+            error: "이미 회사 사용자가 등록된 사업자입니다.",
             status: 409,
           } as const;
         }
 
-        await tx.agentOrganizationCompanyTransferRequest.upsert({
+        await tx.agentOrganizationCompany.upsert({
           where: { companyId: company.id },
           update: {
-            fromAgentOrganizationId: activeLink.agentOrganizationId,
-            toAgentOrganizationId: auth.organizationId,
-            requestedByAgentUserId: auth.userId,
+            agentOrganizationId: auth.organizationId,
           },
           create: {
+            agentOrganizationId: auth.organizationId,
             companyId: company.id,
-            fromAgentOrganizationId: activeLink.agentOrganizationId,
-            toAgentOrganizationId: auth.organizationId,
-            requestedByAgentUserId: auth.userId,
           },
         });
-        pendingApproval = true;
+      } else if (activeLink.agentOrganizationId === auth.organizationId) {
+        alreadyLinked = true;
+      } else {
+        return {
+          error: "이미 다른 에이전트에 연결된 사업자입니다.",
+          status: 409,
+        } as const;
       }
 
       return {
         company,
         created,
-        pendingApproval,
         alreadyLinked,
       };
     });
@@ -308,10 +241,9 @@ export async function POST(request: NextRequest) {
       {
         ...serializeCompany(result.company),
         created: result.created,
-        pendingApproval: result.pendingApproval,
         alreadyLinked: result.alreadyLinked,
       },
-      { status: result.pendingApproval ? 202 : result.created ? 201 : 200 },
+      { status: result.created ? 201 : 200 },
     );
   } catch (error: unknown) {
     console.error("Company POST error:", error);

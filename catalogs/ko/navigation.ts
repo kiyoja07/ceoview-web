@@ -5,7 +5,6 @@ export const COMPANY_HEADER_NAV_ITEMS: NavDefinition[] = [
   { slug: "salary", label: "인건비" },
   { slug: "financial-report", label: "재무리포트" },
   { href: "/company/employees", label: "지급 대상자" },
-  { href: "/company/requests", label: "요청 현황" },
   {
     href: "/company/settings/profile",
     label: "설정",
@@ -20,21 +19,17 @@ export const COMPANY_MANAGE_TABS: NavDefinition[] = [
 ];
 
 export const AGENT_HEADER_NAV_ITEMS: NavDefinition[] = [
-  { href: "/agent/company", label: "거래처" },
-  { href: "/agent/organization", label: "회사 설정" },
-];
-
-export const AGENT_COMPANY_MODULE_TABS: NavDefinition[] = [
   { href: "/agent/company", label: "거래처 목록" },
-  { href: "/agent/company/requests", label: "요청 수신함" },
   { href: "/agent/company/employees", label: "직원 현황" },
   { href: "/agent/company/salary", label: "급여 현황" },
+  { href: "/agent/company/financial-report", label: "재무리포트 현황" },
+  { href: "/agent/organization", label: "설정" },
 ];
 
 export const AGENT_ORGANIZATION_MANAGE_TABS: NavDefinition[] = [
-  { href: "/agent/organization/profile", label: "내 정보" },
   { href: "/agent/organization/info", label: "회사 정보" },
   { href: "/agent/organization/users", label: "회사 사용자" },
+  { href: "/agent/organization/profile", label: "내 정보" },
 ];
 
 export const AGENT_COMPANY_MANAGE_TABS: NavDefinition[] = [

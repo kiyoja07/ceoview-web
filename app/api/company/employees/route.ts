@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import {
-  sanitizeEmployeeRequestPayload,
+  sanitizeEmployeePayload,
   sanitizeBusinessIncomeEmployeePayload,
   sanitizeOtherIncomeEmployeePayload,
   sanitizeOtherIncomeLaborEmployeePayload,
-  serializePendingRequestSummary,
-} from "@/app/lib/company-change-request";
+} from "@/app/lib/company-input";
 import { resolveCompanyAccessContext } from "@/app/lib/company-access";
 import { resolveUploadForCompanyView } from "@/app/lib/salary-upload-view";
 import type {
@@ -14,6 +13,7 @@ import type {
   EmployeeCreateBody,
   EmployeeIncomeFilter,
   BusinessIncomeEmployeeCreateBody,
+  EmployeeBankAccountBody,
   OtherIncomeEmployeeCreateBody,
   OtherIncomeLaborEmployeeCreateBody,
   EmployeeIncomeType,
@@ -40,20 +40,6 @@ function toId(value: string) {
   return value.toString();
 }
 
-const pendingRequestSelect = {
-  id: true,
-  scope: true,
-  action: true,
-  status: true,
-  targetEmployeeId: true,
-  requestedPayload: true,
-  currentSnapshot: true,
-  resolutionComment: true,
-  resolvedAt: true,
-  createdAt: true,
-  updatedAt: true,
-} as const;
-
 type DashboardEmployeeRow = {
   id: string;
   employeeCode: string | null;
@@ -74,7 +60,6 @@ type DashboardEmployeeRow = {
     accountNumber: string;
     accountHolder: string;
   } | null;
-  pendingRequest: ReturnType<typeof serializePendingRequestSummary> | null;
 };
 
 function isEmployeeIncomeType(value: string): value is EmployeeIncomeType {
@@ -289,31 +274,8 @@ async function getRecentPaidCounts(
 
 function buildSummary(
   rows: DashboardEmployeeRow[],
-  pendingRequests: Array<{
-    action: string;
-    requestedPayload: unknown;
-  }>,
   recentPaidCounts: RecentPaidCounts,
 ): CompanyEmployeeDashboardSummary {
-  const pendingRequestCountByType = new Map<EmployeeIncomeType, number>(
-    EMPLOYEE_INCOME_TYPE_OPTIONS.map((option) => [option.value, 0]),
-  );
-
-  for (const request of pendingRequests) {
-    const payload = request.requestedPayload as { incomeType?: string } | null;
-    const requestIncomeType = payload?.incomeType;
-    const incomeType: EmployeeIncomeType =
-      typeof requestIncomeType === "string" &&
-      isEmployeeIncomeType(requestIncomeType)
-        ? requestIncomeType
-        : "EARNED_INCOME";
-
-    pendingRequestCountByType.set(
-      incomeType,
-      (pendingRequestCountByType.get(incomeType) ?? 0) + 1,
-    );
-  }
-
   const summary: CompanyEmployeeDashboardSummary = {
     total: rows.length,
     recentPaidTotal: recentPaidCounts.total,
@@ -323,7 +285,6 @@ function buildSummary(
     inactive: 0,
     withContact: 0,
     withEmail: 0,
-    pendingRequests: pendingRequests.length,
     byIncomeType: EMPLOYEE_INCOME_TYPE_OPTIONS.map((option) => ({
       incomeType: option.value,
       label: option.label,
@@ -335,7 +296,6 @@ function buildSummary(
       inactive: 0,
       withContact: 0,
       withEmail: 0,
-      pendingRequests: pendingRequestCountByType.get(option.value) ?? 0,
     })),
   };
 
@@ -387,6 +347,177 @@ function buildSummary(
   return summary;
 }
 
+function getPrimaryBankAccount(body: {
+  bankAccounts?: EmployeeBankAccountBody[] | null;
+  bankName?: string | null;
+  accountNumber?: string | null;
+  accountHolder?: string | null;
+}) {
+  const bankAccount = body.bankAccounts?.find(
+    (item) => item.bankName || item.accountNumber || item.accountHolder,
+  );
+
+  if (bankAccount) return bankAccount;
+
+  if (body.bankName || body.accountNumber || body.accountHolder) {
+    return {
+      bankName: body.bankName ?? "",
+      accountNumber: body.accountNumber ?? "",
+      accountHolder: body.accountHolder ?? "",
+    };
+  }
+
+  return null;
+}
+
+async function createEmployeeByIncomeType(
+  companyId: string,
+  incomeType: EmployeeIncomeType,
+  payload: Record<string, unknown>,
+  name: string,
+) {
+  if (incomeType === "BUSINESS_INCOME") {
+    const body = payload as BusinessIncomeEmployeeCreateBody;
+    const primaryBankAccount = getPrimaryBankAccount(body);
+    return prisma.businessIncomeEmployee.create({
+      data: {
+        companyId,
+        employeeCode: body.employeeCode?.trim() || null,
+        name,
+        residentNumber: body.residentNumber?.trim() || null,
+        nationalityType: body.nationalityType?.trim() || null,
+        incomeCategory: body.incomeCategory?.trim() || null,
+        residenceType: body.residenceType?.trim() || null,
+        businessName: body.businessName?.trim() || null,
+        businessRegistrationNumber:
+          body.businessRegistrationNumber?.trim() || null,
+        businessAddress: body.businessAddress?.trim() || null,
+        address: body.address?.trim() || null,
+        addressDetail: body.addressDetail?.trim() || null,
+        zipcode: body.zipcode?.trim() || null,
+        department: body.department?.trim() || null,
+        positionTitle: body.positionTitle?.trim() || null,
+        email: body.email?.trim() || null,
+        phone: body.phone?.trim() || null,
+        hireDate: body.hireDate?.trim() || null,
+        resignDate: body.resignDate?.trim() || null,
+        bankName: primaryBankAccount?.bankName?.trim() || null,
+        accountNumber: primaryBankAccount?.accountNumber?.trim() || null,
+        accountHolder: primaryBankAccount?.accountHolder?.trim() || null,
+        publishStatus: "PUBLISHED",
+      },
+    });
+  }
+
+  if (incomeType === "OTHER_INCOME") {
+    const body = payload as OtherIncomeEmployeeCreateBody;
+    const primaryBankAccount = getPrimaryBankAccount(body);
+    return prisma.otherIncomeEmployee.create({
+      data: {
+        companyId,
+        employeeCode: body.employeeCode?.trim() || null,
+        name,
+        residentNumber: body.residentNumber?.trim() || null,
+        nationalityType: body.nationalityType?.trim() || null,
+        incomeCategory: body.incomeCategory?.trim() || null,
+        residenceType: body.residenceType?.trim() || null,
+        personType: body.personType?.trim() || null,
+        businessRegistrationNumber:
+          body.businessRegistrationNumber?.trim() || null,
+        businessAddress: body.businessAddress?.trim() || null,
+        zipcode: body.zipcode?.trim() || null,
+        address: body.address?.trim() || null,
+        addressDetail: body.addressDetail?.trim() || null,
+        department: body.department?.trim() || null,
+        positionTitle: body.positionTitle?.trim() || null,
+        email: body.email?.trim() || null,
+        phone: body.phone?.trim() || null,
+        hireDate: body.hireDate?.trim() || null,
+        resignDate: body.resignDate?.trim() || null,
+        bankName: primaryBankAccount?.bankName?.trim() || null,
+        accountNumber: primaryBankAccount?.accountNumber?.trim() || null,
+        accountHolder: primaryBankAccount?.accountHolder?.trim() || null,
+        publishStatus: "PUBLISHED",
+      },
+    });
+  }
+
+  if (incomeType === "OTHER_INCOME_LABOR") {
+    const body = payload as OtherIncomeLaborEmployeeCreateBody;
+    const primaryBankAccount = getPrimaryBankAccount(body);
+    return prisma.otherIncomeLaborEmployee.create({
+      data: {
+        companyId,
+        employeeCode: body.employeeCode?.trim() || null,
+        name,
+        residentNumber: body.residentNumber?.trim() || null,
+        nationalityType: body.nationalityType?.trim() || null,
+        residenceType: body.residenceType?.trim() || null,
+        zipcode: body.zipcode?.trim() || null,
+        department: body.department?.trim() || null,
+        positionTitle: body.positionTitle?.trim() || null,
+        email: body.email?.trim() || null,
+        phone: body.phone?.trim() || null,
+        hireDate: body.hireDate?.trim() || null,
+        resignDate: body.resignDate?.trim() || null,
+        address: body.address?.trim() || null,
+        addressDetail: body.addressDetail?.trim() || null,
+        bankName: primaryBankAccount?.bankName?.trim() || null,
+        accountNumber: primaryBankAccount?.accountNumber?.trim() || null,
+        accountHolder: primaryBankAccount?.accountHolder?.trim() || null,
+        publishStatus: "PUBLISHED",
+      },
+    });
+  }
+
+  const body = payload as EmployeeCreateBody;
+  return prisma.employee.create({
+    data: {
+      companyId,
+      employeeCode: body.employeeCode?.trim() || null,
+      name,
+      residentNumber: body.residentNumber?.trim() || null,
+      nationalityType: body.nationalityType?.trim() || null,
+      jobCategory: body.jobCategory?.trim() || null,
+      residenceType: body.residenceType?.trim() || null,
+      department: body.department?.trim() || null,
+      positionTitle: body.positionTitle?.trim() || null,
+      email: body.email?.trim() || null,
+      phone: body.phone?.trim() || null,
+      landlinePhone: body.landlinePhone?.trim() || null,
+      hireDate: body.hireDate?.trim() || null,
+      resignDate: body.resignDate?.trim() || null,
+      zipcode: body.zipcode?.trim() || null,
+      address: body.address?.trim() || null,
+      addressDetail: body.addressDetail?.trim() || null,
+      hasSpouse: body.hasSpouse?.trim() || null,
+      dependentUnder20: body.dependentUnder20?.trim() || null,
+      dependentOver60: body.dependentOver60?.trim() || null,
+      deductionSenior: body.deductionSenior?.trim() || null,
+      deductionDisabled: body.deductionDisabled?.trim() || null,
+      deductionWomen: body.deductionWomen?.trim() || null,
+      deductionChildren: body.deductionChildren?.trim() || null,
+      deductionBirthAdoption: body.deductionBirthAdoption?.trim() || null,
+      deductionSingleParent: body.deductionSingleParent?.trim() || null,
+      employmentInsurance: body.employmentInsurance?.trim() || null,
+      payGrade: body.payGrade?.trim() || null,
+      nationalPension: body.nationalPension?.trim() || null,
+      healthInsurance: body.healthInsurance?.trim() || null,
+      publishStatus: "PUBLISHED",
+      bankAccounts: {
+        create:
+          body.bankAccounts
+            ?.filter((ba) => ba.bankName?.trim() && ba.accountNumber?.trim())
+            .map((ba) => ({
+              bankName: ba.bankName.trim(),
+              accountNumber: ba.accountNumber.trim(),
+              accountHolder: ba.accountHolder?.trim() || name,
+            })) ?? [],
+      },
+    },
+  });
+}
+
 export async function GET(request: NextRequest) {
   try {
     const auth = await requireCompanyMember(request);
@@ -432,7 +563,6 @@ export async function GET(request: NextRequest) {
       businessIncomeEmployees,
       otherIncomeEmployees,
       laborEmployees,
-      pendingRequests,
       recentPaidCounts,
     ] = await Promise.all([
       prisma.employee.findMany({
@@ -497,41 +627,8 @@ export async function GET(request: NextRequest) {
           createdAt: true,
         },
       }),
-      prisma.companyChangeRequest.findMany({
-        where: {
-          companyId: auth.currentCompanyId,
-          scope: "EMPLOYEE",
-          status: "PENDING",
-        },
-        orderBy: { createdAt: "desc" },
-        select: pendingRequestSelect,
-      }),
       getRecentPaidCounts(request, auth.currentCompanyId),
     ]);
-
-    const pendingRequestByEmployeeId = new Map<
-      string,
-      ReturnType<typeof serializePendingRequestSummary>
-    >();
-
-    for (const request of pendingRequests) {
-      if (
-        request.action === "CREATE" ||
-        !request.targetEmployeeId ||
-        pendingRequestByEmployeeId.has(request.targetEmployeeId.toString())
-      ) {
-        continue;
-      }
-
-      pendingRequestByEmployeeId.set(
-        request.targetEmployeeId.toString(),
-        serializePendingRequestSummary(request),
-      );
-    }
-
-    const pendingCreateRequests = pendingRequests
-      .filter((request) => request.action === "CREATE")
-      .map((request) => serializePendingRequestSummary(request));
 
     const mergedRows: DashboardEmployeeRow[] = [
       ...employees.map<DashboardEmployeeRow>((emp) => {
@@ -559,8 +656,6 @@ export async function GET(request: NextRequest) {
                 accountHolder: ba.accountHolder,
               }
             : null,
-          pendingRequest:
-            pendingRequestByEmployeeId.get(emp.id.toString()) ?? null,
         };
       }),
       ...businessIncomeEmployees.map<DashboardEmployeeRow>((emp) => ({
@@ -579,7 +674,6 @@ export async function GET(request: NextRequest) {
         incomeTypeLabel: EMPLOYEE_INCOME_TYPE_LABELS.BUSINESS_INCOME,
         canViewDetail: true,
         bankAccount: null,
-        pendingRequest: null,
       })),
       ...otherIncomeEmployees.map<DashboardEmployeeRow>((emp) => ({
         id: toId(emp.id),
@@ -597,7 +691,6 @@ export async function GET(request: NextRequest) {
         incomeTypeLabel: EMPLOYEE_INCOME_TYPE_LABELS.OTHER_INCOME,
         canViewDetail: true,
         bankAccount: null,
-        pendingRequest: null,
       })),
       ...laborEmployees.map<DashboardEmployeeRow>((emp) => ({
         id: toId(emp.id),
@@ -615,7 +708,6 @@ export async function GET(request: NextRequest) {
         incomeTypeLabel: EMPLOYEE_INCOME_TYPE_LABELS.OTHER_INCOME_LABOR,
         canViewDetail: true,
         bankAccount: null,
-        pendingRequest: null,
       })),
     ].sort((left, right) => {
       if (left.createdAt !== right.createdAt) {
@@ -624,7 +716,7 @@ export async function GET(request: NextRequest) {
       return left.name.localeCompare(right.name, "ko");
     });
 
-    const summary = buildSummary(mergedRows, pendingRequests, recentPaidCounts);
+    const summary = buildSummary(mergedRows, recentPaidCounts);
 
     const filteredRows = mergedRows.filter((row) => {
       if (incomeTypeFilter !== "ALL" && row.incomeType !== incomeTypeFilter) {
@@ -645,7 +737,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       employees: employeesPage,
-      pendingCreateRequests,
       summary,
       total,
       page,
@@ -681,6 +772,13 @@ export async function POST(request: NextRequest) {
     const incomeType: EmployeeIncomeType =
       rawBody.incomeType ?? "EARNED_INCOME";
 
+    if (!isEmployeeIncomeType(incomeType)) {
+      return NextResponse.json(
+        { error: "유효하지 않은 소득자 유형입니다." },
+        { status: 400 },
+      );
+    }
+
     let sanitizedPayload: Record<string, unknown>;
     switch (incomeType) {
       case "BUSINESS_INCOME":
@@ -699,7 +797,7 @@ export async function POST(request: NextRequest) {
         );
         break;
       default:
-        sanitizedPayload = sanitizeEmployeeRequestPayload(
+        sanitizedPayload = sanitizeEmployeePayload(
           rawBody as unknown as EmployeeCreateBody,
         );
         break;
@@ -713,21 +811,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const createdRequest = await prisma.companyChangeRequest.create({
-      data: {
-        scope: "EMPLOYEE",
-        action: "CREATE",
-        companyId: auth.currentCompanyId,
-        requestedByCompanyUserId: auth.userId,
-        requestedPayload: { ...sanitizedPayload, incomeType },
-      },
-      select: pendingRequestSelect,
-    });
+    const created = await createEmployeeByIncomeType(
+      auth.currentCompanyId,
+      incomeType,
+      sanitizedPayload,
+      name,
+    );
 
     return NextResponse.json({
       success: true,
-      request: serializePendingRequestSummary(createdRequest),
-      message: "직원 등록 요청이 제출되었습니다.",
+      id: created.id.toString(),
+      name: created.name,
+      message: "직원이 등록되었습니다.",
     });
   } catch (error) {
     console.error("Employee POST error:", error);

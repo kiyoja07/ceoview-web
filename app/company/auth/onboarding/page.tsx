@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { PageLoading } from "@/app/_components/ui/PageState";
 import { formatBusinessNumber } from "@/app/lib/formatters";
 import type {
   CompanyAuthMeResponse,
@@ -47,6 +48,11 @@ export default function CompanyAuthOnboardingPage() {
         }
 
         const data = (await res.json()) as CompanyAuthMeResponse;
+        if (data.pendingJoinRequest) {
+          router.replace("/company/auth/pending");
+          return;
+        }
+
         if (data.profileComplete) {
           router.replace("/company/dashboard");
           return;
@@ -132,11 +138,7 @@ export default function CompanyAuthOnboardingPage() {
   };
 
   if (checking) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-app-bg">
-        <div className="text-sm text-gray-500">세션 확인 중...</div>
-      </div>
-    );
+    return <PageLoading message="세션 확인 중..." />;
   }
 
   return (

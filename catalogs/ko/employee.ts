@@ -1,9 +1,5 @@
 import type { LabeledOption } from "@/catalogs/types";
 import type {
-  CompanyChangeRequestAction,
-  PendingRequestSummary,
-} from "@/types/company/change-request";
-import type {
   CompanyEmployeeDashboardSummary,
   EmployeeIncomeType,
   EmployeeStatus,
@@ -69,19 +65,3 @@ export const EMPLOYEE_INCOME_TYPE_TONE_CLASSES: Record<
   OTHER_INCOME: "bg-violet-50 text-violet-700 ring-violet-200",
   OTHER_INCOME_LABOR: "bg-orange-50 text-orange-700 ring-orange-200",
 };
-
-export const EMPLOYEE_PENDING_REQUEST_ACTION_LABELS: Record<
-  CompanyChangeRequestAction,
-  string
-> = {
-  CREATE: "등록 요청 대기",
-  UPDATE: "수정 요청 대기",
-  DELETE: "삭제 요청 대기",
-};
-
-export function getEmployeePendingRequestLabel(
-  request: PendingRequestSummary | null,
-) {
-  if (!request) return null;
-  return EMPLOYEE_PENDING_REQUEST_ACTION_LABELS[request.action];
-}

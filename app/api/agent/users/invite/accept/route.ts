@@ -93,8 +93,8 @@ export async function POST(request: NextRequest) {
       const consume = await tx.agentUserInviteToken.updateMany({
         where: {
           id: invite.id,
-          usedAt: null,
           expiresAt: { gt: now },
+          OR: [{ usedAt: null }, { usedAt: { isSet: false } }],
         },
         data: {
           usedAt: now,

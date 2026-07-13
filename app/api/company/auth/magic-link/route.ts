@@ -75,8 +75,8 @@ async function consumeMagicLink(
   const markUsedResult = await prisma.companyMagicLinkToken.updateMany({
     where: {
       id: magicLink.id,
-      usedAt: null,
       expiresAt: { gt: now },
+      OR: [{ usedAt: null }, { usedAt: { isSet: false } }],
     },
     data: { usedAt: now },
   });
@@ -94,9 +94,23 @@ async function consumeMagicLink(
   const selectedCompanyAddress =
     accessContext?.company.address ?? magicLink.companyUser.company?.address ?? null;
 
-  const redirectPath = isCompanyProfileComplete(selectedCompanyAddress)
+  let redirectPath = isCompanyProfileComplete(selectedCompanyAddress)
     ? "/company/dashboard"
     : "/company/auth/onboarding";
+
+  if (!isCompanyProfileComplete(selectedCompanyAddress)) {
+    const pendingJoinRequest = await prisma.companyJoinRequest.findFirst({
+      where: {
+        companyUserId: magicLink.companyUserId,
+        status: "PENDING",
+      },
+      select: { id: true },
+    });
+    if (pendingJoinRequest) {
+      redirectPath = "/company/auth/pending";
+    }
+  }
+
   const response = NextResponse.redirect(new URL(redirectPath, request.url), {
     status: 303,
   });

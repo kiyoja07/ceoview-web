@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
+import { buildCompanyUserScope } from "@/app/lib/company-access";
 
 function toId(value: string) {
   return value.toString();
@@ -79,9 +80,7 @@ export async function GET(
     }
 
     const users = await prisma.companyUser.findMany({
-      where: {
-        companyId,
-      },
+      where: buildCompanyUserScope(companyId),
       orderBy: [{ isMaster: "desc" }, { createdAt: "asc" }],
       select: {
         id: true,

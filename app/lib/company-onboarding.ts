@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto";
+
 export const COMPANY_ONBOARDING_PENDING_MARKER = "__ONBOARDING_PENDING__";
 
 export function isCompanyProfileComplete(companyAddress: string | null) {
@@ -9,4 +11,8 @@ export function createPlaceholderBusinessNumber() {
     .toString()
     .padStart(9, "0");
   return `9${random9}`;
+}
+
+export function createInternalPublicSlug(prefix = "company") {
+  return `${prefix}-${randomUUID()}`;
 }

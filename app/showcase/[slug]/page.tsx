@@ -55,7 +55,6 @@ export default async function ShowcasePage({
   const agentCompanies = buildAgentCompanies(scenario.agent.companies);
   const salaryStats = buildSalaryStats(scenario);
   const salarySummary = buildSalarySummary(salaryStats);
-  const firstRequest = scenario.company.pendingRequests[0] ?? null;
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-950">
@@ -104,7 +103,7 @@ export default async function ShowcasePage({
 
         <AgentSection scenario={scenario} agentCompanies={agentCompanies} />
         <SalaryUploadSection scenario={scenario} />
-        <CompanySection scenario={scenario} firstRequest={firstRequest} />
+        <CompanySection scenario={scenario} />
         <SalarySection
           scenario={scenario}
           salaryStats={salaryStats}

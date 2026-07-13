@@ -97,7 +97,7 @@ const SHOWCASE_SCENARIOS: ShowcaseScenario[] = [
           badgeTone: "amber",
           uploadedTypeCount: 3,
           publishedTypeCount: 2,
-          note: "사업소득 업로드 검수 대기",
+          note: "사업소득 업로드 확인 중",
         },
         {
           id: "showcase-company-3",
@@ -135,7 +135,7 @@ const SHOWCASE_SCENARIOS: ShowcaseScenario[] = [
       representativeName: "김지훈",
       agentOrganizationName: "한국세무회계",
       heroSummary:
-        "회사 담당자는 대시보드에서 직원 수, 급여 상태, 요청 현황을 바로 확인하고 다음 작업으로 이동합니다.",
+        "회사 담당자는 대시보드에서 직원 수와 급여 상태를 바로 확인하고 다음 작업으로 이동합니다.",
       dashboardMetrics: [
         {
           label: "재직 직원",
@@ -148,12 +148,6 @@ const SHOWCASE_SCENARIOS: ShowcaseScenario[] = [
           value: "₩ 148,300,000",
           description: "2026년 2월 기준",
           tone: "blue",
-        },
-        {
-          label: "처리 중 요청",
-          value: "1건",
-          description: "직원 정보 변경 요청",
-          tone: "amber",
         },
         {
           label: "명세서 열람률",
@@ -198,26 +192,11 @@ const SHOWCASE_SCENARIOS: ShowcaseScenario[] = [
           label: "실제 화면으로 이동",
         },
         {
-          title: "발행 상태 검토",
-          description:
-            "이번 달 공개 여부와 요청 상태를 읽기 전용으로 확인합니다.",
-          href: "/company/requests",
+          title: "명세서 열람",
+          description: "직원에게 공개된 급여명세서 화면을 확인합니다.",
+          href: "/employee/payslips",
           label: "데모 보기",
           disabled: true,
-        },
-      ],
-      pendingRequests: [
-        {
-          title: "직원 연락처 변경 요청",
-          statusLabel: "접수중",
-          statusTone: "amber",
-          submittedAt: "2026-03-02",
-        },
-        {
-          title: "세무대리인 변경 요청",
-          statusLabel: "승인",
-          statusTone: "emerald",
-          submittedAt: "2026-02-18",
         },
       ],
       salaryMetrics: [

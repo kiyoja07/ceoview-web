@@ -1,5 +1,3 @@
-import type { PendingRequestSummary } from "@/types/company/change-request";
-
 export type CompanyUserItem = {
   id: string;
   email: string;
@@ -62,7 +60,6 @@ export type CompanyInfoResponse = {
       agentOrganizationId: string;
     } | null;
   };
-  pendingRequest: PendingRequestSummary | null;
 };
 
 export type CompanyInfoUpdateBody = {
@@ -91,5 +88,29 @@ export type CompanyInviteHistoryItem = {
 
 export type CompanyInviteHistoryResponse = {
   invites: CompanyInviteHistoryItem[];
+  total: number;
+};
+
+export type CompanyJoinRequestItem = {
+  id: string;
+  businessNumber: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  requestedAt: string;
+  resolvedAt: string | null;
+  company: {
+    id: string;
+    businessNumber: string;
+    businessName: string | null;
+  };
+  companyUser: {
+    id: string;
+    email: string;
+    name: string;
+    phone: string | null;
+  };
+};
+
+export type CompanyJoinRequestsResponse = {
+  requests: CompanyJoinRequestItem[];
   total: number;
 };

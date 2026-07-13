@@ -94,6 +94,7 @@ export async function resolveFinancialReportForCompanyView(
   companyId: string,
 ): Promise<FinancialReportViewSelection> {
   const agentUserId = getAgentUserIdFromRequest(request);
+  const requestedReportId = new URL(request.url).searchParams.get("reportId");
 
   if (!agentUserId) {
     return getPublishedSelection(companyId, false);
@@ -138,7 +139,14 @@ export async function resolveFinancialReportForCompanyView(
     select: { id: true, uploadedAt: true, fiscalYear: true, memo: true },
   });
 
-  for (const report of latestReports) {
+  // reportId가 지정된 경우, 이 조직/회사 소속 리포트 중에서만 해당 건으로 좁힌다.
+  // (org+company로 이미 스코프된 목록이라 다른 조직 리포트가 섞일 수 없음)
+  const requestedReport = requestedReportId
+    ? latestReports.find((r) => r.id === requestedReportId)
+    : undefined;
+  const reportsToCheck = requestedReport ? [requestedReport] : latestReports;
+
+  for (const report of reportsToCheck) {
     const isPublished = pointer?.reportId === report.id;
 
     if (isPublished) {

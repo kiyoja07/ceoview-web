@@ -1,4 +1,3 @@
-import type { PendingRequestSummary } from "@/types/company/change-request";
 import type {
   CompanyEmployeeDashboardSummary,
   EmployeeIncomeType,
@@ -24,12 +23,10 @@ export type DashboardEmployeeRow = {
     accountNumber: string;
     accountHolder: string;
   } | null;
-  pendingRequest: PendingRequestSummary | null;
 };
 
 export type EmployeeListResponse = {
   employees: DashboardEmployeeRow[];
-  pendingCreateRequests: PendingRequestSummary[];
   summary: CompanyEmployeeDashboardSummary;
   total: number;
   page: number;

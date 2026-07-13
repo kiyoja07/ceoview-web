@@ -13,8 +13,7 @@ import { INCOME_META } from "../constants";
 import { BulkPayslipDownload } from "../components/BulkPayslipDownload";
 import { PayslipModal } from "../components/PayslipModal";
 import { SummaryCardsRow } from "../components/SummaryCardsRow";
-import { ErrorPanel } from "../components/common/ErrorPanel";
-import { LoadingPanel } from "../components/common/LoadingPanel";
+import { ErrorPanel, LoadingPanel } from "@/app/_components/ui/Panel";
 import {
   IconBuilding,
   IconChevronLeft,

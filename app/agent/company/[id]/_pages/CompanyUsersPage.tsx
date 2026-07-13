@@ -5,10 +5,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   formatBusinessNumber,
   formatDateDisplay,
+  formatPhoneDisplay,
 } from "@/app/lib/formatters";
 import type { ApiErrorResponse } from "@/types/agent/auth";
 import type {
   AgentCompanyUsersResponse,
+  CompanyJoinRequestItem,
+  CompanyJoinRequestsResponse,
   CompanyUserInviteHistoryItem,
   CompanyUserInviteHistoryResponse,
 } from "@/types/agent/company";
@@ -30,6 +33,15 @@ export default function AgentCompanyUsersPage() {
     CompanyUserInviteHistoryItem[]
   >([]);
   const [inviteHistoryLoading, setInviteHistoryLoading] = useState(false);
+  const [joinRequests, setJoinRequests] = useState<CompanyJoinRequestItem[]>(
+    [],
+  );
+  const [joinRequestsLoading, setJoinRequestsLoading] = useState(false);
+  const [joinActionId, setJoinActionId] = useState<string | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!companyId) return;
@@ -93,6 +105,31 @@ export default function AgentCompanyUsersPage() {
     }
   }, []);
 
+  const fetchJoinRequests = useCallback(async (cid: string) => {
+    setJoinRequestsLoading(true);
+    try {
+      const res = await fetch(`/api/agent/company/${cid}/join-requests`, {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const body = (await res.json()) as CompanyJoinRequestsResponse;
+        setJoinRequests(body.requests);
+      }
+    } catch {
+      // silent
+    } finally {
+      setJoinRequestsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!companyId) return;
+    const timer = window.setTimeout(() => {
+      void fetchJoinRequests(companyId);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [companyId, fetchJoinRequests, refreshKey]);
+
   const handleInvited = useCallback(() => {
     setRefreshKey((k) => k + 1);
     // 초대 이력도 갱신
@@ -107,6 +144,51 @@ export default function AgentCompanyUsersPage() {
     }
     setShowInviteHistory((v) => !v);
   }, [showInviteHistory, companyId, fetchInviteHistory]);
+
+  const handleJoinRequestAction = useCallback(
+    async (requestId: string, action: "approve" | "reject") => {
+      if (!companyId) return;
+
+      setJoinActionId(requestId);
+      setMessage(null);
+      try {
+        const res = await fetch(
+          `/api/agent/company/${companyId}/join-requests/${requestId}/${action}`,
+          { method: "POST" },
+        );
+        const body = (await res.json()) as { error?: string };
+        if (!res.ok) {
+          setMessage({
+            type: "error",
+            text:
+              body.error ||
+              (action === "approve"
+                ? "가입 요청 승인에 실패했습니다."
+                : "가입 요청 거절에 실패했습니다."),
+          });
+          return;
+        }
+
+        setMessage({
+          type: "success",
+          text:
+            action === "approve"
+              ? "가입 요청을 승인했습니다."
+              : "가입 요청을 거절했습니다.",
+        });
+        setRefreshKey((k) => k + 1);
+        void fetchJoinRequests(companyId);
+      } catch {
+        setMessage({
+          type: "error",
+          text: "가입 요청 처리 중 오류가 발생했습니다.",
+        });
+      } finally {
+        setJoinActionId(null);
+      }
+    },
+    [companyId, fetchJoinRequests],
+  );
 
   const companyLabel = useMemo(() => {
     if (!data) return "";
@@ -141,6 +223,18 @@ export default function AgentCompanyUsersPage() {
             </button>
           )}
         </div>
+
+        {message && (
+          <div
+            className={`mb-6 rounded-xl px-4 py-3 text-sm ${
+              message.type === "error"
+                ? "border border-red-200 bg-red-50 text-red-700"
+                : "border border-emerald-200 bg-emerald-50 text-emerald-700"
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
 
         {loading ? (
           <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
@@ -227,7 +321,7 @@ export default function AgentCompanyUsersPage() {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-gray-600">
-                          {user.phone || "-"}
+                          {user.phone ? formatPhoneDisplay(user.phone) : "-"}
                         </td>
                         <td className="px-4 py-3 text-gray-600">
                             {formatDateDisplay(user.createdAt)}
@@ -238,6 +332,101 @@ export default function AgentCompanyUsersPage() {
                 </table>
               </div>
             )}
+
+            <section className="mt-8">
+              <h2 className="mb-3 text-sm font-semibold text-gray-900">
+                사업장 가입 요청
+              </h2>
+              {joinRequestsLoading ? (
+                <div className="rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-950/5">
+                  <p className="text-sm text-gray-500">
+                    가입 요청을 불러오는 중...
+                  </p>
+                </div>
+              ) : joinRequests.length === 0 ? (
+                <div className="rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-gray-950/5">
+                  <p className="text-sm text-gray-500">
+                    대기 중인 가입 요청이 없습니다.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-950/5">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-500">
+                          요청자
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-500">
+                          사업자번호
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-500">
+                          요청일
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold uppercase text-gray-500">
+                          처리
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {joinRequests.map((joinRequest) => {
+                        const busy = joinActionId === joinRequest.id;
+                        return (
+                          <tr key={joinRequest.id}>
+                            <td className="px-4 py-3">
+                              <p className="font-medium text-gray-900">
+                                {joinRequest.companyUser.name}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {joinRequest.companyUser.email}
+                              </p>
+                            </td>
+                            <td className="px-4 py-3 font-mono text-gray-700">
+                              {formatBusinessNumber(
+                                joinRequest.businessNumber,
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-gray-600">
+                              {formatDateDisplay(joinRequest.requestedAt)}
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <div className="inline-flex gap-2">
+                                <button
+                                  type="button"
+                                  disabled={busy}
+                                  onClick={() =>
+                                    void handleJoinRequestAction(
+                                      joinRequest.id,
+                                      "approve",
+                                    )
+                                  }
+                                  className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  승인
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={busy}
+                                  onClick={() =>
+                                    void handleJoinRequestAction(
+                                      joinRequest.id,
+                                      "reject",
+                                    )
+                                  }
+                                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  거절
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
           </>
         )}
 

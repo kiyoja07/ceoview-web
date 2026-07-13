@@ -34,13 +34,6 @@ export type ShowcaseAgentCompanyRow = {
   note: string;
 };
 
-export type ShowcaseRequestRow = {
-  title: string;
-  statusLabel: string;
-  statusTone: "emerald" | "amber" | "slate";
-  submittedAt: string;
-};
-
 export type ShowcaseSalaryTrendPoint = {
   label: string;
   grossAmount: number;
@@ -101,7 +94,6 @@ export type ShowcaseCompanySnapshot = {
   dashboardMetrics: ShowcaseMetric[];
   employeeMetrics: ShowcaseMetric[];
   quickActions: ShowcaseAction[];
-  pendingRequests: ShowcaseRequestRow[];
   salaryMetrics: ShowcaseMetric[];
   salaryTrend: ShowcaseSalaryTrendPoint[];
   salaryRows: ShowcaseSalaryRow[];

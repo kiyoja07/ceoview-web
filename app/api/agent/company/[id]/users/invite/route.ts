@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
 import { isValidEmail } from "@/app/lib/agent-magic-link";
+import { buildCompanyUserScope } from "@/app/lib/company-access";
 import {
   buildCompanyUserInviteUrl,
   createCompanyUserInviteToken,
@@ -144,7 +145,7 @@ export async function POST(
     if (contactType === "email") {
       const existingUser = await prisma.companyUser.findFirst({
         where: {
-          companyId,
+          ...buildCompanyUserScope(companyId),
           email: contact,
         },
         select: { id: true, isActive: true },
@@ -165,7 +166,7 @@ export async function POST(
     if (contactType === "phone") {
       const existingUser = await prisma.companyUser.findFirst({
         where: {
-          companyId,
+          ...buildCompanyUserScope(companyId),
           phone: contact,
         },
         select: { id: true, isActive: true },

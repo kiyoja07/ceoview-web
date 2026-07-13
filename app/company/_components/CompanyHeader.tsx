@@ -72,28 +72,29 @@ export function CompanyHeader() {
     return null;
   }
 
-  const companyId = profile?.company?.id;
-  const salaryHref = companyId
-    ? `/company/${companyId}/salary/dashboard`
-    : "/company/dashboard";
-  const financialReportHref = companyId
-    ? `/company/${companyId}/financial-report`
-    : "/company/dashboard";
-
-  const navItems = COMPANY_HEADER_NAV_ITEMS.map((item) => {
-    if (item.slug === "salary") return { ...item, href: salaryHref };
-    if (item.slug === "financial-report")
-      return { ...item, href: financialReportHref };
-    return item;
-  }).filter(
-    (item): item is typeof item & { href: string } =>
-      typeof item.href === "string",
+  const settingsItem = COMPANY_HEADER_NAV_ITEMS.find(
+    (item) => item.activePrefix === "/company/settings",
   );
+
+  const navItems = COMPANY_HEADER_NAV_ITEMS.filter(
+    (item) => item.activePrefix !== "/company/settings",
+  )
+    .map((item) => {
+      if (item.slug === "salary")
+        return { ...item, href: "/company/salary/dashboard" };
+      if (item.slug === "financial-report")
+        return { ...item, href: "/company/financial-report" };
+      return item;
+    })
+    .filter(
+      (item): item is typeof item & { href: string } =>
+        typeof item.href === "string",
+    );
 
   const companyLabel = profile?.company
     ? profile.company.businessName ||
       formatBusinessNumber(profile.company.businessNumber)
-    : "급여 관리 시스템";
+    : "경영 관리 시스템";
 
   return (
     <header className="sticky top-0 z-30 border-b border-emerald-900/40 bg-emerald-900 backdrop-blur">
@@ -131,18 +132,32 @@ export function CompanyHeader() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <div className="hidden gap-4 flex-row rounded-lg border border-emerald-700/40 bg-white/10 px-3 py-1.5 text-right md:flex">
-            <p className="text-xs text-emerald-100">{profile?.email || ""}</p>
-            <p className="text-xs font-medium text-white">
+          <div className="hidden items-center gap-3 md:flex">
+            <span className="text-xs font-medium text-white">
               {profile?.name || "사용자"}
-            </p>
+            </span>
+            <span className="text-xs font-medium text-white">
+              {profile?.email || ""}
+            </span>
+            {settingsItem?.href && (
+              <Link
+                href={settingsItem.href}
+                className={`shrink-0 rounded-lg border border-emerald-700/40 px-3 py-1.5 text-sm font-medium transition ${
+                  isActivePath(pathname, settingsItem.href)
+                    ? "bg-white/20 text-white"
+                    : "text-emerald-100 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                {settingsItem.label}
+              </Link>
+            )}
+            <Link
+              href="/company/auth/logout"
+              className="shrink-0 rounded-lg border border-emerald-700/40 px-3 py-1.5 text-sm font-medium text-emerald-100 transition hover:bg-white/10 hover:text-white"
+            >
+              {COMMON_ACTION_LABELS.logout}
+            </Link>
           </div>
-          <Link
-            href="/company/auth/logout"
-            className="hidden shrink-0 rounded-lg border border-emerald-700/40 px-3 py-1.5 text-sm font-medium text-emerald-100 transition hover:bg-white/10 hover:text-white md:inline-flex"
-          >
-            {COMMON_ACTION_LABELS.logout}
-          </Link>
 
           {/* Mobile menu button */}
           <button
@@ -219,12 +234,23 @@ export function CompanyHeader() {
                 {profile?.email || ""}
               </p>
             </div>
-            <Link
-              href="/company/auth/logout"
-              className="shrink-0 rounded-lg border border-emerald-700/40 px-3 py-1.5 text-sm font-medium text-emerald-100 transition hover:bg-white/10 hover:text-white"
-            >
-              로그아웃
-            </Link>
+            <div className="flex shrink-0 items-center gap-2">
+              {settingsItem?.href && (
+                <Link
+                  href={settingsItem.href}
+                  onClick={closeMenu}
+                  className="rounded-lg border border-emerald-700/40 px-3 py-1.5 text-sm font-medium text-emerald-100 transition hover:bg-white/10 hover:text-white"
+                >
+                  {settingsItem.label}
+                </Link>
+              )}
+              <Link
+                href="/company/auth/logout"
+                className="rounded-lg border border-emerald-700/40 px-3 py-1.5 text-sm font-medium text-emerald-100 transition hover:bg-white/10 hover:text-white"
+              >
+                로그아웃
+              </Link>
+            </div>
           </div>
         </nav>
       )}

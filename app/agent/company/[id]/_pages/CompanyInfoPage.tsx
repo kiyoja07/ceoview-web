@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import type { BusinessType } from "@/types/agent/company";
 import BizStatusResult from "@/app/agent/_components/business-form/BizStatusResult";
 import type { BizStatusData } from "@/app/agent/_components/business-form/shared";
@@ -10,7 +10,6 @@ import DateInput from "@/app/_components/DateInput";
 import AddressInput, {
   type AddressValue,
 } from "@/app/_components/AddressInput";
-import type { CompanyChangeRequestItem } from "@/types/company/change-request";
 
 type MessageState = { type: "success" | "error"; text: string } | null;
 
@@ -34,9 +33,7 @@ const readOnlyInputBase =
 export default function AgentCompanyInfoPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
-  const searchParams = useSearchParams();
   const companyId = params?.id;
-  const requestId = searchParams.get("requestId");
 
   const [checking, setChecking] = useState(true);
   const [businessNumber, setBusinessNumber] = useState("");
@@ -52,8 +49,6 @@ export default function AgentCompanyInfoPage() {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<MessageState>(null);
-  const [requestItem, setRequestItem] =
-    useState<CompanyChangeRequestItem | null>(null);
 
   const [bizValidating, setBizValidating] = useState(false);
   const [bizStatus, setBizStatus] = useState<BizStatusData | null>(null);
@@ -64,23 +59,16 @@ export default function AgentCompanyInfoPage() {
 
     const loadCompany = async () => {
       try {
-        const [companyRes, requestRes] = await Promise.all([
-          fetch(`/api/agent/company/${companyId}/info`, {
-            cache: "no-store",
-          }),
-          requestId
-            ? fetch(`/api/agent/company/requests/${requestId}`, {
-                cache: "no-store",
-              })
-            : Promise.resolve(null),
-        ]);
+        const companyRes = await fetch(`/api/agent/company/${companyId}/info`, {
+          cache: "no-store",
+        });
 
-        if (companyRes.status === 401 || requestRes?.status === 401) {
+        if (companyRes.status === 401) {
           router.replace("/agent/auth/login");
           return;
         }
 
-        if (companyRes.status === 403 || requestRes?.status === 403) {
+        if (companyRes.status === 403) {
           router.replace("/agent/auth/organization");
           return;
         }
@@ -109,32 +97,6 @@ export default function AgentCompanyInfoPage() {
           addressDetail: data.addressDetail || "",
         });
 
-        if (requestRes?.ok) {
-          const requestData = (await requestRes.json()) as {
-            item: CompanyChangeRequestItem;
-          };
-          setRequestItem(requestData.item);
-          if (requestData.item.scope === "COMPANY_INFO") {
-            const payload = requestData.item.requestedPayload as {
-              businessName?: string | null;
-              representativeName?: string | null;
-              openingDate?: string | null;
-              zipcode?: string | null;
-              address?: string | null;
-              addressDetail?: string | null;
-            };
-            setBusinessName(payload.businessName || "");
-            setRepresentativeName(payload.representativeName || "");
-            setOpeningDate(payload.openingDate || "");
-            setAddressValue({
-              zipcode: payload.zipcode || "",
-              address: payload.address || "",
-              addressDetail: payload.addressDetail || "",
-            });
-          }
-        } else {
-          setRequestItem(null);
-        }
       } catch {
         setMessage({
           type: "error",
@@ -146,7 +108,7 @@ export default function AgentCompanyInfoPage() {
     };
 
     void loadCompany();
-  }, [companyId, requestId, router]);
+  }, [companyId, router]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -166,7 +128,6 @@ export default function AgentCompanyInfoPage() {
           zipcode: addressValue.zipcode || null,
           address: addressValue.address || null,
           addressDetail: addressValue.addressDetail || null,
-          requestId,
         }),
       });
 
@@ -188,13 +149,8 @@ export default function AgentCompanyInfoPage() {
 
       setMessage({
         type: "success",
-        text: requestId
-          ? "요청이 승인되어 거래처 정보가 반영되었습니다."
-          : "거래처 정보가 수정되었습니다.",
+        text: "거래처 정보가 수정되었습니다.",
       });
-      if (requestId) {
-        router.replace("/agent/company/requests");
-      }
     } catch {
       setMessage({
         type: "error",
@@ -223,46 +179,6 @@ export default function AgentCompanyInfoPage() {
           <p className="text-sm text-gray-500">
             거래처의 기본 정보를 조회하고 수정할 수 있습니다.
           </p>
-          {requestItem && (
-            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-              회사 정보 변경 요청이 접수 되었습니다.
-              <div className="mt-1 text-xs text-amber-700">
-                요청자 {requestItem.requestedByCompanyUser.name} · 접수일{" "}
-                {new Date(requestItem.createdAt).toLocaleString()}
-              </div>
-              <div className="mt-3 flex gap-2">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const reason = window.prompt("보류 사유를 입력해주세요.");
-                    if (!reason?.trim()) return;
-                    const res = await fetch(
-                      `/api/agent/company/requests/${requestItem.id}/reject`,
-                      {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          resolutionComment: reason.trim(),
-                        }),
-                      },
-                    );
-                    if (res.ok) {
-                      router.replace("/agent/company/requests");
-                    } else {
-                      const data = await res.json().catch(() => null);
-                      setMessage({
-                        type: "error",
-                        text: data?.error || "요청 보류에 실패했습니다.",
-                      });
-                    }
-                  }}
-                  className="rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50"
-                >
-                  요청 보류
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
         <form

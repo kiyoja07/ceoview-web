@@ -6,17 +6,14 @@ import { useEffect, useState } from "react";
 import { COMMON_ACTION_LABELS } from "@/catalogs/ko/common";
 import { AGENT_HEADER_NAV_ITEMS } from "@/catalogs/ko/navigation";
 import type { HeaderProfile } from "@/types/agent/header";
+import { formatBusinessNumber } from "./business-form/shared";
 
 function isActivePath(pathname: string, href: string) {
+  if (href === "/agent/company") {
+    return pathname === href || pathname.startsWith("/agent/company/new");
+  }
   if (pathname === href) return true;
   return pathname.startsWith(`${href}/`);
-}
-
-function formatOrganizationNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 10);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 5) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
 }
 
 export function AgentHeader() {
@@ -57,11 +54,15 @@ export function AgentHeader() {
   const organizationLabel = profile?.organization?.organizationName
     ? profile.organization.organizationName
     : profile?.organization?.organizationNumber
-      ? formatOrganizationNumber(profile.organization.organizationNumber)
+      ? formatBusinessNumber(profile.organization.organizationNumber)
       : "소속 미등록";
+  const settingsItem = AGENT_HEADER_NAV_ITEMS.find(
+    (item) => item.href === "/agent/organization",
+  );
+
   const navItems = AGENT_HEADER_NAV_ITEMS.filter(
     (item): item is typeof item & { href: string } =>
-      typeof item.href === "string",
+      typeof item.href === "string" && item.href !== "/agent/organization",
   );
 
   return (
@@ -97,14 +98,26 @@ export function AgentHeader() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <div className="hidden gap-4 flex-row rounded-lg border border-gray-500/40 bg-white/10 px-3 py-1.5 text-right md:flex">
-            <p className="text-xs text-gray-300">
-              {profile?.email || organizationLabel}
-            </p>
-            <p className="text-xs font-medium text-white">
+          <div className="hidden gap-3 flex-row rounded-lg  px-3 py-1.5 text-right md:flex">
+            <span className="text-xs font-medium text-white">
               {profile?.name || "사용자"}
-            </p>
+            </span>
+            <span className="text-xs text-gray-300">
+              {profile?.email || organizationLabel}
+            </span>
           </div>
+          {settingsItem?.href && (
+            <Link
+              href={settingsItem.href}
+              className={`shrink-0 rounded-lg border border-gray-500/40 px-3 py-1.5 text-sm font-medium transition ${
+                isActivePath(pathname, settingsItem.href)
+                  ? "bg-white/15 text-white"
+                  : "text-gray-300 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              {settingsItem.label}
+            </Link>
+          )}
           <Link
             href="/agent/auth/logout"
             className="shrink-0 rounded-lg border border-gray-500/40 px-3 py-1.5 text-sm font-medium text-gray-200 transition hover:bg-white/10"

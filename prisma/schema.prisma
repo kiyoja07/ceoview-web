@@ -55,29 +55,11 @@ enum AgentBillingPlan {
   ENTERPRISE
 }
 
-enum CompanyChangeRequestScope {
-  EMPLOYEE
-  COMPANY_INFO
-}
-
-enum CompanyChangeRequestAction {
-  CREATE
-  UPDATE
-  DELETE
-}
-
-enum CompanyChangeRequestStatus {
+enum CompanyJoinRequestStatus {
   PENDING
   APPROVED
   REJECTED
-  CANCELLED
 }
-
-/**
- * ---------------------------
- * 사용자 및 회사 관련 테이블
- * ---------------------------
- */
 
 //  세무사무소 등 에이전트 회사 : 서비스 제공자
 model AgentOrganization {
@@ -87,8 +69,8 @@ model AgentOrganization {
 
   businessType BusinessType @map("business_type") // 개인/법인 구분
 
-  organizationName   String?   @map("organization_name")
-  representativeName String?   @map("representative_name")
+  organizationName   String?   @map("organization_name") // 에이전트 회사명
+  representativeName String?   @map("representative_name") // 대표자명
   phone              String?   @map("phone")
   openingDate        DateTime? @map("opening_date")
   zipcode            String?   @map("zipcode")
@@ -99,8 +81,6 @@ model AgentOrganization {
   billing              AgentOrganizationBilling?
   inviteTokens         AgentUserInviteToken[]
   companyLinks         AgentOrganizationCompany[]
-  transferRequestsFrom AgentOrganizationCompanyTransferRequest[] @relation("TransferFromOrganization")
-  transferRequestsTo   AgentOrganizationCompanyTransferRequest[] @relation("TransferToOrganization")
   accountCatalogs      AccountCatalog[]
   financialReports     FinancialReport[]
 
@@ -118,16 +98,16 @@ model Company {
 
   businessType BusinessType @map("business_type") // 개인/법인 구분
 
-  businessName       String?   @map("business_name")
-  representativeName String?   @map("representative_name")
+  businessName       String?   @map("business_name") // 사업자명
+  representativeName String?   @map("representative_name") // 대표자명
   openingDate        DateTime? @map("opening_date")
   zipcode            String?   @map("zipcode")
   address            String?   @map("address")
   addressDetail      String?   @map("address_detail")
 
-  isDemo           Boolean @default(false) @map("is_demo")
-  isPublicShowcase Boolean @default(false) @map("is_public_showcase")
-  publicSlug       String? @unique @map("public_slug")
+  isDemo           Boolean @default(false) @map("is_demo") // 데모 계정 여부
+  isPublicShowcase Boolean @default(false) @map("is_public_showcase") // 공개 쇼케이스 여부
+  publicSlug       String? @unique @map("public_slug") // 공개 URL 슬러그
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -138,27 +118,26 @@ model Company {
   companyUsers                CompanyUser[]
   companyMemberships          CompanyUserCompany[]
   companyUserInviteHistories  CompanyUserInviteHistory[]
+  joinRequests                CompanyJoinRequest[]
   employees                   Employee[]
   businessIncomeEmployees     BusinessIncomeEmployee[]
   otherIncomeEmployees        OtherIncomeEmployee[]
   otherIncomeLaborEmployees   OtherIncomeLaborEmployee[]
   organizationLink            AgentOrganizationCompany?
-  transferRequest             AgentOrganizationCompanyTransferRequest?
-  changeRequests              CompanyChangeRequest[]
-  agentSignupRequestHistories CompanyAgentSignupRequestHistory[]
   financialReports            FinancialReport[]
   activeFinancialReport       CompanyActiveFinancialReport?
 
   @@map("company")
 }
 
+// 에이전트 회사와 고객 회사의 연결 테이블 : many-to-many 관계
 model AgentOrganizationCompany {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentOrganizationId String @db.ObjectId            @map("agent_organization_id")
+  agentOrganizationId String            @map("agent_organization_id") @db.ObjectId
   agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
 
-  companyId String @db.ObjectId  @unique @map("company_id")
+  companyId String  @unique @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -168,35 +147,11 @@ model AgentOrganizationCompany {
   @@map("agent_organization_company")
 }
 
-model AgentOrganizationCompanyTransferRequest {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  companyId String @db.ObjectId  @unique @map("company_id")
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  fromAgentOrganizationId String? @db.ObjectId            @map("from_agent_organization_id")
-  fromAgentOrganization   AgentOrganization? @relation("TransferFromOrganization", fields: [fromAgentOrganizationId], references: [id], onDelete: SetNull)
-
-  toAgentOrganizationId String @db.ObjectId            @map("to_agent_organization_id")
-  toAgentOrganization   AgentOrganization @relation("TransferToOrganization", fields: [toAgentOrganizationId], references: [id], onDelete: Cascade)
-
-  requestedByAgentUserId String @db.ObjectId    @map("requested_by_agent_user_id")
-  requestedByAgentUser   AgentUser @relation(fields: [requestedByAgentUserId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@index([toAgentOrganizationId])
-  @@index([fromAgentOrganizationId])
-  @@index([requestedByAgentUserId])
-  @@map("agent_organization_company_transfer_request")
-}
-
 // 에이전트 회사 소속 사용자
 model AgentUser {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentOrganizationId String? @db.ObjectId            @map("agent_organization_id")
+  agentOrganizationId String?            @map("agent_organization_id") @db.ObjectId
   agentOrganization   AgentOrganization? @relation(fields: [agentOrganizationId], references: [id])
 
   email          String        @unique
@@ -213,8 +168,6 @@ model AgentUser {
   phoneVerificationCodes AgentPhoneVerificationCode[]
   sentInviteTokens       AgentUserInviteToken[]                    @relation("InviterUserInviteTokens")
   sentCompanyUserInvites CompanyUserInviteHistory[]
-  transferRequests       AgentOrganizationCompanyTransferRequest[]
-  resolvedChangeRequests CompanyChangeRequest[]                    @relation("ResolvedByAgentUser")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -228,7 +181,7 @@ model AgentUser {
 model AgentMagicLinkToken {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentUserId String @db.ObjectId    @map("agent_user_id")
+  agentUserId String    @map("agent_user_id") @db.ObjectId
   agentUser   AgentUser @relation(fields: [agentUserId], references: [id], onDelete: Cascade)
 
   tokenHash String    @unique @map("token_hash")
@@ -246,10 +199,10 @@ model AgentMagicLinkToken {
 model AgentUserInviteToken {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentOrganizationId String @db.ObjectId            @map("agent_organization_id")
+  agentOrganizationId String            @map("agent_organization_id") @db.ObjectId
   agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
 
-  inviterUserId String @db.ObjectId    @map("inviter_user_id")
+  inviterUserId String    @map("inviter_user_id") @db.ObjectId
   inviterUser   AgentUser @relation("InviterUserInviteTokens", fields: [inviterUserId], references: [id], onDelete: Cascade)
 
   invitedEmail String @map("invited_email")
@@ -258,7 +211,7 @@ model AgentUserInviteToken {
   expiresAt DateTime  @map("expires_at")
   usedAt    DateTime? @map("used_at")
 
-  acceptedAgentUserId String? @db.ObjectId @map("accepted_agent_user_id")
+  acceptedAgentUserId String? @map("accepted_agent_user_id") @db.ObjectId
 
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -272,7 +225,7 @@ model AgentUserInviteToken {
 model CompanyUser {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId String @db.ObjectId  @map("company_id")
+  companyId String  @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id])
 
   email          String        @unique
@@ -290,7 +243,7 @@ model CompanyUser {
   magicLinkTokens        CompanyMagicLinkToken[]
   phoneVerificationCodes PhoneVerificationCode[]
   companyMemberships     CompanyUserCompany[]
-  changeRequests         CompanyChangeRequest[]  @relation("RequestedByCompanyUser")
+  joinRequests           CompanyJoinRequest[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -300,13 +253,15 @@ model CompanyUser {
   @@map("company_user")
 }
 
+// 고객 회사 사용자와 고객 회사의 연결 테이블 : many-to-many 관계
+// 회사 사용자가 여러 회사에 소속될 수 있는 경우를 대비한 연결 테이블
 model CompanyUserCompany {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyUserId String @db.ObjectId      @map("company_user_id")
+  companyUserId String      @map("company_user_id") @db.ObjectId
   companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
 
-  companyId String @db.ObjectId  @map("company_id")
+  companyId String  @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now()) @map("created_at")
@@ -317,11 +272,40 @@ model CompanyUserCompany {
   @@map("company_user_company")
 }
 
+// 초대 링크 없이 직접 가입한 회사 사용자의 기존 사업장 가입 요청
+model CompanyJoinRequest {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  companyId String  @map("company_id") @db.ObjectId
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  companyUserId String      @map("company_user_id") @db.ObjectId
+  companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
+
+  businessNumber String                   @map("business_number")
+  status         CompanyJoinRequestStatus @default(PENDING)
+
+  requestedAt DateTime  @default(now()) @map("requested_at")
+  resolvedAt  DateTime? @map("resolved_at")
+
+  // "agent" | "company"
+  resolvedByType String? @map("resolved_by_type")
+  resolvedById   String? @map("resolved_by_id") @db.ObjectId
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, companyUserId])
+  @@index([companyId, status, requestedAt])
+  @@index([companyUserId, status])
+  @@map("company_join_request")
+}
+
 // 고객 회사 사용자용 매직링크 토큰
 model CompanyMagicLinkToken {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyUserId String @db.ObjectId      @map("company_user_id")
+  companyUserId String      @map("company_user_id") @db.ObjectId
   companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
 
   tokenHash String    @unique @map("token_hash")
@@ -335,30 +319,11 @@ model CompanyMagicLinkToken {
   @@map("company_magic_link_token")
 }
 
-// 휴대폰 인증 코드
-model PhoneVerificationCode {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  companyUserId String @db.ObjectId      @map("company_user_id")
-  companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
-
-  phone      String
-  code       String
-  expiresAt  DateTime  @map("expires_at")
-  verifiedAt DateTime? @map("verified_at")
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@index([companyUserId, phone, expiresAt])
-  @@index([expiresAt])
-  @@map("phone_verification_code")
-}
-
 // 에이전트 사용자 휴대폰 인증 코드
 model AgentPhoneVerificationCode {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentUserId String @db.ObjectId    @map("agent_user_id")
+  agentUserId String    @map("agent_user_id") @db.ObjectId
   agentUser   AgentUser @relation(fields: [agentUserId], references: [id], onDelete: Cascade)
 
   phone      String
@@ -373,14 +338,33 @@ model AgentPhoneVerificationCode {
   @@map("agent_phone_verification_code")
 }
 
+//  휴대폰 인증 코드
+model PhoneVerificationCode {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  companyUserId String      @map("company_user_id") @db.ObjectId
+  companyUser   CompanyUser @relation(fields: [companyUserId], references: [id], onDelete: Cascade)
+
+  phone      String
+  code       String
+  expiresAt  DateTime  @map("expires_at")
+  verifiedAt DateTime? @map("verified_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([companyUserId, phone, expiresAt])
+  @@index([expiresAt])
+  @@map("phone_verification_code")
+}
+
 // 거래처 사용자 초대 이력
 model CompanyUserInviteHistory {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId String @db.ObjectId  @map("company_id")
+  companyId String  @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  inviterAgentUserId String @db.ObjectId    @map("inviter_agent_user_id")
+  inviterAgentUserId String    @map("inviter_agent_user_id") @db.ObjectId
   inviterAgentUser   AgentUser @relation(fields: [inviterAgentUserId], references: [id], onDelete: Cascade)
 
   contactType String @map("contact_type") // "email" | "phone"
@@ -396,29 +380,15 @@ model CompanyUserInviteHistory {
   @@map("company_user_invite_history")
 }
 
-// 고객사가 세무대리인에게 보낸 가입 요청 이력
-model CompanyAgentSignupRequestHistory {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  companyId String @db.ObjectId  @map("company_id")
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  contactType String @map("contact_type") // "email" | "phone"
-  contact     String
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@index([companyId, createdAt])
-  @@map("company_agent_signup_request_history")
-}
-
+// 고객사와 에이전트사의 연결 테이블 : many-to-many 관계
+// 에이전트사가 고객사에 대한 세무대리인 역할을 수행하는 경우를 나타내는 연결 테이블
 model AgentCompanyCustomer {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentUserId String @db.ObjectId    @map("agent_user_id")
+  agentUserId String    @map("agent_user_id") @db.ObjectId
   agentUser   AgentUser @relation(fields: [agentUserId], references: [id])
 
-  companyUserId String @db.ObjectId      @map("company_user_id")
+  companyUserId String      @map("company_user_id") @db.ObjectId
   companyUser   CompanyUser @relation(fields: [companyUserId], references: [id])
 
   status          CustomerLinkStatus @default(ACTIVE)
@@ -437,7 +407,7 @@ model AgentCompanyCustomer {
 model AgentOrganizationBilling {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentOrganizationId String @db.ObjectId            @unique @map("agent_organization_id")
+  agentOrganizationId String            @unique @map("agent_organization_id") @db.ObjectId
   agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id])
 
   plan AgentBillingPlan @default(STARTER) @map("plan")
@@ -465,7 +435,7 @@ model AgentOrganizationBilling {
 model Upload {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId String @db.ObjectId  @map("company_id")
+  companyId String  @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id])
 
   type UploadType @map("type")
@@ -495,12 +465,12 @@ model Upload {
 model CompanyActiveUpload {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId String @db.ObjectId  @map("company_id")
+  companyId String  @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id])
 
   type UploadType @map("type")
 
-  uploadId String @db.ObjectId @unique
+  uploadId String @unique @db.ObjectId
   upload   Upload @relation(fields: [uploadId], references: [id])
 
   updatedAt DateTime @updatedAt
@@ -525,7 +495,7 @@ model EarnedIncome {
   paymentYm Int      @map("지급년월")
   payDate   DateTime @map("지급일")
 
-  employeeId String? @db.ObjectId   @map("employee_id")
+  employeeId String?   @map("employee_id") @db.ObjectId
   employee   Employee? @relation(fields: [employeeId], references: [id])
 
   employeeCode String  @map("사원코드")
@@ -586,7 +556,7 @@ enum PayslipNotificationStatus {
 model PayslipNotification {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  earnedIncomeId String @db.ObjectId       @map("earned_income_id")
+  earnedIncomeId String       @map("earned_income_id") @db.ObjectId
   earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id], onDelete: Cascade)
 
   channel      PayslipChannel
@@ -602,7 +572,7 @@ model PayslipNotification {
 model PayslipAccessToken {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  earnedIncomeId String @db.ObjectId       @map("earned_income_id")
+  earnedIncomeId String       @map("earned_income_id") @db.ObjectId
   earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id], onDelete: Cascade)
 
   channel   PayslipChannel
@@ -621,7 +591,7 @@ model PayslipAccessToken {
 model EarnedIncomeItemDefinition {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId String @db.ObjectId  @map("company_id")
+  companyId String  @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id])
 
   code         String
@@ -643,10 +613,10 @@ model EarnedIncomeItemDefinition {
 model EarnedIncomeItemValue {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  earnedIncomeId String @db.ObjectId       @map("earned_income_id")
+  earnedIncomeId String       @map("earned_income_id") @db.ObjectId
   earnedIncome   EarnedIncome @relation(fields: [earnedIncomeId], references: [id])
 
-  itemDefinitionId String @db.ObjectId                     @map("item_definition_id")
+  itemDefinitionId String                     @map("item_definition_id") @db.ObjectId
   itemDefinition   EarnedIncomeItemDefinition @relation(fields: [itemDefinitionId], references: [id])
 
   amount Float
@@ -754,7 +724,7 @@ model DailyIncomeLabor {
   phone                String?   @map("전화번호")
   joinDate             DateTime? @map("입사일")
 
-  workDays      Int?     @map("근무일수")
+  workDays      Int?   @map("근무일수")
   normalHours   Float? @map("근무시간_정상")
   overtimeHours Float? @map("근무시간_연장")
 
@@ -786,7 +756,7 @@ model DailyIncomeLabor {
 model Employee {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId String @db.ObjectId  @map("company_id")
+  companyId String  @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   employeeCode    String? @map("employee_code")
@@ -845,7 +815,7 @@ model Employee {
 model EmployeeUser {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  employeeId String @db.ObjectId   @unique @map("employee_id")
+  employeeId String   @unique @map("employee_id") @db.ObjectId
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   email         String? @unique
@@ -869,7 +839,7 @@ model EmployeeUser {
 model EmployeeMagicLinkToken {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  employeeUserId String @db.ObjectId       @map("employee_user_id")
+  employeeUserId String       @map("employee_user_id") @db.ObjectId
   employeeUser   EmployeeUser @relation(fields: [employeeUserId], references: [id], onDelete: Cascade)
 
   tokenHash String    @unique @map("token_hash")
@@ -892,7 +862,7 @@ model EmployeeMagicLinkToken {
 model BusinessIncomeEmployee {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId String @db.ObjectId  @map("company_id")
+  companyId String  @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   employeeCode               String? @map("employee_code")
@@ -938,7 +908,7 @@ model BusinessIncomeEmployee {
 model OtherIncomeEmployee {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId String @db.ObjectId  @map("company_id")
+  companyId String  @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   employeeCode               String? @map("employee_code")
@@ -984,7 +954,7 @@ model OtherIncomeEmployee {
 model OtherIncomeLaborEmployee {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId String @db.ObjectId  @map("company_id")
+  companyId String  @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   employeeCode    String? @map("employee_code")
@@ -1000,18 +970,18 @@ model OtherIncomeLaborEmployee {
   hireDate        String? @map("hire_date")
   resignDate      String? @map("resign_date")
 
-  jobCategory   String?  @map("job_category")
-  payType       String?  @map("pay_type")
-  paymentMethod String?  @map("payment_method")
-  overtimeType  String?  @map("overtime_type")
-  normalPay     Float? @map("normal_pay")
-  overtimePay   Float? @map("overtime_pay")
-  address       String?  @map("address")
-  addressDetail String?  @map("address_detail")
-  bankName      String?  @map("bank_name")
-  accountNumber String?  @map("account_number")
-  accountHolder String?  @map("account_holder")
-  siteName      String?  @map("site_name")
+  jobCategory   String? @map("job_category")
+  payType       String? @map("pay_type")
+  paymentMethod String? @map("payment_method")
+  overtimeType  String? @map("overtime_type")
+  normalPay     Float?  @map("normal_pay")
+  overtimePay   Float?  @map("overtime_pay")
+  address       String? @map("address")
+  addressDetail String? @map("address_detail")
+  bankName      String? @map("bank_name")
+  accountNumber String? @map("account_number")
+  accountHolder String? @map("account_holder")
+  siteName      String? @map("site_name")
 
   publishStatus EmployeePublishStatus @default(SAVED) @map("publish_status")
 
@@ -1028,7 +998,7 @@ model OtherIncomeLaborEmployee {
 model EmployeeBankAccount {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  employeeId String @db.ObjectId   @map("employee_id")
+  employeeId String   @map("employee_id") @db.ObjectId
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   bankName      String @map("bank_name")
@@ -1042,40 +1012,6 @@ model EmployeeBankAccount {
   @@index([employeeId])
   @@index([employeeId, deletedAt])
   @@map("employee_bank_account")
-}
-
-model CompanyChangeRequest {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  scope  CompanyChangeRequestScope
-  action CompanyChangeRequestAction
-  status CompanyChangeRequestStatus @default(PENDING)
-
-  companyId String @db.ObjectId  @map("company_id")
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  requestedByCompanyUserId String @db.ObjectId      @map("requested_by_company_user_id")
-  requestedByCompanyUser   CompanyUser @relation("RequestedByCompanyUser", fields: [requestedByCompanyUserId], references: [id], onDelete: Cascade)
-
-  resolvedByAgentUserId String? @db.ObjectId    @map("resolved_by_agent_user_id")
-  resolvedByAgentUser   AgentUser? @relation("ResolvedByAgentUser", fields: [resolvedByAgentUserId], references: [id], onDelete: SetNull)
-
-  targetEmployeeId String? @db.ObjectId @map("target_employee_id")
-
-  requestedPayload Json  @map("requested_payload")
-  currentSnapshot  Json? @map("current_snapshot")
-
-  resolutionComment String?   @map("resolution_comment")
-  resolvedAt        DateTime? @map("resolved_at")
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@index([companyId, status, scope, createdAt])
-  @@index([requestedByCompanyUserId, status, createdAt])
-  @@index([resolvedByAgentUserId, status, createdAt])
-  @@index([targetEmployeeId, status, createdAt])
-  @@map("company_change_request")
 }
 
 /**
@@ -1093,13 +1029,13 @@ enum FinancialReportPublishStatus {
 model AccountCatalog {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  agentOrganizationId String            @db.ObjectId @map("agent_organization_id")
+  agentOrganizationId String            @map("agent_organization_id") @db.ObjectId
   agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
 
   name                  String // 라벨 (파일명 등)
   sourceFileName        String? @map("source_file_name")
   checksum              String? @map("checksum")
-  uploadedByAgentUserId String? @db.ObjectId @map("uploaded_by_agent_user_id")
+  uploadedByAgentUserId String? @map("uploaded_by_agent_user_id") @db.ObjectId
 
   entries AccountCatalogEntry[]
   reports FinancialReport[]
@@ -1114,7 +1050,7 @@ model AccountCatalog {
 model AccountCatalogEntry {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  catalogId String         @db.ObjectId @map("catalog_id")
+  catalogId String         @map("catalog_id") @db.ObjectId
   catalog   AccountCatalog @relation(fields: [catalogId], references: [id], onDelete: Cascade)
 
   code             String  @map("code") // 코드
@@ -1135,16 +1071,16 @@ model AccountCatalogEntry {
 model FinancialReport {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId String  @db.ObjectId @map("company_id")
+  companyId String  @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  agentOrganizationId String            @db.ObjectId @map("agent_organization_id")
+  agentOrganizationId String            @map("agent_organization_id") @db.ObjectId
   agentOrganization   AgentOrganization @relation(fields: [agentOrganizationId], references: [id], onDelete: Cascade)
 
-  accountCatalogId String?         @db.ObjectId @map("account_catalog_id")
+  accountCatalogId String?         @map("account_catalog_id") @db.ObjectId
   accountCatalog   AccountCatalog? @relation(fields: [accountCatalogId], references: [id], onDelete: SetNull)
 
-  uploadedByAgentUserId String? @db.ObjectId @map("uploaded_by_agent_user_id")
+  uploadedByAgentUserId String? @map("uploaded_by_agent_user_id") @db.ObjectId
 
   fiscalYear Int?    @map("fiscal_year")
   fileName   String? @map("file_name")
@@ -1152,10 +1088,10 @@ model FinancialReport {
   memo       String? @map("memo")
 
   // 파싱 시점에 원본 분개장 라인으로부터 집계한 요약(차트/대시보드용)
-  summary     Json?  @map("summary")
-  entryCount  Int    @default(0) @map("entry_count")
-  debitTotal  Float  @default(0) @map("debit_total")
-  creditTotal Float  @default(0) @map("credit_total")
+  summary     Json? @map("summary")
+  entryCount  Int   @default(0) @map("entry_count")
+  debitTotal  Float @default(0) @map("debit_total")
+  creditTotal Float @default(0) @map("credit_total")
 
   uploadedAt DateTime @default(now()) @map("uploaded_at")
 
@@ -1170,7 +1106,7 @@ model FinancialReport {
 model FinancialReportEntry {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  reportId String          @db.ObjectId @map("report_id")
+  reportId String          @map("report_id") @db.ObjectId
   report   FinancialReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   rowIndex  Int     @default(0) @map("row_index") // 정렬용 순번
@@ -1195,6 +1131,7 @@ model FinancialReportEntry {
   creditAccount      String? @map("credit_account")
   creditAmount       Float   @default(0) @map("credit_amount")
   creditStandardName String? @map("credit_standard_name")
+  creditUsage        String? @map("credit_usage") // 계정용도
   creditIsRevenue    Boolean @default(false) @map("credit_is_revenue")
   creditPartnerCode  String? @map("credit_partner_code")
   creditPartnerName  String? @map("credit_partner_name")
@@ -1208,10 +1145,10 @@ model FinancialReportEntry {
 model CompanyActiveFinancialReport {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  companyId String  @db.ObjectId @unique @map("company_id")
+  companyId String  @unique @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  reportId String          @db.ObjectId @unique @map("report_id")
+  reportId String          @unique @map("report_id") @db.ObjectId
   report   FinancialReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   updatedAt DateTime @updatedAt

@@ -5,6 +5,7 @@ import {
   resolveUploadForCompanyView,
   serializeUploadViewSelection,
 } from "@/app/lib/salary-upload-view";
+import { resolveFinancialReportForCompanyView } from "@/app/lib/financial-report-view";
 import type { CompanyDashboardResponse } from "@/types/company/dashboard";
 import { getEmployeeStatus } from "@/types/company/employees";
 
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
       businessView,
       otherView,
       dailyView,
-      agentSignupRequestHistories,
+      financialReportView,
     ] =
       await Promise.all([
         prisma.company.findUnique({
@@ -145,17 +146,7 @@ export async function GET(request: NextRequest) {
         resolveUploadForCompanyView(request, companyId, "BUSINESS_INCOME"),
         resolveUploadForCompanyView(request, companyId, "OTHER_INCOME"),
         resolveUploadForCompanyView(request, companyId, "OTHER_INCOME_LABOR"),
-        prisma.companyAgentSignupRequestHistory.findMany({
-          where: { companyId },
-          orderBy: { createdAt: "desc" },
-          take: 5,
-          select: {
-            id: true,
-            contactType: true,
-            contact: true,
-            createdAt: true,
-          },
-        }),
+        resolveFinancialReportForCompanyView(request, companyId),
       ]);
 
     if (!company) {
@@ -236,6 +227,27 @@ export async function GET(request: NextRequest) {
             })
           : Promise.resolve([]),
       ]);
+
+    const financialReportVisible =
+      financialReportView.reportId &&
+      (financialReportView.companyVisible || financialReportView.isAgentView);
+
+    const financialReportRecord = financialReportVisible
+      ? await prisma.financialReport.findUnique({
+          where: { id: financialReportView.reportId! },
+          select: {
+            fiscalYear: true,
+            entryCount: true,
+            summary: true,
+            agentOrganization: { select: { organizationName: true } },
+          },
+        })
+      : null;
+
+    const financialReportSummary = financialReportRecord?.summary as {
+      revenueTotal?: number;
+      expenseTotal?: number;
+    } | null;
 
     const monthlyMap = new Map<number, MonthBucket>();
     for (const ym of recentYms) {
@@ -381,12 +393,6 @@ export async function GET(request: NextRequest) {
             phone: company.organizationLink.agentOrganization.phone,
           }
         : null,
-      agentSignupRequestHistories: agentSignupRequestHistories.map((item) => ({
-        id: item.id.toString(),
-        contactType: item.contactType === "phone" ? "phone" : "email",
-        contact: item.contact,
-        createdAt: item.createdAt.toISOString(),
-      })),
       salary: {
         hasData: latestMonth != null,
         latestYm: latestMonth?.ym ?? null,
@@ -425,6 +431,21 @@ export async function GET(request: NextRequest) {
         businessCount: latestBucket.businessCount,
         otherCount: latestBucket.otherCount,
         dailyCount: latestBucket.dailyCount,
+      },
+      financialReport: {
+        hasReport: Boolean(financialReportRecord),
+        publishStatus: financialReportView.publishStatus,
+        isAgentView: financialReportView.isAgentView,
+        fiscalYear: financialReportRecord?.fiscalYear ?? null,
+        entryCount: financialReportRecord?.entryCount ?? 0,
+        revenueTotal: financialReportSummary?.revenueTotal ?? 0,
+        expenseTotal: financialReportSummary?.expenseTotal ?? 0,
+        uploadedAt: financialReportView.uploadedAt
+          ? financialReportView.uploadedAt.toISOString()
+          : null,
+        agentOrganizationName:
+          financialReportRecord?.agentOrganization.organizationName?.trim() ||
+          null,
       },
     };
 

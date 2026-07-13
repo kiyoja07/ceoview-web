@@ -8,6 +8,7 @@ import type {
   PairedEntry,
   ReportSummary,
 } from "./types";
+import { buildStandardReports } from "./standard-reports";
 
 const EMPTY_META: AccountMeta = {
   standardName: null,
@@ -32,7 +33,11 @@ export function buildCatalogMap(
 }
 
 // 구분자: YY-MM-DD-NNNNN (BunGaeJang 노트북 셀 3)
-function makeGubunja(year: number | null, date: string, voucher: string): string {
+function makeGubunja(
+  year: number | null,
+  date: string,
+  voucher: string,
+): string {
   const yy = year != null ? String(year).slice(-2) : "00";
   const mm = date.slice(0, 2);
   const dd = date.slice(-2);
@@ -64,7 +69,10 @@ export function pairAndSummarize(
   const metaOf = (code: string): AccountMeta => catalog.get(code) ?? EMPTY_META;
 
   // 구분자별 그룹
-  const groups = new Map<string, { debits: JournalLine[]; credits: JournalLine[] }>();
+  const groups = new Map<
+    string,
+    { debits: JournalLine[]; credits: JournalLine[] }
+  >();
   const order: string[] = [];
   for (const line of lines) {
     const key = makeGubunja(fiscalYear, line.date, line.voucherNo);
@@ -108,6 +116,7 @@ export function pairAndSummarize(
       creditAccount: credit?.accountName ?? null,
       creditAmount: credit?.amount ?? 0,
       creditStandardName: cMeta.standardName,
+      creditUsage: cMeta.usage,
       creditIsRevenue: cMeta.isRevenue,
       creditPartnerCode: credit?.partnerCode ?? null,
       creditPartnerName: credit?.partnerName ?? null,
@@ -218,6 +227,7 @@ export function pairAndSummarize(
     topPartners: toSortedTop(partnerMap, 12),
     expenseTotal: Math.round(expenseTotal),
     revenueTotal: Math.round(revenueTotal),
+    standardReports: buildStandardReports(entries),
   };
 
   return {

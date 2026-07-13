@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { PageLoading } from "@/app/_components/ui/PageState";
 import { formatBusinessNumber } from "@/app/lib/formatters";
 import type {
   ApiErrorResponse,
@@ -172,11 +173,7 @@ export default function AgentInfoPage() {
     editFields.organizationNumber.replace(/\D/g, "").length === 10;
 
   if (checking) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-app-bg">
-        <div className="text-sm text-gray-500">정보 확인 중...</div>
-      </div>
-    );
+    return <PageLoading message="정보 확인 중..." />;
   }
 
   return (

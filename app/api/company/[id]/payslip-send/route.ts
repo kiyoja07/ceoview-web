@@ -160,8 +160,10 @@ async function issuePayslipAccessLink(params: {
         earnedIncomeId: params.earnedIncomeId,
         channel: params.channel,
         recipient: params.recipient,
-        usedAt: null,
-        revokedAt: null,
+        AND: [
+          { OR: [{ usedAt: null }, { usedAt: { isSet: false } }] },
+          { OR: [{ revokedAt: null }, { revokedAt: { isSet: false } }] },
+        ],
       },
       data: { revokedAt: now },
     });
@@ -187,8 +189,10 @@ async function revokePayslipAccessToken(tokenId: string) {
   await prisma.payslipAccessToken.updateMany({
     where: {
       id: tokenId,
-      usedAt: null,
-      revokedAt: null,
+      AND: [
+        { OR: [{ usedAt: null }, { usedAt: { isSet: false } }] },
+        { OR: [{ revokedAt: null }, { revokedAt: { isSet: false } }] },
+      ],
     },
     data: {
       revokedAt: new Date(),

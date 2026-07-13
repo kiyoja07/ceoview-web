@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { CompanyDashboardResponse } from "@/types/company/dashboard";
 import { DashboardMetricCard } from "./DashboardMetricCard";
-import { formatCurrency } from "./formatters";
+import { formatCurrencyKRW } from "@/app/lib/formatters";
 
 type SalaryOverviewSectionProps = {
   companyId: string;
@@ -18,16 +18,12 @@ export function SalaryOverviewSection({
     <section className="mb-8">
       <div className="mb-4 flex items-end justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-gray-900">
-            인건비
-          </h2>
-        </div>
-        <div className="flex flex-wrap gap-2">
           <Link
             href={salaryDashboardHref}
-            className="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700"
+            className="group inline-flex items-center gap-1.5 text-xl font-bold tracking-tight text-gray-900 transition hover:text-emerald-600"
           >
-            인건비 관리
+            인건비
+            <ChevronRightIcon className="h-5 w-5 text-gray-400 transition group-hover:translate-x-0.5 group-hover:text-emerald-600" />
           </Link>
         </div>
       </div>
@@ -44,14 +40,14 @@ export function SalaryOverviewSection({
             />
             <DashboardMetricCard
               label="총 지급액"
-              value={formatCurrency(salary.totalPayment)}
+              value={formatCurrencyKRW(salary.totalPayment)}
               description={`${salary.latestLabel} 최신 인건비 기준`}
               tone="blue"
               icon={<PaymentIcon />}
             />
             <DashboardMetricCard
               label="차인지급액"
-              value={formatCurrency(salary.netPayment)}
+              value={formatCurrencyKRW(salary.netPayment)}
               description={`${salary.latestLabel} 최신 인건비 기준`}
               tone="amber"
               icon={<NetPaymentIcon />}
@@ -78,6 +74,20 @@ export function SalaryOverviewSection({
         </div>
       )}
     </section>
+  );
+}
+
+function ChevronRightIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
   );
 }
 

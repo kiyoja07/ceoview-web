@@ -9,7 +9,6 @@ import {
   formatResidentNumber,
   maskResidentNumber,
 } from "@/app/lib/formatters";
-import type { PendingRequestSummary } from "@/types/company/change-request";
 import AddressInput, { type AddressValue } from "./AddressInput";
 import BankAccountInput from "./BankAccountInput";
 import ResidentNumberInput, {
@@ -64,7 +63,6 @@ export type EmployeeFullDetail = {
   }[];
   createdAt: string;
   updatedAt: string;
-  pendingRequest?: PendingRequestSummary | null;
   // 사업소득 고유 필드
   incomeCategory?: string | null;
   businessName?: string | null;

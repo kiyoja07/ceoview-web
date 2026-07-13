@@ -34,7 +34,7 @@ export async function GET(
     }
     const { view } = auth;
 
-    if (!view.reportId || !view.companyVisible) {
+    if (!view.reportId || !(view.companyVisible || view.isAgentView)) {
       return NextResponse.json({
         company: entity,
         publication: serializeFinancialReportViewSelection(view),
@@ -51,12 +51,24 @@ export async function GET(
         debitTotal: true,
         creditTotal: true,
         summary: true,
+        uploadedByAgentUserId: true,
+        agentOrganization: {
+          select: {
+            organizationName: true,
+          },
+        },
       },
     });
 
+    const agentOrganizationName =
+      report?.agentOrganization.organizationName?.trim() || null;
+
     return NextResponse.json({
       company: entity,
-      publication: serializeFinancialReportViewSelection(view),
+      publication: {
+        ...serializeFinancialReportViewSelection(view),
+        agentOrganizationName,
+      },
       summary: report?.summary ?? null,
       totals: report
         ? {

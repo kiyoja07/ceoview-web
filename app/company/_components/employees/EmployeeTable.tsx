@@ -9,7 +9,6 @@ import {
 import {
   getBirthDate,
   getIncomeTypeTone,
-  getPendingRequestLabel,
   getStatusTone,
 } from "./utils";
 import type { DashboardEmployeeRow, EmployeeSortOption } from "./types";
@@ -75,7 +74,7 @@ export default function EmployeeTable({
           <p className="text-sm text-gray-500">
             {search || incomeTypeFilter !== "ALL" || statusFilter !== "ALL"
               ? "현재 필터 조건에 맞는 지급 대상자가 없습니다."
-              : "등록된 지급 대상자가 없습니다. 등록 요청을 먼저 진행해주세요."}
+              : "등록된 지급 대상자가 없습니다. 먼저 지급 대상자를 등록해주세요."}
           </p>
         </div>
       ) : (
@@ -98,9 +97,6 @@ export default function EmployeeTable({
                   const status = getEmployeeStatus(
                     employee.hireDate,
                     employee.resignDate,
-                  );
-                  const pendingLabel = getPendingRequestLabel(
-                    employee.pendingRequest,
                   );
                   const employeeDetailPath = `/company/employees/${employee.id}?incomeType=${employee.incomeType}`;
                   const isRowClickable = employee.canViewDetail;
@@ -132,11 +128,6 @@ export default function EmployeeTable({
                           >
                             {employee.incomeTypeLabel}
                           </span>
-                          {pendingLabel && (
-                            <span className="inline-flex w-fit rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 ring-1 ring-amber-200">
-                              {pendingLabel}
-                            </span>
-                          )}
                         </div>
                       </td>
                       <td className="px-5 py-4">

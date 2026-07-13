@@ -79,3 +79,27 @@ export type CompanyUserInviteHistoryResponse = {
   invites: CompanyUserInviteHistoryItem[];
   total: number;
 };
+
+export type CompanyJoinRequestItem = {
+  id: string;
+  businessNumber: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  requestedAt: string;
+  resolvedAt: string | null;
+  company: {
+    id: string;
+    businessNumber: string;
+    businessName: string | null;
+  };
+  companyUser: {
+    id: string;
+    email: string;
+    name: string;
+    phone: string | null;
+  };
+};
+
+export type CompanyJoinRequestsResponse = {
+  requests: CompanyJoinRequestItem[];
+  total: number;
+};

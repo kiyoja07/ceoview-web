@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { formatBusinessNumber } from "@/app/lib/formatters";
 import { EmployeeForm } from "@/app/company/organization/employees/_components/EmployeeForm";
@@ -8,7 +8,6 @@ import { BusinessIncomeEmployeeForm } from "@/app/company/organization/employees
 import { OtherIncomeEmployeeForm } from "@/app/company/organization/employees/_components/OtherIncomeEmployeeForm";
 import { OtherIncomeLaborEmployeeForm } from "@/app/company/organization/employees/_components/OtherIncomeLaborEmployeeForm";
 import { EMPLOYEE_INCOME_TYPE_OPTIONS } from "@/catalogs/ko/employee";
-import type { CompanyChangeRequestItem } from "@/types/company/change-request";
 import type { EmployeeIncomeType } from "@/types/company/employees";
 
 type CompanyInfo = {
@@ -20,19 +19,12 @@ type CompanyInfo = {
 export default function AgentCompanyEmployeeNewPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const companyId = params?.id;
-  const requestId = searchParams.get("requestId");
 
   const [authChecked, setAuthChecked] = useState(false);
   const [company, setCompany] = useState<CompanyInfo | null>(null);
   const [incomeType, setIncomeType] =
     useState<EmployeeIncomeType>("EARNED_INCOME");
-  const [requestItem, setRequestItem] =
-    useState<CompanyChangeRequestItem | null>(null);
-  const [initialData, setInitialData] = useState<
-    Record<string, unknown> | undefined
-  >(undefined);
 
   const handleAuthError = useCallback(
     (status: number) => {
@@ -54,39 +46,12 @@ export default function AgentCompanyEmployeeNewPage() {
 
     const check = async () => {
       try {
-        const [companyRes, requestRes] = await Promise.all([
-          fetch(`/api/agent/company/${companyId}/info`, {
-            cache: "no-store",
-          }),
-          requestId
-            ? fetch(`/api/agent/company/requests/${requestId}`, {
-                cache: "no-store",
-              })
-            : Promise.resolve(null),
-        ]);
+        const companyRes = await fetch(`/api/agent/company/${companyId}/info`, {
+          cache: "no-store",
+        });
         if (handleAuthError(companyRes.status)) return;
         if (companyRes.ok) {
           setCompany((await companyRes.json()) as CompanyInfo);
-        }
-        if (requestRes?.status && handleAuthError(requestRes.status)) return;
-        if (requestRes?.ok) {
-          const requestData = (await requestRes.json()) as {
-            item: CompanyChangeRequestItem;
-          };
-          setRequestItem(requestData.item);
-          const payload = requestData.item.requestedPayload as Record<
-            string,
-            unknown
-          > | null;
-          if (payload) {
-            const requestIncomeType = payload.incomeType as
-              | EmployeeIncomeType
-              | undefined;
-            if (requestIncomeType) {
-              setIncomeType(requestIncomeType);
-            }
-            setInitialData(payload);
-          }
         }
         setAuthChecked(true);
       } catch {
@@ -94,7 +59,7 @@ export default function AgentCompanyEmployeeNewPage() {
       }
     };
     void check();
-  }, [companyId, handleAuthError, requestId, router]);
+  }, [companyId, handleAuthError, router]);
 
   const handleSubmit = async (data: Record<string, unknown>) => {
     const res = await fetch(`/api/agent/company/${companyId}/employee/new`, {
@@ -103,7 +68,6 @@ export default function AgentCompanyEmployeeNewPage() {
       body: JSON.stringify({
         ...data,
         incomeType,
-        requestId,
       }),
     });
 
@@ -112,11 +76,7 @@ export default function AgentCompanyEmployeeNewPage() {
       throw new Error(body.error || "직원 등록에 실패했습니다.");
     }
 
-    router.push(
-      requestId
-        ? "/agent/company/requests"
-        : `/agent/company/${companyId}/employees`,
-    );
+    router.push(`/agent/company/${companyId}/employees`);
   };
 
   if (!authChecked) {
@@ -143,38 +103,6 @@ export default function AgentCompanyEmployeeNewPage() {
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
             인건비 지급 대상자 등록
           </h1>
-          {requestItem && (
-            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-              인건비 지급 대상자 신규 등록 요청이 접수 되었습니다.
-              <div className="mt-1 text-xs text-amber-700">
-                요청자 {requestItem.requestedByCompanyUser.name} · 접수일{" "}
-                {new Date(requestItem.createdAt).toLocaleString()}
-              </div>
-              <button
-                type="button"
-                onClick={async () => {
-                  const reason = window.prompt("보류 사유를 입력해주세요.");
-                  if (!reason?.trim()) return;
-                  const res = await fetch(
-                    `/api/agent/company/requests/${requestItem.id}/reject`,
-                    {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        resolutionComment: reason.trim(),
-                      }),
-                    },
-                  );
-                  if (res.ok) {
-                    router.replace("/agent/company/requests");
-                  }
-                }}
-                className="mt-3 rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50"
-              >
-                요청 보류
-              </button>
-            </div>
-          )}
           <div className="mt-2">
             <p className="mt-1 text-sm text-gray-500">
               새 직원의 정보를 입력해주세요.
@@ -216,59 +144,31 @@ export default function AgentCompanyEmployeeNewPage() {
 
         {incomeType === "EARNED_INCOME" && (
           <EmployeeForm
-            initialData={initialData}
             onSubmit={handleSubmit}
-            onCancel={() =>
-              router.push(
-                requestId
-                  ? "/agent/company/requests"
-                  : `/agent/company/${companyId}/employees`,
-              )
-            }
-            submitLabel={requestId ? "요청 승인 후 등록" : "등록하기"}
+            onCancel={() => router.push(`/agent/company/${companyId}/employees`)}
+            submitLabel="등록하기"
             showEmployeeCode
           />
         )}
         {incomeType === "BUSINESS_INCOME" && (
           <BusinessIncomeEmployeeForm
-            initialData={initialData}
             onSubmit={handleSubmit}
-            onCancel={() =>
-              router.push(
-                requestId
-                  ? "/agent/company/requests"
-                  : `/agent/company/${companyId}/employees`,
-              )
-            }
-            submitLabel={requestId ? "요청 승인 후 등록" : "등록하기"}
+            onCancel={() => router.push(`/agent/company/${companyId}/employees`)}
+            submitLabel="등록하기"
           />
         )}
         {incomeType === "OTHER_INCOME" && (
           <OtherIncomeEmployeeForm
-            initialData={initialData}
             onSubmit={handleSubmit}
-            onCancel={() =>
-              router.push(
-                requestId
-                  ? "/agent/company/requests"
-                  : `/agent/company/${companyId}/employees`,
-              )
-            }
-            submitLabel={requestId ? "요청 승인 후 등록" : "등록하기"}
+            onCancel={() => router.push(`/agent/company/${companyId}/employees`)}
+            submitLabel="등록하기"
           />
         )}
         {incomeType === "OTHER_INCOME_LABOR" && (
           <OtherIncomeLaborEmployeeForm
-            initialData={initialData}
             onSubmit={handleSubmit}
-            onCancel={() =>
-              router.push(
-                requestId
-                  ? "/agent/company/requests"
-                  : `/agent/company/${companyId}/employees`,
-              )
-            }
-            submitLabel={requestId ? "요청 승인 후 등록" : "등록하기"}
+            onCancel={() => router.push(`/agent/company/${companyId}/employees`)}
+            submitLabel="등록하기"
           />
         )}
       </div>

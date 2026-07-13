@@ -7,6 +7,7 @@ import {
 import { parseFinancialReport } from "./parse";
 import {
   computeChecksum,
+  DuplicateFinancialReportError,
   loadAccountCatalogRows,
   saveFinancialReport,
 } from "./save-services";
@@ -25,6 +26,7 @@ export async function POST(request: NextRequest) {
     const companyId = formData.get("companyId") as string | null;
     const accountCatalogId = formData.get("accountCatalogId") as string | null;
     const save = formData.get("save") === "true";
+    const replace = formData.get("replace") === "true";
 
     if (!file) {
       return NextResponse.json(
@@ -101,6 +103,7 @@ export async function POST(request: NextRequest) {
         fileName,
         checksum: computeChecksum(bytes),
         parsed,
+        replace,
       });
 
       return NextResponse.json({
@@ -122,6 +125,12 @@ export async function POST(request: NextRequest) {
         entries: previewEntries,
       });
     } catch (err) {
+      if (err instanceof DuplicateFinancialReportError) {
+        return NextResponse.json(
+          { error: err.message, duplicate: err.existing },
+          { status: 409 },
+        );
+      }
       if (
         err instanceof Prisma.PrismaClientKnownRequestError &&
         err.code === "P2002"
@@ -131,7 +140,8 @@ export async function POST(request: NextRequest) {
           { status: 409 },
         );
       }
-      const message = err instanceof Error ? err.message : "DB 저장에 실패했습니다.";
+      const message =
+        err instanceof Error ? err.message : "DB 저장에 실패했습니다.";
       return NextResponse.json({ error: message }, { status: 500 });
     }
   } catch (error) {

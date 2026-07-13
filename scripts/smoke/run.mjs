@@ -272,7 +272,6 @@ async function run() {
 
     await httpCheck("company", "GET /api/company/dashboard", `${BASE_URL}/api/company/dashboard`, { headers: H });
     await httpCheck("company", "GET /api/company/employees", `${BASE_URL}/api/company/employees`, { headers: H });
-    await httpCheck("company", "GET /api/company/requests", `${BASE_URL}/api/company/requests`, { headers: H });
     if (COMPANY_ID) {
       await httpCheck("company", `GET /api/company/${COMPANY_ID}/salary-stats`, `${BASE_URL}/api/company/${COMPANY_ID}/salary-stats`, { headers: H });
     } else {

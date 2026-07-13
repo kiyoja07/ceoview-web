@@ -15,11 +15,7 @@ export function isValidEmail(email: string) {
 export function createMagicLinkToken() {
   const token = randomBytes(32).toString("base64url");
   const tokenHash = hashMagicLinkToken(token);
-  console.log("Generated magic link token:", {
-    MAGIC_LINK_TTL_MS,
-  });
   const expiresAt = new Date(Date.now() + MAGIC_LINK_TTL_MS);
-  console.log("Generated magic link token:", { token, tokenHash, expiresAt });
   return { token, tokenHash, expiresAt };
 }
 
@@ -38,7 +34,7 @@ export function getAppBaseUrl(request: NextRequest) {
 }
 
 export function buildMagicLinkUrl(request: NextRequest, token: string) {
-  return buildUrlForAudience("public", "/api/agent/auth/magic-link", request, {
+  return buildUrlForAudience("agent", "/agent/auth/magic-link", request, {
     token,
   });
 }

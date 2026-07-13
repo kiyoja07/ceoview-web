@@ -29,50 +29,51 @@ export function DashboardHero({
       <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h1 className="mt-3 text-3xl font-bold tracking-tight">
-            {companyLabel}
+            {profile && profile.companies.length >= 2 ? (
+              <span className="relative inline-flex items-center">
+                <select
+                  aria-label="회사 선택"
+                  value={profile.currentCompanyId ?? company.id}
+                  disabled={switchingCompany || loading}
+                  onChange={(event) => {
+                    onCompanyChange(event.target.value);
+                  }}
+                  className="appearance-none bg-transparent pr-7 text-3xl font-bold tracking-tight text-white outline-none disabled:cursor-not-allowed disabled:opacity-80"
+                >
+                  {profile.companies.map((item) => (
+                    <option
+                      key={item.id}
+                      value={item.id}
+                      className="text-sm font-medium text-gray-900"
+                    >
+                      {item.businessName ||
+                        formatBusinessNumber(item.businessNumber)}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  className="pointer-events-none absolute right-0 h-5 w-5 text-emerald-100/80"
+                >
+                  <path
+                    d="M5 7.5L10 12.5L15 7.5"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+            ) : (
+              companyLabel
+            )}
           </h1>
           <p className="mt-2 text-sm text-emerald-100/90">
             {formatBusinessNumber(company.businessNumber)}
           </p>
         </div>
-        {profile && profile.companies.length >= 2 && (
-          <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
-            <label
-              htmlFor="dashboard-company-select"
-              className="mb-1.5 block text-xs font-medium text-emerald-100/80"
-            >
-              회사 선택
-            </label>
-            <select
-              id="dashboard-company-select"
-              value={profile.currentCompanyId ?? company.id}
-              disabled={switchingCompany || loading}
-              onChange={(event) => {
-                onCompanyChange(event.target.value);
-              }}
-              className="w-full appearance-none rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 text-sm font-medium text-white outline-none disabled:cursor-not-allowed disabled:opacity-80"
-            >
-              {profile.companies.map((item) => (
-                <option key={item.id} value={item.id} className="text-gray-900">
-                  {item.businessName || formatBusinessNumber(item.businessNumber)}
-                </option>
-              ))}
-            </select>
-            <p className="mt-2 text-xs text-emerald-100/75">
-              {switchingCompany
-                ? "선택한 회사로 전환하는 중입니다."
-                : "접근 가능한 회사 사이에서 현재 작업 회사를 전환할 수 있습니다."}
-            </p>
-            {!profile.profileComplete && (
-              <p className="mt-2 text-xs text-amber-100">
-                현재 선택한 회사의 기본 정보가 아직 완료되지 않았습니다.{" "}
-                <Link href="/company/auth/onboarding" className="underline">
-                  회사 정보 입력
-                </Link>
-              </p>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );

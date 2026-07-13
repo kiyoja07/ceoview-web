@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import {
-  sanitizeEmployeeRequestPayload,
+  sanitizeEmployeePayload,
   sanitizeBusinessIncomeEmployeePayload,
   sanitizeOtherIncomeEmployeePayload,
   sanitizeOtherIncomeLaborEmployeePayload,
-} from "@/app/lib/company-change-request";
+} from "@/app/lib/company-input";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
 import type {
   EmployeeBankAccountBody,
@@ -106,13 +106,10 @@ export async function POST(
     }
 
     const rawBody = (await request.json()) as Record<string, unknown> & {
-      requestId?: string;
       incomeType?: EmployeeIncomeType;
     };
     const incomeType: EmployeeIncomeType =
       rawBody.incomeType ?? "EARNED_INCOME";
-    const requestIdRaw =
-      typeof rawBody.requestId === "string" ? rawBody.requestId.trim() : "";
 
     let sanitizedBody: Record<string, unknown>;
     switch (incomeType) {
@@ -132,7 +129,7 @@ export async function POST(
         );
         break;
       default:
-        sanitizedBody = sanitizeEmployeeRequestPayload(
+        sanitizedBody = sanitizeEmployeePayload(
           rawBody as unknown as EmployeeCreateBody,
         );
         break;
@@ -146,41 +143,7 @@ export async function POST(
       );
     }
 
-    let requestId: string | null = null;
-    if (requestIdRaw) {
-      try {
-        requestId = requestIdRaw;
-      } catch {
-        return NextResponse.json(
-          { error: "유효한 요청 ID가 아닙니다." },
-          { status: 400 },
-        );
-      }
-    }
-
     const result = await prisma.$transaction(async (tx) => {
-      if (requestId) {
-        const changeRequest = await tx.companyChangeRequest.findFirst({
-          where: {
-            id: requestId,
-            companyId,
-            scope: "EMPLOYEE",
-            action: "CREATE",
-            status: "PENDING",
-            company: {
-              organizationLink: {
-                is: { agentOrganizationId: auth.organizationId },
-              },
-            },
-          },
-          select: { id: true },
-        });
-
-        if (!changeRequest) {
-          return null;
-        }
-      }
-
       let createdId: string;
       let createdName: string;
 
@@ -331,27 +294,8 @@ export async function POST(
         createdName = created.name;
       }
 
-      if (requestId) {
-        await tx.companyChangeRequest.update({
-          where: { id: requestId },
-          data: {
-            status: "APPROVED",
-            targetEmployeeId: createdId,
-            resolvedAt: new Date(),
-            resolvedByAgentUserId: auth.userId,
-          },
-        });
-      }
-
       return { id: createdId, name: createdName };
     });
-
-    if (!result) {
-      return NextResponse.json(
-        { error: "처리 가능한 요청을 찾을 수 없습니다." },
-        { status: 404 },
-      );
-    }
 
     return NextResponse.json({
       id: result.id.toString(),

@@ -129,9 +129,11 @@ export default async function PayslipViewPage({
   const markUsedResult = await prisma.payslipAccessToken.updateMany({
     where: {
       id: accessToken.id,
-      usedAt: null,
-      revokedAt: null,
       expiresAt: { gt: now },
+      AND: [
+        { OR: [{ usedAt: null }, { usedAt: { isSet: false } }] },
+        { OR: [{ revokedAt: null }, { revokedAt: { isSet: false } }] },
+      ],
     },
     data: { usedAt: now },
   });

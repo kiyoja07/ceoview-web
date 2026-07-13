@@ -19,11 +19,16 @@ export type CompanyDashboardSalaryMonth = {
   totalCount: number;
 };
 
-export type CompanyAgentSignupRequestHistory = {
-  id: string;
-  contactType: "email" | "phone";
-  contact: string;
-  createdAt: string;
+export type CompanyDashboardFinancialReport = {
+  hasReport: boolean;
+  publishStatus: "NONE" | "SAVED" | "PUBLISHED";
+  isAgentView: boolean;
+  fiscalYear: number | null;
+  entryCount: number;
+  revenueTotal: number;
+  expenseTotal: number;
+  uploadedAt: string | null;
+  agentOrganizationName: string | null;
 };
 
 export type CompanyDashboardResponse = {
@@ -39,7 +44,6 @@ export type CompanyDashboardResponse = {
     representativeName: string | null;
     phone: string | null;
   } | null;
-  agentSignupRequestHistories: CompanyAgentSignupRequestHistory[];
   salary: {
     hasData: boolean;
     latestYm: number | null;
@@ -77,4 +81,5 @@ export type CompanyDashboardResponse = {
     otherCount: number;
     dailyCount: number;
   };
+  financialReport: CompanyDashboardFinancialReport;
 };

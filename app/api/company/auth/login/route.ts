@@ -9,6 +9,7 @@ import {
 } from "@/app/lib/company-magic-link";
 import {
   COMPANY_ONBOARDING_PENDING_MARKER,
+  createInternalPublicSlug,
   createPlaceholderBusinessNumber,
 } from "@/app/lib/company-onboarding";
 import { sendEmail } from "@/app/lib/messages/email";
@@ -18,13 +19,32 @@ import type { CompanyLoginBody } from "@/types/company/auth";
 
 type ContactType = "email" | "phone";
 
-function isUniqueConstraintError(error: unknown): error is { code: string } {
+function isUniqueConstraintError(error: unknown): error is {
+  code: string;
+  meta?: { target?: string[] | string };
+} {
   return (
     typeof error === "object" &&
     error !== null &&
     "code" in error &&
     (error as { code?: string }).code === "P2002"
   );
+}
+
+function getUniqueConstraintTarget(error: unknown) {
+  if (!isUniqueConstraintError(error)) return [];
+  const target = error.meta?.target;
+  if (Array.isArray(target)) return target;
+  return typeof target === "string" ? [target] : [];
+}
+
+function uniqueTargetIncludes(error: unknown, patterns: string[]) {
+  return getUniqueConstraintTarget(error).some((target) => {
+    const normalized = target.toLowerCase();
+    return patterns.some((pattern) =>
+      normalized.includes(pattern.toLowerCase()),
+    );
+  });
 }
 
 function normalizePhone(value: string) {
@@ -75,6 +95,7 @@ async function createPendingCompanyUser(params: {
             businessNumber: createPlaceholderBusinessNumber(),
             businessType: "INDIVIDUAL",
             address: COMPANY_ONBOARDING_PENDING_MARKER,
+            publicSlug: createInternalPublicSlug("pending-company"),
           },
           select: { id: true },
         });
@@ -93,6 +114,7 @@ async function createPendingCompanyUser(params: {
                 ? normalizePhone(params.phone as string)
                 : null,
             loginProvider: "LOCAL",
+            providerUserId: email,
             name:
               params.contactType === "email"
                 ? createDefaultNameFromEmail(email)
@@ -118,6 +140,12 @@ async function createPendingCompanyUser(params: {
       if (!isUniqueConstraintError(error)) {
         throw error;
       }
+
+      if (uniqueTargetIncludes(error, ["businessNumber", "business_number"])) {
+        continue;
+      }
+
+      if (uniqueTargetIncludes(error, ["publicSlug", "public_slug"])) continue;
 
       if (params.contactType === "email") {
         const existing = await prisma.companyUser.findUnique({
@@ -150,6 +178,8 @@ async function createPendingCompanyUser(params: {
         });
         if (existing) return existing;
       }
+
+      throw error;
     }
   }
 

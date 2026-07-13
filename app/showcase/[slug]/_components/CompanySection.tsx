@@ -8,10 +8,8 @@ import { SectionLabel, ArrowTileIcon } from "./ShowcaseUI";
 
 export default function CompanySection({
   scenario,
-  firstRequest: _firstRequest,
 }: {
   scenario: ShowcaseScenario;
-  firstRequest: ShowcaseScenario["company"]["pendingRequests"][number] | null;
 }) {
   return (
     <section id="company" className="space-y-4">
@@ -141,9 +139,6 @@ export default function CompanySection({
                 <h2 className="text-xl font-bold tracking-tight text-gray-900">
                   바로 가기
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  주요 화면으로 바로 이동할 수 있습니다.
-                </p>
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">

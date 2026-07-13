@@ -1,12 +1,7 @@
-import type { PendingRequestSummary } from "@/types/company/change-request";
+import { type EmployeeIncomeType } from "@/types/company/employees";
 import {
-  type EmployeeIncomeType,
-} from "@/types/company/employees";
-import {
-  EMPLOYEE_INCOME_TYPE_LABELS,
   EMPLOYEE_INCOME_TYPE_TONE_CLASSES,
   EMPLOYEE_STATUS_TONE_CLASSES,
-  getEmployeePendingRequestLabel,
 } from "@/catalogs/ko/employee";
 
 export function formatDate(value: string | null) {
@@ -30,20 +25,4 @@ export function getStatusTone(status: string | null) {
 
 export function getIncomeTypeTone(incomeType: EmployeeIncomeType) {
   return EMPLOYEE_INCOME_TYPE_TONE_CLASSES[incomeType];
-}
-
-export function getPendingRequestLabel(request: PendingRequestSummary | null) {
-  return getEmployeePendingRequestLabel(request);
-}
-
-export function resolvePendingIncomeType(request: PendingRequestSummary) {
-  const payload = request.requestedPayload as {
-    incomeType?: EmployeeIncomeType;
-  };
-  const incomeType =
-    payload.incomeType && payload.incomeType in EMPLOYEE_INCOME_TYPE_LABELS
-      ? payload.incomeType
-      : "EARNED_INCOME";
-
-  return EMPLOYEE_INCOME_TYPE_LABELS[incomeType];
 }

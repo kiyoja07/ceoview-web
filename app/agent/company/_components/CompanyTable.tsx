@@ -13,15 +13,14 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
         <thead>
           <tr className="border-b border-gray-100 bg-gray-50/50">
             <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
+              상호명
+            </th>
+            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
               사업자번호
             </th>
             <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
               구분
             </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
-              상호명
-            </th>
-
             <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
               대표자명
             </th>
@@ -39,6 +38,16 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
               key={company.id}
               className="transition-colors hover:bg-blue-50/40"
             >
+              <td className="px-4 py-3 text-gray-700">
+                <Link
+                  href={`/agent/company/${company.id}`}
+                  className="hover:text-blue-700 hover:underline"
+                >
+                  {company.businessName || (
+                    <span className="text-gray-300">—</span>
+                  )}
+                </Link>
+              </td>
               <td className="px-4 py-3 font-mono text-sm font-medium text-gray-900">
                 <Link
                   href={`/agent/company/${company.id}`}
@@ -58,16 +67,6 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
                   >
                     {company.businessType === "INDIVIDUAL" ? "개인" : "법인"}
                   </span>
-                </Link>
-              </td>
-              <td className="px-4 py-3 text-gray-700">
-                <Link
-                  href={`/agent/company/${company.id}`}
-                  className="hover:text-blue-700 hover:underline"
-                >
-                  {company.businessName || (
-                    <span className="text-gray-300">—</span>
-                  )}
                 </Link>
               </td>
 
@@ -96,6 +95,12 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
                     className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-600/10 transition-all hover:bg-slate-200 active:scale-[0.97]"
                   >
                     개요
+                  </Link>
+                  <Link
+                    href={`/agent/company/${company.id}/financial-report`}
+                    className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 ring-1 ring-blue-600/20 transition-all hover:bg-blue-100 active:scale-[0.97]"
+                  >
+                    재무
                   </Link>
                   <Link
                     href={`/agent/company/${company.id}/employees`}

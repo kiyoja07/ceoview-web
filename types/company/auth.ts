@@ -4,6 +4,8 @@ export type CompanyAuthMessageState = {
 } | null;
 
 export type CompanyAuthResponse = {
+  status?: "pending_join_request";
+  requestId?: string;
   redirectTo?: string;
   message?: string;
   error?: string;
@@ -18,6 +20,7 @@ export type CompanyAuthMeResponse = {
   loginProvider: string;
   hasCompany: boolean;
   profileComplete: boolean;
+  pendingJoinRequest: CompanyPendingJoinRequestSummary | null;
   currentCompanyId: string | null;
   company: CompanyAuthCompanySummary | null;
   companies: CompanyAuthCompanySummary[];
@@ -29,6 +32,17 @@ export type CompanyAuthCompanySummary = {
   businessType: "INDIVIDUAL" | "CORPORATION";
   businessName: string | null;
   representativeName: string | null;
+};
+
+export type CompanyPendingJoinRequestSummary = {
+  id: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  requestedAt: string;
+  company: {
+    id: string;
+    businessNumber: string;
+    businessName: string | null;
+  };
 };
 
 export type CompanyLoginBody = {

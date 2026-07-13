@@ -32,6 +32,7 @@ function CompanyListPageInner() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     async function fetchCompanies() {
@@ -62,7 +63,7 @@ function CompanyListPageInner() {
     }
 
     void fetchCompanies();
-  }, [router, currentPage]);
+  }, [router, currentPage, retryKey]);
 
   const handlePageChange = useCallback(
     (page: number) => {
@@ -86,7 +87,10 @@ function CompanyListPageInner() {
         {loading ? (
           <CompanyListLoading />
         ) : error ? (
-          <CompanyListError message={error} />
+          <CompanyListError
+            message={error}
+            onRetry={() => setRetryKey((k) => k + 1)}
+          />
         ) : companies.length === 0 ? (
           <CompanyListEmpty />
         ) : (

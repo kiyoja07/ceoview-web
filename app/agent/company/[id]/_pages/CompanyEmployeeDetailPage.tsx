@@ -1,118 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import type { EmployeeFullDetail } from "@/app/_components/EmployeeDetailModal";
-import { CHANGE_REQUEST_EMPLOYEE_COMPARISON_FIELD_LABELS } from "@/catalogs/ko/change-request";
 import EmployeeViewMode from "../employee/[employeeId]/_components/EmployeeViewMode";
 import EmployeeEditMode from "../employee/[employeeId]/_components/EmployeeEditMode";
 import DeleteConfirmModal from "../employee/[employeeId]/_components/DeleteConfirmModal";
-import type { CompanyChangeRequestItem } from "@/types/company/change-request";
-
-function applyRequestPayload(
-  employee: EmployeeFullDetail,
-  requestItem: CompanyChangeRequestItem | null,
-) {
-  if (!requestItem || requestItem.action !== "UPDATE") {
-    return employee;
-  }
-
-  const payload = requestItem.requestedPayload as Record<string, unknown>;
-  return {
-    ...employee,
-    employeeCode:
-      typeof payload.employeeCode === "string"
-        ? payload.employeeCode
-        : employee.employeeCode,
-    name: typeof payload.name === "string" ? payload.name : employee.name,
-    residentNumber:
-      typeof payload.residentNumber === "string"
-        ? payload.residentNumber
-        : employee.residentNumber,
-    department:
-      typeof payload.department === "string"
-        ? payload.department
-        : employee.department,
-    positionTitle:
-      typeof payload.positionTitle === "string"
-        ? payload.positionTitle
-        : employee.positionTitle,
-    email: typeof payload.email === "string" ? payload.email : employee.email,
-    phone: typeof payload.phone === "string" ? payload.phone : employee.phone,
-    hireDate:
-      typeof payload.hireDate === "string"
-        ? payload.hireDate
-        : employee.hireDate,
-    resignDate:
-      typeof payload.resignDate === "string"
-        ? payload.resignDate
-        : employee.resignDate,
-    zipcode:
-      typeof payload.zipcode === "string" ? payload.zipcode : employee.zipcode,
-    address:
-      typeof payload.address === "string" ? payload.address : employee.address,
-    addressDetail:
-      typeof payload.addressDetail === "string"
-        ? payload.addressDetail
-        : employee.addressDetail,
-    bankAccounts: Array.isArray(payload.bankAccounts)
-      ? (payload.bankAccounts as EmployeeFullDetail["bankAccounts"])
-      : employee.bankAccounts,
-  };
-}
-
-function formatRequestValue(value: unknown) {
-  if (typeof value === "string") {
-    return value.trim() || "-";
-  }
-  if (typeof value === "number") {
-    return String(value);
-  }
-  if (typeof value === "boolean") {
-    return value ? "예" : "아니오";
-  }
-  if (Array.isArray(value)) {
-    if (value.length === 0) return "-";
-    return value
-      .map((item) => {
-        if (!item || typeof item !== "object") return "-";
-        const bankAccount = item as {
-          bankName?: string;
-          accountNumber?: string;
-          accountHolder?: string;
-        };
-        return [
-          bankAccount.bankName || "-",
-          bankAccount.accountNumber || "-",
-          bankAccount.accountHolder || "-",
-        ].join(" / ");
-      })
-      .join(", ");
-  }
-  return "-";
-}
-
-function getChangedRequestEntries(requestItem: CompanyChangeRequestItem) {
-  const currentSnapshot =
-    (requestItem.currentSnapshot as Record<string, unknown> | null) ?? {};
-  const requestedPayload =
-    (requestItem.requestedPayload as Record<string, unknown> | null) ?? {};
-
-  return CHANGE_REQUEST_EMPLOYEE_COMPARISON_FIELD_LABELS.map(
-    ({ key, label }) => {
-      const currentValue = formatRequestValue(currentSnapshot[key]);
-      const requestedValue = formatRequestValue(requestedPayload[key]);
-
-      return {
-        key,
-        label,
-        currentValue,
-        requestedValue,
-        changed: currentValue !== requestedValue,
-      };
-    },
-  ).filter((entry) => entry.changed);
-}
 
 // ────────────────────────────────────────────────────────────
 // Page
@@ -121,19 +14,14 @@ function getChangedRequestEntries(requestItem: CompanyChangeRequestItem) {
 export default function AgentEmployeeDetailPage() {
   const params = useParams<{ id: string; employeeId: string }>();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const companyId = params?.id;
   const employeeId = params?.employeeId;
-  const requestId = searchParams.get("requestId");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [employee, setEmployee] = useState<EmployeeFullDetail | null>(null);
   const [editing, setEditing] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [approving, setApproving] = useState(false);
-  const [requestItem, setRequestItem] =
-    useState<CompanyChangeRequestItem | null>(null);
 
   const handleAuthError = useCallback(
     (status: number) => {
@@ -160,32 +48,16 @@ export default function AgentEmployeeDetailPage() {
 
     (async () => {
       try {
-        const [employeeRes, requestRes] = await Promise.all([
-          fetch(`/api/agent/company/${companyId}/employee/${employeeId}`, {
-            cache: "no-store",
-          }),
-          requestId
-            ? fetch(`/api/agent/company/requests/${requestId}`, {
-                cache: "no-store",
-              })
-            : Promise.resolve(null),
-        ]);
+        const employeeRes = await fetch(
+          `/api/agent/company/${companyId}/employee/${employeeId}`,
+          { cache: "no-store" },
+        );
         if (handleAuthError(employeeRes.status)) return;
-        if (requestRes?.status && handleAuthError(requestRes.status)) return;
         const body = await employeeRes.json();
         if (!employeeRes.ok)
           throw new Error(body?.error || "직원 정보 조회에 실패했습니다.");
         if (cancelled) return;
-        const detail = body as EmployeeFullDetail;
-        if (requestRes?.ok) {
-          const requestBody = (await requestRes.json()) as {
-            item: CompanyChangeRequestItem;
-          };
-          setRequestItem(requestBody.item);
-          setEmployee(detail);
-        } else {
-          setEmployee(detail);
-        }
+        setEmployee(body as EmployeeFullDetail);
       } catch (err) {
         if (cancelled) return;
         setError(
@@ -199,67 +71,7 @@ export default function AgentEmployeeDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [companyId, employeeId, handleAuthError, requestId]);
-
-  const handleApproveRequest = useCallback(async () => {
-    if (!requestItem || !requestId || !companyId || !employeeId || !employee) {
-      return;
-    }
-
-    if (requestItem.action === "DELETE") {
-      setDeleteConfirmOpen(true);
-      return;
-    }
-
-    if (requestItem.action !== "UPDATE") {
-      return;
-    }
-
-    setApproving(true);
-    setError(null);
-
-    try {
-      const res = await fetch(
-        `/api/agent/company/${companyId}/employee/${employeeId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...(requestItem.requestedPayload as Record<string, unknown>),
-            requestId,
-          }),
-        },
-      );
-
-      if (handleAuthError(res.status)) return;
-
-      const body = await res.json().catch(() => null);
-      if (!res.ok) {
-        throw new Error(body?.error || "요청 승인에 실패했습니다.");
-      }
-
-      router.replace("/agent/company/requests");
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "요청 승인에 실패했습니다.",
-      );
-    } finally {
-      setApproving(false);
-    }
-  }, [
-    companyId,
-    employee,
-    employeeId,
-    handleAuthError,
-    requestId,
-    requestItem,
-    router,
-  ]);
-
-  const changedRequestEntries =
-    requestItem?.action === "UPDATE"
-      ? getChangedRequestEntries(requestItem)
-      : [];
+  }, [companyId, employeeId, handleAuthError]);
 
   // ── Main render ──
   return (
@@ -291,121 +103,6 @@ export default function AgentEmployeeDetailPage() {
 
         {/* Content */}
         <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
-          {requestItem && (
-            <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-              직원{" "}
-              {requestItem.action === "DELETE"
-                ? "삭제"
-                : requestItem.action === "UPDATE"
-                  ? "수정"
-                  : "등록"}{" "}
-              요청이 접수 되었습니다.
-              <div className="mt-1 text-xs text-amber-700">
-                요청자 {requestItem.requestedByCompanyUser.name} · 접수일{" "}
-                {new Date(requestItem.createdAt).toLocaleString()}
-              </div>
-              {requestItem.action === "UPDATE" && (
-                <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                  <div className="rounded-xl border border-amber-200 bg-white p-4">
-                    <h3 className="text-sm font-semibold text-gray-900">
-                      제출 시점 내용
-                    </h3>
-                    <dl className="mt-3 space-y-2">
-                      {changedRequestEntries.map((entry) => (
-                        <div
-                          key={`current-${entry.key}`}
-                          className="flex items-start justify-between gap-3"
-                        >
-                          <dt className="text-xs font-medium text-gray-500">
-                            {entry.label}
-                          </dt>
-                          <dd className="text-right text-sm text-gray-900">
-                            {entry.currentValue}
-                          </dd>
-                        </div>
-                      ))}
-                      {changedRequestEntries.length === 0 && (
-                        <div className="text-sm text-gray-500">
-                          비교 가능한 변경 항목이 없습니다.
-                        </div>
-                      )}
-                    </dl>
-                  </div>
-                  <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4">
-                    <h3 className="text-sm font-semibold text-gray-900">
-                      요청 내용
-                    </h3>
-                    <dl className="mt-3 space-y-2">
-                      {changedRequestEntries.map((entry) => (
-                        <div
-                          key={`requested-${entry.key}`}
-                          className="flex items-start justify-between gap-3"
-                        >
-                          <dt className="text-xs font-medium text-gray-500">
-                            {entry.label}
-                          </dt>
-                          <dd className="text-right text-sm font-medium text-emerald-900">
-                            {entry.requestedValue}
-                          </dd>
-                        </div>
-                      ))}
-                      {changedRequestEntries.length === 0 && (
-                        <div className="text-sm text-gray-500">
-                          비교 가능한 변경 항목이 없습니다.
-                        </div>
-                      )}
-                    </dl>
-                  </div>
-                </div>
-              )}
-              {requestItem.action === "DELETE" && (
-                <div className="mt-4 rounded-xl border border-rose-200 bg-white px-4 py-3 text-sm text-gray-900">
-                  회사에서 해당 직원을 삭제 요청했습니다. 아래 상세 정보와 함께
-                  삭제 여부를 최종 검수하세요.
-                </div>
-              )}
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => void handleApproveRequest()}
-                  disabled={approving}
-                  className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300"
-                >
-                  {approving
-                    ? requestItem.action === "DELETE"
-                      ? "승인 준비 중..."
-                      : "승인 처리 중..."
-                    : requestItem.action === "DELETE"
-                      ? "삭제 승인"
-                      : "요청대로 승인"}
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const reason = window.prompt("보류 사유를 입력해주세요.");
-                    if (!reason?.trim()) return;
-                    const res = await fetch(
-                      `/api/agent/company/requests/${requestItem.id}/reject`,
-                      {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          resolutionComment: reason.trim(),
-                        }),
-                      },
-                    );
-                    if (res.ok) {
-                      router.replace("/agent/company/requests");
-                    }
-                  }}
-                  disabled={approving}
-                  className="rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  요청 보류
-                </button>
-              </div>
-            </div>
-          )}
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <p className="text-sm text-gray-500">
@@ -418,16 +115,12 @@ export default function AgentEmployeeDetailPage() {
             </div>
           ) : editing && employee && companyId && employeeId ? (
             <EmployeeEditMode
-              employee={applyRequestPayload(employee, requestItem)}
+              employee={employee}
               companyId={companyId}
               employeeId={employeeId}
-              requestId={requestId}
               onSave={(updated) => {
                 setEmployee(updated);
                 setEditing(false);
-                if (requestId) {
-                  router.replace("/agent/company/requests");
-                }
               }}
               onCancel={() => setEditing(false)}
               onAuthError={handleAuthError}
@@ -435,10 +128,7 @@ export default function AgentEmployeeDetailPage() {
           ) : employee ? (
             <EmployeeViewMode
               employee={employee}
-              onEdit={() => {
-                if (requestItem?.action === "DELETE") return;
-                setEditing(true);
-              }}
+              onEdit={() => setEditing(true)}
               onDelete={() => setDeleteConfirmOpen(true)}
             />
           ) : null}
@@ -451,13 +141,8 @@ export default function AgentEmployeeDetailPage() {
           employeeName={employee.name}
           companyId={companyId}
           employeeId={employeeId}
-          requestId={requestId}
           onDeleted={() =>
-            router.replace(
-              requestId
-                ? "/agent/company/requests"
-                : `/agent/company/${companyId}/employees`,
-            )
+            router.replace(`/agent/company/${companyId}/employees`)
           }
           onClose={() => setDeleteConfirmOpen(false)}
           onAuthError={handleAuthError}

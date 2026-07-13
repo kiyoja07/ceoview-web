@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { resolveCompanyAccessContext } from "@/app/lib/company-access";
 import { isCompanyProfileComplete } from "@/app/lib/company-onboarding";
+import { upsertPendingCompanyJoinRequest } from "@/app/lib/company-join-requests";
 import { deriveBusinessType } from "@/app/lib/business-type";
 
 type CompanyOnboardingBody = {
@@ -96,6 +97,46 @@ export async function POST(request: NextRequest) {
         return null;
       }
 
+      const existingCompany = await tx.company.findUnique({
+        where: { businessNumber: parsed.businessNumber },
+        select: {
+          id: true,
+          businessNumber: true,
+          businessName: true,
+        },
+      });
+
+      if (
+        existingCompany &&
+        existingCompany.id.toString() !== access.currentCompanyId
+      ) {
+        const user = await tx.companyUser.update({
+          where: { id: current.id },
+          data: {
+            name: parsed.name,
+            phone: parsed.phone,
+          },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            phone: true,
+          },
+        });
+
+        const request = await upsertPendingCompanyJoinRequest(tx, {
+          companyId: existingCompany.id,
+          companyUserId: current.id,
+          businessNumber: parsed.businessNumber,
+        });
+
+        return {
+          resultType: "pending_join_request",
+          request,
+          user,
+        } as const;
+      }
+
       await tx.company.update({
         where: { id: access.currentCompanyId },
         data: {
@@ -134,7 +175,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      return company ? { user, company } : null;
+      return company ? { resultType: "completed", user, company } : null;
     });
 
     if (!updated) {
@@ -144,18 +185,41 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (updated.resultType === "pending_join_request") {
+      const request = updated.request;
+      if (!request) {
+        throw new Error("가입 요청 정보를 처리할 수 없습니다.");
+      }
+
+      return NextResponse.json({
+        status: "pending_join_request",
+        requestId: request.id.toString(),
+        redirectTo: "/company/auth/pending",
+        company: {
+          id: request.company.id.toString(),
+          businessNumber: request.company.businessNumber,
+          businessName: request.company.businessName,
+        },
+      });
+    }
+
+    const company = updated.company;
+    if (!company) {
+      throw new Error("사업장 정보를 처리할 수 없습니다.");
+    }
+
     return NextResponse.json({
       id: updated.user.id.toString(),
       email: updated.user.email,
       name: updated.user.name,
       phone: updated.user.phone,
-      profileComplete: isCompanyProfileComplete(updated.company.address),
+      profileComplete: isCompanyProfileComplete(company.address),
       company: {
-        id: updated.company.id.toString(),
-        businessNumber: updated.company.businessNumber,
-        businessType: updated.company.businessType,
-        businessName: updated.company.businessName,
-        representativeName: updated.company.representativeName,
+        id: company.id.toString(),
+        businessNumber: company.businessNumber,
+        businessType: company.businessType,
+        businessName: company.businessName,
+        representativeName: company.representativeName,
       },
       redirectTo: "/company/dashboard",
     });

@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { PageLoading } from "@/app/_components/ui/PageState";
 import type {
   AgentAuthMeResponse,
   AuthMessageState,
@@ -102,11 +103,7 @@ function AgentAuthLoginPageInner() {
   };
 
   if (checking) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-app-bg">
-        <div className="text-sm text-gray-500">세션 확인 중...</div>
-      </div>
-    );
+    return <PageLoading message="세션 확인 중..." />;
   }
 
   return (

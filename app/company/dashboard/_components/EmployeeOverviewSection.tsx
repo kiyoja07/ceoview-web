@@ -19,16 +19,12 @@ export function EmployeeOverviewSection({
     <section className="mb-8">
       <div className="mb-4 flex items-end justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-gray-900">
-            인건비 지급 대상자
-          </h2>
-        </div>
-        <div className="flex flex-wrap gap-2">
           <Link
             href="/company/employees"
-            className="inline-flex items-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700"
+            className="group inline-flex items-center gap-1.5 text-xl font-bold tracking-tight text-gray-900 transition hover:text-emerald-600"
           >
-            대상자 관리
+            인건비 지급 대상자
+            <ChevronRightIcon className="h-5 w-5 text-gray-400 transition group-hover:translate-x-0.5 group-hover:text-emerald-600" />
           </Link>
         </div>
       </div>
@@ -89,6 +85,20 @@ export function EmployeeOverviewSection({
         </div>
       )}
     </section>
+  );
+}
+
+function ChevronRightIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
   );
 }
 

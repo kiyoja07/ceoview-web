@@ -122,7 +122,6 @@ export type CompanyEmployeeDashboardSummaryByIncomeType = {
   inactive: number;
   withContact: number;
   withEmail: number;
-  pendingRequests: number;
 };
 
 export type CompanyEmployeeDashboardSummary = {
@@ -134,7 +133,6 @@ export type CompanyEmployeeDashboardSummary = {
   inactive: number;
   withContact: number;
   withEmail: number;
-  pendingRequests: number;
   byIncomeType: CompanyEmployeeDashboardSummaryByIncomeType[];
 };
 

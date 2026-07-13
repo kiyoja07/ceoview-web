@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
-import {
-  sanitizeCompanyInfoRequestPayload,
-  serializePendingRequestSummary,
-  snapshotCompanyInfoRecord,
-} from "@/app/lib/company-change-request";
+import { sanitizeCompanyInfoPayload } from "@/app/lib/company-input";
 import { resolveCompanyAccessContext } from "@/app/lib/company-access";
 import type { CompanyInfoUpdateBody } from "@/types/company/users";
 
@@ -59,44 +55,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
-    const [company, pendingRequest] = await Promise.all([
-      prisma.company.findUnique({
-        where: { id: auth.currentCompanyId },
-        select: {
-          id: true,
-          businessNumber: true,
-          businessType: true,
-          businessName: true,
-          representativeName: true,
-          openingDate: true,
-          zipcode: true,
-          address: true,
-          addressDetail: true,
-          organizationLink: { select: { agentOrganizationId: true } },
-        },
-      }),
-      prisma.companyChangeRequest.findFirst({
-        where: {
-          companyId: auth.currentCompanyId,
-          scope: "COMPANY_INFO",
-          status: "PENDING",
-        },
-        orderBy: { createdAt: "desc" },
-        select: {
-          id: true,
-          scope: true,
-          action: true,
-          status: true,
-          targetEmployeeId: true,
-          requestedPayload: true,
-          currentSnapshot: true,
-          resolutionComment: true,
-          resolvedAt: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      }),
-    ]);
+    const company = await prisma.company.findUnique({
+      where: { id: auth.currentCompanyId },
+      select: {
+        id: true,
+        businessNumber: true,
+        businessType: true,
+        businessName: true,
+        representativeName: true,
+        openingDate: true,
+        zipcode: true,
+        address: true,
+        addressDetail: true,
+        organizationLink: { select: { agentOrganizationId: true } },
+      },
+    });
 
     if (!company) {
       return NextResponse.json(
@@ -108,9 +81,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       canManageCompanyInfo: auth.isMaster,
       company: serializeCompany(company),
-      pendingRequest: pendingRequest
-        ? serializePendingRequestSummary(pendingRequest)
-        : null,
     });
   } catch (error) {
     console.error("Company info GET error:", error);
@@ -135,7 +105,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const body = sanitizeCompanyInfoRequestPayload(
+    const body = sanitizeCompanyInfoPayload(
       (await request.json()) as CompanyInfoUpdateBody,
     );
 
@@ -179,102 +149,21 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const existingPendingRequest = await prisma.companyChangeRequest.findFirst({
-      where: {
-        companyId: auth.currentCompanyId,
-        scope: "COMPANY_INFO",
-        action: "UPDATE",
-        status: "PENDING",
-      },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
+    await prisma.company.update({
+      where: { id: auth.currentCompanyId },
+      data: {
+        businessName,
+        representativeName,
+        openingDate: openingDateRaw ? new Date(openingDateRaw) : null,
+        zipcode,
+        address,
+        addressDetail,
       },
     });
 
-    if (existingPendingRequest) {
-      return NextResponse.json(
-        { error: "이미 처리 대기 중인 회사 정보 변경 요청이 있습니다." },
-        { status: 409 },
-      );
-    }
-
-    const requestedPayload = {
-      businessName,
-      representativeName,
-      openingDate: openingDateRaw,
-      zipcode,
-      address,
-      addressDetail,
-    };
-    const currentSnapshot = snapshotCompanyInfoRecord(company);
-
-    const requestSelect = {
-      id: true,
-      scope: true,
-      action: true,
-      status: true,
-      targetEmployeeId: true,
-      requestedPayload: true,
-      currentSnapshot: true,
-      resolutionComment: true,
-      resolvedAt: true,
-      createdAt: true,
-      updatedAt: true,
-    } as const;
-
-    if (company.organizationLink) {
-      const createdRequest = await prisma.companyChangeRequest.create({
-        data: {
-          scope: "COMPANY_INFO",
-          action: "UPDATE",
-          companyId: auth.currentCompanyId,
-          requestedByCompanyUserId: auth.userId,
-          requestedPayload,
-          currentSnapshot,
-        },
-        select: requestSelect,
-      });
-
-      return NextResponse.json({
-        success: true,
-        request: serializePendingRequestSummary(createdRequest),
-        message: "회사 정보 변경 요청이 제출되었습니다.",
-      });
-    }
-
-    const [, approvedRequest] = await prisma.$transaction([
-      prisma.company.update({
-        where: { id: auth.currentCompanyId },
-        data: {
-          businessName,
-          representativeName,
-          openingDate: openingDateRaw ? new Date(openingDateRaw) : null,
-          zipcode,
-          address,
-          addressDetail,
-        },
-      }),
-      prisma.companyChangeRequest.create({
-        data: {
-          scope: "COMPANY_INFO",
-          action: "UPDATE",
-          status: "APPROVED",
-          companyId: auth.currentCompanyId,
-          requestedByCompanyUserId: auth.userId,
-          resolvedByAgentUserId: null,
-          requestedPayload,
-          currentSnapshot,
-          resolvedAt: new Date(),
-        },
-        select: requestSelect,
-      }),
-    ]);
-
     return NextResponse.json({
       success: true,
-      request: serializePendingRequestSummary(approvedRequest),
-      message: "회사 정보가 즉시 반영되었습니다.",
+      message: "회사 정보가 수정되었습니다.",
     });
   } catch (error) {
     console.error("Company info PATCH error:", error);

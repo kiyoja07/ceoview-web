@@ -48,6 +48,26 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const pendingJoinRequest = await prisma.companyJoinRequest.findFirst({
+      where: {
+        companyUserId: user.id,
+        status: "PENDING",
+      },
+      orderBy: { requestedAt: "desc" },
+      select: {
+        id: true,
+        status: true,
+        requestedAt: true,
+        company: {
+          select: {
+            id: true,
+            businessNumber: true,
+            businessName: true,
+          },
+        },
+      },
+    });
+
     return NextResponse.json({
       id: user.id.toString(),
       email: user.email,
@@ -57,6 +77,18 @@ export async function GET(request: NextRequest) {
       loginProvider: user.loginProvider,
       hasCompany: auth.context.companies.length > 0,
       profileComplete: isCompanyProfileComplete(auth.context.company.address),
+      pendingJoinRequest: pendingJoinRequest
+        ? {
+            id: pendingJoinRequest.id.toString(),
+            status: pendingJoinRequest.status,
+            requestedAt: pendingJoinRequest.requestedAt.toISOString(),
+            company: {
+              id: pendingJoinRequest.company.id.toString(),
+              businessNumber: pendingJoinRequest.company.businessNumber,
+              businessName: pendingJoinRequest.company.businessName,
+            },
+          }
+        : null,
       currentCompanyId: auth.context.currentCompanyId.toString(),
       company: auth.context.company
         ? {

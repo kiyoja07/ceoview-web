@@ -7,6 +7,7 @@ import type { UsersMessageState, UsersResponse } from "@/types/agent/users";
 import { UserInviteForm } from "./_components/UserInviteForm";
 import { UserTable } from "./_components/UserTable";
 import { StatusMessage } from "./_components/StatusMessage";
+import { ErrorPanel, LoadingPanel } from "@/app/_components/ui/Panel";
 
 export default function AgentUsersPage() {
   const router = useRouter();
@@ -144,17 +145,13 @@ export default function AgentUsersPage() {
         <StatusMessage message={message} />
 
         {loading ? (
-          <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
-            <p className="text-sm text-gray-500">
-              사용자 현황을 불러오는 중...
-            </p>
-          </div>
+          <LoadingPanel message="사용자 현황을 불러오는 중..." card />
         ) : !data ? (
-          <div className="rounded-2xl bg-white p-10 text-center shadow-sm ring-1 ring-gray-950/5">
-            <p className="text-sm text-gray-500">
-              사용자 관리 정보를 확인할 수 없습니다.
-            </p>
-          </div>
+          <ErrorPanel
+            message="사용자 관리 정보를 확인할 수 없습니다."
+            card
+            onRetry={() => void loadUsers()}
+          />
         ) : (
           <UserTable
             users={data.agentUsers}

@@ -12,8 +12,7 @@ import YearMonthPicker from "./components/filters/YearMonthPicker";
 import { DashboardCard } from "./components/DashboardCard";
 import { MonthlyStatsChart } from "./components/MonthlyStatsChart";
 import { SummaryCardsRow } from "./components/SummaryCardsRow";
-import { ErrorPanel } from "./components/common/ErrorPanel";
-import { LoadingPanel } from "./components/common/LoadingPanel";
+import { ErrorPanel, LoadingPanel } from "@/app/_components/ui/Panel";
 import {
   IconBuilding,
   IconChevronLeft,
