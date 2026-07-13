@@ -4,6 +4,10 @@ import {
   getCompanyUserIdFromRequest,
   getSelectedCompanyIdFromRequest,
 } from "@/app/lib/company-auth";
+import {
+  type CompanyFeatureFlags,
+  resolveCompanyFeatureFlags,
+} from "@/types/company/features";
 
 const companyAccessSelect = {
   id: true,
@@ -15,6 +19,12 @@ const companyAccessSelect = {
   zipcode: true,
   address: true,
   addressDetail: true,
+  organizationLink: {
+    select: {
+      salaryFeatureEnabled: true,
+      financialReportFeatureEnabled: true,
+    },
+  },
 } as const;
 
 export type CompanyAccessCompany = {
@@ -27,6 +37,7 @@ export type CompanyAccessCompany = {
   zipcode: string | null;
   address: string | null;
   addressDetail: string | null;
+  features: CompanyFeatureFlags;
 };
 
 export type CompanyAccessContext = {
@@ -37,6 +48,21 @@ export type CompanyAccessContext = {
   company: CompanyAccessCompany;
   companies: CompanyAccessCompany[];
 };
+
+type RawAccessCompany = Omit<CompanyAccessCompany, "features"> & {
+  organizationLink: {
+    salaryFeatureEnabled: boolean;
+    financialReportFeatureEnabled: boolean;
+  } | null;
+};
+
+function normalizeCompany(company: RawAccessCompany): CompanyAccessCompany {
+  const { organizationLink, ...rest } = company;
+  return {
+    ...rest,
+    features: resolveCompanyFeatureFlags(organizationLink),
+  };
+}
 
 function mergeCompanies(companies: CompanyAccessCompany[]) {
   const merged = new Map<string, CompanyAccessCompany>();
@@ -94,8 +120,10 @@ export async function resolveCompanyAccessContextForUser(params: {
   }
 
   const companies = mergeCompanies([
-    user.company,
-    ...user.companyMemberships.map((membership) => membership.company),
+    normalizeCompany(user.company),
+    ...user.companyMemberships.map((membership) =>
+      normalizeCompany(membership.company),
+    ),
   ]);
   const currentCompanyId = resolveCurrentCompanyId(
     companies,

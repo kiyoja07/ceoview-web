@@ -90,6 +90,7 @@ export async function GET(request: NextRequest) {
           }
         : null,
       currentCompanyId: auth.context.currentCompanyId.toString(),
+      features: auth.context.company.features,
       company: auth.context.company
         ? {
             id: auth.context.company.id.toString(),

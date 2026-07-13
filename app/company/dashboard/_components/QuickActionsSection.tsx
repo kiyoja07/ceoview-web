@@ -1,10 +1,15 @@
+import type { CompanyFeatureFlags } from "@/types/company/features";
 import { QuickActionCard } from "./QuickActionCard";
 
 type QuickActionsSectionProps = {
   companyId: string;
+  features: CompanyFeatureFlags;
 };
 
-export function QuickActionsSection({ companyId }: QuickActionsSectionProps) {
+export function QuickActionsSection({
+  companyId,
+  features,
+}: QuickActionsSectionProps) {
   return (
     <section>
       <div className="mb-4">
@@ -14,30 +19,30 @@ export function QuickActionsSection({ companyId }: QuickActionsSectionProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <QuickActionCard
-          href="/company/financial-report"
-          title="재무리포트 보기"
-          description="회계연도별 수익, 비용 요약과 재무 리포트를 확인합니다."
-          icon={<ReportIcon />}
-        />
-        <QuickActionCard
-          href={`/company/${companyId}/salary/dashboard`}
-          title="인건비 내역 보기"
-          description="월별 인건비 내역과 지급 상세를 확인합니다."
-          icon={<DocumentIcon />}
-        />
-        <QuickActionCard
-          href="/company/employees"
-          title="인건비 대상자 관리"
-          description="인건비 대상자 목록을 보고 상태와 현황을 관리합니다."
-          icon={<PeopleIcon />}
-        />
-        {/* <QuickActionCard
-          href="/company/employees/new"
-          title="인건비 대상자 등록"
-          description="신규 인건비 대상자의 정보를 등록합니다."
-          icon={<AddEmployeeIcon />}
-        /> */}
+        {features.financialReport && (
+          <QuickActionCard
+            href="/company/financial-report"
+            title="재무리포트 보기"
+            description="회계연도별 수익, 비용 요약과 재무 리포트를 확인합니다."
+            icon={<ReportIcon />}
+          />
+        )}
+        {features.salary && (
+          <QuickActionCard
+            href={`/company/${companyId}/salary/dashboard`}
+            title="인건비 내역 보기"
+            description="월별 인건비 내역과 지급 상세를 확인합니다."
+            icon={<DocumentIcon />}
+          />
+        )}
+        {features.salary && (
+          <QuickActionCard
+            href="/company/employees"
+            title="인건비 대상자 관리"
+            description="인건비 대상자 목록을 보고 상태와 현황을 관리합니다."
+            icon={<PeopleIcon />}
+          />
+        )}
         <QuickActionCard
           href="/company/settings/info"
           title="회사 정보 관리"

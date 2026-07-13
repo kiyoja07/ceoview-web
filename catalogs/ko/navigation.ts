@@ -42,6 +42,7 @@ export const AGENT_COMPANY_MANAGE_TABS: NavDefinition[] = [
 
 export const AGENT_COMPANY_SETTINGS_TABS: NavDefinition[] = [
   { slug: "info", label: "기본 정보" },
+  { slug: "features", label: "제공 기능" },
   { slug: "users", label: "거래처 사용자" },
 ];
 

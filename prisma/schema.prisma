@@ -140,6 +140,10 @@ model AgentOrganizationCompany {
   companyId String  @unique @map("company_id") @db.ObjectId
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
+  // 에이전트가 거래처에 선택적으로 제공하는 기능 스위치
+  salaryFeatureEnabled          Boolean @default(true) @map("salary_feature_enabled") // 인건비/직원 관리
+  financialReportFeatureEnabled Boolean @default(true) @map("financial_report_feature_enabled") // 재무리포트
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

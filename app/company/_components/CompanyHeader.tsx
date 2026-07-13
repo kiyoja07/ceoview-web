@@ -32,6 +32,10 @@ export function CompanyHeader() {
         const data = (await res.json()) as {
           name: string;
           email: string;
+          features?: {
+            salary?: boolean;
+            financialReport?: boolean;
+          };
           company: {
             id: string;
             businessName: string | null;
@@ -43,6 +47,10 @@ export function CompanyHeader() {
         setProfile({
           name: data.name,
           email: data.email,
+          features: {
+            salary: data.features?.salary ?? true,
+            financialReport: data.features?.financialReport ?? true,
+          },
           company: data.company,
         });
       } catch {
@@ -76,9 +84,26 @@ export function CompanyHeader() {
     (item) => item.activePrefix === "/company/settings",
   );
 
+  const features = profile?.features ?? {
+    salary: true,
+    financialReport: true,
+  };
+
+  // 에이전트가 끈 기능은 메뉴에서 숨긴다.
+  const isNavItemVisible = (item: (typeof COMPANY_HEADER_NAV_ITEMS)[number]) => {
+    if (item.slug === "salary" || item.href === "/company/employees") {
+      return features.salary;
+    }
+    if (item.slug === "financial-report") {
+      return features.financialReport;
+    }
+    return true;
+  };
+
   const navItems = COMPANY_HEADER_NAV_ITEMS.filter(
     (item) => item.activePrefix !== "/company/settings",
   )
+    .filter(isNavItemVisible)
     .map((item) => {
       if (item.slug === "salary")
         return { ...item, href: "/company/salary/dashboard" };
