@@ -5,6 +5,8 @@ import {
   requireAgentOrganizationId,
 } from "../_lib/agent-access";
 
+type FilterType = "all" | "revenue" | "expense" | "unspecified";
+
 /**
  * GET /api/agent/financial-report/entries?companyId=...&reportId=...&page=1&size=50
  * 짝지은 거래 내역(차변/대변) 원장 표를 반환한다.
@@ -71,10 +73,32 @@ export async function GET(request: NextRequest) {
     200,
   );
 
-  const [total, rows] = await Promise.all([
-    prisma.financialReportEntry.count({ where: { reportId } }),
+  const type = searchParams.get("type") ?? "all";
+  const typeWhere =
+    type === "revenue"
+      ? { creditIsRevenue: true }
+      : type === "expense"
+        ? { debitIsExpense: true }
+        : type === "unspecified"
+          ? { creditIsRevenue: false, debitIsExpense: false }
+          : {};
+
+  const [statRows, rows] = await Promise.all([
     prisma.financialReportEntry.findMany({
       where: { reportId },
+      select: {
+        gubunja: true,
+        debitCode: true,
+        debitAmount: true,
+        debitIsRevenue: true,
+        debitIsExpense: true,
+        creditCode: true,
+        creditAmount: true,
+        creditIsRevenue: true,
+      },
+    }),
+    prisma.financialReportEntry.findMany({
+      where: { reportId, ...typeWhere },
       orderBy: { rowIndex: "asc" },
       skip: (page - 1) * size,
       take: size,
@@ -96,10 +120,61 @@ export async function GET(request: NextRequest) {
         creditAccount: true,
         creditAmount: true,
         creditStandardName: true,
+        creditIsRevenue: true,
         creditPartnerName: true,
       },
     }),
   ]);
+
+  // 한 대변 라인이 여러 차변 라인과 짝지어지거나, 한 차변 라인이 여러 대변
+  // 라인과 짝지어질 경우 entries 테이블에 동일한 (gubunja, code, amount) 조합이
+  // 중복 저장되므로, 차변/대변 합계는 각각 그 조합 기준으로 한 번만 집계해
+  // 원본 분개장과의 중복 계산을 막는다.
+  type Stat = { count: number; debitSum: number; creditSum: number };
+  const makeStat = (): Stat & { seenDebit: Set<string>; seenCredit: Set<string> } => ({
+    count: 0,
+    debitSum: 0,
+    creditSum: 0,
+    seenDebit: new Set(),
+    seenCredit: new Set(),
+  });
+  const buckets = {
+    all: makeStat(),
+    revenue: makeStat(),
+    expense: makeStat(),
+    unspecified: makeStat(),
+  };
+  const addTo = (bucket: (typeof buckets)["all"], row: (typeof statRows)[number]) => {
+    bucket.count += 1;
+    if (row.debitAmount) {
+      const key = `${row.gubunja}|${row.debitCode ?? ""}|${row.debitAmount}`;
+      if (!bucket.seenDebit.has(key)) {
+        bucket.seenDebit.add(key);
+        bucket.debitSum += row.debitAmount;
+      }
+    }
+    if (row.creditAmount) {
+      const key = `${row.gubunja}|${row.creditCode ?? ""}|${row.creditAmount}`;
+      if (!bucket.seenCredit.has(key)) {
+        bucket.seenCredit.add(key);
+        bucket.creditSum += row.creditAmount;
+      }
+    }
+  };
+  for (const row of statRows) {
+    addTo(buckets.all, row);
+    // 수익=대변 isRevenue, 비용=차변 isExpense (pairing.ts의 원본 집계 기준과 동일)
+    if (row.creditIsRevenue) addTo(buckets.revenue, row);
+    if (row.debitIsExpense) addTo(buckets.expense, row);
+    if (!row.creditIsRevenue && !row.debitIsExpense) addTo(buckets.unspecified, row);
+  }
+  const counts: Record<FilterType, Stat> = {
+    all: { count: buckets.all.count, debitSum: buckets.all.debitSum, creditSum: buckets.all.creditSum },
+    revenue: { count: buckets.revenue.count, debitSum: buckets.revenue.debitSum, creditSum: buckets.revenue.creditSum },
+    expense: { count: buckets.expense.count, debitSum: buckets.expense.debitSum, creditSum: buckets.expense.creditSum },
+    unspecified: { count: buckets.unspecified.count, debitSum: buckets.unspecified.debitSum, creditSum: buckets.unspecified.creditSum },
+  };
+  const total = counts[type as FilterType]?.count ?? counts.all.count;
 
   return NextResponse.json({
     report: { ...report, uploadedAt: report.uploadedAt.toISOString() },
@@ -107,5 +182,6 @@ export async function GET(request: NextRequest) {
     total,
     page,
     size,
+    counts,
   });
 }

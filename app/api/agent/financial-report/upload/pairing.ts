@@ -60,6 +60,11 @@ function makeYearMonth(year: number | null, date: string): string | null {
  * 짝짓기 규칙(노트북 셀 5~6의 개선판): 차변 라인마다 1행을 생성하고,
  * 같은 구분자의 대변 중 금액이 일치하는 라인(없으면 첫 대변)을 붙인다.
  * → 차변 금액이 중복 집계되지 않아 합계가 원장과 정확히 일치.
+ *
+ * 대변이 2건 이상인 구분자는 차변마다 하나씩 소비(consume)하며 짝짓고,
+ * 끝까지 짝지어지지 못하고 남은 대변은 버리지 않고 별도 행(차변 없음)으로 남긴다.
+ * (이전 구현은 짝지어지지 못한 대변을 그냥 버려 원장에는 있는 금액이
+ * entries 테이블에서 통째로 누락되는 문제가 있었다.)
  */
 export function pairAndSummarize(
   lines: JournalLine[],
@@ -129,16 +134,36 @@ export function pairAndSummarize(
       for (const credit of group.credits) pushEntry(key, null, credit);
       continue;
     }
-    for (const debit of group.debits) {
-      let credit: JournalLine | null = null;
-      if (group.credits.length === 1) {
-        credit = group.credits[0];
-      } else if (group.credits.length > 1) {
-        credit =
-          group.credits.find((c) => c.amount === debit.amount) ??
-          group.credits[0];
+    if (group.credits.length <= 1) {
+      // 대변이 0~1건이면 모든 차변에 동일한 대변(또는 없음)을 짝짓는다.
+      const credit = group.credits[0] ?? null;
+      for (const debit of group.debits) {
+        pushEntry(key, debit, credit);
       }
-      pushEntry(key, debit, credit);
+      continue;
+    }
+    // 대변이 여러 건: 차변마다 금액이 일치하는 대변을 우선 소비하고,
+    // 일치하는 게 없으면 아직 안 쓰인 대변 중 첫 번째를 소비한다.
+    const remainingCredits = [...group.credits];
+    for (const debit of group.debits) {
+      const matchIndex = remainingCredits.findIndex(
+        (c) => c.amount === debit.amount,
+      );
+      const [matched] =
+        matchIndex !== -1
+          ? remainingCredits.splice(matchIndex, 1)
+          : remainingCredits.length > 0
+            ? remainingCredits.splice(0, 1)
+            : [null];
+      pushEntry(key, debit, matched ?? null);
+    }
+    // 짝지어지지 못하고 남은 대변은 유실되지 않도록 별도 행으로 남기되,
+    // 차변을 비워두지 않고 같은 전표의 마지막 차변을 표시용으로 다시 붙인다.
+    // (한 전표 안에서 여러 대변이 하나의 차변 총액을 나눠 구성하는 복합 전표이므로,
+    // 차변 계정/금액 정보를 보여주는 게 원장을 읽을 때 더 자연스럽다.)
+    const anchorDebit = group.debits[group.debits.length - 1];
+    for (const credit of remainingCredits) {
+      pushEntry(key, anchorDebit, credit);
     }
   }
 

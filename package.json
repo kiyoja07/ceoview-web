@@ -12,6 +12,7 @@
     "start": "doppler run -- next start",
     "clean": "npm cache clean --force && rm -rf node_modules package-lock.json .next",
     "db:sync": "doppler run -- npx prisma generate && doppler run -- npx prisma db push",
+    "postinstall": "doppler run -- prisma generate",
     "smoke": "doppler run -- node scripts/smoke/run.mjs"
   },
   "dependencies": {

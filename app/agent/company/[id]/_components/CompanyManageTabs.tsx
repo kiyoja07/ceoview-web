@@ -58,7 +58,9 @@ export function CompanyManageTabs() {
             ? `/agent/company/${companyId}`
             : item.slug === "settings"
               ? `/agent/company/${companyId}/settings/info`
-              : `/agent/company/${companyId}/${item.slug}`,
+              : item.slug === "financial-report"
+                ? `/agent/company/${companyId}/financial-report/generate`
+                : `/agent/company/${companyId}/${item.slug}`,
       })),
     [companyId],
   );
@@ -87,7 +89,11 @@ export function CompanyManageTabs() {
               const active =
                 item.label === "설정"
                   ? pathname.startsWith(`/agent/company/${companyId}/settings`)
-                  : isActivePath(pathname, item.href);
+                  : item.label === "재무리포트"
+                    ? pathname.startsWith(
+                        `/agent/company/${companyId}/financial-report`,
+                      )
+                    : isActivePath(pathname, item.href);
               return (
                 <li key={item.href}>
                   <Link

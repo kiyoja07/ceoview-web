@@ -1,5 +1,5 @@
 import type { KeyLabel } from "@/catalogs/types";
-import type { FilterMode } from "@/app/agent/employees/_components/types";
+import type { FilterMode } from "@/app/agent/_employees/_components/types";
 
 export const EMPLOYEE_DASHBOARD_FILTER_OPTIONS: KeyLabel<FilterMode>[] = [
   { key: "all", label: "전체" },

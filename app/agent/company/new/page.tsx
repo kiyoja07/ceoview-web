@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { AgentAuthMeResponse, AuthMessageState } from "@/types/agent/auth";
 import BusinessRegistrationForm, {
   type BusinessFormValues,
-} from "@/app/agent/_components/business-form/BusinessRegistrationForm";
+} from "@/app/agent/company/new/_components/BusinessRegistrationForm";
 import useBizValidation from "@/app/agent/_components/business-form/useBizValidation";
 
 export default function CompanyNewPage() {

@@ -10,7 +10,7 @@ import type {
 } from "@/types/agent/auth";
 import BusinessRegistrationForm, {
   type BusinessFormValues,
-} from "@/app/agent/_components/business-form/BusinessRegistrationForm";
+} from "@/app/agent/company/new/_components/BusinessRegistrationForm";
 import useBizValidation from "@/app/agent/_components/business-form/useBizValidation";
 import PhoneInput from "@/app/_components/PhoneInput";
 import { validateOrganizationPhone } from "@/app/lib/organization-phone";

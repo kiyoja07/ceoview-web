@@ -20,7 +20,9 @@ import OnboardingGuide from "./_components/OnboardingGuide";
 
 const PAGE_SIZE = 50;
 
-function CompanyListPageInner() {
+// agent의 메인 화면
+// 거래처 관리 화면
+export default function CompanyListPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const created = searchParams.get("created") === "1";
@@ -75,45 +77,39 @@ function CompanyListPageInner() {
   );
 
   return (
-    <div className="min-h-screen bg-app-bg">
-      <div className="mx-auto max-w-5xl p-6 lg:p-8">
-        <CompanyListHeader count={!loading && !error ? total : null} />
-
-        {created && <CompanyCreatedToast />}
-        {requested && <CompanyTransferRequestedToast />}
-
-        <OnboardingGuide />
-
-        {loading ? (
-          <CompanyListLoading />
-        ) : error ? (
-          <CompanyListError
-            message={error}
-            onRetry={() => setRetryKey((k) => k + 1)}
-          />
-        ) : companies.length === 0 ? (
-          <CompanyListEmpty />
-        ) : (
-          <>
-            <CompanyTable companies={companies} />
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-export default function CompanyListPage() {
-  return (
     <Suspense>
-      <CompanyListPageInner />
+      <div className="min-h-screen bg-app-bg">
+        <div className="mx-auto max-w-5xl p-6 lg:p-8">
+          <CompanyListHeader count={!loading && !error ? total : null} />
+
+          {created && <CompanyCreatedToast />}
+          {requested && <CompanyTransferRequestedToast />}
+
+          <OnboardingGuide />
+
+          {loading && <CompanyListLoading />}
+          {error && (
+            <CompanyListError
+              message={error}
+              onRetry={() => setRetryKey((k) => k + 1)}
+            />
+          )}
+          {!loading && !error && companies.length === 0 ? (
+            <CompanyListEmpty />
+          ) : (
+            <>
+              <CompanyTable companies={companies} />
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </Suspense>
   );
 }

@@ -5,27 +5,6 @@ import type {
   StandardReports,
 } from "./types";
 
-// BunGaeJang 노트북 셀 21: 비용 집계에서 제외하는 표준계정과목
-// (단순이체/미지급금 등 실제 비용이 아닌 정산성 계정)
-const EXPENSE_EXCLUDED_ACCOUNTS = new Set([
-  "단순이체",
-  "미지급금",
-  "부가세대급금",
-  "부가세예수금",
-  "보통예금",
-  "가지급금",
-  "미수수익",
-  "미지급비용",
-  "비품",
-  "전도금",
-  "예수금",
-  "외상매출금",
-  "선수금",
-  "선납세금",
-  "선급금",
-  "미지급세금",
-]);
-
 const BANK_ACCOUNT_NAME = "보통예금";
 const VAT_OUTPUT_ACCOUNT = "부가세예수금"; // 대변: 매출세액
 const VAT_INPUT_ACCOUNT = "부가세대급금"; // 차변: 매입세액
@@ -107,12 +86,27 @@ export function buildStandardReports(entries: PairedEntry[]): StandardReports {
   const cashInItems: PivotItem[] = [];
   const cashOutItems: PivotItem[] = [];
 
+  // 페어링 과정에서 대변 1건이 여러 차변에, 혹은 차변 1건이 여러 대변에
+  // 재사용되어 같은 (구분자, 계정, 금액) 조합이 여러 entries 행에 걸쳐
+  // 중복 등장할 수 있다. 수익/비용 합계(pairing.ts의 revenueTotal/expenseTotal,
+  // 원본 라인 기준 집계)와 일치시키려면 그 조합당 한 번만 집계해야 한다.
+  const seenCredit = new Set<string>();
+  const seenDebit = new Set<string>();
+
   for (const e of entries) {
     if (!e.yearMonth) continue;
     const ym = e.yearMonth;
 
-    // 1. 수익 보고서 (대변 계정이 수익여부인 거래)
-    if (e.creditIsRevenue && e.creditAmount) {
+    const creditKey = `${e.gubunja}|${e.creditCode ?? ""}|${e.creditAmount}`;
+    const isNewCredit = Boolean(e.creditAmount) && !seenCredit.has(creditKey);
+    if (e.creditAmount) seenCredit.add(creditKey);
+
+    const debitKey = `${e.gubunja}|${e.debitCode ?? ""}|${e.debitAmount}`;
+    const isNewDebit = Boolean(e.debitAmount) && !seenDebit.has(debitKey);
+    if (e.debitAmount) seenDebit.add(debitKey);
+
+    // 1. 수익 보고서 (대변 계정이 수익여부인 거래, pairing.ts revenueTotal과 동일 기준)
+    if (e.creditIsRevenue && isNewCredit) {
       const label = e.creditStandardName ?? e.creditAccount ?? "미분류";
       incomeItems.push({
         label,
@@ -127,13 +121,8 @@ export function buildStandardReports(entries: PairedEntry[]): StandardReports {
       });
     }
 
-    // 2. 비용 보고서 (수익 거래 제외, 정산성 계정 제외)
-    if (
-      !e.creditIsRevenue &&
-      e.debitAmount &&
-      e.debitStandardName &&
-      !EXPENSE_EXCLUDED_ACCOUNTS.has(e.debitStandardName)
-    ) {
+    // 2. 비용 보고서 (차변 계정이 비용여부인 거래, pairing.ts expenseTotal과 동일 기준)
+    if (e.debitIsExpense && isNewDebit && e.debitStandardName) {
       expenseItems.push({
         label: e.debitStandardName,
         ym,

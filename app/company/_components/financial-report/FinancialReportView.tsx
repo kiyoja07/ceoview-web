@@ -8,6 +8,8 @@ import {
   CartesianGrid,
   ComposedChart,
   Legend,
+  Line,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -28,6 +30,13 @@ function compact(value: number): string {
   if (abs >= 1_0000_0000) return `${(value / 1_0000_0000).toFixed(1)}억`;
   if (abs >= 1_0000) return `${Math.round(value / 1_0000).toLocaleString()}만`;
   return value.toLocaleString();
+}
+
+// "2025년 1월" → 202501 (정렬 키)
+function ymSortKey(ym: string): number {
+  const m = ym.match(/(\d+)년\s*(\d+)월/);
+  if (!m) return Number.MAX_SAFE_INTEGER;
+  return Number.parseInt(m[1], 10) * 100 + Number.parseInt(m[2], 10);
 }
 
 function getSubjectParticle(value: string) {
@@ -150,6 +159,32 @@ export function FinancialReportView({
 
   const monthly = useMemo(() => summary?.monthly ?? [], [summary]);
 
+  const cashFlowMonthly = useMemo(() => {
+    const cashIn = summary?.standardReports?.cashIn;
+    const cashOut = summary?.standardReports?.cashOut;
+    if (!cashIn && !cashOut) return [];
+    const months = new Set<string>([
+      ...(cashIn?.months ?? []),
+      ...(cashOut?.months ?? []),
+    ]);
+    let cumulative = 0;
+    return [...months]
+      .sort((a, b) => ymSortKey(a) - ymSortKey(b))
+      .map((ym) => {
+        const cashInAmt = cashIn?.monthlyTotals[ym] ?? 0;
+        const cashOutAmt = cashOut?.monthlyTotals[ym] ?? 0;
+        const net = cashInAmt - cashOutAmt;
+        cumulative += net;
+        return {
+          ym,
+          cashIn: cashInAmt,
+          cashOutNeg: -cashOutAmt,
+          net,
+          cumulative,
+        };
+      });
+  }, [summary]);
+
   if (loading) {
     return <PageLoading />;
   }
@@ -261,6 +296,75 @@ export function FinancialReportView({
                 </ComposedChart>
               </ResponsiveContainer>
             </section>
+
+            {/* 월별 현금 유입·유출 */}
+            {cashFlowMonthly.length > 0 && (
+              <section className="my-8 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5">
+                <h2 className="mb-5 text-lg font-bold text-gray-900">
+                  월별 현금 유입 · 유출
+                </h2>
+                <ResponsiveContainer width="100%" height={340}>
+                  <ComposedChart
+                    data={cashFlowMonthly}
+                    margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
+                    barCategoryGap="20%"
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis
+                      dataKey="ym"
+                      tick={{ fontSize: 12, fill: "#94a3b8" }}
+                      axisLine={{ stroke: "#e2e8f0" }}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tickFormatter={compact}
+                      tick={{ fontSize: 12, fill: "#94a3b8" }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={60}
+                    />
+                    <Tooltip
+                      content={<ChartTooltip />}
+                      cursor={{ fill: "rgba(59,130,246,0.04)" }}
+                    />
+                    <Legend
+                      iconType="circle"
+                      wrapperStyle={{ fontSize: 13, paddingTop: 12 }}
+                    />
+                    <ReferenceLine y={0} stroke="#cbd5e1" />
+                    <Bar
+                      dataKey="cashIn"
+                      name="현금 유입"
+                      fill="#14b8a6"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="cashOutNeg"
+                      name="현금 유출"
+                      fill="#ec4899"
+                      radius={[0, 0, 4, 4]}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="net"
+                      name="월별 순증감"
+                      stroke="#1e293b"
+                      strokeWidth={2}
+                      dot={{ r: 3 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="cumulative"
+                      name="누적 순증감"
+                      stroke="#94a3b8"
+                      strokeWidth={1.5}
+                      strokeDasharray="5 5"
+                      dot={false}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </section>
+            )}
 
             {summary?.standardReports && (
               <section className="mb-8 space-y-4">

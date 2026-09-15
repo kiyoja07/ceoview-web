@@ -6,30 +6,56 @@ type CompanyTableProps = {
   companies: AgentCompanyListItem[];
 };
 
+const tableHeaders = [
+  "상호명",
+  "사업자번호",
+  "구분",
+  "대표자명",
+  "최근수정일시",
+  "관리 항목",
+];
+
+const companyActions = [
+  {
+    label: "개요",
+    path: "",
+    className:
+      "bg-slate-100 text-slate-700 ring-1 ring-slate-600/10 hover:bg-slate-200",
+  },
+  {
+    label: "재무",
+    path: "/financial-report/generate",
+    className:
+      "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 hover:bg-blue-100",
+  },
+  // {
+  //   label: "직원",
+  //   path: "/employees",
+  //   className:
+  //     "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 hover:bg-emerald-100",
+  // },
+  // {
+  //   label: "급여",
+  //   path: "/salary",
+  //   className:
+  //     "bg-amber-50 text-amber-700 ring-1 ring-amber-600/20 hover:bg-amber-100",
+  // },
+];
+
 export default function CompanyTable({ companies }: CompanyTableProps) {
   return (
     <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-950/5">
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b border-gray-100 bg-gray-50/50">
-            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
-              상호명
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
-              사업자번호
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
-              구분
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
-              대표자명
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
-              최근수정일시
-            </th>
-            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase">
-              관리 항목
-            </th>
+            {tableHeaders.map((header) => (
+              <th
+                key={header}
+                className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-gray-500 uppercase"
+              >
+                {header}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -90,30 +116,15 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
               </td>
               <td className="px-4 py-3 text-right">
                 <div className="inline-flex items-center gap-2">
-                  <Link
-                    href={`/agent/company/${company.id}`}
-                    className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-600/10 transition-all hover:bg-slate-200 active:scale-[0.97]"
-                  >
-                    개요
-                  </Link>
-                  <Link
-                    href={`/agent/company/${company.id}/financial-report`}
-                    className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 ring-1 ring-blue-600/20 transition-all hover:bg-blue-100 active:scale-[0.97]"
-                  >
-                    재무
-                  </Link>
-                  <Link
-                    href={`/agent/company/${company.id}/employees`}
-                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/20 transition-all hover:bg-emerald-100 active:scale-[0.97]"
-                  >
-                    직원
-                  </Link>
-                  <Link
-                    href={`/agent/company/${company.id}/salary`}
-                    className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 ring-1 ring-amber-600/20 transition-all hover:bg-amber-100 active:scale-[0.97]"
-                  >
-                    급여
-                  </Link>
+                  {companyActions.map(({ label, path, className }) => (
+                    <Link
+                      key={label}
+                      href={`/agent/company/${company.id}${path}`}
+                      className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-all active:scale-[0.97] ${className}`}
+                    >
+                      {label}
+                    </Link>
+                  ))}
                 </div>
               </td>
             </tr>
