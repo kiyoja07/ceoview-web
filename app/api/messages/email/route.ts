@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authorizeMessageApiRequest } from "@/app/lib/messages/api-auth";
 import { sendEmail } from "@/app/lib/messages/email";
 import { MessageSendValidationError } from "@/app/lib/messages/shared";
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await authorizeMessageApiRequest(request);
+    if ("error" in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+
     const body = (await request.json()) as {
       to?: string;
       title?: string;

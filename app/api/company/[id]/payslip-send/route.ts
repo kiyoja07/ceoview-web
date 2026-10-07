@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authorizeCompanySalaryAccess } from "@/app/lib/company-salary-access";
 import prisma from "@/app/lib/prisma";
 import {
   buildPayslipViewUrl,
@@ -207,6 +208,14 @@ export async function POST(
   try {
     const { id } = await params;
     const companyId = id;
+
+    const access = await authorizeCompanySalaryAccess(request, companyId);
+    if ("error" in access) {
+      return NextResponse.json(
+        { error: access.error },
+        { status: access.status },
+      );
+    }
 
     const body = await request.json();
     const { earnedIncomeIds, channels } = body as {

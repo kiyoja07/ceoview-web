@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authorizeCompanySalaryAccess } from "@/app/lib/company-salary-access";
 import prisma from "@/app/lib/prisma";
 import { EARNED_ITEM_CODE_STUDENT_LOAN_REPAYMENT } from "@/app/lib/payroll-items";
 import {
@@ -13,6 +14,14 @@ export async function GET(
   try {
     const { id } = await params;
     const companyId = id;
+
+    const access = await authorizeCompanySalaryAccess(request, companyId);
+    if ("error" in access) {
+      return NextResponse.json(
+        { error: access.error },
+        { status: access.status },
+      );
+    }
 
     // 쿼리 파라미터: 귀속년월 필터 (선택)
     const { searchParams } = new URL(request.url);
