@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
       success: true,
       currentCompanyId: nextCompany.id.toString(),
       profileComplete: isCompanyProfileComplete(nextCompany.address),
+      features: nextCompany.features,
       company: {
         id: nextCompany.id.toString(),
         businessNumber: nextCompany.businessNumber,

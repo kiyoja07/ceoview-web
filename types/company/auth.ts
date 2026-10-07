@@ -1,3 +1,5 @@
+import type { CompanyFeatureFlags } from "@/types/company/features";
+
 export type CompanyAuthMessageState = {
   type: "error" | "success";
   text: string;
@@ -22,6 +24,7 @@ export type CompanyAuthMeResponse = {
   profileComplete: boolean;
   pendingJoinRequest: CompanyPendingJoinRequestSummary | null;
   currentCompanyId: string | null;
+  features: CompanyFeatureFlags;
   company: CompanyAuthCompanySummary | null;
   companies: CompanyAuthCompanySummary[];
 };

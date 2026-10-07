@@ -130,6 +130,12 @@ export default function CompanyDashboardPage() {
       formatBusinessNumber(agentOrganization.organizationNumber)
     : "미지정";
 
+  // 에이전트가 끈 기능은 대시보드에서 숨긴다.
+  const features = profile?.features ?? {
+    salary: true,
+    financialReport: true,
+  };
+
   return (
     <div className="min-h-screen bg-app-bg">
       <div className="mx-auto max-w-6xl p-6 lg:p-8">
@@ -149,13 +155,17 @@ export default function CompanyDashboardPage() {
           agentLabel={agentLabel}
         />
         {/* 재무리포트 카드*/}
-        <FinancialReportOverviewSection financialReport={financialReport} />
+        {features.financialReport && (
+          <FinancialReportOverviewSection financialReport={financialReport} />
+        )}
         {/* 인건비 카드*/}
-        <SalaryOverviewSection companyId={company.id} salary={salary} />
+        {features.salary && (
+          <SalaryOverviewSection companyId={company.id} salary={salary} />
+        )}
         {/* 인건비 대상자 카드*/}
-        <EmployeeOverviewSection employees={employees} />
+        {features.salary && <EmployeeOverviewSection employees={employees} />}
         {/* 바로가기 카드*/}
-        <QuickActionsSection companyId={company.id} />
+        <QuickActionsSection companyId={company.id} features={features} />
       </div>
     </div>
   );

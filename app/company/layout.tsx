@@ -19,6 +19,23 @@ async function shouldShowCompanyHeader() {
   return !pathname.startsWith("/company/auth");
 }
 
+// 인건비/직원 기능 경로 : /company/salary, /company/employees, /company/{id}/salary
+const SALARY_PATH_RE = /^\/company\/(salary|employees)(\/|$)|^\/company\/[^/]+\/salary(\/|$)/;
+// 재무리포트 기능 경로 : /company/financial-report, /company/{id}/financial-report
+const FINANCIAL_REPORT_PATH_RE =
+  /^\/company\/financial-report(\/|$)|^\/company\/[^/]+\/financial-report(\/|$)/;
+
+function isFeatureRestrictedPath(
+  pathname: string,
+  features: { salary: boolean; financialReport: boolean },
+) {
+  if (!features.salary && SALARY_PATH_RE.test(pathname)) return true;
+  if (!features.financialReport && FINANCIAL_REPORT_PATH_RE.test(pathname)) {
+    return true;
+  }
+  return false;
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   try {
     if (!(await shouldShowCompanyHeader())) {
@@ -80,6 +97,11 @@ export default async function CompanyLayout({
         redirect(
           pendingRequest ? "/company/auth/pending" : "/company/auth/onboarding",
         );
+      }
+
+      // 에이전트가 끈 기능의 경로는 접근을 차단한다.
+      if (access && isFeatureRestrictedPath(pathname, access.company.features)) {
+        redirect("/company/dashboard");
       }
     }
   }
