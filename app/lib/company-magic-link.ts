@@ -5,8 +5,9 @@ import {
   createDefaultNameFromEmail,
   isValidEmail,
 } from "@/app/lib/agent-magic-link";
+import { MAGIC_LINK_TTL_MINUTES } from "@/app/lib/magic-link-ttl";
 
-const COMPANY_MAGIC_LINK_TTL_MINUTES = 30;
+const COMPANY_MAGIC_LINK_TTL_MINUTES = MAGIC_LINK_TTL_MINUTES;
 const COMPANY_MAGIC_LINK_TTL_MS = COMPANY_MAGIC_LINK_TTL_MINUTES * 60 * 1000;
 
 export { isValidEmail };

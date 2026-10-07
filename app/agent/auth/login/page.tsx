@@ -9,6 +9,7 @@ import type {
   AuthMessageState,
   AuthResponse,
 } from "@/types/agent/auth";
+import { MAGIC_LINK_TTL_MINUTES } from "@/app/lib/magic-link-ttl";
 
 const inputBase =
   "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow";
@@ -43,22 +44,25 @@ function AgentAuthLoginPageInner() {
     void checkSession();
   }, [router]);
 
-  useEffect(() => {
-    const error = searchParams.get("error");
-    if (!error) return;
+  // URL의 error 파라미터가 바뀌면 렌더 중에 오류 메시지를 반영
+  const errorParam = searchParams.get("error");
+  const [prevErrorParam, setPrevErrorParam] = useState<string | null>(null);
+  if (errorParam !== prevErrorParam) {
+    setPrevErrorParam(errorParam);
+    if (errorParam) {
+      const errorTextMap: Record<string, string> = {
+        invalid_magic_link: "로그인 링크가 올바르지 않습니다.",
+        expired_magic_link: "로그인 링크가 만료되었거나 이미 사용되었습니다.",
+        inactive_user: "비활성화된 계정입니다. 관리자에게 문의해주세요.",
+        magic_link_error: "로그인 처리 중 오류가 발생했습니다.",
+      };
 
-    const errorTextMap: Record<string, string> = {
-      invalid_magic_link: "로그인 링크가 올바르지 않습니다.",
-      expired_magic_link: "로그인 링크가 만료되었거나 이미 사용되었습니다.",
-      inactive_user: "비활성화된 계정입니다. 관리자에게 문의해주세요.",
-      magic_link_error: "로그인 처리 중 오류가 발생했습니다.",
-    };
-
-    setMessage({
-      type: "error",
-      text: errorTextMap[error] || "로그인 링크 검증에 실패했습니다.",
-    });
-  }, [searchParams]);
+      setMessage({
+        type: "error",
+        text: errorTextMap[errorParam] || "로그인 링크 검증에 실패했습니다.",
+      });
+    }
+  }
 
   const submitLabel = useMemo(
     () => (loading ? "링크 발송 중..." : "로그인 링크 보내기"),
@@ -229,7 +233,7 @@ function AgentAuthLoginPageInner() {
                 </button>
 
                 <p className="text-center text-xs text-gray-500">
-                  링크는 15분간 유효하며 1회만 사용할 수 있습니다.
+                  링크는 {MAGIC_LINK_TTL_MINUTES}분간 유효하며 1회만 사용할 수 있습니다.
                 </p>
                 <p className="text-center text-xs text-gray-500">
                   첫 로그인 후 소속 조직 정보를 입력하면 바로 사용 가능합니다.

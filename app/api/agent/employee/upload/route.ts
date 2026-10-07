@@ -297,79 +297,83 @@ export async function POST(request: NextRequest) {
         const accountHolder = toStr(row["예금주"]);
 
         // upsert Employee
-        const employee = await prisma.employee.upsert({
-          where: {
-            companyId_employeeCode: {
-              companyId: parsedCompanyId,
-              employeeCode: code,
-            },
-          },
-          update: {
-            name,
-            residentNumber,
-            nationalityType,
-            jobCategory,
-            residenceType,
-            department,
-            positionTitle,
-            hireDate,
-            resignDate,
-            zipcode,
-            address,
-            addressDetail,
-            phone: mobile ?? phone,
-            landlinePhone: phone,
-            email,
-            hasSpouse,
-            dependentUnder20,
-            dependentOver60,
-            deductionSenior,
-            deductionDisabled,
-            deductionWomen,
-            deductionChildren,
-            deductionBirthAdoption,
-            deductionSingleParent,
-            employmentInsurance,
-            payGrade,
-            nationalPension,
-            healthInsurance,
-            publishStatus: "SAVED",
-            deletedAt: null,
-          },
-          create: {
-            companyId: parsedCompanyId,
-            employeeCode: code,
-            name,
-            residentNumber,
-            nationalityType,
-            jobCategory,
-            residenceType,
-            department,
-            positionTitle,
-            hireDate,
-            resignDate,
-            zipcode,
-            address,
-            addressDetail,
-            phone: mobile ?? phone,
-            landlinePhone: phone,
-            email,
-            hasSpouse,
-            dependentUnder20,
-            dependentOver60,
-            deductionSenior,
-            deductionDisabled,
-            deductionWomen,
-            deductionChildren,
-            deductionBirthAdoption,
-            deductionSingleParent,
-            employmentInsurance,
-            payGrade,
-            nationalPension,
-            healthInsurance,
-            publishStatus: "SAVED",
-          },
+        // 사원코드는 비어 있을 수 있어 고유 제약 대신 조회 후 수정/생성한다.
+        const existingByCode = await prisma.employee.findFirst({
+          where: { companyId: parsedCompanyId, employeeCode: code },
+          orderBy: { createdAt: "asc" },
+          select: { id: true },
         });
+        const employee = existingByCode
+          ? await prisma.employee.update({
+              where: { id: existingByCode.id },
+              data: {
+                name,
+                residentNumber,
+                nationalityType,
+                jobCategory,
+                residenceType,
+                department,
+                positionTitle,
+                hireDate,
+                resignDate,
+                zipcode,
+                address,
+                addressDetail,
+                phone: mobile ?? phone,
+                landlinePhone: phone,
+                email,
+                hasSpouse,
+                dependentUnder20,
+                dependentOver60,
+                deductionSenior,
+                deductionDisabled,
+                deductionWomen,
+                deductionChildren,
+                deductionBirthAdoption,
+                deductionSingleParent,
+                employmentInsurance,
+                payGrade,
+                nationalPension,
+                healthInsurance,
+                publishStatus: "SAVED",
+                deletedAt: null,
+              },
+            })
+          : await prisma.employee.create({
+              data: {
+                companyId: parsedCompanyId,
+                employeeCode: code,
+                name,
+                residentNumber,
+                nationalityType,
+                jobCategory,
+                residenceType,
+                department,
+                positionTitle,
+                hireDate,
+                resignDate,
+                zipcode,
+                address,
+                addressDetail,
+                phone: mobile ?? phone,
+                landlinePhone: phone,
+                email,
+                hasSpouse,
+                dependentUnder20,
+                dependentOver60,
+                deductionSenior,
+                deductionDisabled,
+                deductionWomen,
+                deductionChildren,
+                deductionBirthAdoption,
+                deductionSingleParent,
+                employmentInsurance,
+                payGrade,
+                nationalPension,
+                healthInsurance,
+                publishStatus: "SAVED",
+              },
+            });
 
         // 은행 계좌 처리
         if (bankName && accountNumber) {
@@ -541,43 +545,49 @@ async function handleBusinessIncome(
       const address = toStr(row["소득자주소"]);
       const zipcode = toStr(row["우편번호"]);
 
-      await prisma.businessIncomeEmployee.upsert({
-        where: {
-          companyId_employeeCode: {
+      // 사원코드는 비어 있을 수 있어 고유 제약 대신 조회 후 수정/생성한다.
+      const existingByCode = await prisma.businessIncomeEmployee.findFirst({
+        where: { companyId: parsedCompanyId, employeeCode: code },
+        orderBy: { createdAt: "asc" },
+        select: { id: true },
+      });
+      if (existingByCode) {
+        await prisma.businessIncomeEmployee.update({
+          where: { id: existingByCode.id },
+          data: {
+            name,
+            residentNumber,
+            nationalityType,
+            incomeCategory,
+            residenceType,
+            businessName,
+            businessRegistrationNumber,
+            businessAddress,
+            address,
+            zipcode,
+            publishStatus: "SAVED",
+            deletedAt: null,
+          },
+        });
+      } else {
+        await prisma.businessIncomeEmployee.create({
+          data: {
             companyId: parsedCompanyId,
             employeeCode: code,
+            name,
+            residentNumber,
+            nationalityType,
+            incomeCategory,
+            residenceType,
+            businessName,
+            businessRegistrationNumber,
+            businessAddress,
+            address,
+            zipcode,
+            publishStatus: "SAVED",
           },
-        },
-        update: {
-          name,
-          residentNumber,
-          nationalityType,
-          incomeCategory,
-          residenceType,
-          businessName,
-          businessRegistrationNumber,
-          businessAddress,
-          address,
-          zipcode,
-          publishStatus: "SAVED",
-          deletedAt: null,
-        },
-        create: {
-          companyId: parsedCompanyId,
-          employeeCode: code,
-          name,
-          residentNumber,
-          nationalityType,
-          incomeCategory,
-          residenceType,
-          businessName,
-          businessRegistrationNumber,
-          businessAddress,
-          address,
-          zipcode,
-          publishStatus: "SAVED",
-        },
-      });
+        });
+      }
 
       savedCount++;
     }
@@ -716,43 +726,49 @@ async function handleOtherIncome(
       const zipcode = toStr(row["우편번호"]);
       const phone = toStr(row["전화번호"]);
 
-      await prisma.otherIncomeEmployee.upsert({
-        where: {
-          companyId_employeeCode: {
+      // 사원코드는 비어 있을 수 있어 고유 제약 대신 조회 후 수정/생성한다.
+      const existingByCode = await prisma.otherIncomeEmployee.findFirst({
+        where: { companyId: parsedCompanyId, employeeCode: code },
+        orderBy: { createdAt: "asc" },
+        select: { id: true },
+      });
+      if (existingByCode) {
+        await prisma.otherIncomeEmployee.update({
+          where: { id: existingByCode.id },
+          data: {
+            name,
+            residentNumber,
+            nationalityType,
+            incomeCategory,
+            residenceType,
+            personType,
+            businessRegistrationNumber,
+            businessAddress,
+            zipcode,
+            phone,
+            publishStatus: "SAVED",
+            deletedAt: null,
+          },
+        });
+      } else {
+        await prisma.otherIncomeEmployee.create({
+          data: {
             companyId: parsedCompanyId,
             employeeCode: code,
+            name,
+            residentNumber,
+            nationalityType,
+            incomeCategory,
+            residenceType,
+            personType,
+            businessRegistrationNumber,
+            businessAddress,
+            zipcode,
+            phone,
+            publishStatus: "SAVED",
           },
-        },
-        update: {
-          name,
-          residentNumber,
-          nationalityType,
-          incomeCategory,
-          residenceType,
-          personType,
-          businessRegistrationNumber,
-          businessAddress,
-          zipcode,
-          phone,
-          publishStatus: "SAVED",
-          deletedAt: null,
-        },
-        create: {
-          companyId: parsedCompanyId,
-          employeeCode: code,
-          name,
-          residentNumber,
-          nationalityType,
-          incomeCategory,
-          residenceType,
-          personType,
-          businessRegistrationNumber,
-          businessAddress,
-          zipcode,
-          phone,
-          publishStatus: "SAVED",
-        },
-      });
+        });
+      }
 
       savedCount++;
     }
@@ -914,55 +930,61 @@ async function handleDailyLaborIncome(
       const accountNumber = toStr(row[findCol("계좌번호")]);
       const siteName = toStr(row[findCol("현장")]);
 
-      await prisma.otherIncomeLaborEmployee.upsert({
-        where: {
-          companyId_employeeCode: {
+      // 사원코드는 비어 있을 수 있어 고유 제약 대신 조회 후 수정/생성한다.
+      const existingByCode = await prisma.otherIncomeLaborEmployee.findFirst({
+        where: { companyId: parsedCompanyId, employeeCode: code },
+        orderBy: { createdAt: "asc" },
+        select: { id: true },
+      });
+      if (existingByCode) {
+        await prisma.otherIncomeLaborEmployee.update({
+          where: { id: existingByCode.id },
+          data: {
+            name,
+            residentNumber,
+            department,
+            positionTitle,
+            hireDate,
+            resignDate,
+            jobCategory,
+            payType,
+            paymentMethod,
+            overtimeType,
+            normalPay,
+            overtimePay,
+            address,
+            bankName,
+            accountNumber,
+            siteName,
+            publishStatus: "SAVED",
+            deletedAt: null,
+          },
+        });
+      } else {
+        await prisma.otherIncomeLaborEmployee.create({
+          data: {
             companyId: parsedCompanyId,
             employeeCode: code,
+            name,
+            residentNumber,
+            department,
+            positionTitle,
+            hireDate,
+            resignDate,
+            jobCategory,
+            payType,
+            paymentMethod,
+            overtimeType,
+            normalPay,
+            overtimePay,
+            address,
+            bankName,
+            accountNumber,
+            siteName,
+            publishStatus: "SAVED",
           },
-        },
-        update: {
-          name,
-          residentNumber,
-          department,
-          positionTitle,
-          hireDate,
-          resignDate,
-          jobCategory,
-          payType,
-          paymentMethod,
-          overtimeType,
-          normalPay,
-          overtimePay,
-          address,
-          bankName,
-          accountNumber,
-          siteName,
-          publishStatus: "SAVED",
-          deletedAt: null,
-        },
-        create: {
-          companyId: parsedCompanyId,
-          employeeCode: code,
-          name,
-          residentNumber,
-          department,
-          positionTitle,
-          hireDate,
-          resignDate,
-          jobCategory,
-          payType,
-          paymentMethod,
-          overtimeType,
-          normalPay,
-          overtimePay,
-          address,
-          bankName,
-          accountNumber,
-          siteName,
-          publishStatus: "SAVED",
-        },
-      });
+        });
+      }
 
       savedCount++;
     }

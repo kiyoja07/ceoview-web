@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import {
+  EMPLOYEE_CODE_TAKEN_MESSAGE,
+  isEmployeeCodeTaken,
+} from "@/app/lib/employee-code";
 import { sanitizeEmployeePayload } from "@/app/lib/company-input";
 import { getAgentUserIdFromRequest } from "@/app/lib/agent-auth";
 import type { EmployeeCreateBody } from "@/types/company/employees";
@@ -214,6 +218,20 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return NextResponse.json(
         { error: "이름을 입력해주세요." },
         { status: 400 },
+      );
+    }
+
+    if (
+      await isEmployeeCodeTaken({
+        incomeType: "EARNED_INCOME",
+        companyId,
+        employeeCode: body.employeeCode,
+        excludeId: employeeId,
+      })
+    ) {
+      return NextResponse.json(
+        { error: EMPLOYEE_CODE_TAKEN_MESSAGE },
+        { status: 409 },
       );
     }
 

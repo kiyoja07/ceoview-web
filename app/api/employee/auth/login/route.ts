@@ -53,8 +53,9 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const user = await prisma.employeeUser.findUnique({
+      const user = await prisma.employeeUser.findFirst({
         where: { email },
+        orderBy: { createdAt: "asc" },
         select: {
           id: true,
           isActive: true,
@@ -165,8 +166,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await prisma.employeeUser.findUnique({
+    const user = await prisma.employeeUser.findFirst({
       where: { phone },
+      orderBy: { createdAt: "asc" },
       select: {
         id: true,
         isActive: true,

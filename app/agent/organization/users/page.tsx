@@ -9,6 +9,29 @@ import { UserTable } from "./_components/UserTable";
 import { StatusMessage } from "./_components/StatusMessage";
 import { ErrorPanel, LoadingPanel } from "@/app/_components/ui/Panel";
 
+type UsersFetchResult =
+  | { kind: "ok"; data: UsersResponse }
+  | { kind: "redirect"; path: string }
+  | { kind: "error" };
+
+async function fetchUsers(): Promise<UsersFetchResult> {
+  try {
+    const res = await fetch("/api/agent/users", { cache: "no-store" });
+    if (res.status === 401) {
+      return { kind: "redirect", path: "/agent/auth/login" };
+    }
+    if (res.status === 403) {
+      return { kind: "redirect", path: "/agent/auth/organization" };
+    }
+    if (!res.ok) {
+      return { kind: "error" };
+    }
+    return { kind: "ok", data: (await res.json()) as UsersResponse };
+  } catch {
+    return { kind: "error" };
+  }
+}
+
 export default function AgentUsersPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -36,38 +59,38 @@ export default function AgentUsersPage() {
     void loadMe();
   }, []);
 
+  const applyUsersResult = useCallback(
+    (result: UsersFetchResult) => {
+      if (result.kind === "redirect") {
+        router.replace(result.path);
+      } else if (result.kind === "ok") {
+        setData(result.data);
+      } else {
+        setMessage({
+          type: "error",
+          text: "사용자 현황을 불러오지 못했습니다.",
+        });
+      }
+      setLoading(false);
+    },
+    [router],
+  );
+
   const loadUsers = useCallback(async () => {
     setLoading(true);
     setMessage(null);
-    try {
-      const res = await fetch("/api/agent/users", { cache: "no-store" });
-      if (res.status === 401) {
-        router.replace("/agent/auth/login");
-        return;
-      }
-      if (res.status === 403) {
-        router.replace("/agent/auth/organization");
-        return;
-      }
-      if (!res.ok) {
-        throw new Error("조회 실패");
-      }
-
-      const payload = (await res.json()) as UsersResponse;
-      setData(payload);
-    } catch {
-      setMessage({
-        type: "error",
-        text: "사용자 현황을 불러오지 못했습니다.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
+    applyUsersResult(await fetchUsers());
+  }, [applyUsersResult]);
 
   useEffect(() => {
-    void loadUsers();
-  }, [loadUsers]);
+    let cancelled = false;
+    void fetchUsers().then((result) => {
+      if (!cancelled) applyUsersResult(result);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [applyUsersResult]);
 
   const handleToggleActive = async (userId: string, nextIsActive: boolean) => {
     setSubmittingKey(userId);

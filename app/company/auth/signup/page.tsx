@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Suspense, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatBusinessNumber } from "@/app/lib/formatters";
@@ -7,6 +8,7 @@ import type {
   CompanyAuthMessageState,
   CompanyAuthResponse,
 } from "@/types/company/auth";
+import { MAGIC_LINK_TTL_MINUTES } from "@/app/lib/magic-link-ttl";
 
 type InviteInfo = {
   company: {
@@ -259,17 +261,17 @@ function CompanySignupPageInner() {
             </button>
 
             <p className="text-center text-xs text-gray-500">
-              링크는 15분간 유효하며 1회만 사용할 수 있습니다.
+              링크는 {MAGIC_LINK_TTL_MINUTES}분간 유효하며 1회만 사용할 수 있습니다.
             </p>
 
             <p className="text-center text-xs text-gray-500">
               이미 계정이 있으신가요?{" "}
-              <a
+              <Link
                 href="/company/auth/login"
                 className="font-medium text-emerald-600 hover:underline"
               >
                 로그인
-              </a>
+              </Link>
             </p>
           </form>
         </div>

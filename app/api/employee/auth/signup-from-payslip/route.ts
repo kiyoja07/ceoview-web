@@ -4,6 +4,7 @@ import { attachEmployeeSession } from "@/app/lib/employee-auth";
 import { normalizeEmployeePhone } from "@/app/lib/employee-contact";
 import { isValidEmail } from "@/app/lib/employee-magic-link";
 import { verifyEmployeeSignupGrant } from "@/app/lib/employee-signup-grant";
+import { findEmployeeUserContactConflict } from "@/app/lib/employee-user-contact";
 import prisma from "@/app/lib/prisma";
 import type { EmployeeSignupFromPayslipBody } from "@/types/employee/auth";
 
@@ -99,12 +100,28 @@ export async function POST(request: NextRequest) {
         ? normalizeEmployeePhone(employee.phone)
         : null;
 
+      // 비어 있는 연락처만 채우되, 다른 직원 계정이 쓰는 값이면 채우지 않는다.
+      const fillEmail = employee.user.email ? null : (employee.email ?? email);
+      const fillPhone = employee.user.phone
+        ? null
+        : (normalizedEmployeePhone ?? phone);
+      const [emailConflict, phoneConflict] = await Promise.all([
+        findEmployeeUserContactConflict({
+          email: fillEmail,
+          excludeUserId: employee.user.id,
+        }),
+        findEmployeeUserContactConflict({
+          phone: fillPhone,
+          excludeUserId: employee.user.id,
+        }),
+      ]);
+
       await prisma.employeeUser.update({
         where: { id: employee.user.id },
         data: {
           name: employee.name.slice(0, 100),
-          email: employee.user.email ?? employee.email ?? email,
-          phone: employee.user.phone ?? normalizedEmployeePhone ?? phone,
+          email: employee.user.email ?? (emailConflict ? null : fillEmail),
+          phone: employee.user.phone ?? (phoneConflict ? null : fillPhone),
           zipcode: employee.zipcode,
           address: employee.address,
           addressDetail: employee.addressDetail,
@@ -134,13 +151,34 @@ export async function POST(request: NextRequest) {
         }
       | null = null;
 
+    const newUserEmail = employee.email ?? email;
+    const newUserPhone = employee.phone
+      ? normalizeEmployeePhone(employee.phone)
+      : phone;
+
+    // email·phone은 DB 고유 제약이 없으므로 생성 전에 다른 계정과 겹치는지 확인한다.
+    const contactConflict = await findEmployeeUserContactConflict({
+      email: newUserEmail,
+      phone: newUserPhone,
+      excludeEmployeeId: employee.id,
+    });
+    if (contactConflict) {
+      return NextResponse.json(
+        {
+          error:
+            "해당 연락처는 다른 직원 계정에서 이미 사용 중입니다. 관리자에게 문의해주세요.",
+        },
+        { status: 409 },
+      );
+    }
+
     try {
       user = await prisma.employeeUser.create({
         data: {
           employeeId: employee.id,
           name: employee.name.slice(0, 100),
-          email: employee.email ?? email,
-          phone: employee.phone ? normalizeEmployeePhone(employee.phone) : phone,
+          email: newUserEmail,
+          phone: newUserPhone,
           zipcode: employee.zipcode,
           address: employee.address,
           addressDetail: employee.addressDetail,

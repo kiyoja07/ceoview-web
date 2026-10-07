@@ -26,6 +26,89 @@ interface UseSalaryDataResult {
   refetch: () => Promise<void>;
 }
 
+type SalaryDataQuery = {
+  companyId: string;
+  currentPage: number;
+  filterAccrualYm: string;
+  filterPaymentYm: string;
+  viewMode: ViewMode;
+};
+
+type SalaryDataResult =
+  | {
+      kind: "dashboard";
+      earned: EarnedApiResponse | null;
+      business: BusinessApiResponse | null;
+      daily: DailyApiResponse | null;
+      other: OtherApiResponse | null;
+    }
+  | { kind: "earned"; data: EarnedApiResponse }
+  | { kind: "business"; data: BusinessApiResponse }
+  | { kind: "daily"; data: DailyApiResponse }
+  | { kind: "other"; data: OtherApiResponse }
+  | { kind: "error"; message: string };
+
+async function fetchSalaryData({
+  companyId,
+  currentPage,
+  filterAccrualYm,
+  filterPaymentYm,
+  viewMode,
+}: SalaryDataQuery): Promise<SalaryDataResult> {
+  try {
+    const params = new URLSearchParams();
+    params.set("page", String(currentPage));
+    params.set("size", "50");
+    if (filterAccrualYm) params.set("accrualYm", filterAccrualYm);
+    if (filterPaymentYm) params.set("paymentYm", filterPaymentYm);
+
+    if (viewMode === "dashboard") {
+      const endpoints = {
+        earned: `/api/company/${companyId}/earned-income?${params}`,
+        business: `/api/company/${companyId}/business-income?${params}`,
+        daily: `/api/company/${companyId}/daily-income-labor?${params}`,
+        other: `/api/company/${companyId}/other-income?${params}`,
+      };
+
+      const [earnedRes, businessRes, dailyRes, otherRes] = await Promise.all([
+        fetch(endpoints.earned),
+        fetch(endpoints.business),
+        fetch(endpoints.daily),
+        fetch(endpoints.other),
+      ]);
+
+      return {
+        kind: "dashboard",
+        earned: earnedRes.ok ? await earnedRes.json() : null,
+        business: businessRes.ok ? await businessRes.json() : null,
+        daily: dailyRes.ok ? await dailyRes.json() : null,
+        other: otherRes.ok ? await otherRes.json() : null,
+      };
+    }
+
+    const endpointMap: Record<IncomeTab, string> = {
+      earned: `/api/company/${companyId}/earned-income?${params}`,
+      business: `/api/company/${companyId}/business-income?${params}`,
+      daily: `/api/company/${companyId}/daily-income-labor?${params}`,
+      other: `/api/company/${companyId}/other-income?${params}`,
+    };
+
+    const res = await fetch(endpointMap[viewMode]);
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error ?? `HTTP ${res.status}`);
+    }
+
+    return { kind: viewMode, data: await res.json() } as SalaryDataResult;
+  } catch (e) {
+    return {
+      kind: "error",
+      message: e instanceof Error ? e.message : "데이터를 불러올 수 없습니다.",
+    };
+  }
+}
+
 export function useSalaryData({
   companyId,
   currentPage,
@@ -42,81 +125,86 @@ export function useSalaryData({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async () => {
+  const applyResult = useCallback((result: SalaryDataResult) => {
+    switch (result.kind) {
+      case "dashboard":
+        setEarnedData(result.earned);
+        setBusinessData(result.business);
+        setDailyData(result.daily);
+        setOtherData(result.other);
+        break;
+      case "earned":
+        setEarnedData(result.data);
+        break;
+      case "business":
+        setBusinessData(result.data);
+        break;
+      case "daily":
+        setDailyData(result.data);
+        break;
+      case "other":
+        setOtherData(result.data);
+        break;
+      case "error":
+        setError(result.message);
+        break;
+    }
+    setLoading(false);
+  }, []);
+
+  // 조회 조건이 바뀌면 렌더 중에 로딩 상태를 초기화
+  const requestKey = `${companyId}|${currentPage}|${filterAccrualYm}|${filterPaymentYm}|${viewMode}`;
+  const [prevRequestKey, setPrevRequestKey] = useState(requestKey);
+  if (requestKey !== prevRequestKey) {
+    setPrevRequestKey(requestKey);
     setLoading(true);
     setError(null);
-
-    try {
-      const params = new URLSearchParams();
-      params.set("page", String(currentPage));
-      params.set("size", "50");
-      if (filterAccrualYm) params.set("accrualYm", filterAccrualYm);
-      if (filterPaymentYm) params.set("paymentYm", filterPaymentYm);
-
-      if (viewMode === "dashboard") {
-        const endpoints = {
-          earned: `/api/company/${companyId}/earned-income?${params}`,
-          business: `/api/company/${companyId}/business-income?${params}`,
-          daily: `/api/company/${companyId}/daily-income-labor?${params}`,
-          other: `/api/company/${companyId}/other-income?${params}`,
-        };
-
-        const [earnedRes, businessRes, dailyRes, otherRes] = await Promise.all([
-          fetch(endpoints.earned),
-          fetch(endpoints.business),
-          fetch(endpoints.daily),
-          fetch(endpoints.other),
-        ]);
-
-        if (earnedRes.ok) setEarnedData(await earnedRes.json());
-        else setEarnedData(null);
-
-        if (businessRes.ok) setBusinessData(await businessRes.json());
-        else setBusinessData(null);
-
-        if (dailyRes.ok) setDailyData(await dailyRes.json());
-        else setDailyData(null);
-
-        if (otherRes.ok) setOtherData(await otherRes.json());
-        else setOtherData(null);
-
-        return;
-      }
-
-      const endpointMap: Record<IncomeTab, string> = {
-        earned: `/api/company/${companyId}/earned-income?${params}`,
-        business: `/api/company/${companyId}/business-income?${params}`,
-        daily: `/api/company/${companyId}/daily-income-labor?${params}`,
-        other: `/api/company/${companyId}/other-income?${params}`,
-      };
-
-      const endpoint = endpointMap[viewMode];
-      const res = await fetch(endpoint);
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? `HTTP ${res.status}`);
-      }
-
-      if (viewMode === "business") {
-        setBusinessData(await res.json());
-      } else if (viewMode === "daily") {
-        setDailyData(await res.json());
-      } else if (viewMode === "other") {
-        setOtherData(await res.json());
-      } else {
-        setEarnedData(await res.json());
-      }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "데이터를 불러올 수 없습니다.");
-    } finally {
-      setLoading(false);
-    }
-  }, [companyId, currentPage, filterAccrualYm, filterPaymentYm, viewMode]);
+  }
 
   useEffect(() => {
-    void fetchData();
-  }, [fetchData]);
+    let cancelled = false;
+    void fetchSalaryData({
+      companyId,
+      currentPage,
+      filterAccrualYm,
+      filterPaymentYm,
+      viewMode,
+    }).then((result) => {
+      if (!cancelled) applyResult(result);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    companyId,
+    currentPage,
+    filterAccrualYm,
+    filterPaymentYm,
+    viewMode,
+    applyResult,
+  ]);
+
+  // 발송 완료 후 등 외부에서 다시 불러올 때 사용
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    applyResult(
+      await fetchSalaryData({
+        companyId,
+        currentPage,
+        filterAccrualYm,
+        filterPaymentYm,
+        viewMode,
+      }),
+    );
+  }, [
+    companyId,
+    currentPage,
+    filterAccrualYm,
+    filterPaymentYm,
+    viewMode,
+    applyResult,
+  ]);
 
   return {
     earnedData,
@@ -125,6 +213,6 @@ export function useSalaryData({
     otherData,
     loading,
     error,
-    refetch: fetchData,
+    refetch,
   };
 }

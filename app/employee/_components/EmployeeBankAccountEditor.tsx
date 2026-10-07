@@ -5,6 +5,30 @@ import BankAccountInput, {
   type BankAccountValue,
 } from "@/app/_components/BankAccountInput";
 
+// 계좌 목록 조회. 실패하면 null을 반환한다.
+async function fetchBankAccounts(): Promise<BankAccountValue[] | null> {
+  try {
+    const res = await fetch("/api/employee/bank-account");
+    if (!res.ok) return null;
+    const data = await res.json();
+    return (data.accounts ?? []).map(
+      (a: {
+        id: string;
+        bankName: string;
+        accountNumber: string;
+        accountHolder: string;
+      }) => ({
+        id: a.id,
+        bankName: a.bankName,
+        accountNumber: a.accountNumber,
+        accountHolder: a.accountHolder,
+      }),
+    );
+  } catch {
+    return null;
+  }
+}
+
 export default function EmployeeBankAccountEditor() {
   const [accounts, setAccounts] = useState<BankAccountValue[]>([]);
   const [original, setOriginal] = useState<BankAccountValue[]>([]);
@@ -16,36 +40,24 @@ export default function EmployeeBankAccountEditor() {
     text: string;
   } | null>(null);
 
-  const fetchAccounts = useCallback(async () => {
-    try {
-      const res = await fetch("/api/employee/bank-account");
-      if (!res.ok) return;
-      const data = await res.json();
-      const fetched: BankAccountValue[] = (data.accounts ?? []).map(
-        (a: {
-          id: string;
-          bankName: string;
-          accountNumber: string;
-          accountHolder: string;
-        }) => ({
-          id: a.id,
-          bankName: a.bankName,
-          accountNumber: a.accountNumber,
-          accountHolder: a.accountHolder,
-        }),
-      );
+  // 조회 결과 반영(실패 시 기존 값 유지)
+  const applyAccounts = useCallback((fetched: BankAccountValue[] | null) => {
+    if (fetched) {
       setAccounts(fetched);
       setOriginal(fetched);
-    } catch {
-      // silent
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
-    fetchAccounts();
-  }, [fetchAccounts]);
+    let cancelled = false;
+    void fetchBankAccounts().then((fetched) => {
+      if (!cancelled) applyAccounts(fetched);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [applyAccounts]);
 
   function handleCancel() {
     setAccounts(original);
@@ -72,7 +84,7 @@ export default function EmployeeBankAccountEditor() {
       }
       setMessage({ type: "success", text: "계좌 정보가 저장되었습니다." });
       setEditing(false);
-      await fetchAccounts();
+      applyAccounts(await fetchBankAccounts());
     } catch {
       setMessage({ type: "error", text: "네트워크 오류가 발생했습니다." });
     } finally {

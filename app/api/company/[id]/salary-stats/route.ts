@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { authorizeCompanySalaryAccess } from "@/app/lib/company-salary-access";
 import { computeSalaryStats } from "@/app/lib/salary-stats";
 
 /**
@@ -14,6 +15,14 @@ export async function GET(
 ) {
   try {
     const { id: companyId } = await params;
+
+    const access = await authorizeCompanySalaryAccess(request, companyId);
+    if ("error" in access) {
+      return NextResponse.json(
+        { error: access.error },
+        { status: access.status },
+      );
+    }
 
     const { searchParams } = new URL(request.url);
     const months = Math.min(

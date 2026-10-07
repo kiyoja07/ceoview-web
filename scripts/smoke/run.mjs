@@ -290,31 +290,71 @@ async function run() {
     record("SKIP", "employee", "Employee 역할 체크", "--employee-user-id 미지정");
   }
 
-  // 15. 메시지 연동 — 검증 경로만 확인(실발송 없음): 잘못된 to → 400
-  await httpCheck("messages", "POST /api/messages/email (validation)", `${BASE_URL}/api/messages/email`, {
+  // 15. 메시지 연동 — 미인증 차단 확인 + (에이전트 세션) 검증 경로 확인(실발송 없음)
+  await httpCheck("messages", "POST /api/messages/email (no auth → 401)", `${BASE_URL}/api/messages/email`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ to: "not-an-email", title: "smoke", body: "smoke" }),
-    expect: 400,
+    expect: 401,
   });
 
-  // 옵트인: 실제 이메일 1회 발송(--live-send --to=<주소>)
-  if (LIVE_SEND) {
-    if (!LIVE_SEND_TO) {
-      record("SKIP", "messages", "실이메일 발송", "--to 미지정");
-    } else {
-      await httpCheck("messages", "POST /api/messages/email (live)", `${BASE_URL}/api/messages/email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: LIVE_SEND_TO,
-          title: "[경영한눈] 스모크 테스트 발송",
-          body: "스모크 테스트에 의한 발송입니다.",
-        }),
-        expect: 200,
-      });
+  if (AGENT_USER_ID) {
+    const agentJsonHeaders = {
+      "Content-Type": "application/json",
+      Cookie: cookieHeaderFor("agent", AGENT_USER_ID),
+    };
+
+    // 잘못된 to → 400
+    await httpCheck("messages", "POST /api/messages/email (validation)", `${BASE_URL}/api/messages/email`, {
+      method: "POST",
+      headers: agentJsonHeaders,
+      body: JSON.stringify({ to: "not-an-email", title: "smoke", body: "smoke" }),
+      expect: 400,
+    });
+
+    // 옵트인: 실제 이메일 1회 발송(--live-send --to=<주소>)
+    if (LIVE_SEND) {
+      if (!LIVE_SEND_TO) {
+        record("SKIP", "messages", "실이메일 발송", "--to 미지정");
+      } else {
+        await httpCheck("messages", "POST /api/messages/email (live)", `${BASE_URL}/api/messages/email`, {
+          method: "POST",
+          headers: agentJsonHeaders,
+          body: JSON.stringify({
+            to: LIVE_SEND_TO,
+            title: "[경영한눈] 스모크 테스트 발송",
+            body: "스모크 테스트에 의한 발송입니다.",
+          }),
+          expect: 200,
+        });
+      }
     }
+  } else {
+    record("SKIP", "messages", "POST /api/messages/email (validation)", "--agent-user-id 미지정");
   }
+
+  // 16. 회사 급여 API 미인증 차단 확인
+  if (COMPANY_ID) {
+    await httpCheck("security", `GET /api/company/${COMPANY_ID}/earned-income (no auth → 401)`, `${BASE_URL}/api/company/${COMPANY_ID}/earned-income`, {
+      expect: 401,
+    });
+    await httpCheck("security", `POST /api/company/${COMPANY_ID}/payslip-send (no auth → 401)`, `${BASE_URL}/api/company/${COMPANY_ID}/payslip-send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ earnedIncomeIds: [] }),
+      expect: 401,
+    });
+  } else {
+    record("SKIP", "security", "회사 급여 API 미인증 차단", "--company-id 미지정");
+  }
+
+  // 17. 급여명세서 열람 API — 잘못된 토큰은 404 (DB 무변경)
+  await httpCheck("public", "POST /api/public/payslip/view (invalid token → 404)", `${BASE_URL}/api/public/payslip/view`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token: "smoke-invalid-token" }),
+    expect: 404,
+  });
 
   // 요약
   const passed = results.filter((r) => r.status === "PASS").length;
