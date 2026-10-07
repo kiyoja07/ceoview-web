@@ -116,47 +116,72 @@ export default function AgentCompanyEmployeePage() {
   }, [companyId, handleAuthError]);
 
   // ── Load employee list ──
-  const loadEmployees = useCallback(async () => {
-    if (!companyId) return;
+  // 삭제·공개 상태 변경 후 목록을 다시 불러올 때 증가시킨다.
+  const [listReloadKey, setListReloadKey] = useState(0);
+  const reloadEmployees = useCallback(() => {
+    setListReloadKey((key) => key + 1);
+  }, []);
 
-    setListLoading(true);
-    setListError(null);
-
-    try {
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: "50",
-        incomeType,
-      });
-      if (search) params.set("search", search);
-
-      const res = await fetch(
-        `/api/agent/company/${companyId}/employee?${params}`,
-        { cache: "no-store" },
-      );
-
-      if (handleAuthError(res.status)) return;
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        setListError(body?.error || "직원 목록을 불러오지 못했습니다.");
-        return;
-      }
-
-      const data = (await res.json()) as EmployeeListResponse;
-      setEmployees(data.employees);
-      setTotal(data.total);
-      setTotalPages(data.totalPages);
-    } catch {
-      setListError("직원 목록을 불러오지 못했습니다.");
-    } finally {
-      setListLoading(false);
+  // 조회 조건이 바뀌면 렌더 중에 로딩 상태를 초기화
+  const listRequestKey = companyId
+    ? `${companyId}|${page}|${search}|${incomeType}|${listReloadKey}`
+    : null;
+  const [prevListRequestKey, setPrevListRequestKey] = useState<string | null>(
+    null,
+  );
+  if (listRequestKey !== prevListRequestKey) {
+    setPrevListRequestKey(listRequestKey);
+    if (listRequestKey) {
+      setListLoading(true);
+      setListError(null);
     }
-  }, [companyId, page, search, incomeType, handleAuthError]);
+  }
 
   useEffect(() => {
-    void loadEmployees();
-  }, [loadEmployees]);
+    if (!companyId) return;
+
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const params = new URLSearchParams({
+          page: String(page),
+          limit: "50",
+          incomeType,
+        });
+        if (search) params.set("search", search);
+
+        const res = await fetch(
+          `/api/agent/company/${companyId}/employee?${params}`,
+          { cache: "no-store" },
+        );
+        if (cancelled) return;
+
+        if (handleAuthError(res.status)) return;
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => null);
+          if (cancelled) return;
+          setListError(body?.error || "직원 목록을 불러오지 못했습니다.");
+          return;
+        }
+
+        const data = (await res.json()) as EmployeeListResponse;
+        if (cancelled) return;
+        setEmployees(data.employees);
+        setTotal(data.total);
+        setTotalPages(data.totalPages);
+      } catch {
+        if (!cancelled) setListError("직원 목록을 불러오지 못했습니다.");
+      } finally {
+        if (!cancelled) setListLoading(false);
+      }
+    };
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [companyId, page, search, incomeType, handleAuthError, listReloadKey]);
 
   // ── Switch income type ──
   const handleIncomeTypeChange = (type: IncomeType) => {
@@ -195,7 +220,7 @@ export default function AgentCompanyEmployeePage() {
       if (handleAuthError(res.status)) return;
 
       if (res.ok) {
-        void loadEmployees();
+        reloadEmployees();
       } else {
         const body = await res.json().catch(() => null);
         alert(body?.error || "삭제에 실패했습니다.");
@@ -246,14 +271,14 @@ export default function AgentCompanyEmployeePage() {
         }
 
         // Reload list to get updated publishStatus
-        void loadEmployees();
+        reloadEmployees();
       } catch {
         alert("서버 연결에 실패했습니다.");
       } finally {
         setPublishLoading(false);
       }
     },
-    [companyId, incomeType, handleAuthError, loadEmployees],
+    [companyId, incomeType, handleAuthError, reloadEmployees],
   );
 
   // ── Handle individual publish toggle (called from table row) ──

@@ -28,13 +28,21 @@ export function InviteCompanyUserModal({
   const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  // 모달이 열릴 때 렌더 중에 입력 상태를 초기화
+  const [prevOpen, setPrevOpen] = useState(false);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
     if (open) {
       setContact("");
       setError(null);
       setResult(null);
       setSending(false);
       setCopied(false);
+    }
+  }
+
+  useEffect(() => {
+    if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [open]);

@@ -210,7 +210,11 @@ export function SendPayslipButton({
     type: "success" | "error";
   } | null>(null);
 
-  useEffect(() => {
+  // 연락처가 바뀌어 사용 가능한 채널이 달라지면 렌더 중에 선택 채널을 보정
+  const [prevAvailableChannels, setPrevAvailableChannels] =
+    useState(availableChannels);
+  if (availableChannels !== prevAvailableChannels) {
+    setPrevAvailableChannels(availableChannels);
     setSelectedChannels((current) => {
       const next = current.filter((channel) =>
         availableChannels.includes(channel),
@@ -218,7 +222,7 @@ export function SendPayslipButton({
       if (next.length > 0) return next;
       return defaultChannels;
     });
-  }, [defaultChannels, availableChannels]);
+  }
 
   const hasContact = availableChannels.length > 0;
   const channelDetails: Partial<Record<PayslipSendChannel, string>> = {

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Suspense, useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatBusinessNumber } from "@/app/lib/formatters";
@@ -264,12 +265,12 @@ function CompanySignupPageInner() {
 
             <p className="text-center text-xs text-gray-500">
               이미 계정이 있으신가요?{" "}
-              <a
+              <Link
                 href="/company/auth/login"
                 className="font-medium text-emerald-600 hover:underline"
               >
                 로그인
-              </a>
+              </Link>
             </p>
           </form>
         </div>

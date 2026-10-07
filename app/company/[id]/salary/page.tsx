@@ -61,13 +61,19 @@ function SalaryPageInner() {
   const [accrualInput, setAccrualInput] = useState(filterAccrualYm);
   const [paymentInput, setPaymentInput] = useState(filterPaymentYm);
 
-  // 쿼리 파라미터 변경 시 입력 상태 동기화
-  useEffect(() => {
+  // 쿼리 파라미터 변경 시 렌더 중에 입력 상태 동기화
+  const [prevFilterAccrualYm, setPrevFilterAccrualYm] =
+    useState(filterAccrualYm);
+  if (filterAccrualYm !== prevFilterAccrualYm) {
+    setPrevFilterAccrualYm(filterAccrualYm);
     setAccrualInput(filterAccrualYm);
-  }, [filterAccrualYm]);
-  useEffect(() => {
+  }
+  const [prevFilterPaymentYm, setPrevFilterPaymentYm] =
+    useState(filterPaymentYm);
+  if (filterPaymentYm !== prevFilterPaymentYm) {
+    setPrevFilterPaymentYm(filterPaymentYm);
     setPaymentInput(filterPaymentYm);
-  }, [filterPaymentYm]);
+  }
 
   const [statsMonths, setStatsMonths] = useState(12);
 

@@ -43,22 +43,25 @@ function AgentAuthLoginPageInner() {
     void checkSession();
   }, [router]);
 
-  useEffect(() => {
-    const error = searchParams.get("error");
-    if (!error) return;
+  // URL의 error 파라미터가 바뀌면 렌더 중에 오류 메시지를 반영
+  const errorParam = searchParams.get("error");
+  const [prevErrorParam, setPrevErrorParam] = useState<string | null>(null);
+  if (errorParam !== prevErrorParam) {
+    setPrevErrorParam(errorParam);
+    if (errorParam) {
+      const errorTextMap: Record<string, string> = {
+        invalid_magic_link: "로그인 링크가 올바르지 않습니다.",
+        expired_magic_link: "로그인 링크가 만료되었거나 이미 사용되었습니다.",
+        inactive_user: "비활성화된 계정입니다. 관리자에게 문의해주세요.",
+        magic_link_error: "로그인 처리 중 오류가 발생했습니다.",
+      };
 
-    const errorTextMap: Record<string, string> = {
-      invalid_magic_link: "로그인 링크가 올바르지 않습니다.",
-      expired_magic_link: "로그인 링크가 만료되었거나 이미 사용되었습니다.",
-      inactive_user: "비활성화된 계정입니다. 관리자에게 문의해주세요.",
-      magic_link_error: "로그인 처리 중 오류가 발생했습니다.",
-    };
-
-    setMessage({
-      type: "error",
-      text: errorTextMap[error] || "로그인 링크 검증에 실패했습니다.",
-    });
-  }, [searchParams]);
+      setMessage({
+        type: "error",
+        text: errorTextMap[errorParam] || "로그인 링크 검증에 실패했습니다.",
+      });
+    }
+  }
 
   const submitLabel = useMemo(
     () => (loading ? "링크 발송 중..." : "로그인 링크 보내기"),

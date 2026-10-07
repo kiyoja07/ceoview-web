@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { formatBusinessNumber } from "@/app/lib/formatters";
 import { INCOME_META } from "@/app/company/[id]/salary/constants";
@@ -67,30 +67,42 @@ export function SalaryDashboardView({ statsUrl }: { statsUrl: string }) {
   const [error, setError] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<string>("__all__");
 
-  const fetchData = useCallback(async () => {
+  // statsUrl이 바뀌면 렌더 중에 로딩·오류 상태를 초기화
+  const [prevStatsUrl, setPrevStatsUrl] = useState(statsUrl);
+  if (statsUrl !== prevStatsUrl) {
+    setPrevStatsUrl(statsUrl);
     setLoading(true);
     setError(null);
-    try {
-      const res = await fetch(statsUrl);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? `HTTP ${res.status}`);
-      }
-      setData(await res.json());
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "데이터를 불러오는 데 실패했습니다.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [statsUrl]);
+  }
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await fetch(statsUrl);
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error ?? `HTTP ${res.status}`);
+        }
+        const json = await res.json();
+        if (!cancelled) setData(json);
+      } catch (err) {
+        if (cancelled) return;
+        setError(
+          err instanceof Error
+            ? err.message
+            : "데이터를 불러오는 데 실패했습니다.",
+        );
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [statsUrl]);
 
   // 데이터가 있는 월만 필터 (최신순)
   const activeMonths = useMemo(

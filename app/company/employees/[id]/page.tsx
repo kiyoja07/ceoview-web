@@ -368,13 +368,26 @@ export default function EmployeeDetailPage() {
     setFormAccountNumber(emp.accountNumber ?? "");
   }, []);
 
+  // 조회 대상이나 재조회 요청이 바뀌면 렌더 중에 로딩·오류 상태를 초기화
+  const detailRequestKey = employeeId
+    ? `${employeeId}|${incomeType}|${reloadKey}`
+    : null;
+  const [prevDetailRequestKey, setPrevDetailRequestKey] = useState<
+    string | null
+  >(null);
+  if (detailRequestKey !== prevDetailRequestKey) {
+    setPrevDetailRequestKey(detailRequestKey);
+    if (detailRequestKey) {
+      setLoading(true);
+      setError(null);
+    }
+  }
+
   // Fetch detail on mount
   useEffect(() => {
     if (!employeeId) return;
 
     let cancelled = false;
-    setLoading(true);
-    setError(null);
 
     (async () => {
       try {

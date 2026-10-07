@@ -45,56 +45,70 @@ export default function CompanyEmployeesPage() {
     [router],
   );
 
-  const loadEmployees = useCallback(async () => {
+  // 조회 조건이 바뀌면 렌더 중에 로딩 상태를 초기화
+  const listRequestKey = `${page}|${search}|${incomeTypeFilter}|${statusFilter}`;
+  const [prevListRequestKey, setPrevListRequestKey] = useState<string | null>(
+    null,
+  );
+  if (listRequestKey !== prevListRequestKey) {
+    setPrevListRequestKey(listRequestKey);
     setListLoading(true);
     setListError(null);
-
-    try {
-      const meRes = await fetch("/api/company/auth/me", {
-        cache: "no-store",
-      });
-      if (handleAuthError(meRes.status)) return;
-      if (meRes.ok) {
-        const me = (await meRes.json()) as { profileComplete?: boolean };
-        if (!me.profileComplete) {
-          router.replace("/company/auth/onboarding");
-          return;
-        }
-      }
-
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: "50",
-        incomeType: incomeTypeFilter,
-        status: statusFilter,
-      });
-      if (search) params.set("search", search);
-
-      const res = await fetch(`/api/company/employees?${params}`, {
-        cache: "no-store",
-      });
-      if (handleAuthError(res.status)) return;
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        setListError(body?.error || "지급 대상자 목록을 불러오지 못했습니다.");
-        return;
-      }
-
-      const data = (await res.json()) as EmployeeListResponse;
-      setEmployees(data.employees);
-      setSummary(data.summary);
-      setTotalPages(data.totalPages);
-    } catch {
-      setListError("지급 대상자 목록을 불러오지 못했습니다.");
-    } finally {
-      setListLoading(false);
-    }
-  }, [handleAuthError, incomeTypeFilter, page, router, search, statusFilter]);
+  }
 
   useEffect(() => {
-    void loadEmployees();
-  }, [loadEmployees]);
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const meRes = await fetch("/api/company/auth/me", {
+          cache: "no-store",
+        });
+        if (handleAuthError(meRes.status)) return;
+        if (meRes.ok) {
+          const me = (await meRes.json()) as { profileComplete?: boolean };
+          if (!me.profileComplete) {
+            router.replace("/company/auth/onboarding");
+            return;
+          }
+        }
+
+        const params = new URLSearchParams({
+          page: String(page),
+          limit: "50",
+          incomeType: incomeTypeFilter,
+          status: statusFilter,
+        });
+        if (search) params.set("search", search);
+
+        const res = await fetch(`/api/company/employees?${params}`, {
+          cache: "no-store",
+        });
+        if (handleAuthError(res.status)) return;
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => null);
+          if (cancelled) return;
+          setListError(body?.error || "지급 대상자 목록을 불러오지 못했습니다.");
+          return;
+        }
+
+        const data = (await res.json()) as EmployeeListResponse;
+        if (cancelled) return;
+        setEmployees(data.employees);
+        setSummary(data.summary);
+        setTotalPages(data.totalPages);
+      } catch {
+        if (!cancelled) setListError("지급 대상자 목록을 불러오지 못했습니다.");
+      } finally {
+        if (!cancelled) setListLoading(false);
+      }
+    };
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [handleAuthError, incomeTypeFilter, page, router, search, statusFilter]);
 
   const handleSearch = () => {
     setPage(1);

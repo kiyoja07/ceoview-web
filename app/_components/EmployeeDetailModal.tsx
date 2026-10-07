@@ -232,15 +232,26 @@ export default function EmployeeDetailModal({
     );
   }, []);
 
+  // 모달이 열리거나 대상 직원이 바뀌면 화면 상태를 렌더 중에 초기화
+  const detailRequestKey = open && employeeId ? employeeId : null;
+  const [prevDetailRequestKey, setPrevDetailRequestKey] = useState<
+    string | null
+  >(null);
+  if (detailRequestKey !== prevDetailRequestKey) {
+    setPrevDetailRequestKey(detailRequestKey);
+    if (detailRequestKey) {
+      setLoading(true);
+      setError(null);
+      setEditing(false);
+      setShowResidentNumber(false);
+    }
+  }
+
   // Fetch detail when opened
   useEffect(() => {
     if (!open || !employeeId) return;
 
     let cancelled = false;
-    setLoading(true);
-    setError(null);
-    setEditing(false);
-    setShowResidentNumber(false);
 
     fetchDetail(employeeId)
       .then((data) => {
