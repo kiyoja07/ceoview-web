@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import {
+  EMPLOYEE_CODE_TAKEN_MESSAGE,
+  isEmployeeCodeTaken,
+} from "@/app/lib/employee-code";
+import {
   sanitizeEmployeePayload,
   sanitizeBusinessIncomeEmployeePayload,
   sanitizeOtherIncomeEmployeePayload,
@@ -140,6 +144,19 @@ export async function POST(
       return NextResponse.json(
         { error: "이름을 입력해주세요." },
         { status: 400 },
+      );
+    }
+
+    if (
+      await isEmployeeCodeTaken({
+        incomeType,
+        companyId: companyId,
+        employeeCode: sanitizedBody.employeeCode as string | null | undefined,
+      })
+    ) {
+      return NextResponse.json(
+        { error: EMPLOYEE_CODE_TAKEN_MESSAGE },
+        { status: 409 },
       );
     }
 

@@ -44,11 +44,11 @@ export async function PATCH(request: NextRequest) {
           { status: 400 },
         );
       }
-      const existing = await prisma.employeeUser.findUnique({
-        where: { email: trimmedEmail },
+      const existing = await prisma.employeeUser.findFirst({
+        where: { email: trimmedEmail, NOT: { id: userId } },
         select: { id: true },
       });
-      if (existing && existing.id !== userId) {
+      if (existing) {
         return NextResponse.json(
           { error: "이미 사용 중인 이메일입니다." },
           { status: 409 },
@@ -63,11 +63,11 @@ export async function PATCH(request: NextRequest) {
           { status: 400 },
         );
       }
-      const existing = await prisma.employeeUser.findUnique({
-        where: { phone: trimmedPhone },
+      const existing = await prisma.employeeUser.findFirst({
+        where: { phone: trimmedPhone, NOT: { id: userId } },
         select: { id: true },
       });
-      if (existing && existing.id !== userId) {
+      if (existing) {
         return NextResponse.json(
           { error: "이미 사용 중인 휴대폰번호입니다." },
           { status: 409 },

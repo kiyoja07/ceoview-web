@@ -4,12 +4,16 @@ import {
   buildUrlForAudience,
   getBaseUrlForAudience,
 } from "@/app/lib/audience-routing";
+import { MAGIC_LINK_TTL_MINUTES } from "@/app/lib/magic-link-ttl";
 
-const MAGIC_LINK_TTL_MINUTES = process.env.MAGIC_LINK_TTL_MINUTES!;
-const MAGIC_LINK_TTL_MS = parseInt(MAGIC_LINK_TTL_MINUTES) * 60 * 1000;
+const MAGIC_LINK_TTL_MS = MAGIC_LINK_TTL_MINUTES * 60 * 1000;
 
 export function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+export function getAgentMagicLinkTtlMinutes() {
+  return MAGIC_LINK_TTL_MINUTES;
 }
 
 export function createMagicLinkToken() {

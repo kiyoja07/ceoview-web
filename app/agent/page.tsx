@@ -5,6 +5,7 @@ import {
   AGENT_SESSION_COOKIE,
   verifyAgentSessionToken,
 } from "@/app/lib/agent-auth";
+import { MAGIC_LINK_TTL_MINUTES } from "@/app/lib/magic-link-ttl";
 
 export default async function AgentHomePage() {
   const cookieStore = await cookies();
@@ -35,7 +36,7 @@ export default async function AgentHomePage() {
               로그인 링크 받기
             </Link>
             <p className="text-center text-xs text-gray-500">
-              링크는 15분 동안 유효하며 1회만 사용할 수 있습니다.
+              링크는 {MAGIC_LINK_TTL_MINUTES}분 동안 유효하며 1회만 사용할 수 있습니다.
             </p>
           </div>
         </div>

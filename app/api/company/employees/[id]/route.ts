@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import {
+  EMPLOYEE_CODE_TAKEN_MESSAGE,
+  isEmployeeCodeTaken,
+} from "@/app/lib/employee-code";
+import {
   sanitizeEmployeePayload,
 } from "@/app/lib/company-input";
 import { resolveCompanyAccessContext } from "@/app/lib/company-access";
@@ -377,6 +381,22 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       return NextResponse.json(
         { error: "직원 정보를 찾을 수 없습니다." },
         { status: 404 },
+      );
+    }
+
+    if (
+      await isEmployeeCodeTaken({
+        incomeType,
+        companyId: auth.currentCompanyId,
+        employeeCode: cleanString(
+          (rawBody as { employeeCode?: unknown }).employeeCode,
+        ),
+        excludeId: employeeId,
+      })
+    ) {
+      return NextResponse.json(
+        { error: EMPLOYEE_CODE_TAKEN_MESSAGE },
+        { status: 409 },
       );
     }
 

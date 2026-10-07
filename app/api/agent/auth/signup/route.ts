@@ -43,6 +43,8 @@ export async function POST(request: NextRequest) {
         email,
         passwordHash,
         loginProvider: "LOCAL",
+        // (loginProvider, providerUserId) 고유 제약 때문에 비워 두면 두 번째 사용자부터 충돌한다.
+        providerUserId: email,
         name,
         phone,
       },

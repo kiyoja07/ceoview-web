@@ -457,8 +457,9 @@ model Upload {
 
   activePointer CompanyActiveUpload?
 
-  // 동일 파일 중복 업로드 감지(선택): 같은 사업자+타입+체크섬은 중복 방지 가능
-  @@unique([companyId, type, checksum])
+  // checksum은 비어 있을 수 있어 고유 제약을 두지 않는다.
+  // (MongoDB 고유 인덱스는 빈 값을 null로 색인하므로, 같은 사업자+타입의 두 번째 업로드가 충돌한다.
+  //  근로소득은 귀속·지급월을 파일이 아니라 화면 입력으로 받아 파일 내용만으로 중복을 판단할 수도 없다.)
   // 조회 최적화
   @@index([companyId, type, uploadedAt])
   @@map("upload")
@@ -809,7 +810,8 @@ model Employee {
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  @@unique([companyId, employeeCode])
+  // 사원코드는 비어 있을 수 있어 고유 제약 대신 인덱스로 둔다(중복 확인은 app/lib/employee-code.ts).
+  @@index([companyId, employeeCode])
   @@index([companyId, name])
   @@index([companyId, deletedAt, createdAt])
   @@index([companyId, publishStatus, deletedAt])
@@ -822,8 +824,8 @@ model EmployeeUser {
   employeeId String   @unique @map("employee_id") @db.ObjectId
   employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
-  email         String? @unique
-  phone         String? @unique
+  email         String?
+  phone         String?
   name          String
   zipcode       String? @map("zipcode")
   address       String? @map("address")
@@ -836,6 +838,9 @@ model EmployeeUser {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  // 이메일·전화는 비어 있을 수 있어 고유 제약 대신 인덱스로 두고, 중복은 코드에서 확인한다.
+  @@index([email])
+  @@index([phone])
   @@index([isActive])
   @@map("employee_user")
 }
@@ -897,7 +902,8 @@ model BusinessIncomeEmployee {
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  @@unique([companyId, employeeCode])
+  // 사원코드는 비어 있을 수 있어 고유 제약 대신 인덱스로 둔다(중복 확인은 app/lib/employee-code.ts).
+  @@index([companyId, employeeCode])
   @@index([companyId, deletedAt, createdAt])
   @@index([companyId, publishStatus, deletedAt])
   @@map("business_income_employee")
@@ -943,7 +949,8 @@ model OtherIncomeEmployee {
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  @@unique([companyId, employeeCode])
+  // 사원코드는 비어 있을 수 있어 고유 제약 대신 인덱스로 둔다(중복 확인은 app/lib/employee-code.ts).
+  @@index([companyId, employeeCode])
   @@index([companyId, deletedAt, createdAt])
   @@index([companyId, publishStatus, deletedAt])
   @@map("other_income_employee")
@@ -993,7 +1000,8 @@ model OtherIncomeLaborEmployee {
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  @@unique([companyId, employeeCode])
+  // 사원코드는 비어 있을 수 있어 고유 제약 대신 인덱스로 둔다(중복 확인은 app/lib/employee-code.ts).
+  @@index([companyId, employeeCode])
   @@index([companyId, deletedAt, createdAt])
   @@index([companyId, publishStatus, deletedAt])
   @@map("other_income_labor_employee")

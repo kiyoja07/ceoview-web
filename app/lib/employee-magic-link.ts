@@ -2,8 +2,9 @@ import { createHash, randomBytes } from "crypto";
 import type { NextRequest } from "next/server";
 import { buildUrlForAudience } from "@/app/lib/audience-routing";
 import { isValidEmail } from "@/app/lib/agent-magic-link";
+import { MAGIC_LINK_TTL_MINUTES } from "@/app/lib/magic-link-ttl";
 
-const EMPLOYEE_MAGIC_LINK_TTL_MINUTES = 15;
+const EMPLOYEE_MAGIC_LINK_TTL_MINUTES = MAGIC_LINK_TTL_MINUTES;
 const EMPLOYEE_MAGIC_LINK_TTL_MS = EMPLOYEE_MAGIC_LINK_TTL_MINUTES * 60 * 1000;
 
 export { isValidEmail };

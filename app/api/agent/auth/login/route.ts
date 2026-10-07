@@ -4,6 +4,7 @@ import {
   buildMagicLinkUrl,
   createDefaultNameFromEmail,
   createMagicLinkToken,
+  getAgentMagicLinkTtlMinutes,
   isValidEmail,
 } from "@/app/lib/agent-magic-link";
 import { sendEmail } from "@/app/lib/messages/email";
@@ -45,6 +46,8 @@ export async function POST(request: NextRequest) {
             email,
             name: createDefaultNameFromEmail(email),
             loginProvider: "LOCAL",
+            // (loginProvider, providerUserId) 고유 제약 때문에 비워 두면 두 번째 사용자부터 충돌한다.
+            providerUserId: email,
           },
           select: {
             id: true,
@@ -105,7 +108,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const ttlMinutes = process.env.MAGIC_LINK_TTL_MINUTES!;
+    const ttlMinutes = getAgentMagicLinkTtlMinutes();
     const title = "[경영한눈] 세무대리인 로그인 링크 안내";
     const mailBody = `
 <!DOCTYPE html>

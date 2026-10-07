@@ -8,6 +8,7 @@ import type {
   CompanyAuthMessageState,
   CompanyAuthResponse,
 } from "@/types/company/auth";
+import { MAGIC_LINK_TTL_MINUTES } from "@/app/lib/magic-link-ttl";
 
 type InviteInfo = {
   company: {
@@ -260,7 +261,7 @@ function CompanySignupPageInner() {
             </button>
 
             <p className="text-center text-xs text-gray-500">
-              링크는 15분간 유효하며 1회만 사용할 수 있습니다.
+              링크는 {MAGIC_LINK_TTL_MINUTES}분간 유효하며 1회만 사용할 수 있습니다.
             </p>
 
             <p className="text-center text-xs text-gray-500">
