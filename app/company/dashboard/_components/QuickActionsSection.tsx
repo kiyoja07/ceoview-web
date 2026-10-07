@@ -108,23 +108,24 @@ function PeopleIcon() {
   );
 }
 
-function AddEmployeeIcon() {
-  return (
-    <svg
-      className="h-5 w-5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.8}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M18 7.5v9m4.5-4.5h-9m-6.75 8.25h-1.5A2.25 2.25 0 0 1 3 18V6A2.25 2.25 0 0 1 5.25 3.75h9A2.25 2.25 0 0 1 16.5 6v1.5"
-      />
-    </svg>
-  );
-}
+// 인건비 대상자 등록 카드와 함께 노출 보류 중
+// function AddEmployeeIcon() {
+//   return (
+//     <svg
+//       className="h-5 w-5"
+//       fill="none"
+//       viewBox="0 0 24 24"
+//       stroke="currentColor"
+//       strokeWidth={1.8}
+//     >
+//       <path
+//         strokeLinecap="round"
+//         strokeLinejoin="round"
+//         d="M18 7.5v9m4.5-4.5h-9m-6.75 8.25h-1.5A2.25 2.25 0 0 1 3 18V6A2.25 2.25 0 0 1 5.25 3.75h9A2.25 2.25 0 0 1 16.5 6v1.5"
+//       />
+//     </svg>
+//   );
+// }
 
 function BuildingIcon() {
   return (

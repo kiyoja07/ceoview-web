@@ -3,20 +3,20 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import PublishStatusConfirmModal from "../salary-publication/_components/PublishStatusConfirmModal";
-import UploadTable from "../salary-publication/_components/UploadTable";
-import PreviewModal from "../salary-publication/_components/PreviewModal";
+import PublishStatusConfirmModal from "./_components/PublishStatusConfirmModal";
+import UploadTable from "./_components/UploadTable";
+import PreviewModal from "./_components/PreviewModal";
 import { getCurrentYYYYMM } from "@/lib/time";
 import {
   formatBusinessNumber,
   getPublishStatusLabel,
-} from "../salary-publication/_lib/format";
+} from "./_lib/format";
 import type {
   CompanyInfo,
   PublicationStatusResponse,
   UploadPreviewResponse,
   ActionType,
-} from "../salary-publication/_lib/types";
+} from "./_lib/types";
 
 const CURRENT_YYYYMM = getCurrentYYYYMM();
 

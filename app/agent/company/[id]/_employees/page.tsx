@@ -7,7 +7,7 @@ import { formatBusinessNumber } from "@/app/lib/formatters";
 import EmployeeTable from "@/app/_components/EmployeeTable";
 import type { EmployeeRow } from "@/app/_components/EmployeeTable";
 import { EMPLOYEE_INCOME_TYPE_OPTIONS } from "@/catalogs/ko/employee";
-import EmployeePublishConfirmModal from "../employee-publication/_components/EmployeePublishConfirmModal";
+import EmployeePublishConfirmModal from "./_components/EmployeePublishConfirmModal";
 
 // ────────────────────────────────────────────────────────────
 // Types

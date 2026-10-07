@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { formatBusinessNumber } from "@/app/lib/formatters";
 import type { CompanyAuthMeResponse } from "@/types/company/auth";
 

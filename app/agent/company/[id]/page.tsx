@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { formatBusinessNumber } from "@/app/agent/_components/business-form/shared";
 import { ErrorPanel, LoadingPanel } from "@/app/_components/ui/Panel";
 import type { AgentCompanyUsersResponse } from "@/types/agent/company";
-import type { PublicationStatusResponse } from "./salary/_lib/types";
+import type { PublicationStatusResponse } from "./_salary/_lib/types";
 
 type CompanyInfo = {
   id: string;
