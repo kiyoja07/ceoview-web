@@ -62,5 +62,6 @@ barkiri(`barkiri-backend` + `barkiri-2`)처럼 API와 화면을 별도 레포로
 - Vercel Preview에 Deployment Protection(Vercel 인증)이 켜져 있다고 가정한 경우다.
   - 화면 서버 컴포넌트가 같은 Preview 주소로 호출하는 API가 401을 받을 수 있다.
   - 그러면 직원 화면은 로그인으로 돌아가고, 레이아웃 제목은 기본값이 된다.
-  - 대응: Preview에서 `BACKEND_URL`을 보호되지 않은 backend 주소로 두거나, Protection Bypass를 설정한다.
+  - 대응: Vercel 프로젝트 설정 → Deployment Protection → "Protection Bypass for Automation"을 켠다. Vercel이 `VERCEL_AUTOMATION_BYPASS_SECRET`을 넣어 주고, `backendGet`이 이 값을 `x-vercel-protection-bypass` 헤더로 보낸다.
+  - 분리 후 web과 backend는 서로 다른 프로젝트다. 그래서 web Preview에서는 `VERCEL_AUTOMATION_BYPASS_SECRET` 대신 `BACKEND_URL`을 backend의 운영 주소로 두는 편이 간단하다.
 - 화면 서버 컴포넌트가 backend를 HTTP로 한 번 더 호출하므로, 분리 전 단일 앱에서도 레이아웃 렌더링에 호출 1회분 지연이 생긴다.

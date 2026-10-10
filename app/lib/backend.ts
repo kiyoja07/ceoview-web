@@ -35,8 +35,15 @@ export async function backendGet<T>(path: string): Promise<BackendResult<T>> {
   const baseUrl = await resolveBackendBaseUrl();
   const cookie = headerStore.get("cookie");
 
+  const requestHeaders: Record<string, string> = {};
+  if (cookie) requestHeaders.cookie = cookie;
+  // Vercel Preview의 배포 보호(Vercel 인증)를 서버 간 호출에서 통과한다.
+  // 프로젝트 설정의 "Protection Bypass for Automation"을 켜면 Vercel이 자동으로 넣어 주는 값이다.
+  const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+  if (bypassSecret) requestHeaders["x-vercel-protection-bypass"] = bypassSecret;
+
   const response = await fetch(`${baseUrl}${path}`, {
-    headers: cookie ? { cookie } : undefined,
+    headers: requestHeaders,
     cache: "no-store",
   });
 
