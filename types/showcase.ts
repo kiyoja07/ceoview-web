@@ -1,4 +1,4 @@
-import type { PayslipData } from "@/app/company/[id]/salary/lib/payslip-template";
+import type { PayslipData } from "@/app/lib/payslip/payslip-template";
 
 export type ShowcaseSlug = string;
 

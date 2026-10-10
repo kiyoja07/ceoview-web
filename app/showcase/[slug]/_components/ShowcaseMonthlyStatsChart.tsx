@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MonthlyStatsChart } from "@/app/company/[id]/salary/components/MonthlyStatsChart";
-import type { MonthlyStat } from "@/app/company/[id]/salary/types";
+import type { MonthlyStat } from "@/types/company/salary";
 
 export default function ShowcaseMonthlyStatsChart({
   stats,

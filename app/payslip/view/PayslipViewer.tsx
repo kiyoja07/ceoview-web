@@ -6,11 +6,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   getPayslipFileName,
   renderPayslipPdfFromData,
-} from "@/app/company/[id]/salary/lib/payslip-pdf";
+} from "@/app/lib/payslip/payslip-pdf";
 import {
   renderPayslipHtml,
   type PayslipData,
-} from "@/app/company/[id]/salary/lib/payslip-template";
+} from "@/app/lib/payslip/payslip-template";
 import type { EmployeeAuthResponse } from "@/types/employee/auth";
 
 interface PayslipViewerProps {

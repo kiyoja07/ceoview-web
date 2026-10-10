@@ -1,11 +1,10 @@
-import type { PayslipData } from "@/app/company/[id]/salary/lib/payslip-template";
-import { toPayslipData } from "@/app/company/[id]/salary/lib/payslip-template";
+import { toPayslipData } from "@/app/lib/payslip/payslip-template";
 import type {
   BusinessIncomeRow,
   Company,
   DailyIncomeLaborRow,
   OtherIncomeRow,
-} from "@/app/company/[id]/salary/types";
+} from "@/types/company/salary";
 import { PAYSLIP_INCOME_TAB_LABELS } from "@/catalogs/ko/salary";
 import prisma from "@/app/lib/prisma";
 import {
@@ -13,33 +12,11 @@ import {
   formatPayslipYm,
 } from "@/app/lib/payslip-earned";
 import type { EmployeePortalSession } from "@/app/lib/employee-portal";
-
-export type EmployeePayslipType = "earned" | "business" | "other" | "daily";
-
-export type EmployeePayslipEntry = {
-  id: string;
-  type: EmployeePayslipType;
-  incomeLabel: string;
-  monthKey: string | null;
-  monthLabel: string;
-  metaLabel: string;
-  totalPayment: number;
-  totalDeduction: number;
-  netPayment: number;
-  payslipData: PayslipData;
-};
-
-export type EmployeePayslipMonthGroup = {
-  monthKey: string;
-  monthLabel: string;
-  entries: EmployeePayslipEntry[];
-};
-
-export type EmployeePayslipCollection = {
-  monthGroups: EmployeePayslipMonthGroup[];
-  undatedEntries: EmployeePayslipEntry[];
-  allEntries: EmployeePayslipEntry[];
-};
+import type {
+  EmployeePayslipCollection,
+  EmployeePayslipEntry,
+  EmployeePayslipType,
+} from "@/types/employee/payslips";
 
 const ACTIVE_UPLOAD_TYPES = [
   "EARNED_INCOME",

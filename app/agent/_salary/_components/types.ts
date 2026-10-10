@@ -38,4 +38,4 @@ export type DashboardResponse = {
   companies: CompanyRow[];
 };
 
-export type FilterMode = "all" | "published" | "unpublished" | "no-upload";
+export type { SalaryDashboardFilterMode as FilterMode } from "@/types/agent/salary";

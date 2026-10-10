@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
   ComposedChart,
 } from "recharts";
-import type { MonthlyStat } from "../types";
+import type { MonthlyStat } from "@/types/company/salary";
 
 interface MonthlyStatsChartProps {
   stats: MonthlyStat[];

@@ -1,17 +1,13 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import {
-  AGENT_SESSION_COOKIE,
-  verifyAgentSessionToken,
-} from "@/app/lib/agent-auth";
+import { backendGet } from "@/app/lib/backend";
 import { MAGIC_LINK_TTL_MINUTES } from "@/app/lib/magic-link-ttl";
+import type { AgentSessionResponse } from "@/types/agent/session";
 
 export default async function AgentHomePage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(AGENT_SESSION_COOKIE)?.value;
+  const session = await backendGet<AgentSessionResponse>("/api/agent/session");
 
-  if (verifyAgentSessionToken(token)) {
+  if (session.ok && session.data.authenticated) {
     redirect("/agent/company");
   }
 

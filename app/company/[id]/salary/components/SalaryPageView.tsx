@@ -28,7 +28,7 @@ import { EarnedIncomeTable } from "./tables/EarnedIncomeTable";
 import { OtherIncomeTable } from "./tables/OtherIncomeTable";
 import { useSalaryData } from "../hooks/useSalaryData";
 import { useSalaryStats } from "../hooks/useSalaryStats";
-import { formatBusinessNumber, formatNumber, formatYm } from "../lib/format";
+import { formatBusinessNumber, formatNumber, formatYm } from "@/app/lib/payslip/format";
 import { buildPageNumbers, shiftYm } from "../lib/navigation";
 import {
   buildBusinessSummary,
@@ -46,7 +46,7 @@ import type {
   BusinessIncomeRow,
   DailyIncomeLaborRow,
   OtherIncomeRow,
-} from "../types";
+} from "@/types/company/salary";
 
 interface SalaryPageViewProps {
   viewMode: ViewMode;

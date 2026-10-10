@@ -16,6 +16,8 @@
 - `proxy.ts`가 서브도메인(host)을 보고 `/agent`, `/company`, `/employee` 내부 경로로 rewrite한다. 화면 코드는 내부 경로 기준으로 작성한다.
 - 공개 영역(`public`)은 랜딩(`/`), 쇼케이스(`/showcase/[slug]`), 급여명세서 열람(`/payslip/view`)이다.
   - 급여명세서 열람 페이지(GET)는 1회용 토큰을 확인만 하고, 사용자가 "열람하기" 버튼을 누를 때 `POST /api/public/payslip/view`에서 소진한다. 링크 미리보기·메일 보안 스캐너가 토큰을 소진하지 않게 하기 위함이므로 GET에서 소진하도록 되돌리지 않는다.
+- 화면 서버 컴포넌트(레이아웃·페이지)는 Prisma나 서버 전용 lib(인증·접근 헬퍼 등)을 직접 import하지 않고 `app/lib/backend.ts`의 `backendGet`으로 API를 호출한다(쿠키를 그대로 전달). 레포를 backend/web으로 나누기 위한 규칙이며 `docs/repo-split.md`를 참고한다.
+  - 레이아웃용 세션 API: `GET /api/agent/session`, `GET /api/company/session`, 직원은 `GET /api/employee/auth/me`·`GET /api/employee/payslips`.
 - 역할별 인증 헬퍼는 `app/lib/{agent,company,employee}-auth.ts`. 회사 소속 확인은 `app/lib/company-access.ts`.
 - 회사 데이터 라우트(`/api/company/[id]/**`)의 접근 제어 헬퍼:
   - 급여(인건비)·명세서 발송: `app/lib/company-salary-access.ts` (연결된 에이전트 또는 해당 회사 사용자만 허용)
@@ -29,7 +31,7 @@
 - `app/company/**` : 회사 관리자 화면.
 - `app/employee/**` : 직원 화면.
 - `app/api/**` : Route Handler. 규칙은 `app/api/AGENTS.md` 참고.
-- `app/lib/**` : 서버·클라이언트 공용 도메인 로직(인증, 메시지 발송, 급여 통계 등).
+- `app/lib/**` : 서버·클라이언트 공용 도메인 로직(인증, 메시지 발송, 급여 통계 등). 급여명세서 렌더러(HTML·PDF)는 `app/lib/payslip/`.
 - `lib/**` : 라우트와 무관한 작은 유틸(예: `lib/time.ts`).
 - `app/_hooks/**` : 전역 공용 React 훅.
 - `app/_components/**` : 전역 공용 컴포넌트. 라우트 전용 컴포넌트는 해당 라우트의 `_components/`에 둔다.
@@ -50,6 +52,7 @@
 - 사용자에게 보이는 메시지는 한국어로 작성한다.
 - 미사용 변수는 에러다. 의도적으로 무시할 경우 `_` 접두사를 붙인다.
 - 기능별 정식 URL은 하나만 유지한다. 별도 요청이 없으면 alias route, redirect, rewrite를 추가하지 않는다.
+- 화면 쪽 코드(`app/{agent,company,employee,payslip,showcase,_components,_hooks}`)와 API 쪽 코드(`app/api/**`)는 서로 import하지 않는다. 둘 다 쓰는 코드는 `types/`, `catalogs/`, `app/lib/`의 공용 파일에 둔다(`docs/repo-split.md`의 공용 파일 목록).
 - 새 환경변수를 추가하면 `app/api/health/ready`의 env 그룹 점검과 `README.md`에 반영한다.
 - 세션 쿠키 구조나 급여 파서 양식을 바꾸면 `scripts/smoke/run.mjs`도 함께 갱신한다.
 - **비어 있을 수 있는 필드(`String?` 등)에는 `@unique`/`@@unique`를 걸지 않는다.** MongoDB 고유 인덱스는 값이 없는 필드를 null로 색인하므로 같은 묶음에서 빈 값인 두 번째 문서부터 충돌한다. 이런 필드는 `@@index`로 두고 중복은 코드에서 확인한다(예: 사원코드 `app/lib/employee-code.ts`, 직원 계정 연락처 `app/lib/employee-user-contact.ts`). 기존 고유 제약에 선택 필드가 남아 있으면 생성 코드가 항상 값을 채우는지 확인한다(예: `AgentUser`·`CompanyUser`의 `providerUserId`에는 이메일을 넣는다).

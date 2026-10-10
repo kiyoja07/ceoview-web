@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import { PAYSLIP_INCOME_TAB_LABELS } from "@/catalogs/ko/salary";
-import type { Company, EarnedIncomeRow, IncomeTab } from "../types";
-import { renderPayslipHtml } from "../lib/payslip-template";
+import type { Company, EarnedIncomeRow, IncomeTab } from "@/types/company/salary";
+import { renderPayslipHtml } from "@/app/lib/payslip/payslip-template";
 import {
   toPayslipData,
   type IncomeRow,
-} from "../lib/payslip-template";
+} from "@/app/lib/payslip/payslip-template";
 import { SendPayslipButton } from "./SendPayslipButton";
 
 /* ───────── Types ───────── */

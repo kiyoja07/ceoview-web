@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { EmptyRow } from "../EmptyRow";
-import type { BusinessIncomeRow } from "../../types";
+import type { BusinessIncomeRow } from "@/types/company/salary";
 
 interface BusinessIncomeTableProps {
   rows: BusinessIncomeRow[];

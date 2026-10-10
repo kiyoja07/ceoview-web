@@ -5,12 +5,12 @@ import Link from "next/link";
 import { formatBusinessNumber } from "@/app/lib/formatters";
 import { INCOME_META } from "@/app/company/[id]/salary/constants";
 import { ErrorPanel, LoadingPanel } from "@/app/_components/ui/Panel";
-import { formatNumber } from "@/app/company/[id]/salary/lib/format";
+import { formatNumber } from "@/app/lib/payslip/format";
 import type {
   MonthlyStat,
   IncomeTab,
   SalaryStatsResponse,
-} from "@/app/company/[id]/salary/types";
+} from "@/types/company/salary";
 
 /* ── helpers ── */
 

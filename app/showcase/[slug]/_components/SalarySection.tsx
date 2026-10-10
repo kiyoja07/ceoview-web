@@ -1,12 +1,12 @@
 import {
   formatBusinessNumber,
   formatNumber,
-} from "@/app/company/[id]/salary/lib/format";
+} from "@/app/lib/payslip/format";
 import { SummaryCardsRow } from "@/app/company/[id]/salary/components/SummaryCardsRow";
 import type {
   IncomeSummary,
   MonthlyStat,
-} from "@/app/company/[id]/salary/types";
+} from "@/types/company/salary";
 import ShowcaseMonthlyStatsChart from "./ShowcaseMonthlyStatsChart";
 import { formatCurrency } from "./showcase-utils";
 import type { ShowcaseScenario } from "./showcase-utils";

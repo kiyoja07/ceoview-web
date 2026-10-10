@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { EmptyRow } from "../EmptyRow";
-import type { DailyIncomeLaborRow } from "../../types";
+import type { DailyIncomeLaborRow } from "@/types/company/salary";
 
 interface DailyIncomeLaborTableProps {
   rows: DailyIncomeLaborRow[];

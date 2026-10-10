@@ -6,7 +6,7 @@ import {
   IconNetPay,
   IconTotalLaborCost,
 } from "./icons";
-import type { IncomeSummary } from "../types";
+import type { IncomeSummary } from "@/types/company/salary";
 
 interface SummaryCardsRowProps {
   summary: IncomeSummary;

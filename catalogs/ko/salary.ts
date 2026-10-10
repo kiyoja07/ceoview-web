@@ -1,7 +1,9 @@
 import type { KeyLabel, LabeledOption } from "@/catalogs/types";
-import type { SalaryIncomeType } from "@/app/api/agent/salary/upload/types";
-import type { IncomeTab } from "@/app/company/[id]/salary/types";
-import type { FilterMode } from "@/app/agent/_salary/_components/types";
+import type {
+  SalaryDashboardFilterMode as FilterMode,
+  SalaryIncomeType,
+} from "@/types/agent/salary";
+import type { IncomeTab } from "@/types/company/salary";
 
 export const SALARY_DASHBOARD_FILTER_OPTIONS: KeyLabel<FilterMode>[] = [
   { key: "all", label: "전체" },

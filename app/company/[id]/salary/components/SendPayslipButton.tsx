@@ -6,7 +6,7 @@ import {
   getAvailablePayslipChannels,
   type PayslipSendChannel,
 } from "@/app/lib/payslip-delivery";
-import type { EarnedIncomeRow } from "../types";
+import type { EarnedIncomeRow } from "@/types/company/salary";
 import { PayslipChannelSelector } from "./PayslipChannelSelector";
 
 interface SendPayslipButtonProps {

@@ -118,3 +118,13 @@ export type YearMonthFieldProps = {
   onYearChange: (value: string) => void;
   onMonthChange: (value: string) => void;
 };
+
+// 급여 업로드 소득 종류 (API·카탈로그 공용)
+export type SalaryIncomeType = IncomeType;
+
+// 세무대리인 급여 현황 목록 필터
+export type SalaryDashboardFilterMode =
+  | "all"
+  | "published"
+  | "unpublished"
+  | "no-upload";

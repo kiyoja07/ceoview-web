@@ -4,7 +4,7 @@ import type {
   EarnedApiResponse,
   IncomeSummary,
   OtherApiResponse,
-} from "../types";
+} from "@/types/company/salary";
 
 // 산재보험 평균 요율
 const INDUSTRIAL_ACCIDENT_RATE = 0.007;

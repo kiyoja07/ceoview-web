@@ -22,10 +22,10 @@ import {
 } from "../components/icons";
 import { OtherIncomeTable } from "../components/tables/OtherIncomeTable";
 import { useSalaryData } from "../hooks/useSalaryData";
-import { formatBusinessNumber, formatNumber, formatYm } from "../lib/format";
+import { formatBusinessNumber, formatNumber, formatYm } from "@/app/lib/payslip/format";
 import { buildPageNumbers, shiftYm } from "../lib/navigation";
 import { buildOtherSummary } from "../lib/summary";
-import type { OtherIncomeRow } from "../types";
+import type { OtherIncomeRow } from "@/types/company/salary";
 
 function SalaryOtherPageInner() {
   const { id } = useParams<{ id: string }>();

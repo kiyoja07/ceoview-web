@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { DashboardMetricCard } from "@/app/company/dashboard/_components/DashboardMetricCard";
 import { QuickActionCard } from "@/app/company/dashboard/_components/QuickActionCard";
-import { formatBusinessNumber } from "@/app/company/[id]/salary/lib/format";
+import { formatBusinessNumber } from "@/app/lib/payslip/format";
 import { toneFromMetric } from "./showcase-utils";
 import type { ShowcaseScenario } from "./showcase-utils";
 import { SectionLabel, ArrowTileIcon } from "./ShowcaseUI";

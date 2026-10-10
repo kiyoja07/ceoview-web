@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { PAYSLIP_INCOME_TAB_LABELS } from "@/catalogs/ko/salary";
-import type { Company, IncomeTab } from "../types";
+import type { Company, IncomeTab } from "@/types/company/salary";
 
 interface BulkPayslipDownloadProps {
   companyId: string;
@@ -60,7 +60,7 @@ export function BulkPayslipDownload({
       setProgress({ done: 0, total: rows.length });
 
       // 2. Generate ZIP
-      const { generatePayslipZip } = await import("../lib/payslip-pdf");
+      const { generatePayslipZip } = await import("@/app/lib/payslip/payslip-pdf");
 
       const blob = await generatePayslipZip(
         rows,

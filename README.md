@@ -22,6 +22,9 @@ MongoDB를 사용하므로 `DATABASE_URL`은 `mongodb+srv://...` 형식이어야
 NCLOUD_MAIL_SENDER_NAME=관리자 시스템
 NCLOUD_MAIL_API_BASE_URL=https://mail.apigw.ntruss.com/api/v1
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+# 화면 서버 컴포넌트가 호출할 backend 주소. 비우면 현재 요청의 origin을 쓴다(단일 앱).
+# 레포 분리 후 ceoview-web에서 ceoview-backend 주소로 설정한다. (docs/repo-split.md)
+BACKEND_URL=
 ```
 
 # 유료 부과 기능

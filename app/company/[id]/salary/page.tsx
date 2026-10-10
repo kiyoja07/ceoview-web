@@ -21,7 +21,7 @@ import {
 } from "./components/icons";
 import { useSalaryData } from "./hooks/useSalaryData";
 import { useSalaryStats } from "./hooks/useSalaryStats";
-import { formatBusinessNumber, formatNumber } from "./lib/format";
+import { formatBusinessNumber, formatNumber } from "@/app/lib/payslip/format";
 import { shiftYm } from "./lib/navigation";
 import {
   buildBusinessSummary,
@@ -30,7 +30,7 @@ import {
   buildGrandTotal,
   buildOtherSummary,
 } from "./lib/summary";
-import type { IncomeTab } from "./types";
+import type { IncomeTab } from "@/types/company/salary";
 
 function SalaryPageInner() {
   const { id } = useParams<{ id: string }>();

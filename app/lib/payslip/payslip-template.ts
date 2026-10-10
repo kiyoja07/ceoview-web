@@ -5,9 +5,9 @@ import type {
   OtherIncomeRow,
   Company,
   IncomeTab,
-} from "../types";
+} from "@/types/company/salary";
 import { PAYSLIP_INCOME_TAB_LABELS } from "@/catalogs/ko/salary";
-import { formatNumber, formatBusinessNumber, formatYm } from "./format";
+import { formatNumber, formatBusinessNumber, formatYm } from "@/app/lib/payslip/format";
 
 export interface PayslipItem {
   label: string;

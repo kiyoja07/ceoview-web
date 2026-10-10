@@ -1,5 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
-import { consumePayslipAccessToken } from "@/app/lib/payslip-view";
+import {
+  consumePayslipAccessToken,
+  isPayslipAccessTokenUsable,
+} from "@/app/lib/payslip-view";
+import type { PayslipTokenStatusResponse } from "@/types/payslip";
+
+/**
+ * GET /api/public/payslip/view?token=
+ * 열람 페이지 렌더링용. 토큰을 소진하지 않고 사용 가능 여부만 확인한다.
+ * (링크 미리보기·메일 보안 스캐너가 토큰을 소진하지 않도록 소진은 POST에서만 한다.)
+ */
+export async function GET(request: NextRequest) {
+  const token = request.nextUrl.searchParams.get("token")?.trim() ?? "";
+
+  try {
+    const usable = token ? await isPayslipAccessTokenUsable(token) : false;
+    return NextResponse.json<PayslipTokenStatusResponse>(
+      { usable },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  } catch (error) {
+    console.error("Payslip token status error:", error);
+    return NextResponse.json(
+      { error: "급여명세서 링크를 확인하지 못했습니다." },
+      { status: 500 },
+    );
+  }
+}
 
 /**
  * POST /api/public/payslip/view

@@ -5,7 +5,7 @@ import type {
   EarnedIncomeRow,
   IncomeSummary,
   MonthlyStat,
-} from "@/app/company/[id]/salary/types";
+} from "@/types/company/salary";
 import { formatCurrencyKRW } from "@/app/lib/formatters";
 import type { getShowcaseBySlug } from "@/catalogs/showcase";
 

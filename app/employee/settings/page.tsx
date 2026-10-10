@@ -1,11 +1,11 @@
 import EmployeeProfileEditor from "../_components/EmployeeProfileEditor";
 import EmployeeBankAccountEditor from "../_components/EmployeeBankAccountEditor";
-import { getEmployeePortalSession } from "@/app/lib/employee-portal";
+import { getEmployeePortalUser } from "@/app/employee/_lib/portal";
 
 export const dynamic = "force-dynamic";
 
 export default async function EmployeeSettingsPage() {
-  const user = await getEmployeePortalSession();
+  const user = await getEmployeePortalUser();
 
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-8 sm:px-6">

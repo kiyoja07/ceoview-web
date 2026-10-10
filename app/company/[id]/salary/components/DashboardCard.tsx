@@ -1,6 +1,6 @@
 import { INCOME_META } from "../constants";
-import { formatNumber } from "../lib/format";
-import type { IncomeSummary, IncomeTab } from "../types";
+import { formatNumber } from "@/app/lib/payslip/format";
+import type { IncomeSummary, IncomeTab } from "@/types/company/salary";
 
 interface DashboardCardProps {
   tab: IncomeTab;

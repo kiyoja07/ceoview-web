@@ -1,4 +1,4 @@
-import type { PayslipData } from "@/app/company/[id]/salary/lib/payslip-template";
+import type { PayslipData } from "@/app/lib/payslip/payslip-template";
 
 /** POST /api/public/payslip/view 성공 응답 */
 export type PayslipViewResponse = {
@@ -14,4 +14,9 @@ export type PayslipViewResponse = {
 /** POST /api/public/payslip/view 실패 응답 */
 export type PayslipViewErrorResponse = {
   error: string;
+};
+
+/** GET /api/public/payslip/view?token= 응답. 토큰을 소진하지 않고 사용 가능 여부만 알려준다. */
+export type PayslipTokenStatusResponse = {
+  usable: boolean;
 };

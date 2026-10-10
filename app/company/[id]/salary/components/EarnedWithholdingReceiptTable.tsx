@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
-import type { Company, EarnedIncomeRow } from "../types";
-import { formatBusinessNumber, formatNumber } from "../lib/format";
+import type { Company, EarnedIncomeRow } from "@/types/company/salary";
+import { formatBusinessNumber, formatNumber } from "@/app/lib/payslip/format";
 
 interface EarnedWithholdingReceiptTableProps {
   row: EarnedIncomeRow;

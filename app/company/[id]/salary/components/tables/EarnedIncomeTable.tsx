@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { EmptyRow } from "../EmptyRow";
-import type { EarnedIncomeRow } from "../../types";
+import type { EarnedIncomeRow } from "@/types/company/salary";
 
 const PAYMENT_COLS = [
   { key: "baseSalary", label: "기본급" },

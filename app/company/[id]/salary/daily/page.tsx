@@ -22,10 +22,10 @@ import {
 } from "../components/icons";
 import { DailyIncomeLaborTable } from "../components/tables/DailyIncomeLaborTable";
 import { useSalaryData } from "../hooks/useSalaryData";
-import { formatBusinessNumber, formatNumber } from "../lib/format";
+import { formatBusinessNumber, formatNumber } from "@/app/lib/payslip/format";
 import { buildPageNumbers, shiftYm } from "../lib/navigation";
 import { buildDailySummary } from "../lib/summary";
-import type { DailyIncomeLaborRow } from "../types";
+import type { DailyIncomeLaborRow } from "@/types/company/salary";
 
 function SalaryDailyPageInner() {
   const { id } = useParams<{ id: string }>();

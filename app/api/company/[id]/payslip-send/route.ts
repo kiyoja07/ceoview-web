@@ -14,8 +14,8 @@ import {
 } from "@/app/lib/payslip-delivery";
 import { buildEarnedPayslipData } from "@/app/lib/payslip-earned";
 import { resolveUploadForCompanyView } from "@/app/lib/salary-upload-view";
-import { formatNumber } from "@/app/company/[id]/salary/lib/format";
-import { renderPayslipHtml } from "@/app/company/[id]/salary/lib/payslip-template";
+import { formatNumber } from "@/app/lib/payslip/format";
+import { renderPayslipHtml } from "@/app/lib/payslip/payslip-template";
 import { sendEmail } from "@/app/lib/messages/email";
 import { sendKakaoMessage } from "@/app/lib/messages/kakao";
 import { sendSms } from "@/app/lib/messages/sms";

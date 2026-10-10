@@ -2,14 +2,18 @@ import Link from "next/link";
 import { formatCurrencyKRW } from "@/app/lib/formatters";
 import EmployeeProfileEditor from "./_components/EmployeeProfileEditor";
 import EmployeeBankAccountEditor from "./_components/EmployeeBankAccountEditor";
-import { getEmployeePortalSession } from "@/app/lib/employee-portal";
-import { getEmployeePayslipCollection } from "@/app/lib/employee-payslips";
+import {
+  getEmployeePayslipCollection,
+  getEmployeePortalUser,
+} from "@/app/employee/_lib/portal";
 
 export const dynamic = "force-dynamic";
 
 export default async function EmployeeHomePage() {
-  const user = await getEmployeePortalSession();
-  const collection = await getEmployeePayslipCollection(user);
+  const [user, collection] = await Promise.all([
+    getEmployeePortalUser(),
+    getEmployeePayslipCollection(),
+  ]);
   const latestEntry = collection.allEntries[0] ?? null;
 
   return (
@@ -23,7 +27,7 @@ export default async function EmployeeHomePage() {
               {user.name}님
             </h1>
             <p className="mt-1 text-sm text-gray-500">
-              {user.employee.company.businessName ?? "회사"}
+              {user.company.businessName ?? "회사"}
               {[
                 user.employee.department,
                 user.employee.positionTitle !== "직급없음"

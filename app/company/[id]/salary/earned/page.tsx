@@ -23,10 +23,10 @@ import {
 } from "../components/icons";
 import { EarnedIncomeTable } from "../components/tables/EarnedIncomeTable";
 import { useSalaryData } from "../hooks/useSalaryData";
-import { formatBusinessNumber, formatNumber, formatYm } from "../lib/format";
+import { formatBusinessNumber, formatNumber, formatYm } from "@/app/lib/payslip/format";
 import { buildPageNumbers, shiftYm } from "../lib/navigation";
 import { buildEarnedSummary } from "../lib/summary";
-import type { EarnedIncomeRow } from "../types";
+import type { EarnedIncomeRow } from "@/types/company/salary";
 
 function SalaryEarnedPageInner() {
   const { id } = useParams<{ id: string }>();

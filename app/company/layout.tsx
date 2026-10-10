@@ -1,17 +1,10 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { cookies } from "next/headers";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { CompanyHeader } from "./_components/CompanyHeader";
-import {
-  COMPANY_SELECTED_COMPANY_COOKIE,
-  verifyCompanySessionToken,
-  COMPANY_SESSION_COOKIE,
-} from "@/app/lib/company-auth";
-import { resolveCompanyAccessContextForUser } from "@/app/lib/company-access";
-import { COMPANY_ONBOARDING_PENDING_MARKER } from "@/app/lib/company-onboarding";
-import prisma from "@/app/lib/prisma";
+import { backendGet } from "@/app/lib/backend";
+import type { CompanySessionResponse } from "@/types/company/session";
 
 async function shouldShowCompanyHeader() {
   const headerStore = await headers();
@@ -36,28 +29,22 @@ function isFeatureRestrictedPath(
   return false;
 }
 
+function getCompanySession() {
+  return backendGet<CompanySessionResponse>("/api/company/session");
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   try {
     if (!(await shouldShowCompanyHeader())) {
       return { title: "Company Auth" };
     }
 
-    const cookieStore = await cookies();
-    const token = cookieStore.get(COMPANY_SESSION_COOKIE)?.value;
-    const selectedCompanyValue =
-      cookieStore.get(COMPANY_SELECTED_COMPANY_COOKIE)?.value ?? null;
-    const payload = verifyCompanySessionToken(token);
-    if (!payload) return { title: "Company Dashboard" };
+    const session = await getCompanySession();
+    if (!session.ok || !session.data.authenticated) {
+      return { title: "Company Dashboard" };
+    }
 
-    const selectedCompanyId = selectedCompanyValue
-      ? selectedCompanyValue
-      : null;
-    const access = await resolveCompanyAccessContextForUser({
-      userId: payload.userId,
-      selectedCompanyId,
-    });
-
-    const companyName = access?.company.businessName;
+    const companyName = session.data.company?.businessName;
     return { title: companyName || "Company Dashboard" };
   } catch {
     return { title: "Company Dashboard" };
@@ -73,34 +60,21 @@ export default async function CompanyLayout({
   const pathname = headerStore.get("x-ceoview-pathname") ?? "";
 
   if (!pathname.startsWith("/company/auth")) {
-    const cookieStore = await cookies();
-    const token = cookieStore.get(COMPANY_SESSION_COOKIE)?.value;
-    const selectedCompanyValue =
-      cookieStore.get(COMPANY_SELECTED_COMPANY_COOKIE)?.value ?? null;
-    const payload = verifyCompanySessionToken(token);
+    const session = await getCompanySession();
 
-    if (payload) {
-      const access = await resolveCompanyAccessContextForUser({
-        userId: payload.userId,
-        selectedCompanyId: selectedCompanyValue,
-      });
+    if (session.ok && session.data.authenticated) {
+      const { company, onboarding } = session.data;
 
-      if (access?.company.address === COMPANY_ONBOARDING_PENDING_MARKER) {
-        const pendingRequest = await prisma.companyJoinRequest.findFirst({
-          where: {
-            companyUserId: payload.userId,
-            status: "PENDING",
-          },
-          select: { id: true },
-        });
-
+      if (onboarding) {
         redirect(
-          pendingRequest ? "/company/auth/pending" : "/company/auth/onboarding",
+          onboarding === "pending"
+            ? "/company/auth/pending"
+            : "/company/auth/onboarding",
         );
       }
 
       // 에이전트가 끈 기능의 경로는 접근을 차단한다.
-      if (access && isFeatureRestrictedPath(pathname, access.company.features)) {
+      if (company && isFeatureRestrictedPath(pathname, company.features)) {
         redirect("/company/dashboard");
       }
     }

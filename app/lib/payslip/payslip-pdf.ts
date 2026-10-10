@@ -1,11 +1,11 @@
-import type { Company, IncomeTab } from "../types";
+import type { Company, IncomeTab } from "@/types/company/salary";
 import { PAYSLIP_INCOME_TAB_LABELS } from "@/catalogs/ko/salary";
 import {
   renderPayslipHtml,
   toPayslipData,
   type PayslipData,
   type IncomeRow,
-} from "./payslip-template";
+} from "@/app/lib/payslip/payslip-template";
 
 const PAYSLIP_CSS = `
   * { margin: 0; padding: 0; box-sizing: border-box; }

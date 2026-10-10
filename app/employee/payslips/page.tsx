@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { formatCurrencyKRW } from "@/app/lib/formatters";
 import EmployeePayslipViewer from "@/app/employee/payslips/_components/EmployeePayslipViewer";
-import { getEmployeePayslipCollection } from "@/app/lib/employee-payslips";
-import { getEmployeePortalSession } from "@/app/lib/employee-portal";
+import {
+  getEmployeePayslipCollection,
+  getEmployeePortalUser,
+} from "@/app/employee/_lib/portal";
 
 export const dynamic = "force-dynamic";
 
@@ -19,9 +21,11 @@ export default async function EmployeePayslipsPage({
     id?: string | string[];
   }>;
 }) {
-  const session = await getEmployeePortalSession();
-  const params = await searchParams;
-  const collection = await getEmployeePayslipCollection(session);
+  const [session, collection, params] = await Promise.all([
+    getEmployeePortalUser(),
+    getEmployeePayslipCollection(),
+    searchParams,
+  ]);
   const selectedMonth = getSearchValue(params.month);
   const selectedType = getSearchValue(params.type);
   const selectedId = getSearchValue(params.id);
@@ -69,7 +73,7 @@ export default async function EmployeePayslipsPage({
                   회사
                 </p>
                 <p className="mt-1 text-sm font-semibold text-gray-900">
-                  {session.employee.company.businessName ?? "회사"}
+                  {session.company.businessName ?? "회사"}
                 </p>
               </div>
               <div className="rounded-2xl bg-slate-50 px-4 py-3">

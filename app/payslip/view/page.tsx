@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { isPayslipAccessTokenUsable } from "@/app/lib/payslip-view";
+import { backendGet } from "@/app/lib/backend";
+import type { PayslipTokenStatusResponse } from "@/types/payslip";
 import { PayslipAccessGate } from "./PayslipAccessGate";
 
 export const dynamic = "force-dynamic";
@@ -63,7 +64,13 @@ export default async function PayslipViewPage({
 
   // GET 렌더링에서는 토큰을 소진하지 않는다(링크 미리보기·보안 스캐너 대응).
   // 실제 소진은 사용자가 열람 버튼을 누를 때 POST /api/public/payslip/view에서 한다.
-  if (!(await isPayslipAccessTokenUsable(normalizedToken))) {
+  const status = await backendGet<PayslipTokenStatusResponse>(
+    `/api/public/payslip/view?token=${encodeURIComponent(normalizedToken)}`,
+  );
+  if (!status.ok) {
+    throw new Error("급여명세서 링크 상태를 확인하지 못했습니다.");
+  }
+  if (!status.data.usable) {
     return (
       <InvalidPayslipView
         title="만료되었거나 이미 사용된 링크입니다"

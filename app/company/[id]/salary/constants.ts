@@ -1,4 +1,4 @@
-import type { IncomeMeta, IncomeTab } from "./types";
+import type { IncomeMeta, IncomeTab } from "@/types/company/salary";
 
 export const INCOME_META: Record<IncomeTab, IncomeMeta> = {
   earned: {

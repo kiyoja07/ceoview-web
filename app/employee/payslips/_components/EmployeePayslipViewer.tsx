@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import {
   renderPayslipHtml,
   type PayslipData,
-} from "@/app/company/[id]/salary/lib/payslip-template";
-import { renderPayslipPdfFromData } from "@/app/company/[id]/salary/lib/payslip-pdf";
+} from "@/app/lib/payslip/payslip-template";
+import { renderPayslipPdfFromData } from "@/app/lib/payslip/payslip-pdf";
 
 interface EmployeePayslipViewerProps {
   payslipData: PayslipData;

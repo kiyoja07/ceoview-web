@@ -1,8 +1,6 @@
-export type SalaryIncomeType =
-  | "EARNED_INCOME"
-  | "BUSINESS_INCOME"
-  | "OTHER_INCOME"
-  | "OTHER_INCOME_LABOR";
+import type { SalaryIncomeType } from "@/types/agent/salary";
+
+export type { SalaryIncomeType };
 
 export type ParsedRows = {
   columns: string[];

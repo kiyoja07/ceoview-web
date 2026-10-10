@@ -6,7 +6,7 @@ import {
   getPayslipChannelLabel,
   type PayslipSendChannel,
 } from "@/app/lib/payslip-delivery";
-import type { IncomeTab } from "../types";
+import type { IncomeTab } from "@/types/company/salary";
 import { PayslipChannelSelector } from "./PayslipChannelSelector";
 
 interface BulkPayslipSendProps {

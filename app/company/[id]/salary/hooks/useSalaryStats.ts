@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { SalaryStatsResponse } from "../types";
+import type { SalaryStatsResponse } from "@/types/company/salary";
 
 interface UseSalaryStatsParams {
   companyId: string;

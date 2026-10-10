@@ -1,9 +1,3 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import {
-  EMPLOYEE_SESSION_COOKIE,
-  verifyEmployeeSessionToken,
-} from "@/app/lib/employee-auth";
 import prisma from "@/app/lib/prisma";
 
 export type EmployeePortalSession = {
@@ -31,24 +25,10 @@ export type EmployeePortalSession = {
   };
 };
 
-const EMPLOYEE_LOGIN_PATH = "/employee/auth/login";
-
-export async function getEmployeePortalSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(EMPLOYEE_SESSION_COOKIE)?.value;
-  const payload = verifyEmployeeSessionToken(token);
-
-  if (!payload) {
-    redirect(EMPLOYEE_LOGIN_PATH);
-  }
-
-  let userId: string;
-  try {
-    userId = payload.userId;
-  } catch {
-    redirect(EMPLOYEE_LOGIN_PATH);
-  }
-
+// 활성 직원 계정과 소속 회사를 조회한다. 비활성·삭제된 직원이면 null.
+export async function loadEmployeePortalSession(
+  userId: string,
+): Promise<EmployeePortalSession | null> {
   const user = await prisma.employeeUser.findUnique({
     where: { id: userId },
     select: {
@@ -82,8 +62,8 @@ export async function getEmployeePortalSession() {
   });
 
   if (!user || !user.isActive || user.employee.deletedAt) {
-    redirect(EMPLOYEE_LOGIN_PATH);
+    return null;
   }
 
-  return user satisfies EmployeePortalSession;
+  return user;
 }

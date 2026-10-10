@@ -6,7 +6,7 @@ import type {
   IncomeTab,
   OtherApiResponse,
   ViewMode,
-} from "../types";
+} from "@/types/company/salary";
 
 interface UseSalaryDataParams {
   companyId: string;

@@ -15,7 +15,7 @@ import {
   formatBusinessNumber,
   formatNumber,
   formatYm,
-} from "@/app/company/[id]/salary/lib/format";
+} from "@/app/lib/payslip/format";
 import { shiftYm } from "@/app/company/[id]/salary/lib/navigation";
 import { buildEarnedSummary } from "@/app/company/[id]/salary/lib/summary";
 import { SectionLabel } from "./ShowcaseUI";

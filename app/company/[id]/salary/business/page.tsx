@@ -22,10 +22,10 @@ import {
 } from "../components/icons";
 import { BusinessIncomeTable } from "../components/tables/BusinessIncomeTable";
 import { useSalaryData } from "../hooks/useSalaryData";
-import { formatBusinessNumber, formatNumber, formatYm } from "../lib/format";
+import { formatBusinessNumber, formatNumber, formatYm } from "@/app/lib/payslip/format";
 import { buildPageNumbers, shiftYm } from "../lib/navigation";
 import { buildBusinessSummary } from "../lib/summary";
-import type { BusinessIncomeRow } from "../types";
+import type { BusinessIncomeRow } from "@/types/company/salary";
 
 function SalaryBusinessPageInner() {
   const { id } = useParams<{ id: string }>();

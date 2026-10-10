@@ -11,7 +11,7 @@ import { EmployeeOverviewSection } from "./_components/EmployeeOverviewSection";
 import { FinancialReportOverviewSection } from "./_components/FinancialReportOverviewSection";
 import { QuickActionsSection } from "./_components/QuickActionsSection";
 import { SalaryOverviewSection } from "./_components/SalaryOverviewSection";
-import { formatBusinessNumber } from "../[id]/salary/lib/format";
+import { formatBusinessNumber } from "@/app/lib/payslip/format";
 
 export default function CompanyDashboardPage() {
   const router = useRouter();
