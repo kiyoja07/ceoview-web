@@ -1,21 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { attachAgentSession } from "@/app/lib/agent-auth";
 import { hashMagicLinkToken } from "@/app/lib/agent-magic-link";
+import { redirectToPath } from "@/app/lib/http-redirect";
 import prisma from "@/app/lib/prisma";
 
 const LOGIN_PATH = "/agent/auth/login";
 const MAGIC_LINK_PAGE_PATH = "/agent/auth/magic-link";
 
-function redirectToLoginWithError(request: NextRequest, errorCode: string) {
-  const url = new URL(LOGIN_PATH, request.url);
-  url.searchParams.set("error", errorCode);
-  return NextResponse.redirect(url);
+function redirectToLoginWithError(errorCode: string) {
+  return redirectToPath(LOGIN_PATH, { error: errorCode });
 }
 
-function redirectToMagicLinkPage(request: NextRequest, token: string) {
-  const url = new URL(MAGIC_LINK_PAGE_PATH, request.url);
-  url.searchParams.set("token", token);
-  return NextResponse.redirect(url);
+function redirectToMagicLinkPage(token: string) {
+  return redirectToPath(MAGIC_LINK_PAGE_PATH, { token });
 }
 
 async function readTokenFromRequest(request: NextRequest) {
@@ -31,7 +28,7 @@ async function readTokenFromRequest(request: NextRequest) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-async function consumeMagicLink(request: NextRequest, token: string) {
+async function consumeMagicLink(token: string) {
   const tokenHash = hashMagicLinkToken(token);
   const now = new Date();
 
@@ -52,11 +49,11 @@ async function consumeMagicLink(request: NextRequest, token: string) {
   });
 
   if (!magicLink || magicLink.usedAt || magicLink.expiresAt <= now) {
-    return redirectToLoginWithError(request, "expired_magic_link");
+    return redirectToLoginWithError("expired_magic_link");
   }
 
   if (!magicLink.agentUser.isActive) {
-    return redirectToLoginWithError(request, "inactive_user");
+    return redirectToLoginWithError("inactive_user");
   }
 
   const markUsedResult = await prisma.agentMagicLinkToken.updateMany({
@@ -69,15 +66,13 @@ async function consumeMagicLink(request: NextRequest, token: string) {
   });
 
   if (markUsedResult.count !== 1) {
-    return redirectToLoginWithError(request, "expired_magic_link");
+    return redirectToLoginWithError("expired_magic_link");
   }
 
   const redirectPath = magicLink.agentUser.agentOrganizationId
     ? "/agent/company"
     : "/agent/auth/organization";
-  const response = NextResponse.redirect(new URL(redirectPath, request.url), {
-    status: 303,
-  });
+  const response = redirectToPath(redirectPath, undefined, 303);
   attachAgentSession(response, magicLink.agentUserId);
   return response;
 }
@@ -85,22 +80,22 @@ async function consumeMagicLink(request: NextRequest, token: string) {
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("token")?.trim();
   if (!token) {
-    return redirectToLoginWithError(request, "invalid_magic_link");
+    return redirectToLoginWithError("invalid_magic_link");
   }
 
-  return redirectToMagicLinkPage(request, token);
+  return redirectToMagicLinkPage(token);
 }
 
 export async function POST(request: NextRequest) {
   try {
     const token = await readTokenFromRequest(request);
     if (!token) {
-      return redirectToLoginWithError(request, "invalid_magic_link");
+      return redirectToLoginWithError("invalid_magic_link");
     }
 
-    return await consumeMagicLink(request, token);
+    return await consumeMagicLink(token);
   } catch (error) {
     console.error("Agent magic link verify error:", error);
-    return redirectToLoginWithError(request, "magic_link_error");
+    return redirectToLoginWithError("magic_link_error");
   }
 }
