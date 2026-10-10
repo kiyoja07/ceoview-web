@@ -1,31 +1,25 @@
 ## 서비스 이름
 
-[경영한눈](https://ceoview.kr)
+[경영한눈](https://ceoview.kr) — web (`ceoview-web`)
 
-## Setup
+## 구조
 
-```bash
-npx prisma db push
-npx prisma generate
-```
+화면 전용 레포(`ceoview-web`). API·DB는 `ceoview-backend` 레포가 담당하며,
+`/api/*` 요청은 `next.config.ts`의 rewrite로 backend에 전달된다. 자세한 구조는 `docs/repo-split.md`.
 
-MongoDB를 사용하므로 `DATABASE_URL`은 `mongodb+srv://...` 형식이어야 합니다.
-기존 RDB 마이그레이션은 사용하지 않고 Prisma schema를 `db push`로 반영합니다.
-
-## Auth (Magic Link)
-
-로그인은 이메일 기반 `magic link` 방식.
-
-선택 환경변수:
+## 환경변수
 
 ```bash
-NCLOUD_MAIL_SENDER_NAME=관리자 시스템
-NCLOUD_MAIL_API_BASE_URL=https://mail.apigw.ntruss.com/api/v1
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-# 화면 서버 컴포넌트가 호출할 backend 주소. 비우면 현재 요청의 origin을 쓴다(단일 앱).
-# 레포 분리 후 ceoview-web에서 ceoview-backend 주소로 설정한다. (docs/repo-split.md)
+# 필수: ceoview-backend 주소 (예: https://api.ceoview.kr, 로컬은 http://localhost:4000)
 BACKEND_URL=
+# 서브도메인 라우팅용 (선택, 없으면 접속 host로 추정)
+PUBLIC_BASE_URL=https://ceoview.kr
+AGENT_BASE_URL=https://agent.ceoview.kr
+COMPANY_BASE_URL=https://company.ceoview.kr
+EMPLOYEE_BASE_URL=https://employee.ceoview.kr
 ```
+
+`BACKEND_URL`은 빌드 시점에 rewrite 설정으로 들어가므로 바꾸면 다시 배포해야 한다.
 
 # 유료 부과 기능
 
@@ -36,7 +30,6 @@ BACKEND_URL=
 
 - 인건비 지급 대상자 개별 등록 : /agent/company/${companyId}/employees/new
 
-doppler run -- npx prisma generate && doppler run -- npx prisma db push
 
 # 테스트
 
